@@ -1424,6 +1424,7 @@ var doVoids = false;
 var needToVoid = false;
 var needPrestige = false;
 var voidCheckPercent = 0;
+var HDratio = 0;
 
 function autoMap() {
 	//allow script to handle abandoning
@@ -1464,6 +1465,7 @@ function autoMap() {
     	
         enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * 0.2) || baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * 0.2));
         enoughDamage = (baseDamage * 4 > enemyHealth);
+        HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
         var shouldDoMaps = !enoughHealth || !enoughDamage;
         var shouldDoMap = "world";
         
