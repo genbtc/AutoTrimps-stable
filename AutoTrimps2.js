@@ -1729,13 +1729,19 @@ function autoMap() {
 		//if we can't afford the map we designed, pick our highest map
                 if (updateMapCost(true) > game.resources.fragments.owned) {
                     selectMap(game.global.mapsOwnedArray[highestMap].id);
+                    console.log("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value);
+                    console.log("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level);
                     runMap();
                 } else {
+                    console.log("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value);
                     buyMap();
                 }
                 //if we already have a map picked, run it
             } else {
                 selectMap(shouldDoMap);
+                console.log("Already have a map picked: Running map:# " + shouldDoMap + 
+                	" Level: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].level +
+                	" Name: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].name);
                 runMap();
             }
         }
