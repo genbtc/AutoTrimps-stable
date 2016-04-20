@@ -1439,9 +1439,9 @@ function autoMap() {
         
         //take map-bonus into account if in a world.
         baseDamage *= 1 + (0.20*game.global.mapBonus);
-
+        //farm if basedamage is between 10 and 16)
         if(!getPageSetting('DisableFarm')) {
-        	shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 10 : getEnemyMaxHealth(game.global.world) / baseDamage > 15;
+        	shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 10 : getEnemyMaxHealth(game.global.world) / baseDamage > 16;
         }
 
 	needToVoid = getPageSetting('VoidMaps') > 0 && game.global.totalVoidMaps > 0 && ((game.global.world == getPageSetting('VoidMaps') && !getPageSetting('RunNewVoids')) || (game.global.world >= getPageSetting('VoidMaps') && getPageSetting('RunNewVoids'))) && (game.global.challengeActive != 'Lead' || game.global.lastClearedCell > 95);
