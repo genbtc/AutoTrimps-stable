@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         AutoTrimpsV2
+// @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.1.1-genbtc-stable
 // @description  try to take over the world!
-// @author       zininzinin, spindrjr, belaith, ishakaru
+// @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include        *trimps.github.io*
 // @grant        none
 // ==/UserScript==
@@ -283,6 +283,13 @@ function highlightHousing() {
             if (max === false) max = -1;
             if (game.buildings[keysSorted[best]].owned < max || max == -1) {
                 bestBuilding = keysSorted[best];
+                
+                if(bestBuilding == "Warpstation"){
+                //except if we are past the cap-level (just wait for next giga).
+                    if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
+                        bestBuilding = null;
+                }
+                
                 break;
             }
         }
