@@ -901,6 +901,9 @@ function initializeAutoTrimps() {
     loadPageVariables();
     javascript: with(document)(head.appendChild(createElement('script')).src = 'https://genbtc.github.io/AutoTrimps/NewUI.js')._;
     javascript: with(document)(head.appendChild(createElement('script')).src = 'https://genbtc.github.io/AutoTrimps/Graphs.js')._;
+    //needed for local testing.
+    //javascript:with(document)(head.appendChild(createElement('script')).src = 'https://localhost:4445/NewUI.js')._;
+    //javascript:with(document)(head.appendChild(createElement('script')).src = 'https://localhost:4445/Graphs.js')._;    
     toggleSettingsMenu();
     toggleSettingsMenu();
 }
@@ -1501,13 +1504,25 @@ function autoMap() {
         }
         else stackingTox = false;
         
+        //Create siphonology on demand section.
+        var siphlvl = game.global.world - game.portal.Siphonology.level;
+
+        if (getPageSetting('DynamicSiphonology')){
+	        for (siphlvl; siphlvl < game.global.world; siphlvl++) {
+	        	//check HP vs damage and find how many siphonology levels we need.
+	        	var maphp = getEnemyMaxHealth(siphlvl);
+	        	if (baseDamage * 4 < maphp){
+	        		break;
+	        	}
+	        }
+	    }
         var obj = {};
         var siphonMap = -1;
         for (var map in game.global.mapsOwnedArray) {
             if (!game.global.mapsOwnedArray[map].noRecycle) {
                 obj[map] = game.global.mapsOwnedArray[map].level;
-                if(game.global.mapsOwnedArray[map].level == (game.global.world - game.portal.Siphonology.level))
-                	siphonMap = map;
+                if(game.global.mapsOwnedArray[map].level == siphlvl)
+                    siphonMap = map;                
             }
         }
         var keysSorted = Object.keys(obj).sort(function(a, b) {
@@ -1603,24 +1618,24 @@ function autoMap() {
             
 
         }
-        //shouldFarm is true here if: regular shouldFarm check set it, or voidMap difficulty check set it
-	if (shouldFarm && siphonMap == -1 && !needPrestige) shouldDoMap = "create";
-
         //map if we don't have health/dmg or we need to clear void maps or if we are prestige mapping, and our set item has a new prestige available 
         if (shouldDoMaps || doVoids || needPrestige) {
         	//shouldDoMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
-        	//if shouldDoMap != world, it already has a map ID and will be run below
             if (shouldDoMap == "world") {
-            	//if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige
-            	if (shouldDoMaps && shouldFarm && !needPrestige) shouldDoMap = game.global.mapsOwnedArray[siphonMap].id;
-                else if (game.global.world == game.global.mapsOwnedArray[highestMap].level) {
-                    shouldDoMap = game.global.mapsOwnedArray[highestMap].id;
-                } else {
-                    //if we dont' have an appropriate max level map, or a siphon map, we need to make one
-                    //if(!shouldDoMaps) shouldDoMap = "world";
+            	//if needPrestige, TRY to find current level map as the highest level map we own.
+            	if (needPrestige)
+                    if (game.global.world == game.global.mapsOwnedArray[highestMap].level)
+                        shouldDoMap = game.global.mapsOwnedArray[highestMap].id;
+                    else
+                        shouldDoMap = "create";
+				//if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                
+            	else if (siphonMap != -1)
+                    shouldDoMap = game.global.mapsOwnedArray[siphonMap].id;
+                //if we dont' have an appropriate max level map, or a siphon map, we need to make one
+                else
                     shouldDoMap = "create";
-                }
             }
+        	//if shouldDoMap != world, it already has a map ID and will be run below            
         }
         
                  //don't map on even worlds if on Lead, except if person is dumb and wants to void on even	
@@ -1672,9 +1687,10 @@ function autoMap() {
                 mapsClicked();
             } 
             else if (shouldDoMap == "create") {
-            	//create a siphonology level map if shouldFarm and not prestiging (void map diff check consideration here?)
-                if(shouldDoMaps && shouldFarm && !needPrestige) document.getElementById("mapLevelInput").value = game.global.world - game.portal.Siphonology.level;
-                else document.getElementById("mapLevelInput").value = game.global.world;
+            	if (needPrestige)
+            		document.getElementById("mapLevelInput").value = game.global.world;
+            	else
+                	document.getElementById("mapLevelInput").value = siphlvl;
                 if (game.global.world > 70) {
                     sizeAdvMapsRange.value = 9;
                     adjustMap('size', 9);
