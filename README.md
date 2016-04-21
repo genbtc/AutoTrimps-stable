@@ -1,10 +1,41 @@
-# AutoTrimps
+# AutoTrimps + genBTC
 Automation script for the idle incremental game Trimps  
 
 **Installation instructions at the bottom of this README**
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
 
 ## Recent changes
+
+Changed by genBTC:
+- Add WarpStation Cap (deltaGiga+baseWarp) feature.
+Stop making warpstations if we are past the deltagiga + base
+warpstations (and no giga upgrade is available). Will also remove the
+green highlight around the icon. This will save you metal to use on
+weapons,armor, etc.
+NOTE: (the cap will only work on incremental buys, it will not come into
+effect when the game uses a gigastation and immediately bulk-buys as
+many warpstations as it can afford. I think this is preferrable.)
+- Stop from firing all scientists when it reaches the threshhold. (250k farmers)
+Farmers will be maintained at the current level, not fired entirely. I
+corrected the commented explanation, since the number it stops buying at
+is 250k farmers, not 100k.
+- Take Map Bonus +%Damage into account for farming decisions. (so you can farm less.)
+- Farm if enemyhealth : basedamage is between 10 and 16. (Used to be 10 and 15). 
+Means it will farm very slightly less.
+- Farm @ cell 61 (megamining) not 82 (megafarming).
+- Put a numerical status on the "Farming"&"Want more Damage" UI indicator.
+This way you can see things progressing, instead of wondering what is going on.
+The number pertains to Enemy Health / Base Damage(non-stance). Above 16 means farm. Below 10 means stop farming.
+- Add console debug messages to the map selection/buying/running section.
+- Dynamic Siphonology - only when needed based on (Enemyhealth / baseDamage)
+Created a new setting in the advanced options. "Dynamic Siphonology".
+It will switch to the proper Map-level as soon as the current map is completed.
+So you can choose original behavior of always using the lowest level
+map, or the modified behavior, which increases the map level based on your damage.
+The old behavior of "no siphonology at all when using DisableFarming" is
+no longer applied, under any circumstance.
+- Commit Changes from other branches as of 4/20/2016 to work with Trimps version 3.22
+
 
 4/5/2016
 - Added new advanced option Coordination Abandon to automatically abandon the army if a new army is ready and we have a new coordination that has not been accounted for in the current army.
