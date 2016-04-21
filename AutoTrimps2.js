@@ -1447,7 +1447,7 @@ function autoMap() {
         	shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 10 : getEnemyMaxHealth(game.global.world) / baseDamage > 16;
         }
 
-	needToVoid = getPageSetting('VoidMaps') > 0 && game.global.totalVoidMaps > 0 && ((game.global.world == getPageSetting('VoidMaps') && !getPageSetting('RunNewVoids')) || (game.global.world >= getPageSetting('VoidMaps') && getPageSetting('RunNewVoids'))) && (game.global.challengeActive != 'Lead' || game.global.lastClearedCell > 95);
+	needToVoid = getPageSetting('VoidMaps') > 0 && game.global.totalVoidMaps > 0 && ((game.global.world == getPageSetting('VoidMaps') && !getPageSetting('RunNewVoids')) || (game.global.world >= getPageSetting('VoidMaps') && getPageSetting('RunNewVoids'))) && (game.global.challengeActive != 'Lead' || game.global.lastClearedCell > 93);
     if (game.global.mapsUnlocked) {
         var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
         var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
@@ -1490,10 +1490,13 @@ function autoMap() {
         //at looting 54, I have found this only to trigger in lower zones, (20-72 or so) and not been worth it for overall he/hr. Higher looting should trigger it in progressively higher zones, but probably never worth it
         //leaving it in for now. Manually setting heliumGrowing to true in console should allow it to be used for a maximum total helium gained tox run (for bone trader)
         
-        //stack tox stacks if heliumGrowing has been set to true, or of we need to clear our void maps
+        //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
         if(game.global.challengeActive == 'Toxicity' && game.global.lastClearedCell > 93 && game.challenges.Toxicity.stacks < 1500 && ((getPageSetting('MaxTox') && game.global.world > 59) || needToVoid)) {
 		    shouldDoMaps = true;
-		    stackingTox = true;
+            if (needToVoid && game.challenges.Toxicity.stacks > 1415)   //we willl get at least 85 toxstacks from the 1st voidmap
+                stackingTox = false;
+            else 
+                stackingTox = true;
 		    //force abandon army
 		    if(!game.global.mapsActive && !game.global.preMapsActive) {
 		    	mapsClicked();
@@ -1538,7 +1541,7 @@ function autoMap() {
             	//clear void maps if we need to
             if(theMap.location == 'Void' && needToVoid) {
                 	//if we are on toxicity, don't clear until we will have max stacks at the last cell.
-	            	if(game.global.challengeActive == 'Toxicity' && game.challenges.Toxicity.stacks < 1400) break;
+	            	if(game.global.challengeActive == 'Toxicity' && game.challenges.Toxicity.stacks < (1500 - theMap.size)) break;
 	            	doVoids = true;
 	            	//check to make sure we won't get 1-shot in nostance by boss
 	            	var eAttack = getEnemyMaxAttack(game.global.world, theMap.size, 'Voidsnimp', theMap.difficulty);
@@ -1662,6 +1665,10 @@ function autoMap() {
                     }
                     //if we aren't here for dmg/hp, and we see the prestige we are after on the last cell of this map, and it's the last one available, turn off repeat to avoid an extra map cycle
                     if (!shouldDoMaps && (game.global.mapGridArray[game.global.mapGridArray.length - 1].special == targetPrestige && game.mapUnlocks[targetPrestige].last >= game.global.world - 9 )) {
+                        repeatClicked();
+                    }
+                    //avoid another map cycle due to having the amount of tox stacks we need.
+                    if (stackingTox && (game.challenges.Toxicity.stacks + game.global.mapGridArray.length - (game.global.lastClearedMapCell + 1) >= 1500)){
                         repeatClicked();
                     }
                 } else {
@@ -1879,6 +1886,8 @@ function autoPortal() {
 			break;
 		case "Toxicity":
 			if(game.global.world > 165 && !game.global.challengeActive) {
+                if (getPageSetting('MaxTox'))
+                    settingChanged("MaxTox");
 				pushData();
 				doPortal('Toxicity');
 			}
