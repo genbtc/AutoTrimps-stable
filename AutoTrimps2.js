@@ -282,11 +282,10 @@ function highlightHousing() {
             if (game.buildings[keysSorted[best]].owned < max || max == -1) {
                 bestBuilding = keysSorted[best];
                 
-                if(bestBuilding == "Warpstation"){
-                //except if we are past the cap-level (just wait for next giga).
-                    if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
-                        bestBuilding = null;
-                }
+                //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
+                if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation" &&
+                    (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation'))))
+                            bestBuilding = null;
                 
                 break;
             }
