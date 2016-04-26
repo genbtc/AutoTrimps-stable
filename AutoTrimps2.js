@@ -35,6 +35,7 @@ var baseHealth = 0;
 var preBuyAmt = game.global.buyAmt;
 var preBuyFiring = game.global.firing;
 var preBuyTooltip = game.global.lockTooltip;
+var preBuymaxSplit = game.global.maxSplit;
 
 ////////////////////////////////////////
 //List Variables////////////////////////
@@ -205,6 +206,7 @@ function preBuy() {
     preBuyAmt = game.global.buyAmt;
     preBuyFiring = game.global.firing;
     preBuyTooltip = game.global.lockTooltip;
+    preBuymaxSplit = game.global.maxSplit;
 }
 
 //Called after buying things that can be purchased in bulk
@@ -212,6 +214,7 @@ function postBuy() {
     game.global.buyAmt = preBuyAmt;
     game.global.firing = preBuyFiring;
     game.global.lockTooltip = preBuyTooltip;
+    game.global.maxSplit = preBuymaxSplit;
 }
 
 function safeBuyBuilding(building) {
@@ -232,7 +235,7 @@ function safeBuyBuilding(building) {
  	//buy as many warpstations as we can afford
     if(building == 'Warpstation'){
 		game.global.buyAmt = 'Max';
-		setMax(1);
+		game.global.maxSplit = 1;
 	    	buyBuilding(building, true, true);
 	    	debug('Building ' + game.global.buyAmt + ' ' + building + 's');
 	    	return;
@@ -319,17 +322,19 @@ function safeBuyJob(jobTitle, amount) {
     if (amount === 0) return false;
     preBuy();
     if (amount < 0) {
-        game.global.firing = true;
         amount = Math.abs(amount);
-    } else {
-            game.global.firing = false;
-	    if (!canAffordJob(jobTitle, false)) {
-	        postBuy();
-	        return false;
-	    }
-    }
+        game.global.firing = true;
+        game.global.buyAmt = amount;
+    } else{
+        game.global.firing = false;
+        game.global.buyAmt = amount;
+        //if can afford, buy what we wanted,
+        if (!canAffordJob(jobTitle, false)){
+            game.global.buyAmt = 'Max'; //if we can't afford it, just use 'Max'. -it will always succeed-
+            game.global.maxSplit = 1;
+        }
+    }   
     //debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle);
-    game.global.buyAmt = amount;
     buyJob(jobTitle, null, true);
     postBuy();
     return true;
