@@ -689,9 +689,20 @@ function evaluateEfficiency(equipName) {
         }
     }
     //wall (don't buy any more equipment, buy prestige first) is true if the limit equipment option is on and we are past our limit 
+    //res = 0 sets the efficiency to 0 so that it will be disregarded. if not, efficiency will still be somenumber that is cheaper, 
+    //		and the algorithm will get stuck on whatever equipment we have capped, and not buy other equipment.
     if (gameResource.level > 10 - gameResource.prestige && getPageSetting('LimitEquipment')) {
+    	Res = 0;
         Wall = true;
     }
+    if (gameResource.level >= 10 && getPageSetting('CapEquip')) {
+    	Res = 0;
+        Wall = true;
+    }
+    if (game.global.world >= 58 && game.global.world < 60 && getPageSetting('WaitTill60')){
+        Wall = true;
+    }
+
     return {
         Stat: equip.Stat,
         Factor: Res,
@@ -1151,22 +1162,29 @@ function autoLevelEquipment() {
                 document.getElementById(equipName).style.color = 'yellow';
             }
 
+            //Code is Spaced This Way So You Can Read It: (logic was also difficult.)
             if (
                 evaluation.Status == 'red' &&
                 (
-                    (
-                        getPageSetting('BuyWeaponUpgrades') &&
-                        equipmentList[equipName].Stat == 'attack'
-                    ) ||
-                    (
-                        getPageSetting('BuyArmorUpgrades') &&
+                    ( getPageSetting('BuyWeaponUpgrades') && equipmentList[equipName].Stat == 'attack' ) 
+                    ||
+                    ( getPageSetting('BuyArmorUpgrades') && (equipmentList[equipName].Stat == 'health' || 'block' == equipmentList[equipName].Stat)
+                        && 
+                        //Only buy Armor prestiges when 'DelayArmorWhenNeeded' is on, IF:
                         (
-                            equipmentList[equipName].Stat == 'health' ||
-                            equipmentList[equipName].Stat == 'block'
+                            (getPageSetting('DelayArmorWhenNeeded') && !shouldFarm)  // during not"Farming" mode 
+                            ||                                                       //     or
+                            (getPageSetting('DelayArmorWhenNeeded') && enoughDamage) //  has enough damage to not be in "Wants more Damage" mode either
+                            ||                                                       //     or        
+                            (getPageSetting('DelayArmorWhenNeeded') && !enoughDamage && !enoughHealth) // if neither enough dmg or health, then tis ok to buy.
+                            ||                                                                                          //        or
+                            (getPageSetting('DelayArmorWhenNeeded') && equipmentList[equipName].Upgrade == 'Gymystic')  // always buy gymystics (no need to delay).
                         )
+                        || !getPageSetting('DelayArmorWhenNeeded')  //or when its off.
                     )
                 )
-            ) {
+            ) 
+            {
                 var upgrade = equipmentList[equipName].Upgrade;
                 debug('Upgrading ' + upgrade);
                 buyUpgrade(upgrade, true, true);
@@ -1483,8 +1501,15 @@ function autoMap() {
             autoTrimpSettings.Prestige.selected = "Bestplate";
         }
         
-
-        
+        //FarmWhenNomStacks7
+        if(game.global.challengeActive == 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
+            if (game.global.gridArray[99].nomStacks > 7){
+                if (game.global.mapBonus != 10)
+                    shouldDoMaps = true;
+            }
+            else if (game.global.gridArray[99].nomStacks == 30)
+                shouldFarm = true;
+        }
 
         //If on toxicity and reached the last cell, calculate if max tox stacks will give us better He/hr (assumes max agility)
         //at looting 54, I have found this only to trigger in lower zones, (20-72 or so) and not been worth it for overall he/hr. Higher looting should trigger it in progressively higher zones, but probably never worth it
@@ -1980,10 +2005,15 @@ function manageGenes() {
         if(game.portal.Anticipation.level == 0) autoTrimpSettings.GeneticistTimer.value = '0';
         else if(game.global.challengeActive == 'Electricity' || game.global.challengeActive == 'Mapocalypse') autoTrimpSettings.GeneticistTimer.value = '3.5';
         else if(game.global.challengeActive == 'Nom' || game.global.challengeActive == 'Toxicity') {
-        	//intent of below if is to push through past megafarming with 30 anti stacks if we need to farm, 
-        	//but raising to 30 antistacks often turns shouldfarm off. Would need a separate shouldFarmNom variable that approximates at 10 stacks? Don't care enough to do now
-        	//if(shouldFarm && !game.global.mapsActive) autoTrimpSettings.GeneticistTimer.value = '30';
-        	autoTrimpSettings.GeneticistTimer.value = '11';
+            
+            if(getPageSetting('FarmWhenNomStacks7') && game.global.gridArray[99].nomStacks >= 5 && !game.global.mapsActive) {
+                //if Improbability already has 5 nomstacks, do 30 antistacks.
+                autoTrimpSettings.GeneticistTimer.value = '30';
+                //actually buy them here because we can't wait.
+                safeBuyJob('Geneticist',1+(autoTrimpSettings.GeneticistTimer.value - getBreedTime())*2);
+            }
+            else
+                autoTrimpSettings.GeneticistTimer.value = '10';
         }
         else autoTrimpSettings.GeneticistTimer.value = '30';
     }
