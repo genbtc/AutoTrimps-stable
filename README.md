@@ -38,10 +38,12 @@ So you can choose original behavior of always using the lowest level
 map, or the modified behavior, which increases the map level based on your damage.
 The old behavior of "no siphonology at all when using DisableFarming" is
 no longer applied, under any circumstance.
-- During Nom, take precautions not to get too many stacks. (On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On!')
-- Commit Changes from other branches as of 4/20/2016 to work with Trimps version 3.22
+- 'Farm on >7 NomStacks': During Nom, take precautions not to get too many stacks. (On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On!')
+- Change Genetecist Timer to 10 sec instead of 11sec. (was commonly showing 11.4s because it rounds. that is too much)
+- Commit Changes from other branches as of 4/27/2016 to work with Trimps version 3.22 (and any internal syntax bug fixes)
 
-### Voidmaps and Toxicity changes:
+**Voidmaps and Toxicity changes:**
+
 Voidmaps:
 - Do voids @ cell 96 Instead of 98. (to prevent overkill). This change
 was tried to be committed before by spindrjr, but it only applied to Tox runs.
