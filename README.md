@@ -4,9 +4,7 @@ Automation script for the idle incremental game Trimps
 **Installation instructions at the bottom of this README**
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
 
-## Recent changes
-
-Changed by genBTC:
+## Changed by genBTC:
 - Better Help-Tooltips
 - Add WarpStation Cap (deltaGiga+baseWarp) feature.
 Stop making warpstations if we are past the deltagiga + base
@@ -58,6 +56,7 @@ Max-Tox Run:
 from the settings page, so we dont' run 2 Max-Tox's in a row (will go
 back to normal Tox run).
 
+## Original Version's Previous Recent changes
 
 4/5/2016
 - Added new advanced option Coordination Abandon to automatically abandon the army if a new army is ready and we have a new coordination that has not been accounted for in the current army.
