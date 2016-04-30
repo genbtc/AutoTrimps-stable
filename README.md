@@ -6,6 +6,8 @@ Automation script for the idle incremental game Trimps
 
 ## Changed by genBTC:
 - Better Help-Tooltips
+- Add seperated  "genBTC's settings UI" button,
+- Add Export/Import/Reset autotrimps settings buttons.
 - Add WarpStation Cap (deltaGiga+baseWarp) feature.
 Stop making warpstations if we are past the deltagiga + base
 warpstations (and no giga upgrade is available). Will also remove the
@@ -26,6 +28,9 @@ Means it will farm very slightly less.
 This way you can see things progressing, instead of wondering what is going on.
 The number pertains to Enemy Health / Base Damage(non-stance). Above 16 means farm. Below 10 means stop farming.
 - Add console debug messages to the map selection/buying/running section.
+- Delay Armor When needed: Delay buying armor prestige upgrades during Want More Damage or Farming automap-modes.
+- Cap Equip to 10: Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.
+- Skip Gear Level 58&59: Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.
 - Dynamic Siphonology - only when needed based on (Enemyhealth / baseDamage)
 Created a new setting in the advanced options. "Dynamic Siphonology".
 It will switch to the proper Map-level as soon as the current map is completed.
@@ -33,6 +38,7 @@ So you can choose original behavior of always using the lowest level
 map, or the modified behavior, which increases the map level based on your damage.
 The old behavior of "no siphonology at all when using DisableFarming" is
 no longer applied, under any circumstance.
+- During Nom, take precautions not to get too many stacks. (On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On!')
 - Commit Changes from other branches as of 4/20/2016 to work with Trimps version 3.22
 
 ### Voidmaps and Toxicity changes:
