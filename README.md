@@ -36,19 +36,23 @@ map, or the modified behavior, which increases the map level based on your damag
 The old behavior of "no siphonology at all when using DisableFarming" is
 no longer applied, under any circumstance.
 - Commit Changes from other branches as of 4/20/2016 to work with Trimps version 3.22
-- Voidmaps and Toxicity changes.
+
+### Voidmaps and Toxicity changes:
 Voidmaps:
 - Do voids @ cell 96 Instead of 98. (to prevent overkill). This change
 was tried to be committed before by spindrjr, but it only applied to Tox runs.
+
 Voidmap + Max-Tox runs:
 - If we need to do a voidmap and have already more than 1415 stacks,
 (smallest voidmap is 85 cells)  consider tox-stack finished.
 For normal-tox:
 - Instead of starting the voidmap at 1400 stacks, start at
 (1500-theVoidmap.size) in case its an 85 cell voidmap.
+
 Regular Tox-Run:
 - Avoid another non-unique map cycle due to having the amount of tox
 stacks we need.
+
 Max-Tox Run:
 - During a Toxicity + Max Tox run AutoPortal, unset the MaxTox setting
 from the settings page, so we dont' run 2 Max-Tox's in a row (will go
