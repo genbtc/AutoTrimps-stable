@@ -1398,14 +1398,14 @@ function autoStance() {
 			if(xHealth > baseBlock)
 			xDamage = enemyDamage*5 - baseBlock > 0 ? enemyDamage*5 - baseBlock : 0;
 		}
-		else if (game.global.voidBuff == "bleed") {
+		if (game.global.voidBuff == "bleed") {
 			dDamage += game.global.soldierHealth * 0.2;
 			xDamage += game.global.soldierHealth * 0.2;
 			bDamage += game.global.soldierHealth * 0.2;
 		}
 	//double attack is OK if the buff isn't double attack, or we will survive a double attack, or we are going to one-shot them (so they won't be able to double attack)
 	var doubleAttackOK = game.global.voidBuff != 'doubleAttack' || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2) || enemyHealth < baseDamage * (game.global.titimpLeft > 0 ? 4 : 2);
-	var leadDamage = game.challenges.Lead.stacks * 0.0003;
+	var leadDamage = game.challenges.Lead.stacks * 0.0005;
 	//lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
 	var leadAttackOK = game.global.challengeActive != 'Lead' || enemyHealth < baseDamage * (game.global.titimpLeft > 0 ? 4 : 2) || ((newSquadRdy && dHealth > dDamage + (dHealth * leadDamage)) || (dHealth - missingHealth > dDamage + (dHealth * leadDamage)));
 		//add voidcrit?
@@ -1421,9 +1421,11 @@ function autoStance() {
 				setFormation(2);
 			}
 		} else if (game.upgrades.Formations.done && ((newSquadRdy && xHealth > xDamage) || xHealth - missingHealth > xDamage)) {
-			if (game.global.formation != "0") {
+			//in lead challenge, switch to H if about to die, so doesn't just die in X mode without trying
+			if ((game.global.challengeActive == 'Lead') && (xHealth - missingHealth < xDamage + (xHealth * leadDamage)))
+				setFormation(1);
+			else
 				setFormation("0");
-			}
 		} else if (game.upgrades.Barrier.done && ((newSquadRdy && bHealth > bDamage) || bHealth - missingHealth > bDamage)) {
 			if (game.global.formation != 3) {
 				setFormation(3);
