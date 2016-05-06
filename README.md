@@ -4,9 +4,10 @@ Automation script for the idle incremental game Trimps
 **Installation instructions at the bottom of this README**
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
 
-## Recent changes
-
-Changed by genBTC:
+## Changed by genBTC:
+- Better Help-Tooltips
+- Add seperated  "genBTC's settings UI" button,
+- Add Export/Import/Reset autotrimps settings buttons.
 - Add WarpStation Cap (deltaGiga+baseWarp) feature.
 Stop making warpstations if we are past the deltagiga + base
 warpstations (and no giga upgrade is available). Will also remove the
@@ -27,6 +28,9 @@ Means it will farm very slightly less.
 This way you can see things progressing, instead of wondering what is going on.
 The number pertains to Enemy Health / Base Damage(non-stance). Above 16 means farm. Below 10 means stop farming.
 - Add console debug messages to the map selection/buying/running section.
+- Delay Armor When needed: Delay buying armor prestige upgrades during Want More Damage or Farming automap-modes.
+- Cap Equip to 10: Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.
+- Skip Gear Level 58&59: Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.
 - Dynamic Siphonology - only when needed based on (Enemyhealth / baseDamage)
 Created a new setting in the advanced options. "Dynamic Siphonology".
 It will switch to the proper Map-level as soon as the current map is completed.
@@ -34,8 +38,36 @@ So you can choose original behavior of always using the lowest level
 map, or the modified behavior, which increases the map level based on your damage.
 The old behavior of "no siphonology at all when using DisableFarming" is
 no longer applied, under any circumstance.
-- Commit Changes from other branches as of 4/20/2016 to work with Trimps version 3.22
+- 'Farm on >7 NomStacks': During Nom, take precautions not to get too many stacks. (On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On!')
+- Change Genetecist Timer to 10 sec instead of 11sec. (was commonly showing 11.4s because it rounds. that is too much)
+- Commit Changes from other branches as of 4/27/2016 to work with Trimps version 3.22 (and any internal syntax bug fixes)
 
+**Voidmaps and Toxicity changes:**
+
+Voidmaps:
+- Do voids @ cell 96 Instead of 98. (to prevent overkill). This change
+was tried to be committed before by spindrjr, but it only applied to Tox runs.
+
+Voidmap + Max-Tox runs:
+- If we need to do a voidmap and have already more than 1415 stacks,
+(smallest voidmap is 85 cells)  consider tox-stack finished.
+For normal-tox:
+- Instead of starting the voidmap at 1400 stacks, start at
+(1500-theVoidmap.size) in case its an 85 cell voidmap.
+
+Regular Tox-Run:
+- Avoid another non-unique map cycle due to having the amount of tox
+stacks we need.
+
+Max-Tox Run:
+- During a Toxicity + Max Tox run AutoPortal, unset the MaxTox setting
+from the settings page, so we dont' run 2 Max-Tox's in a row (will go
+back to normal Tox run).
+
+## Original Version's Previous Recent changes
+
+4/28/2016
+- The script will no longer run while the perks screen is up to try to prevent reported NaN issue.
 
 4/5/2016
 - Added new advanced option Coordination Abandon to automatically abandon the army if a new army is ready and we have a new coordination that has not been accounted for in the current army.
