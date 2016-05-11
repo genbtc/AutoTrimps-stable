@@ -1483,6 +1483,7 @@ function autoMap() {
     	//enemyDamage *= 2;
     	enemyHealth *= 2;
     	}
+        var pierceMod = 0;
     	if(game.global.challengeActive == 'Lead') {
             enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
             enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
@@ -1498,8 +1499,10 @@ function autoMap() {
     	if(game.global.totalVoidMaps == 0 || !needToVoid)
     		doVoids = false;
     	
-        enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * 0.2) || baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * 0.2));
-        enoughDamage = (baseDamage * 4 > enemyHealth);
+        enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod))
+						|| 
+						baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod)));
+        enoughDamage = baseDamage > enemyHealth;
         HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
         var shouldDoMaps = !enoughHealth || !enoughDamage;
         var shouldDoMap = "world";
