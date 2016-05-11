@@ -1465,7 +1465,8 @@ function autoMap() {
         //add crit in somehow?
         
         //take map-bonus into account if in a world.
-        baseDamage *= 1 + (0.20*game.global.mapBonus);
+        var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
+        baseDamage *= mapbonusmulti;
         //farm if basedamage is between 10 and 16)
         if(!getPageSetting('DisableFarm')) {
         	shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 10 : getEnemyMaxHealth(game.global.world) / baseDamage > 16;
@@ -1483,8 +1484,16 @@ function autoMap() {
     	enemyHealth *= 2;
     	}
     	if(game.global.challengeActive == 'Lead') {
-    		enemyDamage *= 2.5;
-    		enemyHealth *= 2.5;
+            enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
+            enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
+            if (game.global.world % 2 == 1){
+                enemyDamage = getEnemyMaxAttack(game.global.world + 2, 30, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
+                enemyHealth = getEnemyMaxHealth(game.global.world + 2);
+                baseDamage /= 1.5; //subtract the odd-zone bonus.
+            }
+            pierceMod += (game.challenges.Lead.stacks * 0.001);
+            baseDamage /= mapbonusmulti;
+            shouldFarm = shouldFarm ? enemyHealth / baseDamage > 10 : enemyHealth / baseDamage > 16;
     	}
     	if(game.global.totalVoidMaps == 0 || !needToVoid)
     		doVoids = false;
