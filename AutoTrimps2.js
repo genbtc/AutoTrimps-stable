@@ -26,8 +26,6 @@ var newCoord = false;
 var noFight = 0;
 
 
-
-
 var baseDamage = 0;
 var baseBlock = 0;
 var baseHealth = 0;
@@ -935,6 +933,11 @@ function easyMode() {
         autoTrimpSettings.LumberjackRatio.value = '1';
         autoTrimpSettings.MinerRatio.value = '1';
     }
+    if (game.global.challengeActive == 'Watch'){
+		autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '1';
+        autoTrimpSettings.MinerRatio.value = '1';
+    }
 }
 
 //Buys all available non-equip upgrades listed in var upgradeList
@@ -954,7 +957,7 @@ function buyUpgrades() {
     }
 }
 
-//Buys more storage if resource is over 90% full
+//Buys more storage if resource is over 85% full (or 60% if zone<10)
 function buyStorage() {
     var packMod = 1 + game.portal.Packrat.level * game.portal.Packrat.modifier;
     var Bs = {
@@ -971,7 +974,7 @@ function buyStorage() {
 	    	jest = simpleSeconds(Bs[B], 45);
 	    	jest = scaleToCurrentMap(jest);
     	}
-        if (owned > max * 0.9 || owned + jest > max * 0.9) {
+        if ((game.global.world < 10 && owned > max * 0.6) || owned + jest > max * 0.85 || owned > max * 0.85) {
             // debug('Buying ' + B + '(' + Bs[B] + ') at ' + Math.floor(game.resources[Bs[B]].owned / (game.resources[Bs[B]].max * packMod * 0.99) * 100) + '%');
             if (canAffordBuilding(B)) {
                 safeBuyBuilding(B);
@@ -1009,8 +1012,14 @@ function buyBuildings() {
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     //only buy nurseries if enabled,   and we need to lower our breed time, or our target breed time is 0, or we aren't trying to manage our breed time before geneticists, and they aren't locked
     //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
-    if ((targetBreed < getBreedTime() || targetBreed == 0 || !getPageSetting('ManageBreedtimer') || (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false))) && !game.buildings.Nursery.locked) {
-        if ((getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1) && (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Warpstation, "gems", false, 1) || game.buildings.Warpstation.locked) && (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Collector, "gems", false, 1) || game.buildings.Collector.locked || !game.buildings.Warpstation.locked)) {
+    if ((targetBreed < getBreedTime() || targetBreed == 0 || !getPageSetting('ManageBreedtimer') || 
+        (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
+    	(!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false))) && !game.buildings.Nursery.locked) 
+    {
+        if ((getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1) && 
+        	(getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Warpstation, "gems", false, 1) || game.buildings.Warpstation.locked) && 
+        	(getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Collector, "gems", false, 1) || game.buildings.Collector.locked || !game.buildings.Warpstation.locked))
+        {
             safeBuyBuilding('Nursery');
         }
     }
@@ -1025,22 +1034,38 @@ function setTitle() {
 }
 
 function buyJobs() {
-    //Implement Ratio thingy
-    if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.8 && !breedFire) return;
-    var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-    var totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
-
+	var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+	var trimps = game.resources.trimps;
+    var totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;    
     var farmerRatio = parseInt(getPageSetting('FarmerRatio'));
     var lumberjackRatio = parseInt(getPageSetting('LumberjackRatio'));
     var minerRatio = parseInt(getPageSetting('MinerRatio'));
     var totalRatio = farmerRatio + lumberjackRatio + minerRatio;
     var scientistRatio = totalRatio / 25;
+    
+    if (game.global.challengeActive == 'Watch'){
+        scientistRatio = totalRatio / 10;
+        stopScientistsatFarmers = 1e8;
+        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire){
+            //so the game buys scientists first while we sit around waiting for breed timer.
+            var buyScientists = Math.floor((scientistRatio / totalRatio * totalDistributableWorkers) - game.jobs.Scientist.owned);
+            if (game.jobs.Scientist.owned < buyScientists && game.resources.trimps.owned > game.resources.trimps.realMax() * 0.1){
+                var toBuy = buyScientists-game.jobs.Scientist.owned;
+                var canBuy = Math.floor(trimps.owned - trimps.employed);
+                if(buyScientists > 0 && freeWorkers > 0)
+                    safeBuyJob('Scientist',toBuy <= canBuy ? toBuy : canBuy);
+            }
+            else
+            	return;
+        }
+    }
+    else
+    {   //exit if we are havent bred to at least 90% breedtimer yet...
+        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) return;
+    }
+    
+
     var oldBuy = game.global.buyAmt;
-
-
-    // debug('Total farmers to add = ' + Math.floor((farmerRatio / totalRatio * totalDistributableWorkers) - game.jobs.Farmer.owned));
-
-
 
     //Simple buy if you can
     if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
@@ -1059,33 +1084,43 @@ function buyJobs() {
             safeBuyJob('Explorer');
         }
     }
-game.global.buyAmt = oldBuy;
-freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+    game.global.buyAmt = oldBuy;
+    freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     if (getPageSetting('HireScientists') && !game.jobs.Scientist.locked) {
-    //if earlier in the game, buy a small amount of scientists
-    if (game.jobs.Farmer.owned < 250000 && !breedFire) {
-        var buyScientists = Math.floor((scientistRatio / totalRatio * totalDistributableWorkers) - game.jobs.Scientist.owned);
-        //bandaid to prevent situation where 1 scientist is bought, causing floor calculation to drop by 1, making next calculation -1 and entering hiring/firing loop
-        //proper fix is including scientists in totalDistributableWorkers and the scientist ratio in the total ratio, but then it waits for 4 jobs
-        if(buyScientists > 0 && freeWorkers > 0) safeBuyJob('Scientist', buyScientists);
+        //if earlier in the game, buy a small amount of scientists
+        if (game.jobs.Farmer.owned < stopScientistsatFarmers && !breedFire) {
+            var buyScientists = Math.floor((scientistRatio / totalRatio * totalDistributableWorkers) - game.jobs.Scientist.owned);
+            //bandaid to prevent situation where 1 scientist is bought, causing floor calculation to drop by 1, making next calculation -1 and entering hiring/firing loop
+            //proper fix is including scientists in totalDistributableWorkers and the scientist ratio in the total ratio, but then it waits for 4 jobs
+            if(buyScientists > 0 && freeWorkers > 0) safeBuyJob('Scientist', buyScientists);
+        }
+        //once over 250k farmers, fire our scientists and rely on manual gathering of science
+        //else if (game.jobs.Scientist.owned > 0) safeBuyJob('Scientist', game.jobs.Scientist.owned * -1);
     }
-    //once over 250k farmers, fire our scientists and rely on manual gathering of science
-    //else if (game.jobs.Scientist.owned > 0) safeBuyJob('Scientist', game.jobs.Scientist.owned * -1);
-}
-    //Distribute Farmer/Lumberjack/Miner breedfire
-    if(!game.jobs.Farmer.locked && !breedFire) 
-    safeBuyJob('Farmer', Math.floor((farmerRatio / totalRatio * totalDistributableWorkers) - game.jobs.Farmer.owned));
+    //Buy Farmers:
+    if(!game.jobs.Farmer.locked && !breedFire) {
+    	var toBuy = Math.floor((farmerRatio / totalRatio * totalDistributableWorkers) - game.jobs.Farmer.owned);
+    	var canBuy = Math.floor(trimps.owned - trimps.employed);
+    	safeBuyJob('Farmer',toBuy <= canBuy ? toBuy : canBuy);
+    }
    // else if(breedFire)
-   // safeBuyJob('Farmer', game.jobs.Farmer.owned * -1);
-    if(!game.jobs.Lumberjack.locked && !breedFire) 
-    safeBuyJob('Lumberjack', Math.floor((lumberjackRatio / totalRatio * totalDistributableWorkers) - game.jobs.Lumberjack.owned));
+   // safeBuyJob('Farmer', game.jobs.Farmer.owned * -1);    
+    //Buy/Fire Miners:
+    if(!game.jobs.Miner.locked && !breedFire) {
+    	var toBuy = Math.floor((minerRatio / totalRatio * totalDistributableWorkers) - game.jobs.Miner.owned);
+    	var canBuy = Math.floor(trimps.owned - trimps.employed);
+    	safeBuyJob('Miner',toBuy <= canBuy ? toBuy : canBuy);
+    }
     else if(breedFire)
-    safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
-    if(!game.jobs.Miner.locked && !breedFire) 
-    safeBuyJob('Miner', Math.floor((minerRatio / totalRatio * totalDistributableWorkers) - game.jobs.Miner.owned));
+    	safeBuyJob('Miner', game.jobs.Miner.owned * -1);
+    //Buy/Fire Lumberjacks:
+    if(!game.jobs.Lumberjack.locked && !breedFire) {
+    	var toBuy = Math.floor((lumberjackRatio / totalRatio * totalDistributableWorkers) - game.jobs.Lumberjack.owned);
+    	var canBuy = Math.floor(trimps.owned - trimps.employed);
+    	safeBuyJob('Lumberjack',toBuy <= canBuy ? toBuy : canBuy);
+    }
     else if(breedFire)
-    safeBuyJob('Miner', game.jobs.Miner.owned * -1);
-    
+    	safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);    
 
 }
 
@@ -1502,7 +1537,7 @@ function autoMap() {
         enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod))
 						|| 
 						baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod)));
-        enoughDamage = baseDamage > enemyHealth;
+        enoughDamage = baseDamage * 4 > enemyHealth;
         HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
         var shouldDoMaps = !enoughHealth || !enoughDamage;
         var shouldDoMap = "world";
@@ -1548,6 +1583,14 @@ function autoMap() {
 
         }
         else stackingTox = false;
+        
+        //during 'watch' challenge, run maps on these levels:
+        var watchmaps = [15,25,35,50];
+        var shouldDoWatchMaps = false;
+        if (game.global.challengeActive == 'Watch' && watchmaps.indexOf(game.global.world) > -1 && game.global.mapBonus < 1){
+            shouldDoMaps = true;
+            shouldDoWatchMaps = true;
+        }
         
         //Create siphonology on demand section.
         var siphlvl = game.global.world - game.portal.Siphonology.level;
@@ -1715,6 +1758,9 @@ function autoMap() {
                     if (stackingTox && (game.challenges.Toxicity.stacks + game.global.mapGridArray.length - (game.global.lastClearedMapCell + 1) >= 1500)){
                         repeatClicked();
                     }
+                    //turn off repeat maps if we doing Watch maps.
+                    if (shouldDoWatchMaps)
+                        repeatClicked();
                 } else {
                     //otherwise, make sure repeat map is off
                     if (game.global.repeatMap) {
@@ -1730,6 +1776,9 @@ function autoMap() {
                     //if (prestige mapping or need to do void maps or on lead in odd world) abandon army if (a new army is ready or need to void map and we're almost done with the zone)
                     if(game.global.switchToMaps && ((game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) || doVoids || needPrestige) && ((shouldFarm && game.global.challengeActive == 'Lead') || game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || (doVoids && game.global.lastClearedCell > 95)))
                          	mapsClicked();
+                    //forcibly run watch maps
+                    if (shouldDoWatchMaps)
+                        mapsClicked();
                 }
             }
         } else if (game.global.preMapsActive) {
@@ -2051,7 +2100,7 @@ function manageGenes() {
     }
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
-    if ((targetBreed < getBreedTime() || !game.jobs.Geneticist.locked || !getPageSetting('ManageBreedtimer')) && game.upgrades.Potency.allowed > game.upgrades.Potency.done && canAffordTwoLevel('Potency') && getPageSetting('BuyUpgrades')) {
+    if ((targetBreed < getBreedTime() || !game.jobs.Geneticist.locked || !getPageSetting('ManageBreedtimer') || game.global.challengeActive == 'Watch') && game.upgrades.Potency.allowed > game.upgrades.Potency.done && canAffordTwoLevel('Potency') && getPageSetting('BuyUpgrades')) {
         buyUpgrade('Potency');
     }
     //otherwise, if we have some geneticists, start firing them
@@ -2094,7 +2143,9 @@ function manageGenes() {
 
 setTimeout(delayStart, 2000);
 
+var stopScientistsatFarmers = 250000;
 function mainLoop() {
+    stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
 	game.global.addonUser = true;
 	if(getPageSetting('PauseScript')) return;
 	if(game.global.viewingUpgrades) return;
@@ -2151,7 +2202,7 @@ function mainLoop() {
             }
         }
         lowLevelFight = game.resources.trimps.maxSoldiers < (game.resources.trimps.owned - game.resources.trimps.employed) * 0.5 && (game.resources.trimps.owned - game.resources.trimps.employed) > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
-        if (game.upgrades.Battle.done && !game.global.fighting && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || game.global.soldierHealth > 0 || lowLevelFight )) {
+        if (game.upgrades.Battle.done && !game.global.fighting && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
             fightManual();
             newCoord = false;
             // debug('triggered fight');
