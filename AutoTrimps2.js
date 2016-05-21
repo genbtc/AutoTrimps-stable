@@ -898,6 +898,8 @@ function getBreedTime(remaining,round) {
 	var totalTime = log10((trimpsMax - trimps.employed) / (trimpsMax - adjustedMax - trimps.employed)) / log10(potencyMod);
 
 	totalTime /= 10;
+
+	return parseFloat(totalTime.toFixed(1));
 }
 
 ////////////////////////////////////////
