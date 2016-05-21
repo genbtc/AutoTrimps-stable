@@ -1798,6 +1798,9 @@ function autoMap() {
                         mapsClicked();
 	                }
     	        }
+		        //forcibly run watch maps
+                if (shouldDoWatchMaps)
+                    mapsClicked();                
 			}
         } else if (game.global.preMapsActive) {
             if (shouldDoMap == "world") {
