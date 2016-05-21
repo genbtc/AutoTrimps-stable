@@ -2127,7 +2127,7 @@ function manageGenes() {
         buyUpgrade('Potency');
     }
     //otherwise, if we have some geneticists, start firing them
-    else if ((targetBreed < getBreedTime() || targetBreed < getBreedTime(true)) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > 10) {
+    else if ((targetBreed*1.02 < getBreedTime() || targetBreed*1.02 < getBreedTime(true)) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > 10) {
         	safeBuyJob('Geneticist', -10);
         	//debug('fired a geneticist');
     	
