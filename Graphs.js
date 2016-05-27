@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none;"><div id="graph" style="margin-bottom: 2vw;margin-top: 2vw;"></div></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coord', 'Gigas', 'Lastwarp', 'Trimps'];
+var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coord', 'Gigas', 'Lastwarp', 'Trimps','NullifiumPerHour'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -497,6 +497,24 @@ function setGraphData(graph) {
             yType = 'Linear';
             break;                        
             
+        case 'NullifiumPerHour':
+            graphData = [];
+            graphData.push({
+                name: 'Nullifium per Hour',
+                data: [],
+                type: 'column'
+            });
+            for (var i in nullifiumData) {
+                var theOne = nullifiumData[i];
+                var nullperhour = theOne.recycledNullifium / (theOne.portalTime / 3600000);
+                graphData[0].data.push([theOne.totalPortals, nullperhour]);
+            }
+            title = 'Nullifium/Hour';
+            xTitle = 'Portal';
+            yTitle = 'Nullifium';
+            yType = 'Linear';
+            break;
+                        
     }
     if (oldData != JSON.stringify(graphData)) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
@@ -608,7 +626,12 @@ if (tmpGraphData !== null) {
     console.log('Got allSaveData. Yay!');
     allSaveData = tmpGraphData;
 }
-
+var nullifiumData = [];
+var tmpnullifiumData = JSON.parse(localStorage.getItem('nullifiumData'));
+if (tmpnullifiumData !== null) {
+    console.log('Got nullifiumData. Yay!');
+    nullifiumData = tmpnullifiumData;
+}
 
 setInterval(gatherInfo, 1000);
 

@@ -1957,8 +1957,12 @@ function watchHelium (init) {
 }
 	setInterval(watchHelium, 10000);
 	*/
-
-
+function storeRecycledNullfiumData(){
+    if (nullifiumData.length === 0 || nullifiumData[nullifiumData.length - 1].totalPortals != game.global.totalPortals) {
+        nullifiumData.push({totalPortals: game.global.totalPortals, recycledNullifium: recycleAllExtraHeirlooms(true), portalTime: new Date().getTime() - game.global.portalTime});
+        localStorage.setItem('nullifiumData', JSON.stringify(nullifiumData));
+    }
+}
 
 var lastHelium = 0;
 var lastZone = 0;
@@ -1972,7 +1976,7 @@ function autoPortal() {
 	    			timeThisPortal /= 3600000;
 	    			var myHelium = Math.floor(game.resources.helium.owned / timeThisPortal);
 	    			if(myHelium < lastHelium && !game.global.challengeActive) {
-	    				pushData();
+	    				pushData(); storeRecycledNullfiumData();
 	    				if(autoTrimpSettings.HeliumHourChallenge.selected != 'None') doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
 	    				else doPortal();
 	    			}
@@ -1981,14 +1985,14 @@ function autoPortal() {
 			break;
 		case "Balance":
 			if(game.global.world > 40 && !game.global.challengeActive) {
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 				doPortal('Balance');
 			}
 			break;
 		case "Electricity":
 			//if doPrison is true, autoMaps sent us in there because of electricity
 			if(doPrison && !game.global.challengeActive) {
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 				doPortal('Electricity');
 				doPrison = false;
 			}
@@ -1996,14 +2000,14 @@ function autoPortal() {
 		case "Crushed":
 			//if doWonderland is true, autoMaps sent us in there because of crushed
 			if(doWonderland && !game.global.challengeActive) {
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 				doPortal('Crushed');
 				doWonderland = false;
 			}
 			break;
 		case "Nom":
 			if(game.global.world > 145 && !game.global.challengeActive) {
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 				doPortal('Nom');
 			}
 			break;
@@ -2011,25 +2015,25 @@ function autoPortal() {
 			if(game.global.world > 165 && !game.global.challengeActive) {
                 if (getPageSetting('MaxTox'))
                     settingChanged("MaxTox");
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 				doPortal('Toxicity');
 			}
 			break;
 		case "Watch":
 			if(game.global.world > 180 && !game.global.challengeActive) {
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 				doPortal('Watch');
 			}
 			break;
 		case "Lead":
 			if(game.global.world > 180 && !game.global.challengeActive) {
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 				doPortal('Lead');
 			}
 			break;
 		case "Custom":
 			if(game.global.world > getPageSetting('CustomAutoPortal') && !game.global.challengeActive) {
-				pushData();
+				pushData(); storeRecycledNullfiumData();
 	    			if(autoTrimpSettings.HeliumHourChallenge.selected != 'None') doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
 	    			else doPortal();
 			}
