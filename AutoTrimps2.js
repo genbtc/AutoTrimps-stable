@@ -179,10 +179,10 @@ function getPageSetting(setting) {
 }
 
 //Global debug message (need to implement debugging to in game window)
-function debug(message) {
+function debug(message, lootIcon) {
     if (enableDebug){
         console.log(timeStamp() + ' ' + message);
-        message2(message, "AutoTrimps", "*droplet");
+        message2(message, "AutoTrimps", lootIcon);
     }
 }
 
@@ -2275,9 +2275,9 @@ function message2(messageString, type, lootIcon, extraClass) {
 		prefix =  "icomoon icon-";
 	}
 	else prefix = "glyphicon glyphicon-";
-    //add a star icon for "AutoTrimps"
-	if (type == "AutoTrimps") messageString = "<span class='icomoon icon-exclamation-circle'></span> " + messageString;
-    if (type == "Story") messageString = "<span class='glyphicon glyphicon-star'></span> " + messageString;
+    //add an icon for "AutoTrimps"
+	if (type == "AutoTrimps" ) messageString = "<span class='icomoon icon-exclamation-circle'></span> " + messageString;
+    	if (type == "Story") messageString = "<span class='glyphicon glyphicon-star'></span> " + messageString;
 	if (type == "Combat") messageString = "<span class='glyphicon glyphicon-flag'></span> " + messageString;
 	if (type == "Loot" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
 	var addId = "";
