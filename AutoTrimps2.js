@@ -2275,8 +2275,8 @@ function message2(messageString, type, lootIcon, extraClass) {
 		prefix =  "icomoon icon-";
 	}
 	else prefix = "glyphicon glyphicon-";
-    //add an icon for "AutoTrimps"
-	if (type == "AutoTrimps") messageString = "<span class='icomoon icon-exclamation-circle'></span> " + messageString;
+    //add a suitable icon for "AutoTrimps"
+	if (type == "AutoTrimps") messageString = "<span class='glyphicon glyphicon-superscript'></span> " + messageString;
     	if (type == "Story") messageString = "<span class='glyphicon glyphicon-star'></span> " + messageString;
 	if (type == "Combat") messageString = "<span class='glyphicon glyphicon-flag'></span> " + messageString;
 	if (type == "Loot" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
