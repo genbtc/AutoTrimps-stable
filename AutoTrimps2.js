@@ -909,6 +909,8 @@ function getBreedTime(remaining,round) {
 ////////////////////////////////////////
 
 function initializeAutoTrimps() {
+    if (game.global.messages["AutoTrimps"] == null)
+        game.global.messages["AutoTrimps"] = true;
     debug('initializeAutoTrimps');
     loadPageVariables();
     javascript: with(document)(head.appendChild(createElement('script')).src = 'https://genbtc.github.io/AutoTrimps/NewUI.js')._;
