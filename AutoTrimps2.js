@@ -2287,15 +2287,15 @@ function message2(messageString, type, lootIcon, extraClass) {
 	if (type != "Story") trimMessages(type);
 } 
 
-game.global.messages["AutoTrimps"] = true;
+delete game.global.messages["AutoTrimps"];
 
 //For adding a 5th tab to the message window
 var ATbutton = document.createElement("button");
 ATbutton.setAttribute('id', 'AutoTrimpsFilter');
 ATbutton.setAttribute('type', 'button');
 ATbutton.setAttribute('onclick', "filterMessage('AutoTrimps')");
-ATbutton.setAttribute('class', "btn btn-success logFlt");
-ATbutton.innerHTML = 'AutoTrimps';
+ATbutton.setAttribute('class', "btn btn-danger logFlt");
+ATbutton.innerHTML = 'AutoTrimps off';
 //
 var tab = document.createElement("DIV");
 tab.setAttribute('class', 'btn-group');
