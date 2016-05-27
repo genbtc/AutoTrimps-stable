@@ -13,6 +13,7 @@
 //Variables/////////////////////////////
 ////////////////////////////////////////
 var AutoTrimpsDebugTabVisible = true;
+delete game.global.messages["AutoTrimps"];
 
 var runInterval = 100; //How often to loop through logicc
 var enableDebug = true; //Spam console?
