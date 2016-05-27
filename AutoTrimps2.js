@@ -12,6 +12,8 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
+var AutoTrimpsDebugTabVisible = true;
+
 var runInterval = 100; //How often to loop through logicc
 var enableDebug = true; //Spam console?
 var autoTrimpSettings = new Object();
@@ -240,7 +242,7 @@ function safeBuyBuilding(building) {
 	    	debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*rocket');
 	    	return;
     }
-	    debug('Building ' + building, '*hammer');
+	    debug('Building ' + building, '*hammer2');
 	    buyBuilding(building, true, true);
     
     
@@ -2269,7 +2271,7 @@ function delayStartAgain(){
 function message2(messageString, type, lootIcon, extraClass) {
 	var log = document.getElementById("log");
 	var needsScroll = ((log.scrollTop + 10) > (log.scrollHeight - log.clientHeight));
-	var displayType = (game.global.messages2[type]) ? "block" : "none";
+	var displayType = (AutoTrimpsDebugTabVisible) ? "block" : "none";
 	var prefix = "";
 	if (lootIcon && lootIcon.charAt(0) == "*") {
 		lootIcon = lootIcon.replace("*", "");
@@ -2287,7 +2289,7 @@ function message2(messageString, type, lootIcon, extraClass) {
 }
 
 //HTML For adding a 5th tab to the message window
-game.global.messages2={AutoTrimps: true};
+
 var ATbutton = document.createElement("button");
 ATbutton.innerHTML = 'AutoTrimps';
 ATbutton.setAttribute('id', 'AutoTrimpsFilter');
@@ -2304,9 +2306,8 @@ document.getElementById('logBtnGroup').appendChild(tab);
 function filterMessage2(what){
 	var log = document.getElementById("log");
 
-	var displayed = game.global.messages2[what];
-    displayed = (displayed) ? false : true;
-    game.global.messages2[what] = displayed;
+    displayed = (AutoTrimpsDebugTabVisible) ? false : true;
+    AutoTrimpsDebugTabVisible = displayed;
 
 	var toChange = document.getElementsByClassName(what + "Message");
 	var btnText = (displayed) ? what : what + " off";
