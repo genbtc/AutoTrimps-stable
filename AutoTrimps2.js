@@ -238,10 +238,10 @@ function safeBuyBuilding(building) {
 		game.global.buyAmt = 'Max';
 		game.global.maxSplit = 1;
 	    	buyBuilding(building, true, true);
-	    	debug('Building ' + game.global.buyAmt + ' ' + building + 's');
+	    	debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*rocket');
 	    	return;
     }
-	    debug('Building ' + building);
+	    debug('Building ' + building, '*hammer');
 	    buyBuilding(building, true, true);
     
     
@@ -909,7 +909,7 @@ function getBreedTime(remaining,round) {
 ////////////////////////////////////////
 
 function initializeAutoTrimps() {
-    debug('initializeAutoTrimps');
+    debug('AutoTrimps Loaded!', '*spinner3');
     loadPageVariables();
     javascript: with(document)(head.appendChild(createElement('script')).src = 'https://genbtc.github.io/AutoTrimps/NewUI.js')._;
     javascript: with(document)(head.appendChild(createElement('script')).src = 'https://genbtc.github.io/AutoTrimps/Graphs.js')._;
@@ -1230,9 +1230,9 @@ function autoLevelEquipment() {
             {
                 var upgrade = equipmentList[equipName].Upgrade;
 				if (upgrade != "Gymystic")
-					debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige);
+					debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, '*upload');
 				else
-					debug('Upgrading ' + upgrade + " # " + game.upgrades[upgrade].allowed);
+					debug('Upgrading ' + upgrade + " # " + game.upgrades[upgrade].allowed, '*upload');
                 buyUpgrade(upgrade, true, true);
             }
         }
@@ -1246,14 +1246,14 @@ function autoLevelEquipment() {
             //If we're considering an attack item, we want to buy weapons if we don't have enough damage, or if we don't need health (so we default to buying some damage)
             if (getPageSetting('BuyWeapons') && DaThing.Stat == 'attack' && (!enoughDamageE || enoughHealthE)) {
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(Best[stat].Name, null, null, true)) {
-                    debug('Leveling equipment ' + Best[stat].Name);
+                    debug('Leveling equipment ' + Best[stat].Name, '*upload3');
                     buyEquipment(Best[stat].Name, null, true);
                 }
             }
             //If we're considering a health item, buy it if we don't have enough health, otherwise we default to buying damage
             if (getPageSetting('BuyArmor') && (DaThing.Stat == 'health' || DaThing.Stat == 'block') && !enoughHealthE) {
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(Best[stat].Name, null, null, true)) {
-                    debug('Leveling equipment ' + Best[stat].Name);
+                    debug('Leveling equipment ' + Best[stat].Name, '*upload3');
                     buyEquipment(Best[stat].Name, null, true);
                 }
             }
@@ -1869,13 +1869,13 @@ function autoMap() {
 		//if we can't afford the map we designed, pick our highest map
                 if (updateMapCost(true) > game.resources.fragments.owned) {
                     selectMap(game.global.mapsOwnedArray[highestMap].id);
-                    debug("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value);
-                    debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level);
+                    debug("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value, '*crying2');
+                    debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, '*happy2');
                     runMap();
                 } else {
                 	if(buyMap() == -2){
                 		recycleBelow(true);
-                		 debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value);
+                		 debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, 'th-large');
                 		 buyMap();
                 	}
                 }
@@ -1884,7 +1884,7 @@ function autoMap() {
                 selectMap(shouldDoMap);
                 debug("Already have a map picked: Running map:# " + shouldDoMap + 
                 	" Level: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].level +
-                	" Name: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].name);
+                	" Name: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].name, 'th-large');
                 runMap();
             }
         }
