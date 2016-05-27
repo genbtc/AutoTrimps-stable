@@ -9,7 +9,6 @@
 // @grant        none
 // ==/UserScript==
 
-
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
@@ -2270,7 +2269,7 @@ function delayStartAgain(){
 function message2(messageString, type, lootIcon, extraClass) {
 	var log = document.getElementById("log");
 	var needsScroll = ((log.scrollTop + 10) > (log.scrollHeight - log.clientHeight));
-	var displayType = (game.global.messages[type]) ? "block" : "none";
+	var displayType = (game.global.messages2[type]) ? "block" : "none";
 	var prefix = "";
 	if (lootIcon && lootIcon.charAt(0) == "*") {
 		lootIcon = lootIcon.replace("*", "");
@@ -2285,21 +2284,39 @@ function message2(messageString, type, lootIcon, extraClass) {
 	log.innerHTML += "<span" + addId + " class='" + type + "Message message" +  " " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
 	if (needsScroll) log.scrollTop = log.scrollHeight;
 	if (type != "Story") trimMessages(type);
-} 
+}
 
-delete game.global.messages["AutoTrimps"];
-
-//For adding a 5th tab to the message window
+//HTML For adding a 5th tab to the message window
+game.global.messages2={AutoTrimps: true};
 var ATbutton = document.createElement("button");
+ATbutton.innerHTML = 'AutoTrimps';
 ATbutton.setAttribute('id', 'AutoTrimpsFilter');
 ATbutton.setAttribute('type', 'button');
-ATbutton.setAttribute('onclick', "filterMessage('AutoTrimps')");
-ATbutton.setAttribute('class', "btn btn-danger logFlt");
-ATbutton.innerHTML = 'AutoTrimps off';
+ATbutton.setAttribute('onclick', "filterMessage2('AutoTrimps')");
+ATbutton.setAttribute('class', "btn btn-success logFlt");
 //
 var tab = document.createElement("DIV");
 tab.setAttribute('class', 'btn-group');
 tab.setAttribute('role', 'group');
 tab.appendChild(ATbutton);
 document.getElementById('logBtnGroup').appendChild(tab);
+//Toggle settings button & filter messages accordingly.
+function filterMessage2(what){
+	var log = document.getElementById("log");
 
+	var displayed = game.global.messages2[what];
+    displayed = (displayed) ? false : true;
+    game.global.messages2[what] = displayed;
+
+	var toChange = document.getElementsByClassName(what + "Message");
+	var btnText = (displayed) ? what : what + " off";
+	var btnElem = document.getElementById(what + "Filter");
+	btnElem.innerHTML = btnText;
+	btnElem.className = "";
+	btnElem.className = getTabClass(displayed);
+	displayed = (displayed) ? "block" : "none";
+	for (var x = 0; x < toChange.length; x++){
+		toChange[x].style.display = displayed;
+	}
+	log.scrollTop = log.scrollHeight;
+}
