@@ -757,65 +757,6 @@ function setScienceNeeded() {
         }
     }
 }
-/*
-function breedTime(genes) {
-    var trimps = game.resources.trimps;
-
-    if (trimps.owned - trimps.employed < 2 || game.global.challengeActive == "Trapper") {
-        return 0;
-    }
-
-    var potencyMod = trimps.potency;
-    potencyMod = potencyMod * (1 + game.portal.Pheromones.level * game.portal.Pheromones.modifier);
-
-    if (game.unlocks.quickTrimps) {
-        potencyMod *= 2;
-    }
-    if (game.global.brokenPlanet) {
-        potencyMod /= 10;
-    }
-    if (game.jobs.Geneticist.owned > 0) {
-        potencyMod *= Math.pow(0.98, game.jobs.Geneticist.owned);
-    }
-
-    var multiplier = 1;
-    if (genes >= 0) {
-        multiplier *= Math.pow(0.98, genes);
-    } else {
-        multiplier *= Math.pow((1 / 0.98), -genes);
-    }
-
-    var soldiers = game.portal.Coordinated.level ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
-    var numerus = (trimps.realMax() - trimps.employed) / (trimps.realMax() - (soldiers + trimps.employed));
-    var base = potencyMod * multiplier + 1;
-
-    return Math.log(numerus) / Math.log(base);
-}
-
-function getEnemyMaxAttack(zone) {
-    var amt = 0;
-    var level = 30;
-    var world = zone;
-    amt += 50 * Math.sqrt(world * Math.pow(3.27, world));
-    amt -= 10;
-    if (world == 1) {
-        amt *= 0.35;
-        amt = (amt * 0.20) + ((amt * 0.75) * (level / 100));
-    } else if (world == 2) {
-        amt *= 0.5;
-        amt = (amt * 0.32) + ((amt * 0.68) * (level / 100));
-    } else if (world < 60) {
-        amt = (amt * 0.375) + ((amt * 0.7) * (level / 100));
-    } else {
-        amt = (amt * 0.4) + ((amt * 0.9) * (level / 100));
-        amt *= Math.pow(1.15, world - 59);
-    }
-
-    amt *= 1.1;
-    amt *= game.badGuys["Snimp"].attack;
-    return Math.floor(amt);
-}
-*/
 
 function getEnemyMaxAttack(world, level, name, diff) {
 	var amt = 0;
