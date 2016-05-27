@@ -180,8 +180,10 @@ function getPageSetting(setting) {
 
 //Global debug message (need to implement debugging to in game window)
 function debug(message) {
-    if (enableDebug)
+    if (enableDebug){
         console.log(timeStamp() + ' ' + message);
+        message2(message, "AutoTrimps", "*droplet");
+    }
 }
 
 //Simply returns a formatted text timestamp
@@ -2247,3 +2249,47 @@ function delayStartAgain(){
 	 updateCustomButtons();
 	 //setInterval(updateCustomButtons, 10000);
 }
+
+//we copied message function because this was not able to be called from function debug() without getting a weird scope? related "cannot find function" error.
+function message2(messageString, type, lootIcon, extraClass) {
+	var log = document.getElementById("log");
+	var needsScroll = ((log.scrollTop + 10) > (log.scrollHeight - log.clientHeight));
+	var displayType = (game.global.messages[type]) ? "block" : "none";
+	var prefix = "";
+	if (lootIcon && lootIcon.charAt(0) == "*") {
+		lootIcon = lootIcon.replace("*", "");
+		prefix =  "icomoon icon-";
+	}
+	else prefix = "glyphicon glyphicon-";
+    //add a star icon for "AutoTrimps"
+	if (type == "AutoTrimps") messageString = "<span class='icomoon icon-exclamation-circle'></span> " + messageString;
+    if (type == "Story") messageString = "<span class='glyphicon glyphicon-star'></span> " + messageString;
+	if (type == "Combat") messageString = "<span class='glyphicon glyphicon-flag'></span> " + messageString;
+	if (type == "Loot" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
+	var addId = "";
+	if (messageString == "Game Saved!" || extraClass == 'save') {
+		addId = " id='saveGame'";
+		if (document.getElementById('saveGame') !== null){
+			log.removeChild(document.getElementById('saveGame'));
+		}
+	}
+	if (type == "Notices"){
+		messageString = "<span class='glyphicon glyphicon-off'></span> " + messageString;
+	}
+	log.innerHTML += "<span" + addId + " class='" + type + "Message message" +  " " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
+	if (needsScroll) log.scrollTop = log.scrollHeight;
+	if (type != "Story") trimMessages(type);
+} 
+//For adding a 5th tab to the message window
+var ATbutton = document.createElement("button");
+ATbutton.setAttribute('id', 'AutoTrimpsFilter');
+ATbutton.setAttribute('type', 'button');
+ATbutton.setAttribute('onclick', "filterMessage('AutoTrimps')");
+ATbutton.setAttribute('class', "btn btn-success logFlt");
+ATbutton.innerHTML = 'AutoTrimps';
+//
+var tab = document.createElement("DIV");
+tab.setAttribute('class', 'btn-group');
+tab.setAttribute('role', 'group');
+tab.appendChild(ATbutton);
+document.getElementById('logBtnGroup').appendChild(tab);
