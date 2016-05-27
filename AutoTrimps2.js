@@ -2281,7 +2281,6 @@ function message2(messageString, type, lootIcon, extraClass) {
 	else prefix = "glyphicon glyphicon-";
     //add a suitable icon for "AutoTrimps"
 	if (type == "AutoTrimps" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
-    if (type == "Loot" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
     if (type == "AutoTrimps") messageString = "<span class='glyphicon glyphicon-superscript'></span> " + messageString;
     
 	var addId = "";
