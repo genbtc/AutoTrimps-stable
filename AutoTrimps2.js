@@ -2280,20 +2280,11 @@ function message2(messageString, type, lootIcon, extraClass) {
 	}
 	else prefix = "glyphicon glyphicon-";
     //add a suitable icon for "AutoTrimps"
-	if (type == "AutoTrimps") messageString = "<span class='glyphicon glyphicon-superscript'></span> " + messageString;
-    	if (type == "Story") messageString = "<span class='glyphicon glyphicon-star'></span> " + messageString;
-	if (type == "Combat") messageString = "<span class='glyphicon glyphicon-flag'></span> " + messageString;
-	if (type == "Loot" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
+	if (type == "AutoTrimps" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
+    if (type == "Loot" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
+    if (type == "AutoTrimps") messageString = "<span class='glyphicon glyphicon-superscript'></span> " + messageString;
+    
 	var addId = "";
-	if (messageString == "Game Saved!" || extraClass == 'save') {
-		addId = " id='saveGame'";
-		if (document.getElementById('saveGame') !== null){
-			log.removeChild(document.getElementById('saveGame'));
-		}
-	}
-	if (type == "Notices"){
-		messageString = "<span class='glyphicon glyphicon-off'></span> " + messageString;
-	}
 	log.innerHTML += "<span" + addId + " class='" + type + "Message message" +  " " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
 	if (needsScroll) log.scrollTop = log.scrollHeight;
 	if (type != "Story") trimMessages(type);
