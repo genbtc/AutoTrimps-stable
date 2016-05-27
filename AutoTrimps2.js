@@ -1871,20 +1871,20 @@ function autoMap() {
 		//if we can't afford the map we designed, pick our highest map
                 if (updateMapCost(true) > game.resources.fragments.owned) {
                     selectMap(game.global.mapsOwnedArray[highestMap].id);
-                    console.log("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value);
-                    console.log("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level);
+                    debug("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value);
+                    debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level);
                     runMap();
                 } else {
                 	if(buyMap() == -2){
                 		recycleBelow(true);
-                		 console.log("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value);
+                		 debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value);
                 		 buyMap();
                 	}
                 }
                 //if we already have a map picked, run it
             } else {
                 selectMap(shouldDoMap);
-                console.log("Already have a map picked: Running map:# " + shouldDoMap + 
+                debug("Already have a map picked: Running map:# " + shouldDoMap + 
                 	" Level: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].level +
                 	" Name: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].name);
                 runMap();
@@ -2157,6 +2157,18 @@ function manageGenes() {
 }
 
 
+function autoRoboTrimp() {
+    //exit if the cooldown is active, or we havent unlocked robotrimp.
+    if (game.global.roboTrimpCooldown > 0 || !game.global.roboTrimpLevel) return;
+    var robotrimpzone = parseInt(getPageSetting('AutoRoboTrimp'));
+    //exit if we have the setting set to 0
+    if (robotrimpzone == 0) return;
+    //activate the button when we are above the cutoff zone, and we are out of cooldown (and the button is inactive)
+    if (game.global.world >= robotrimpzone && !game.global.useShriek){
+        magnetoShriek();
+    }
+}
+
 
 ////////////////////////////////////////
 //Logic Loop////////////////////////////
@@ -2194,7 +2206,7 @@ function mainLoop() {
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();
     if (getPageSetting('AutoHeirlooms')) autoHeirlooms();
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap();
-    
+    if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();
     
     if (getPageSetting('AutoStance')) autoStance();
     //if autostance is not on, we should do base calculations here so stuff like automaps still works
