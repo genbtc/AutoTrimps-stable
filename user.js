@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         AutoTrimps
-// @namespace    https://github.com/zininzinin/AutoTrimps
+// @name         AutoTrimps-genBTC
+// @namespace    https://github.com/genbtc/AutoTrimps
 // @version      2.1
 // @description  Automate all the trimps!
-// @author       zininzinin, spindrjr, Ishkaru
+// @author       zininzinin, spindrjr, Ishkaru, genBTC
 // @include        *trimps.github.io*
 // @include        *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-javascript:with(document)(head.appendChild(createElement('script')).src='https://zininzinin.github.io/AutoTrimps/AutoTrimps2.js')._;
+javascript:with(document)(head.appendChild(createElement('script')).src='https://genbtc.github.io/AutoTrimps/AutoTrimps2.js')._;
