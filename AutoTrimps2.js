@@ -909,8 +909,6 @@ function getBreedTime(remaining,round) {
 ////////////////////////////////////////
 
 function initializeAutoTrimps() {
-    if (game.global.messages["AutoTrimps"] == null)
-        game.global.messages["AutoTrimps"] = true;
     debug('initializeAutoTrimps');
     loadPageVariables();
     javascript: with(document)(head.appendChild(createElement('script')).src = 'https://genbtc.github.io/AutoTrimps/NewUI.js')._;
@@ -2288,6 +2286,9 @@ function message2(messageString, type, lootIcon, extraClass) {
 	if (needsScroll) log.scrollTop = log.scrollHeight;
 	if (type != "Story") trimMessages(type);
 } 
+
+game.global.messages["AutoTrimps"] = true;
+
 //For adding a 5th tab to the message window
 var ATbutton = document.createElement("button");
 ATbutton.setAttribute('id', 'AutoTrimpsFilter');
@@ -2301,3 +2302,4 @@ tab.setAttribute('class', 'btn-group');
 tab.setAttribute('role', 'group');
 tab.appendChild(ATbutton);
 document.getElementById('logBtnGroup').appendChild(tab);
+
