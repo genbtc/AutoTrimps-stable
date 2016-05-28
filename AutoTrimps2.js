@@ -1816,9 +1816,12 @@ function autoMap() {
                     debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, '*happy2');
                     runMap();
                 } else {
-                	if(buyMap() == -2){
-                		recycleBelow(true);
-                		 debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, 'th-large');
+                    debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, 'th-large');
+                    var result = buyMap();
+                	if(result == -2){
+                		 debug("Too many maps, recycling now: ", 'th-large');
+                         recycleBelow(true);
+                		 debug("Retrying BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, 'th-large');
                 		 buyMap();
                 	}
                 }
