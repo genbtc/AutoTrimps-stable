@@ -1702,7 +1702,7 @@ function autoMap() {
             if (game.global.mapsActive) {
                 
                 //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
-                if (shouldDoMap == game.global.currentMapId && !game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox)) {
+                if (shouldDoMap == game.global.currentMapId && !game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) {
                     var targetPrestige = autoTrimpSettings.Prestige.selected;
                     //make sure repeat map is on
                     if (!game.global.repeatMap) {
@@ -2195,6 +2195,7 @@ function delayStartAgain(){
 }
 
 //we copied message function because this was not able to be called from function debug() without getting a weird scope? related "cannot find function" error.
+var lastmessagecount = 1;
 function message2(messageString, type, lootIcon, extraClass) {
     var log = document.getElementById("log");
     var needsScroll = ((log.scrollTop + 10) > (log.scrollHeight - log.clientHeight));
@@ -2206,13 +2207,28 @@ function message2(messageString, type, lootIcon, extraClass) {
     }
     else prefix = "glyphicon glyphicon-";
     //add a suitable icon for "AutoTrimps"
-    if (type == "AutoTrimps" && lootIcon) messageString = "<span class='" + prefix + lootIcon + "'></span> " + messageString;
-    if (type == "AutoTrimps") messageString = "<span class='glyphicon glyphicon-superscript'></span> " + messageString;
-    
-    var addId = "";
-    log.innerHTML += "<span" + addId + " class='" + type + "Message message" +  " " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
+    if (type == "AutoTrimps" && lootIcon) messageString = "<span class=\"" + prefix + lootIcon + "\"></span> " + messageString;
+    if (type == "AutoTrimps") messageString = "<span class=\"glyphicon glyphicon-superscript\"></span> " + messageString;
+
+    var add = "<span class='" + type + "Message message" +  " " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
+    var toChange = document.getElementsByClassName(type + "Message");    
+    if (toChange.length > 1 && toChange[toChange.length-1].innerHTML.indexOf(messageString) > -1){
+        var msgToChange = toChange[toChange.length-1].innerHTML;
+        lastmessagecount++;
+        //search string backwards for the occurrence of "x" (meaning x21 etc)
+        var foundXat = msgToChange.lastIndexOf("x");
+        if (foundXat != -1){
+            toChange[toChange.length-1].innerHTML = msgToChange.slice(0,foundXat);  //and slice it out.
+        }
+        //so we can add a new number in.
+        toChange[toChange.length-1].innerHTML += " x" + lastmessagecount;
+    }
+    else {
+        lastmessagecount =1;
+        log.innerHTML += add;
+    }
     if (needsScroll) log.scrollTop = log.scrollHeight;
-    if (type != "Story") trimMessages(type);
+    trimMessages(type);
 }
 
 //HTML For adding a 5th tab to the message window
