@@ -13,7 +13,7 @@
 //Variables/////////////////////////////
 ////////////////////////////////////////
 var AutoTrimpsDebugTabVisible = true;
-delete game.global.messages["AutoTrimps"];
+delete game.global.messages["AutoTrimps"];  //bugfix from May27th, no need to be permanent.
 
 var runInterval = 100; //How often to loop through logicc
 var enableDebug = true; //Spam console?
@@ -1876,35 +1876,17 @@ function calculateNextHeliumHour (stacked) {
 var heliumGrowing = false;
 var strikes = 0;
 var heliumWatch= 0;
-/*
-function watchHelium (init) {
-    var he = calculateNextHeliumHour();
-    if(init) {
-        heliumGrowing = true;
-        strikes = 0;
-        heliumWatch = he;
-    }
-    if (he > heliumWatch) {
-        heliumGrowing = true;
-        strikes = 0;
-        debug('helium growing! ' + he + ' vs: ' + heliumWatch);
-    }
-    else if (he < heliumWatch) {
-    strikes ++;
-    }
-    if(strikes > 2) {
-        heliumGrowing = false;
-        debug ('urrrrrrrrr OUT!');
-    }
-    heliumWatch = he;
 
-}
-    setInterval(watchHelium, 10000);
-    */
 function storeRecycledNullfiumData(){
+    if (nullifiumData == null) {
+        debug("Could not find nullifium data storage!(not good). Creating now.");
+        var nullifiumData = [];        
+    }
     if (nullifiumData.length === 0 || nullifiumData[nullifiumData.length - 1].totalPortals != game.global.totalPortals) {
         nullifiumData.push({totalPortals: game.global.totalPortals, recycledNullifium: recycleAllExtraHeirlooms(true), portalTime: new Date().getTime() - game.global.portalTime});
+        debug("Gathered nullifium graph data.");
         localStorage.setItem('nullifiumData', JSON.stringify(nullifiumData));
+        debug("Stored nullifium graph data into localstorage.");
     }
 }
 
