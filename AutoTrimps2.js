@@ -1504,7 +1504,10 @@ function autoMap() {
                         baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod)));
         enoughDamage = baseDamage * 4 > enemyHealth;
         HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
-        var shouldDoMaps = !enoughHealth || !enoughDamage;
+        //prevents map-screen from flickering on and off during startup when base damage is 0.
+        if (baseDamage > 0){
+            var shouldDoMaps = !enoughHealth || !enoughDamage;
+        }
         var shouldDoMap = "world";
         
         
