@@ -2218,8 +2218,8 @@ function message2(messageString, type, lootIcon, extraClass) {
     if (toChange.length > 1 && toChange[toChange.length-1].innerHTML.indexOf(messageString) > -1){
         var msgToChange = toChange[toChange.length-1].innerHTML;
         lastmessagecount++;
-        //search string backwards for the occurrence of "x" (meaning x21 etc)
-        var foundXat = msgToChange.lastIndexOf("x");
+        //search string backwards for the occurrence of " x" (meaning x21 etc)
+        var foundXat = msgToChange.lastIndexOf(" x");
         if (foundXat != -1){
             toChange[toChange.length-1].innerHTML = msgToChange.slice(0,foundXat);  //and slice it out.
         }
