@@ -1870,37 +1870,23 @@ function calculateNextHeliumHour (stacked) {
     return heliumNow;
 }
 
-function storeRecycledNullfiumData(){
-    if (nullifiumData == null) {
-        debug("Could not find nullifium data storage!(not good). Creating now.");
-        var nullifiumData = [];        
-    }
-    if (nullifiumData.length === 0 || nullifiumData[nullifiumData.length - 1].totalPortals != game.global.totalPortals) {
-        nullifiumData.push({totalPortals: game.global.totalPortals, recycledNullifium: recycleAllExtraHeirlooms(true), portalTime: new Date().getTime() - game.global.portalTime});
-        debug("Gathered nullifium graph data.");
-        localStorage.setItem('nullifiumData', JSON.stringify(nullifiumData));
-        debug("Stored nullifium graph data into localstorage.");
-    }
-}
-
-var lastHelium = 0;
-var lastZone = 0;
 function autoPortal() {
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone
         case "Helium Per Hour":
-            if(game.global.world > lastZone) {
-                lastZone = game.global.world;
-                var timeThisPortal = new Date().getTime() - game.global.portalTime;
-                timeThisPortal /= 3600000;
-                var myHelium = Math.floor(game.resources.helium.owned / timeThisPortal);
+            game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
+            if(game.global.world > game.stats.bestHeliumHourThisRun.atZone) {
+                var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
+                var myHeliumHr = game.stats.heliumHour.value()
                 var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
-                if(myHelium < lastHelium * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
-                    pushData(); storeRecycledNullfiumData();
-                    if(autoTrimpSettings.HeliumHourChallenge.selected != 'None') doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
-                    else doPortal();
+                if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
+                    debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr);
+                    pushData();
+                    if(autoTrimpSettings.HeliumHourChallenge.selected != 'None') 
+                        doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
+                    else 
+                        doPortal();
                 }
-                else lastHelium = myHelium;
             }
             break;
         case "Custom":
@@ -1920,7 +1906,7 @@ function autoPortal() {
         case "Watch":
         case "Lead":
             if(!game.global.challengeActive) {
-                pushData(); storeRecycledNullfiumData();
+                pushData();
                 doPortal(autoTrimpSettings.AutoPortal.selected);
             }
             break;
@@ -1979,8 +1965,6 @@ function doPortal(challenge) {
     if(challenge) selectChallenge(challenge);
     activateClicked();
     activatePortal();
-    lastHelium = 0;
-    lastZone = 0;
 }
 
 //adjust geneticists to reach desired breed timer

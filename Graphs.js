@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none;"><div id="graph" style="margin-bottom: 2vw;margin-top: 2vw;"></div></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coord', 'Gigas', 'Lastwarp', 'Trimps','NullifiumPerHour'];
+var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coord', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -168,7 +168,7 @@ function pushData() {
         challenge: game.global.challengeActive,
         voids: game.global.totalVoidMaps,
         heirlooms: game.stats.totalHeirlooms,
-        nullifium: game.global.nullifium,
+        nullifium: recycleAllExtraHeirlooms(true),
         gigas: game.upgrades.Gigastation.done,
         trimps: game.resources.trimps.realMax(),
         coord: game.upgrades.Coordination.done,
@@ -273,7 +273,7 @@ function setGraphData(graph) {
             }
             title = 'Helium';
             xTitle = 'Zone';
-            yTitle = 'Helium'
+            yTitle = 'Helium';
             yType = 'Linear';
             break;
         case 'HeliumPerHour':
@@ -342,6 +342,39 @@ function setGraphData(graph) {
             yTitle = 'Void Maps';
             yType = 'Linear';
             break;
+      
+        case 'Nullifium Gained':
+        var currentPortal = -1;
+        var totalNull = 0;
+        var theChallenge = '';
+        graphData = [];
+        for (var i in allSaveData) {
+            if (allSaveData[i].totalPortals != currentPortal) {
+                if(currentPortal == -1) {
+                    theChallenge = allSaveData[i].challenge;
+                    currentPortal = allSaveData[i].totalPortals;
+                    graphData.push({
+                    name: 'Nullifium Gained',
+                    data: [],
+                    type: 'column'
+                });
+                    continue;
+                }
+                graphData[0].data.push([allSaveData[i-1].totalPortals, totalNull]);
+                theChallenge = allSaveData[i].challenge;
+                totalNull = 0;
+                currentPortal = allSaveData[i].totalPortals;
+            }
+            if(allSaveData[i].nullifium > totalNull) {
+                 totalNull = allSaveData[i].nullifium;
+             }
+        }
+        title = 'Nullifium Gained Per Portal';
+        xTitle = 'Portal';
+        yTitle = 'Nullifium Gained';
+        yType = 'Linear';
+        break;
+
            /* 
             case 'Loot Sources':
             graphData = [];
@@ -351,7 +384,11 @@ function setGraphData(graph) {
             graphData[3] = {name: 'Gems', data: lootData.gems};
             title = 'Loot Sources';
             xTitle = 'Time';
-            yTitle = 'Ratio Looted:Produced'
+            yTitle = 'percentage looted (of all resources gained)';
+            valueSuffix = '%';
+            formatter = function () {
+              return Highcharts.numberFormat(this.y,1);
+            };
             break;
             */
             
@@ -497,24 +534,6 @@ function setGraphData(graph) {
             yType = 'Linear';
             break;                        
             
-        case 'NullifiumPerHour':
-            graphData = [];
-            graphData.push({
-                name: 'Nullifium per Hour',
-                data: [],
-                type: 'column'
-            });
-            for (var i in nullifiumData) {
-                var theOne = nullifiumData[i];
-                var nullperhour = theOne.recycledNullifium / (theOne.portalTime / 3600000);
-                graphData[0].data.push([theOne.totalPortals, nullperhour]);
-            }
-            title = 'Nullifium/Hour';
-            xTitle = 'Portal';
-            yTitle = 'Nullifium';
-            yType = 'Linear';
-            break;
-                        
     }
     if (oldData != JSON.stringify(graphData)) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
@@ -625,12 +644,6 @@ var tmpGraphData = JSON.parse(localStorage.getItem('allSaveData'));
 if (tmpGraphData !== null) {
     console.log('Got allSaveData. Yay!');
     allSaveData = tmpGraphData;
-}
-var nullifiumData = [];
-var tmpnullifiumData = JSON.parse(localStorage.getItem('nullifiumData'));
-if (tmpnullifiumData !== null) {
-    console.log('Got nullifiumData. Yay!');
-    nullifiumData = tmpnullifiumData;
 }
 
 setInterval(gatherInfo, 1000);
