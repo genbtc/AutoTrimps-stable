@@ -1725,8 +1725,9 @@ function autoMap() {
             } else if (!game.global.mapsActive) {
                 if (shouldDoMap != "world") {
                     //if shouldFarm, don't switch until after megamining //genBTC changed.
-                    if (!game.global.switchToMaps && ((shouldFarm && game.global.lastClearedCell >= 59) || !shouldFarm)) {
-                        mapsClicked();
+                    if (!game.global.switchToMaps){
+                        if ((shouldDoMaps && game.global.lastClearedCell < 10) || (shouldFarm && game.global.lastClearedCell >= 59) || needPrestige || doVoids || shouldDoMap!="world")
+                            mapsClicked();
                     }
                     ////Get Impatient/Abandon if: need prestige / _NEED_ to do void maps / on lead in odd world. AND a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone )
                     if(
