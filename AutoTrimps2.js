@@ -1467,8 +1467,20 @@ function autoMap() {
     if(!getPageSetting('DisableFarm')) {
         shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / (baseDamage*4) > 2.5 : getEnemyMaxHealth(game.global.world) / (baseDamage*4) > 4;
     }
-
-    needToVoid = getPageSetting('VoidMaps') > 0 && game.global.totalVoidMaps > 0 && ((game.global.world == getPageSetting('VoidMaps') && !getPageSetting('RunNewVoids')) || (game.global.world >= getPageSetting('VoidMaps') && getPageSetting('RunNewVoids'))) && (game.global.challengeActive != 'Lead' || game.global.lastClearedCell > 93);
+    //DECIMAL VOID MAPS:
+    var voidMapLevelSetting = getPageSetting('VoidMaps');
+    //using string function to avoid false float precision (0.29999999992). javascript can compare ints to strings anyway.
+    var voidMapLevelSettingZone = (voidMapLevelSetting+"").split(".")[0];
+    var voidMapLevelSettingMap = (voidMapLevelSetting+"").split(".")[1];
+    if (voidMapLevelSettingMap === undefined || game.global.challengeActive == 'Lead') 
+        voidMapLevelSettingMap = 95;
+    if (voidMapLevelSettingMap.length == 1) voidMapLevelSettingMap += "0";  //entering 187.70 becomes 187.7, this will bring it back to 187.70
+    var voidsuntil = getPageSetting('RunNewVoidsUntil');
+    needToVoid = voidMapLevelSetting > 0 && game.global.totalVoidMaps > 0 && game.global.lastClearedCell + 1 >= voidMapLevelSettingMap && 
+                                ((game.global.world == voidMapLevelSettingZone && !getPageSetting('RunNewVoids')) 
+                                                                || 
+                                 (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids')))
+                         && (voidsuntil != -1 && game.global.world <= voidsuntil);
     if (game.global.mapsUnlocked) {
         var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
         var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
