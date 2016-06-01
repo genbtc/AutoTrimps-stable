@@ -1484,7 +1484,7 @@ function autoMap() {
                                 ((game.global.world == voidMapLevelSettingZone && !getPageSetting('RunNewVoids')) 
                                                                 || 
                                  (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids')))
-                         && (voidsuntil != -1 && game.global.world <= voidsuntil);
+                         && ((voidsuntil != -1 && game.global.world <= voidsuntil) || (voidsuntil == -1)) ;
     if (game.global.mapsUnlocked) {
         var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
         var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
