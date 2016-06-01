@@ -14,7 +14,8 @@
 ////////////////////////////////////////
 var AutoTrimpsDebugTabVisible = true;
 
-var runInterval = 100; //How often to loop through logicc
+var runInterval = 100; //How often to loop through logic
+var startupDelay = 2000;
 var enableDebug = true; //Spam console?
 var autoTrimpSettings = new Object();
 var bestBuilding;
@@ -23,10 +24,7 @@ var breedFire = false;
 var shouldFarm = false;
 var enoughDamage = true;
 var enoughHealth = true;
-var newCoord = false;
-
-var noFight = 0;
-
+var stopScientistsatFarmers;
 
 var baseDamage = 0;
 var baseBlock = 0;
@@ -220,12 +218,10 @@ function postBuy() {
 }
 
 function safeBuyBuilding(building) {
-    //exclude housing from 1 per queue limit?
+    //limit to 1 building per queue
     for (var b in game.global.buildingsQueue) {
         if (game.global.buildingsQueue[b].includes(building)) return false;
     }
-   
-    
     preBuy();
     game.global.buyAmt = 1;
     if (!canAffordBuilding(building)) {
@@ -244,8 +240,6 @@ function safeBuyBuilding(building) {
     }
     debug('Building ' + building, '*hammer2');
     buyBuilding(building, true, true);
-    
-    
     postBuy();
     return true;
 }
@@ -277,7 +271,7 @@ function highlightHousing() {
             }
         }
         var keysSorted = Object.keys(obj).sort(function(a, b) {
-            return obj[a] - obj[b]
+            return obj[a] - obj[b];
         });
         bestBuilding = null;
         //loop through the array and find the first one that isn't limited by max settings
@@ -369,13 +363,9 @@ function sortHeirlooms(){
                 return worth[x][b] - worth[x][a];
         });
     }
-    // console.log(worth);
-    //console.log('hat: ' + worth['Shield']);
-    //console.log('staff: ' + worth['Staff']);
 }
 
-
-
+//Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.
 function autoHeirlooms() {
     var bestUpgrade;
     if(!heirloomsShown && game.global.heirloomsExtra.length > 0){
@@ -426,6 +416,7 @@ function autoHeirlooms() {
     //advBtn.setAttribute("onmouseover", 'tooltip(\"Advanced Settings\", \"customText\", event, \"Leave off unless you know what you\'re doing with them.\")');
 }
 
+//Determines the best heirloom mods
 function evaluateMods(loom, location, upgrade) {
     var index = loom;
     var bestUpgrade = {
@@ -633,6 +624,7 @@ function evaluateMods(loom, location, upgrade) {
     return eff;
 }
 
+//Heirloom helper function
 function checkForMod(what, loom, location){
     var heirloom = game.global[location][loom];
     for (var mod in heirloom.mods){
@@ -641,8 +633,7 @@ function checkForMod(what, loom, location){
     return false;
 }
 
-
-
+//back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
 function evaluateEfficiency(equipName) {
     var equip = equipmentList[equipName];
     var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
@@ -668,7 +659,11 @@ function evaluateEfficiency(equipName) {
         var CanAfford = canAffordTwoLevel(game.upgrades[equip.Upgrade]);
         if (equip.Equip) {
             var NextEff = PrestigeValue(equip.Upgrade);
-            var NextCost = getNextPrestigeCost(equip.Upgrade) * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level);
+            //Scientist 3 challenge: set metalcost to Infinity so it can buy equipment levels without waiting for prestige. (fake the impossible science cost)
+            if (game.global.challengeActive == "Scientist" && getScientistLevel() == 3)
+                var NextCost =  Infinity;
+            else
+            	var NextCost = getNextPrestigeCost(equip.Upgrade) * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level);
             Wall = (NextEff / NextCost > Res);
         }
 
@@ -717,6 +712,7 @@ function evaluateEfficiency(equipName) {
     };
 }
 
+//Returns the amount of stats that the equipment (or gym) will give when bought.
 function Effect(gameResource, equip) {
     if (equip.Equip) {
         return gameResource[equip.Stat + 'Calculated'];
@@ -729,6 +725,7 @@ function Effect(gameResource, equip) {
     }
 }
 
+//Returns the cost after Artisanistry of a piece of equipment.
 function Cost(gameResource, equip) {
     preBuy();
     game.global.buyAmt = 1;
@@ -738,6 +735,7 @@ function Cost(gameResource, equip) {
     return price;
 }
 
+//Returns the amount of stats that the prestige will give when bought.
 function PrestigeValue(what) {
     var name = game.upgrades[what].prestiges;
     var equipment = game.equipment[name];
@@ -894,8 +892,7 @@ function buyUpgrades() {
         if (upgrade == 'Gigastation' && (game.global.lastWarp ? game.buildings.Warpstation.owned < (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')) : game.buildings.Warpstation.owned < getPageSetting('FirstGigastation'))) continue;
         if ((!game.upgrades.Scientists.done && upgrade != 'Battle') ? (available && upgrade == 'Scientists' && game.upgrades.Scientists.allowed) : (available)) {
             buyUpgrade(upgrade, true, true);
-            if(upgrade == 'Coordination') newCoord = true;
-            //debug('bought upgrade ' + upgrade);
+            debug('Upgraded ' + upgrade,"*upload2");
         }
     }
 }
@@ -1295,9 +1292,6 @@ function manualLabor() {
 //function written by Belaith
 function autoStance() {
     if (game.global.gridArray.length === 0) return;
-    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-
     
     baseDamage = game.global.soldierCurrentAttack * 2 * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
     if (game.global.formation == 2) {
@@ -1321,6 +1315,12 @@ function autoStance() {
     } else if (game.global.formation != "0") {
         baseHealth *= 2;
     }
+    //no need to continue
+    if (!getPageSetting('AutoStance')) return;
+
+    //start analyzing autostance
+    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
 
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         var enemy;
@@ -1393,7 +1393,7 @@ function autoStance() {
         xDamage += game.global.soldierHealth * 0.2;
         bDamage += game.global.soldierHealth * 0.2;
     }
-    baseDamage *= (game.global.titimpLeft > 0 ? 4 : 2); //consider titimp (reasoning behind 8 and 4: Dstance is *4, and titimp *2 = 8). (used to be 4&2 but there was a questionable  *2 in the original basedamage equation)
+    baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
     //double attack is OK if the buff isn't double attack, or we will survive a double attack, or we are going to one-shot them (so they won't be able to double attack)
     var doubleAttackOK = game.global.voidBuff != 'doubleAttack' || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2) || enemyHealth < baseDamage;
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
@@ -1447,6 +1447,7 @@ function autoStance() {
         } else
             setFormation("0");
     }
+    baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
 }
 
 //core function written by Belaith
@@ -1461,6 +1462,9 @@ function autoMap() {
     //allow script to handle abandoning
     if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
         
+    //calculate average crits
+    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
+    //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
     baseDamage *= mapbonusmulti;
     //farm if basedamage is between 10 and 16)
@@ -1514,7 +1518,7 @@ function autoMap() {
         HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
         //prevents map-screen from flickering on and off during startup when base damage is 0.
         if (baseDamage > 0){
-            var shouldDoMaps = !enoughHealth || !enoughDamage;
+            var shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm;
         }
         var shouldDoMap = "world";
         
@@ -1547,10 +1551,9 @@ function autoMap() {
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
         if(game.global.challengeActive == 'Toxicity' && game.global.lastClearedCell > 93 && game.challenges.Toxicity.stacks < 1500 && ((getPageSetting('MaxTox') && game.global.world > 59) || needToVoid)) {
             shouldDoMaps = true;
-            if (needToVoid && game.challenges.Toxicity.stacks > 1415)   //we willl get at least 85 toxstacks from the 1st voidmap
-                stackingTox = false;
-            else 
-                stackingTox = true;
+            //we willl get at least 85 toxstacks from the 1st voidmap
+            stackingTox = !(needToVoid && game.challenges.Toxicity.stacks > 1415);
+
             //force abandon army
             if(!game.global.mapsActive && !game.global.preMapsActive) {
                 mapsClicked();
@@ -1590,7 +1593,7 @@ function autoMap() {
             }
         }
         var keysSorted = Object.keys(obj).sort(function(a, b) {
-            return obj[b] - obj[a]
+            return obj[b] - obj[a];
         });
         //if there are no non-unique maps, there will be nothing in keysSorted, so set to create a map
         if (keysSorted[0]) var highestMap = keysSorted[0];
@@ -1677,9 +1680,9 @@ function autoMap() {
                 }
                 //other unique maps here
             }
+        }
             
 
-        }
         //map if we don't have health/dmg or we need to clear void maps or if we are prestige mapping, and our set item has a new prestige available 
         if (shouldDoMaps || doVoids || needPrestige) {
             //shouldDoMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
@@ -1736,7 +1739,8 @@ function autoMap() {
                 }
             } else if (!game.global.mapsActive) {
                 if (shouldDoMap != "world") {
-                    //if shouldFarm, don't switch until after megamining //genBTC changed.
+                    //if shouldFarm, don't switch until after megamining. if "wants damage", go in first 10 cells of zone (do map bonus simultaneously)
+                    //if need prestige, go immediately.
                     if (!game.global.switchToMaps){
                         if ((shouldDoMaps && game.global.lastClearedCell < 10) || (shouldFarm && game.global.lastClearedCell >= 59) || needPrestige || doVoids || shouldDoMap!="world")
                             mapsClicked();
@@ -1762,7 +1766,7 @@ function autoMap() {
             }
         } else if (game.global.preMapsActive) {
             if (shouldDoMap == "world") {
-                mapsClicked();
+                mapsClicked();  //go back
             } 
             else if (shouldDoMap == "create") {
                 if (needPrestige)
@@ -1804,19 +1808,19 @@ function autoMap() {
                 if(shouldFarm) {
                     biomeAdvMapsSelect.value = "Mountain";
                     while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                        sizeAdvMapsRange.value = sizeAdvMapsRange.value - 1;
+                        sizeAdvMapsRange.value -= 1;
                     }
                     while (lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                        lootAdvMapsRange.value = lootAdvMapsRange.value - 1;
+                        lootAdvMapsRange.value -= 1;
                     }
                 } else {
                     while (lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                        lootAdvMapsRange.value = lootAdvMapsRange.value - 1;
+                        lootAdvMapsRange.value -= 1;
                     }
                     //prioritize size over difficulty? Not sure. high Helium that just wants prestige = yes.
                     //Really just trying to prevent prestige mapping from getting stuck
                     while (difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                        difficultyAdvMapsRange.value = difficultyAdvMapsRange.value - 1;
+                        difficultyAdvMapsRange.value -= 1;
                     }
                 }
                 //if we can't afford the map we designed, pick our highest map
@@ -1890,7 +1894,7 @@ function autoPortal() {
             game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
             if(game.global.world > game.stats.bestHeliumHourThisRun.atZone) {
                 var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
-                var myHeliumHr = game.stats.heliumHour.value()
+                var myHeliumHr = game.stats.heliumHour.value();
                 var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
                 if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
                     debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr);
@@ -1925,10 +1929,9 @@ function autoPortal() {
             break;
         default:
             break;
-
     }
-
 }
+
 
 function checkSettings() {
     var portalLevel = -1;
@@ -1965,11 +1968,11 @@ function checkSettings() {
     if(portalLevel == -1)
         return;
     if(autoTrimpSettings.VoidMaps.value >= portalLevel) {
-        tooltip('confirm', null, 'update', 'It looks like your void maps may be set to complete after your autoPortal. Your void maps may not be done at all in this case. Please verify your settings. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
+        tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please verify your settings. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
         return;
     }
     if((leadCheck || game.global.challengeActive == 'Lead') && (autoTrimpSettings.VoidMaps.value % 2 == 0 && portalLevel < 182))
-        tooltip('confirm', null, 'update', 'It looks like you may be on the Lead challenge or planning to run it and your void maps are set to complete on an even zone. You will receive double helium for completeing them in an odd numbered zone. Consider changing this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
+        tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
 }
 
 function doPortal(challenge) {
@@ -2031,12 +2034,6 @@ function manageGenes() {
     else if ((targetBreed < getBreedTime(true) || (game.resources.trimps.soldiers == 0 && getBreedTime(true) > 6)) && breedFire == false && getPageSetting('BreedFire') && game.global.world > 10) {
         breedFire = true;
     }
-    /*    
-        //really should be integrated with the buyBuildings routine instead of here, but I think it's mostly harmless here
-        else if (targetBreed < getBreedTime() && getPageSetting('ManageBreedtimer') && !game.buildings.Nursery.locked) {
-            safeBuyBuilding('Nursery');
-        }
-    */
 
     //reset breedFire once we have less than 2 seconds remaining
     if(getBreedTime(true) < 2) breedFire = false;
@@ -2058,31 +2055,33 @@ function autoRoboTrimp() {
 
 
 ////////////////////////////////////////
-//Logic Loop////////////////////////////
+//Main Logic Loop///////////////////////
 ////////////////////////////////////////
 
+setTimeout(delayStart, startupDelay);
+function delayStart() {
+    initializeAutoTrimps();
+    setTimeout(delayStartAgain, startupDelay);
+}
+function delayStartAgain(){
+    setInterval(mainLoop, runInterval);
+    updateCustomButtons();
+}
 
-
-//This is totally cheating Only use for debugging
-// game.settings.speed = 1;
-// game.settings.speedTemp = 1;
-// setTimeout(function() {
-//     game.settings.speed = 2;
-// }, 1000);
-
-setTimeout(delayStart, 2000);
-
-var stopScientistsatFarmers = 250000;
 function mainLoop() {
     stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
     game.global.addonUser = true;
     if(getPageSetting('PauseScript')) return;
     if(game.global.viewingUpgrades) return;
-    setTitle();
-    setScienceNeeded();
-    updateValueFields();
+    //auto-close breaking the world textbox
+    if(document.getElementById('tipTitle').innerHTML == 'The Improbability') cancelTooltip();
+    //auto-close the corruption at zone 181 textbox
+    if(document.getElementById('tipTitle').innerHTML == 'Corruption') cancelTooltip();
+    setTitle();          //set the browser title
+    setScienceNeeded();  //determine how much science is needed
+    updateValueFields(); //refresh the UI
 
-    if (getPageSetting('EasyMode')) easyMode(); //This needs a UI input
+    if (getPageSetting('EasyMode')) easyMode();
     if (getPageSetting('BuyUpgrades')) buyUpgrades();
     if (getPageSetting('BuyStorage')) buyStorage();
     if (getPageSetting('BuyBuildings')) buyBuildings();
@@ -2094,35 +2093,8 @@ function mainLoop() {
     if (getPageSetting('AutoHeirlooms')) autoHeirlooms();
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap();
     if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();
-    
-    if (getPageSetting('AutoStance')) autoStance();
-        //if autostance is not on, we should do base calculations here so stuff like automaps still works
-    else {
-        baseDamage = game.global.soldierCurrentAttack * 2 * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
-        if (game.global.formation == 2) {
-            baseDamage /= 4;
-        } else if (game.global.formation != "0") {
-            baseDamage *= 2;
-        }
-        //baseBlock
-        baseBlock = game.global.soldierCurrentBlock;
-        if (game.global.formation == 3) {
-            baseBlock /= 4;
-        } else if (game.global.formation != "0") {
-            baseBlock *= 2;
-        }
-        //baseHealth
-        baseHealth = game.global.soldierHealthMax;
-        if (game.global.formation == 1) {
-            baseHealth /= 4;
-        } else if (game.global.formation != "0") {
-            baseHealth *= 2;
-        }
-    }
-    //auto-close breaking the world textbox
-    if(document.getElementById('tipTitle').innerHTML == 'The Improbability') cancelTooltip();
     autoLevelEquipment();
-
+    autoStance();
     if (getPageSetting('AutoFight')) {
         //Manually fight instead of using builtin auto-fight
         if (game.global.autoBattle) {
@@ -2133,7 +2105,6 @@ function mainLoop() {
         lowLevelFight = game.resources.trimps.maxSoldiers < (game.resources.trimps.owned - game.resources.trimps.employed) * 0.5 && (game.resources.trimps.owned - game.resources.trimps.employed) > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
         if (game.upgrades.Battle.done && !game.global.fighting && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
             fightManual();
-            newCoord = false;
             // debug('triggered fight');
         }
     }
@@ -2141,15 +2112,6 @@ function mainLoop() {
 
 }
 
-function delayStart() {
-    initializeAutoTrimps();
-    setTimeout(delayStartAgain, 2000);
-}
-function delayStartAgain(){
-    setInterval(mainLoop, runInterval);
-    updateCustomButtons();
-    //setInterval(updateCustomButtons, 10000);
-}
 
 //we copied message function because this was not able to be called from function debug() without getting a weird scope? related "cannot find function" error.
 var lastmessagecount = 1;
@@ -2164,8 +2126,10 @@ function message2(messageString, type, lootIcon, extraClass) {
     }
     else prefix = "glyphicon glyphicon-";
     //add a suitable icon for "AutoTrimps"
-    if (type == "AutoTrimps" && lootIcon) messageString = "<span class=\"" + prefix + lootIcon + "\"></span> " + messageString;
-    if (type == "AutoTrimps") messageString = "<span class=\"glyphicon glyphicon-superscript\"></span> " + messageString;
+    if (lootIcon) 
+        messageString = "<span class=\"" + prefix + lootIcon + "\"></span> " + messageString;
+    messageString = "<span class=\"glyphicon glyphicon-superscript\"></span> " + messageString;
+    messageString = "<span class=\"icomoon icon-text-color\"></span>" + messageString;
 
     var add = "<span class='" + type + "Message message" +  " " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
     var toChange = document.getElementsByClassName(type + "Message");    
@@ -2189,7 +2153,7 @@ function message2(messageString, type, lootIcon, extraClass) {
 }
 
 //HTML For adding a 5th tab to the message window
-
+//
 var ATbutton = document.createElement("button");
 ATbutton.innerHTML = 'AutoTrimps';
 ATbutton.setAttribute('id', 'AutoTrimpsFilter');
