@@ -2108,8 +2108,6 @@ function mainLoop() {
             // debug('triggered fight');
         }
     }
-    if(game.resources.trimps.soldiers == 0) noFight ++;
-
 }
 
 
