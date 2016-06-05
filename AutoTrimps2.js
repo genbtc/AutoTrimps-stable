@@ -1773,7 +1773,7 @@ function autoMap() {
                     document.getElementById("mapLevelInput").value = game.global.world;
                 else
                     document.getElementById("mapLevelInput").value = siphlvl;
-                if (game.global.world >= 16) {
+                if (game.global.world > 70) {
                     sizeAdvMapsRange.value = 9;
                     adjustMap('size', 9);
                     difficultyAdvMapsRange.value = 9;
@@ -1783,7 +1783,7 @@ function autoMap() {
 
                     biomeAdvMapsSelect.value = "Mountain";
                     updateMapCost();
-                } else {
+                } else if (game.global.world < 16) {
                     sizeAdvMapsRange.value = 9;
                     adjustMap('size', 9);
                     difficultyAdvMapsRange.value = 0;
@@ -1793,10 +1793,17 @@ function autoMap() {
 
                     biomeAdvMapsSelect.value = "Random";
                     updateMapCost();
+                } else {
+                    sizeAdvMapsRange.value = 9;
+                    adjustMap('size', 9);
+                    difficultyAdvMapsRange.value = 9;
+                    adjustMap('difficulty', 9);
+                    lootAdvMapsRange.value = 0;
+                    adjustMap('loot', 0);
+
+                    biomeAdvMapsSelect.value = "Random";
+                    updateMapCost();
                 }
-                while (lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                    lootAdvMapsRange.value -= 1;
-                }                
                 //if we are farming (for resources), make sure it's metal, and put low priority on size
                 if(shouldFarm) {
                     biomeAdvMapsSelect.value = "Mountain";
