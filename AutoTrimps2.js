@@ -177,7 +177,7 @@ function getPageSetting(setting) {
     }
 }
 
-//Global debug message (need to implement debugging to in game window)
+//Global debug message
 function debug(message, lootIcon) {
     if (enableDebug){
         console.log(timeStamp() + ' ' + message);
@@ -330,7 +330,7 @@ function safeBuyJob(jobTitle, amount) {
             game.global.maxSplit = 1;
         }
     }   
-    //debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle);
+    debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', *users);
     buyJob(jobTitle, null, true);
     postBuy();
     return true;
@@ -659,8 +659,8 @@ function evaluateEfficiency(equipName) {
         var CanAfford = canAffordTwoLevel(game.upgrades[equip.Upgrade]);
         if (equip.Equip) {
             var NextEff = PrestigeValue(equip.Upgrade);
-            //Scientist 3 challenge: set metalcost to Infinity so it can buy equipment levels without waiting for prestige. (fake the impossible science cost)
-            if (game.global.challengeActive == "Scientist" && getScientistLevel() == 3)
+            //Scientist 3 and 4 challenge: set metalcost to Infinity so it can buy equipment levels without waiting for prestige. (fake the impossible science cost)
+            if (game.global.challengeActive == "Scientist" && getScientistLevel() > 2)
                 var NextCost =  Infinity;
             else
             	var NextCost = getNextPrestigeCost(equip.Upgrade) * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level);
@@ -1542,6 +1542,8 @@ function autoMap() {
             }
             else if (game.global.gridArray[99].nomStacks == 30)
                 shouldFarm = true;
+        
+            debug(Farming off Nom stacks)
         }
 
         //If on toxicity and reached the last cell, calculate if max tox stacks will give us better He/hr (assumes max agility)
@@ -1836,7 +1838,7 @@ function autoMap() {
                 //if we already have a map picked, run it
             } else {
                 selectMap(shouldDoMap);
-                debug("Already have a map picked: Running map:# " + shouldDoMap + 
+                debug("Already have a map picked: Running map: " + shouldDoMap + 
                     " Level: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].level +
                     " Name: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].name, 'th-large');
                 runMap();
@@ -2044,6 +2046,7 @@ function autoRoboTrimp() {
     //activate the button when we are above the cutoff zone, and we are out of cooldown (and the button is inactive)
     if (game.global.world >= robotrimpzone && !game.global.useShriek){
         magnetoShriek();
+        debug(Activated Robotrimp Ability, '*podcast')
     }
 }
 
