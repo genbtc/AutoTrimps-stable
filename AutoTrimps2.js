@@ -330,7 +330,7 @@ function safeBuyJob(jobTitle, amount) {
             game.global.maxSplit = 1;
         }
     }   
-    debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', *users);
+    debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', "*users");
     buyJob(jobTitle, null, true);
     postBuy();
     return true;
