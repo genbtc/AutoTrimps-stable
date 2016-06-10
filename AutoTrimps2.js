@@ -1543,7 +1543,7 @@ function autoMap() {
             else if (game.global.gridArray[99].nomStacks == 30)
                 shouldFarm = true;
         
-            debug(Farming off Nom stacks)
+            debug("Farming off Nom stacks");
         }
 
         //If on toxicity and reached the last cell, calculate if max tox stacks will give us better He/hr (assumes max agility)
