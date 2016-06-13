@@ -1161,8 +1161,9 @@ function autoLevelEquipment() {
                             (getPageSetting('DelayArmorWhenNeeded') && !enoughDamage && !enoughHealth) // if neither enough dmg or health, then tis ok to buy.
                             || 
                             (getPageSetting('DelayArmorWhenNeeded') && equipmentList[equipName].Resource == 'wood')
+                            || 
+                            !getPageSetting('DelayArmorWhenNeeded')  //or when its off.
                         )
-                        || !getPageSetting('DelayArmorWhenNeeded')  //or when its off.
                     )
                 )
             ) 
