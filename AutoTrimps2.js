@@ -1921,12 +1921,18 @@ function calculateNextHeliumHour (stacked) {
     return heliumNow;
 }
 
+var lastZone = 0;
 function autoPortal() {
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone
         case "Helium Per Hour":
             game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
-            if(game.global.world > game.stats.bestHeliumHourThisRun.atZone) {
+            var zoneincremented = false;
+            if(game.global.world > lastZone) {
+                lastZone = game.global.world;
+                zoneincremented = true;
+            }
+            if(game.global.world > game.stats.bestHeliumHourThisRun.atZone && zoneincremented == true) {
                 var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
                 var myHeliumHr = game.stats.heliumHour.value();
                 var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
