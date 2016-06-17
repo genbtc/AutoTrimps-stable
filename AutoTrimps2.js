@@ -1583,8 +1583,6 @@ function autoMap() {
             }
             else if (game.global.gridArray[99].nomStacks == 30)
                 shouldFarm = true;
-        
-            debug("Farming off Nom stacks");
         }
 
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
