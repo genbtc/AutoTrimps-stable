@@ -1508,6 +1508,11 @@ function autoMap() {
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
     baseDamage *= mapbonusmulti;
+    
+    //get average enemyhealth and damage for the next zone, cell 30, snimp type and multiply it by a factor of .85 (don't ask why)
+    var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
+    var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
+    
     //farm if basedamage is between 10 and 16)
     if(!getPageSetting('DisableFarm')) {
         shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 5 : getEnemyMaxHealth(game.global.world) / baseDamage > 8;
@@ -1527,8 +1532,6 @@ function autoMap() {
                                  (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids')))
                          && ((voidsuntil != -1 && game.global.world <= voidsuntil) || (voidsuntil == -1)) ;
     if (game.global.mapsUnlocked) {
-        var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
-        var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
       
         needPrestige = (autoTrimpSettings.Prestige.selected != "Off" && game.mapUnlocks[autoTrimpSettings.Prestige.selected].last <= game.global.world - 5 && game.global.mapsUnlocked && game.global.challengeActive != "Frugal");
         if(game.global.challengeActive == "Toxicity") {
@@ -1581,8 +1584,10 @@ function autoMap() {
                 if (game.global.mapBonus != 10)
                     shouldDoMaps = true;
             }
-            else if (game.global.gridArray[99].nomStacks == 30)
-                shouldFarm = true;
+            //Go into maps on 30 stacks, and I assume our enemy health to damage ratio is worse than 10 (so that shouldfarm would be true),
+            // and exit farming once we get enough damage to drop under 10.
+            if (game.global.gridArray[99].nomStacks == 30)
+                shouldFarm = (HDratio > 10);
         }
 
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
