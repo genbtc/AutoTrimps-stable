@@ -1530,7 +1530,7 @@ function autoMap() {
                                 ((game.global.world == voidMapLevelSettingZone && !getPageSetting('RunNewVoids')) 
                                                                 || 
                                  (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids')))
-                         && ((voidsuntil != -1 && game.global.world <= voidsuntil) || (voidsuntil == -1)) ;
+                         && ((voidsuntil != -1 && game.global.world <= voidsuntil) || (voidsuntil == -1) || !getPageSetting('RunNewVoids')) ;
     if (game.global.mapsUnlocked) {
       
         needPrestige = (autoTrimpSettings.Prestige.selected != "Off" && game.mapUnlocks[autoTrimpSettings.Prestige.selected].last <= game.global.world - 5 && game.global.mapsUnlocked && game.global.challengeActive != "Frugal");
