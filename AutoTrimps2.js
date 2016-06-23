@@ -1515,7 +1515,7 @@ function autoMap() {
     
     //farm if basedamage is between 10 and 16)
     if(!getPageSetting('DisableFarm')) {
-        shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 5 : getEnemyMaxHealth(game.global.world) / baseDamage > 8;
+        shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 20 : getEnemyMaxHealth(game.global.world) / baseDamage > 32;
     }
     //DECIMAL VOID MAPS:
     var voidMapLevelSetting = getPageSetting('VoidMaps');
@@ -1550,7 +1550,7 @@ function autoMap() {
             }
             pierceMod += (game.challenges.Lead.stacks * 0.001);
             baseDamage /= mapbonusmulti;
-            shouldFarm = enemyHealth / baseDamage > 5;
+            shouldFarm = enemyHealth / baseDamage > 10;
         }
         if(game.global.totalVoidMaps == 0 || !needToVoid)
             doVoids = false;
@@ -1558,8 +1558,8 @@ function autoMap() {
         enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod))
                         || 
                         baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod)));
-        enoughDamage = baseDamage * 4 > enemyHealth;
-        HDratio = getEnemyMaxHealth(game.global.world) / baseDamage*2;  //throw a 2 in there to keep the displayed value consistent after an internal removal of 2x off basedamage
+        enoughDamage = baseDamage * 8 > enemyHealth;
+        HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
         //prevents map-screen from flickering on and off during startup when base damage is 0.
         if (baseDamage > 0){
             var shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm;
@@ -1587,7 +1587,7 @@ function autoMap() {
             //Go into maps on 30 stacks, and I assume our enemy health to damage ratio is worse than 10 (so that shouldfarm would be true),
             // and exit farming once we get enough damage to drop under 10.
             if (game.global.gridArray[99].nomStacks == 30)
-                shouldFarm = (HDratio > 10);
+                shouldFarm = (HDratio > 20);
         }
 
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
@@ -1957,7 +1957,7 @@ function autoPortal() {
                 else
                     doPortal();
             }
-            break;
+            break; 
         case "Balance":
         case "Electricity":
         case "Crushed":
@@ -1969,6 +1969,10 @@ function autoPortal() {
                 pushData();
                 doPortal(autoTrimpSettings.AutoPortal.selected);
             }
+            break;
+        case "Spire":
+            if(game.global.world >= 201)
+                doPortal("Lead");
             break;
         default:
             break;
@@ -2007,15 +2011,17 @@ function checkSettings() {
         case "Watch":
             portalLevel = 181;
             break;
+        case "Spire":
+            portalLevel = 201;
+            break;        
     }
     if(portalLevel == -1)
-        return;
-    if(autoTrimpSettings.VoidMaps.value >= portalLevel) {
-        tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please verify your settings. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
-        return;
-    }
+        return portalLevel;
+    if(autoTrimpSettings.VoidMaps.value >= portalLevel)
+        tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please Change Your Settings Now. This Box Will Not Go away Until You do. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
     if((leadCheck || game.global.challengeActive == 'Lead') && (autoTrimpSettings.VoidMaps.value % 2 == 0 && portalLevel < 182))
         tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
+    return portalLevel;
 }
 
 function doPortal(challenge) {
@@ -2152,7 +2158,57 @@ function mainLoop() {
             // debug('triggered fight');
         }
     }
+    //Run the dynamic prestige changing script below.
+    if (getPageSetting('DynamicPrestige')) prestigeChanging();
+    else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 }
+
+//Change prestiges as we go (thanks to Hider)
+//The idea is like this. We will stick to Dagger until the end of the run, then we will slowly start grabbing prestiges, so we can hit the Prestige we want by the last zone.
+//The keywords below "Dagadder" and "GambesOP" are merely representative of the minimum and maximum values. Toggling these on and off, the script will take care of itself, when set to min (Dagger) or max (Gambeson).
+//In this way, we will achieve the desired "maxPrestige" setting (which would be somewhere in the middle, like Polearm) by the end of the run. (instead of like in the past where it was gotten from the beginning and wasting time in early maps.)
+function prestigeChanging(){
+    //find out the prestige we want to hit at the end.
+    var maxPrestige = document.getElementById('Prestige').value;
+    //find out the last zone (checks custom autoportal and challenge's portal zone)
+    var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
+    
+    if (lastzone < 0)
+        return; //stop doing anything if lastzone is not set
+    
+    //If we are between 20 and 10 zones before the last zone:
+    if(game.global.world >= (lastzone-20) && game.global.world < (lastzone-10) && game.global.lastClearedCell < 79){
+        if (game.global.mapBonus < 1)
+            autoTrimpSettings.Prestige.selected = "GambesOP";
+        else if (game.global.mapBonus >= 1)  
+            autoTrimpSettings.Prestige.selected = "Dagadder";
+    }
+    
+    //If we are within 10 zones of the last zone:
+    if(game.global.world >= (lastzone-10) && game.global.world < (lastzone) &&  game.global.lastClearedCell < 79){
+        if (game.global.mapBonus < 1)
+            autoTrimpSettings.Prestige.selected = "GambesOP";
+        else if (game.global.mapBonus >= 1)
+            autoTrimpSettings.Prestige.selected = "Dagadder";
+        else if (game.global.mapBonus < maxPrestige)  
+            autoTrimpSettings.Prestige.selected = "GambesOP";
+        else if (game.global.mapBonus == maxPrestige)  
+            autoTrimpSettings.Prestige.selected = "Dagadder";
+    }
+    
+    //If we are on the last zone:
+    if(game.global.world == lastzone){
+        if (game.global.lastClearedCell < 79 && game.global.mapBonus < 9)
+            autoTrimpSettings.Prestige.selected = "GambesOP";
+        else if (game.global.mapBonus >= 9)
+            autoTrimpSettings.Prestige.selected = "Dagadder";
+    }
+    
+    //If we are over 20 zones away from the last zone (the beginning of the run), use dagger:
+    if (game.global.world < lastzone-20)  
+       autoTrimpSettings.Prestige.selected = "Dagadder";
+}
+
 
 
 //we copied message function because this was not able to be called from function debug() without getting a weird scope? related "cannot find function" error.
