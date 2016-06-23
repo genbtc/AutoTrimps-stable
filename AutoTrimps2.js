@@ -2170,6 +2170,7 @@ function mainLoop() {
 function prestigeChanging(){
     //find out the prestige we want to hit at the end.
     var maxPrestige = document.getElementById('Prestige').value;
+    var maxPrestigeIndex = document.getElementById('Prestige').selectedIndex;
     //find out the last zone (checks custom autoportal and challenge's portal zone)
     var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
     
@@ -2190,9 +2191,9 @@ function prestigeChanging(){
             autoTrimpSettings.Prestige.selected = "GambesOP";
         else if (game.global.mapBonus >= 1)
             autoTrimpSettings.Prestige.selected = "Dagadder";
-        else if (game.global.mapBonus < maxPrestige)  
+        else if (game.global.mapBonus < maxPrestigeIndex)  
             autoTrimpSettings.Prestige.selected = "GambesOP";
-        else if (game.global.mapBonus == maxPrestige)  
+        else if (game.global.mapBonus == maxPrestigeIndex)  
             autoTrimpSettings.Prestige.selected = "Dagadder";
     }
     
