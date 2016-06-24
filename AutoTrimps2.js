@@ -1965,6 +1965,7 @@ function autoPortal() {
         case "Toxicity":
         case "Watch":
         case "Lead":
+        case "Corrupted":
             if(!game.global.challengeActive) {
                 pushData();
                 doPortal(autoTrimpSettings.AutoPortal.selected);
@@ -2011,6 +2012,9 @@ function checkSettings() {
         case "Watch":
             portalLevel = 181;
             break;
+        case "Corrupted":
+            portalLevel = 191;
+            break;              
         case "Spire":
             portalLevel = 201;
             break;        
