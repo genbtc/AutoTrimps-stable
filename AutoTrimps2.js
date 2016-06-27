@@ -1586,8 +1586,10 @@ function autoMap() {
             }
             //Go into maps on 30 stacks, and I assume our enemy health to damage ratio is worse than 10 (so that shouldfarm would be true),
             // and exit farming once we get enough damage to drop under 10.
-            if (game.global.gridArray[99].nomStacks == 30)
+            if (game.global.gridArray[99].nomStacks == 30){
                 shouldFarm = (HDratio > 20);
+                shouldDoMaps = true;
+            }
         }
 
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
@@ -1678,8 +1680,9 @@ function autoMap() {
                         shouldFarm = false;
                 }
                 shouldDoMap = theMap.id;
-                if(game.global.mapsActive && game.global.challengeActive == "Nom") {
-                    if(game.global.mapGridArray[game.global.lastClearedMapCell + 1].nomStacks > 6) {
+                //Restart the voidmap if we hit 30 nomstacks on the final boss
+                if(game.global.mapsActive && game.global.challengeActive == "Nom" && getPageSetting('FarmWhenNomStacks7')) {
+                    if(game.global.mapGridArray[theMap.size-1].nomStacks >= 100) {
                         mapsClicked(true);
                     }
                 }
