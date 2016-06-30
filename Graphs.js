@@ -373,6 +373,9 @@ function setGraphData(graph) {
         var totalNull = 0;
         var theChallenge = '';
         graphData = [];
+        var averagenulli = 0;
+        var sumnulli = 0;
+        var count = 0;
         for (var i in allSaveData) {
             if (allSaveData[i].totalPortals != currentPortal) {
                 if(currentPortal == -1) {
@@ -392,8 +395,12 @@ function setGraphData(graph) {
             }
             if(allSaveData[i].nullifium > totalNull) {
                  totalNull = allSaveData[i].nullifium;
-             }
+                count++;
+                sumnulli += totalNull;
+            }
         }
+        averagenulli = sumnulli / count;
+        console.log("Average nulli was: " + averagenulli);
         title = 'Nullifium Gained Per Portal';
         xTitle = 'Portal';
         yTitle = 'Nullifium Gained';
