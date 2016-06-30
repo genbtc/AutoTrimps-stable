@@ -1,9 +1,9 @@
 //Import the Chart Libraries
 var head = document.getElementsByTagName('head')[0];
-var script = document.createElement('script');
-script.type = 'text/javascript';
-script.src = 'https://code.highcharts.com/highcharts.js';
-head.appendChild(script);
+var chartscript = document.createElement('script');
+chartscript.type = 'text/javascript';
+chartscript.src = 'https://code.highcharts.com/highcharts.js';
+head.appendChild(chartscript);
 
 
 //Create the graph button and div
@@ -389,19 +389,23 @@ function setGraphData(graph) {
                     continue;
                 }
                 graphData[0].data.push([allSaveData[i-1].totalPortals, totalNull]);
+                count++;
+                sumnulli += totalNull;
+                //console.log("nulli was: " + totalNull + " " + count + " @ " + allSaveData[i].totalPortals);   //debug
                 theChallenge = allSaveData[i].challenge;
                 totalNull = 0;
                 currentPortal = allSaveData[i].totalPortals;
+                
             }
             if(allSaveData[i].nullifium > totalNull) {
-                 totalNull = allSaveData[i].nullifium;
-                count++;
-                sumnulli += totalNull;
+                totalNull = allSaveData[i].nullifium;                
             }
         }
         averagenulli = sumnulli / count;
-        console.log("Average nulli was: " + averagenulli);
+        //console.log("Average nulli was: " + averagenulli);
         title = 'Nullifium Gained Per Portal';
+        if (averagenulli)
+            title = "Average " + title + " = " + averagenulli;
         xTitle = 'Portal';
         yTitle = 'Nullifium Gained';
         yType = 'Linear';

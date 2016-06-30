@@ -878,11 +878,11 @@ function initializeAutoTrimps() {
     debug('AutoTrimps Loaded!', '*spinner3');
     loadPageVariables();
 
-    var script = document.getElementById('AutoTrimps-script')
+    var atscript = document.getElementById('AutoTrimps-script')
       , base = 'https://genbtc.github.io/AutoTrimps'
       ;
-    if (script !== null) {
-        base = script.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
+    if (atscript !== null) {
+        base = atscript.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
     }
     document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
     document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
