@@ -210,14 +210,14 @@ function gatherInfo() {
         allSaveData = [];
     }
     //clear filtered loot data upon portaling. <5 check to hopefully throw out bone portal shenanigans
-  /*  if(allSaveData[allSaveData.length -1].totalPortals != game.global.totalPortals && game.global.world < 5) {
+    if(allSaveData[allSaveData.length -1].totalPortals != game.global.totalPortals && game.global.world < 5) {
     	for(var r in filteredLoot) {
     		for(var b in filteredLoot[r]){
     			filteredLoot[r][b] = 0;
     		}
     	}
     }
-    */
+    
     if (allSaveData.length === 0) {
         pushData();
     } else if (allSaveData[allSaveData.length - 1].world != game.global.world) {
@@ -400,7 +400,6 @@ function setGraphData(graph) {
         yType = 'Linear';
         break;
 
-           /* 
             case 'Loot Sources':
             graphData = [];
             graphData[0] = {name: 'Metal', data: lootData.metal};
@@ -415,7 +414,7 @@ function setGraphData(graph) {
               return Highcharts.numberFormat(this.y,1);
             };
             break;
-            */
+
             
             case 'Run Time':
             var currentPortal = -1;
@@ -565,7 +564,7 @@ function setGraphData(graph) {
     }
 }
 
-/*
+
 function updateCustomStats() {
     var timeThisPortal = new Date().getTime() - game.global.portalTime;
     timeThisPortal /= 3600000;
@@ -662,7 +661,7 @@ function addResCheckMax(what, number, noStat, fromGather, nonFilteredLoot) {
 }
 
 //END game function overwrite
-*/
+
 var allSaveData = [];
 var graphData = [];
 var tmpGraphData = JSON.parse(localStorage.getItem('allSaveData'));
