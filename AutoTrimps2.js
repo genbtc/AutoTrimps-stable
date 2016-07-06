@@ -1760,10 +1760,8 @@ function autoMap() {
                         shouldDoMap = theMap.id;
                         break;                        
                     }
-                    //stop when there are 0 items left from bionic VII
-                    if (theMap.name == 'Bionic Wonderland VII' && prestigeitemsleft == 0){
-                        repeatBionics = false;
-                    }                    
+                    //if it gets here, nothing was matched, so stop the repeating.
+                    repeatBionics = false;
                 }
                 
                 //other unique maps here
