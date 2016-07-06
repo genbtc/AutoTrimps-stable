@@ -1378,6 +1378,11 @@ function autoStance() {
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate"));
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
+        //check for world Corruption
+        if (enemy.corrupted){
+            enemyHealth *= getCorruptScale("health");
+            enemyDamage *= getCorruptScale("attack");
+        }
         if (game.global.challengeActive == 'Lead') {
             enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         }
@@ -1401,6 +1406,11 @@ function autoStance() {
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
+        //check for voidmap Corruption
+        if (getCurrentMapObject().location == "Void" && enemy.corrupted){
+            enemyHealth *= (getCorruptScale("health") / 2).toFixed(1);
+            enemyDamage *= (getCorruptScale("attack") / 2).toFixed(1);
+        }
         if (game.global.challengeActive == 'Lead') {
             enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         }
