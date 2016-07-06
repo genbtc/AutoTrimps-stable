@@ -1758,10 +1758,8 @@ function autoMap() {
                     //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI) - Code will not get to here if we have items still.
                     if (theMap.name == 'Bionic Wonderland VII' && prestigeitemsleft > 0){
                         shouldDoMap = theMap.id;
-                        break;                        
+                        break;
                     }
-                    //if it gets here, nothing was matched, so stop the repeating.
-                    repeatBionics = false;
                 }
                 
                 //other unique maps here
@@ -1800,7 +1798,8 @@ function autoMap() {
             if (game.global.mapsActive) {
                 
                 //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
-                if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) || repeatBionics) {
+                //or repeatbionics is true and there are still prestige items available to get
+                if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) || (repeatBionics && addSpecials(true, true, game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)]) > 0)) {
                     var targetPrestige = autoTrimpSettings.Prestige.selected;
                     //make sure repeat map is on
                     if (!game.global.repeatMap) {
