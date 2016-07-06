@@ -1375,7 +1375,7 @@ function autoStance() {
         } else {
             enemy = game.global.gridArray[game.global.lastClearedCell + 1];
         }
-        var enemyFast = game.global.challengeActive != 'Nom' && (game.badGuys[enemy.name].fast || game.global.challengeActive == 'Slow');
+        var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
         if (game.global.challengeActive == 'Lead') {
@@ -1398,7 +1398,7 @@ function autoStance() {
         } else {
             var enemy = game.global.mapGridArray[game.global.lastClearedMapCell + 1];
         }
-        var enemyFast = game.global.challengeActive != 'Nom' && (game.badGuys[enemy.name].fast || game.global.challengeActive == 'Slow' || game.global.voidBuff == 'doubleAttack');
+        var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
         if (game.global.challengeActive == 'Lead') {
@@ -1433,20 +1433,20 @@ function autoStance() {
         if(xHealth > baseBlock)
             xDamage = enemyDamage*5 - baseBlock > 0 ? enemyDamage*5 - baseBlock : 0;
     }
-    if (game.global.voidBuff == "bleed") {
+    if (game.global.voidBuff == "bleed" || enemy.corrupted == 'corruptBleed') {
         dDamage += game.global.soldierHealth * 0.2;
         xDamage += game.global.soldierHealth * 0.2;
         bDamage += game.global.soldierHealth * 0.2;
     }
     baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
     //double attack is OK if the buff isn't double attack, or we will survive a double attack, or we are going to one-shot them (so they won't be able to double attack)
-    var doubleAttackOK = game.global.voidBuff != 'doubleAttack' || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2) || enemyHealth < baseDamage;
+    var doubleAttackOK = (game.global.voidBuff != 'doubleAttack' || enemy.corrupted != 'corruptDbl') || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2) || enemyHealth < baseDamage;
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
     var leadDamage = game.challenges.Lead.stacks * 0.0005;
     var leadAttackOK = game.global.challengeActive != 'Lead' || enemyHealth < baseDamage || ((newSquadRdy && dHealth > dDamage + (dHealth * leadDamage)) || (dHealth - missingHealth > dDamage + (dHealth * leadDamage)));
     //added voidcrit.
     //voidcrit is OK if the buff isn't crit-buff, or we will survive a crit, or we are going to one-shot them (so they won't be able to crit)
-    var isCritVoidMap = game.global.voidBuff == 'getCrit';
+    var isCritVoidMap = game.global.voidBuff == 'getCrit' || enemy.corrupted == 'corruptCrit';
     var voidCritinDok = !isCritVoidMap || (!enemyFast ? enemyHealth < baseDamage : false) || (newSquadRdy && dHealth > dVoidCritDamage) || (dHealth - missingHealth > dVoidCritDamage);
     var voidCritinXok = !isCritVoidMap || (!enemyFast ? enemyHealth < baseDamage : false) || (newSquadRdy && xHealth > xVoidCritDamage) || (xHealth - missingHealth > xVoidCritDamage);
 
