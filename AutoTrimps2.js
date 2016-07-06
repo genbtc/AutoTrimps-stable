@@ -1656,6 +1656,8 @@ function autoMap() {
         if (keysSorted[0]) var highestMap = keysSorted[0];
         else shouldDoMap = "create";
          
+        //set the repeatBionics flag (farm bionics before spire), for the repeat management code below.
+        var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 5; //WARNING: Currently repeats infinitely, no cue to exit, not sure under what conditions it should exit. When Farming is done? When is that? When player's Block exceeds cell 100's Spire improbability's attack?  We can get the attack data with this command: getSpireStats(100, "Improbability", "attack"). Needs to know there are no more prestige items so we can set this to false.
 
 
         //Look through all the maps we have - find Uniques or Voids and figure out if we need to run them.
@@ -1737,6 +1739,33 @@ function autoMap() {
                         break;
                     }
                 }
+                //run Bionics before spire to farm.
+                if (getPageSetting('RunBionicBeforeSpire') && (game.global.world == 199 || game.global.world == 200) && theMap.name.includes('Bionic Wonderland')){                    
+                    //this is how to check if a bionic is green or not.
+                    var bionicnumber = ((theMap.level - 125) / 15).toFixed(2);
+                    //if numbers match, map is green, so run it. (do the pre-requisite bionics one at a time in order)
+                    if (bionicnumber == game.global.bionicOwned && bionicnumber < 5){ 
+                        shouldDoMap = theMap.id;
+                        break;
+                    }
+                    //Count number of prestige items left,
+                    var prestigeitemsleft = addSpecials(true, true, theMap);
+                    //Always run Bionic Wonderland VI (if there are still prestige items available)
+                    if (theMap.name == 'Bionic Wonderland VI' && prestigeitemsleft > 0){
+                        shouldDoMap = theMap.id;
+                        break;
+                    }
+                    //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI) - Code will not get to here if we have items still.
+                    if (theMap.name == 'Bionic Wonderland VII' && prestigeitemsleft > 0){
+                        shouldDoMap = theMap.id;
+                        break;                        
+                    }
+                    //stop when there are 0 items left from bionic VII
+                    if (theMap.name == 'Bionic Wonderland VII' && prestigeitemsleft == 0){
+                        repeatBionics = false;
+                    }                    
+                }
+                
                 //other unique maps here
             }
         }
@@ -1773,7 +1802,7 @@ function autoMap() {
             if (game.global.mapsActive) {
                 
                 //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
-                if (shouldDoMap == game.global.currentMapId && !game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) {
+                if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) || repeatBionics) {
                     var targetPrestige = autoTrimpSettings.Prestige.selected;
                     //make sure repeat map is on
                     if (!game.global.repeatMap) {
