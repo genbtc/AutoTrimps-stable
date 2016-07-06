@@ -1367,9 +1367,8 @@ function autoStance() {
     //start analyzing autostance
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-
+    var enemy;
     if (!game.global.mapsActive && !game.global.preMapsActive) {
-        var enemy;
         if (typeof game.global.gridArray[game.global.lastClearedCell + 1] === 'undefined') {
             enemy = game.global.gridArray[0];
         } else {
@@ -1399,9 +1398,9 @@ function autoStance() {
         var bHealth = baseHealth/2;
     } else if (game.global.mapsActive && !game.global.preMapsActive) {
         if (typeof game.global.mapGridArray[game.global.lastClearedMapCell + 1] === 'undefined') {
-            var enemy = game.global.mapGridArray[0];
+            enemy = game.global.mapGridArray[0];
         } else {
-            var enemy = game.global.mapGridArray[game.global.lastClearedMapCell + 1];
+            enemy = game.global.mapGridArray[game.global.lastClearedMapCell + 1];
         }
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
