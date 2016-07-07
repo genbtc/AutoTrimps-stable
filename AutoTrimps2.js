@@ -891,7 +891,15 @@ function initializeAutoTrimps() {
 }
 
 function easyMode() {
-    if (game.resources.trimps.realMax() > 3000000) {
+    if (game.buildings.Tribute.owned > 1500) {
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '2';
+        autoTrimpSettings.MinerRatio.value = '22';    
+    } else if (game.buildings.Tribute.owned > 1000) {
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '1';
+        autoTrimpSettings.MinerRatio.value = '10';    
+    } else if (game.resources.trimps.realMax() > 3000000) {
         autoTrimpSettings.FarmerRatio.value = '3';
         autoTrimpSettings.LumberjackRatio.value = '1';
         autoTrimpSettings.MinerRatio.value = '4';
@@ -899,14 +907,6 @@ function easyMode() {
         autoTrimpSettings.FarmerRatio.value = '3';
         autoTrimpSettings.LumberjackRatio.value = '3';
         autoTrimpSettings.MinerRatio.value = '5';
-    } else if (game.buildings.Tribute.owned > 1500) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '2';
-        autoTrimpSettings.MinerRatio.value = '22';    
-    } else if (game.buildings.Tribute.owned > 1000) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '10';
     } else {
         autoTrimpSettings.FarmerRatio.value = '1';
         autoTrimpSettings.LumberjackRatio.value = '1';
