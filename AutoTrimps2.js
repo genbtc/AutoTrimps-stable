@@ -2195,6 +2195,8 @@ function mainLoop() {
     if(document.getElementById('tipTitle').innerHTML == 'The Improbability') cancelTooltip();
     //auto-close the corruption at zone 181 textbox
     if(document.getElementById('tipTitle').innerHTML == 'Corruption') cancelTooltip();
+    //auto-close the Spire notification checkbox
+    if(document.getElementById('tipTitle').innerHTML == 'Spire') cancelTooltip();
     setTitle();          //set the browser title
     setScienceNeeded();  //determine how much science is needed
     updateValueFields(); //refresh the UI
@@ -2292,6 +2294,10 @@ function message2(messageString, type, lootIcon, extraClass) {
         prefix =  "icomoon icon-";
     }
     else prefix = "glyphicon glyphicon-";
+    //add timestamp
+    if (game.options.menu.timestamps.enabled){ 
+        messageString = ((game.options.menu.timestamps.enabled == 1) ? getCurrentTime() : updatePortalTimer(true)) + " " + messageString; 
+    }
     //add a suitable icon for "AutoTrimps"
     if (lootIcon) 
         messageString = "<span class=\"" + prefix + lootIcon + "\"></span> " + messageString;
