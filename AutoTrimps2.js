@@ -2244,7 +2244,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
+    document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
 function mainLoop() {

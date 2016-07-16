@@ -53,6 +53,12 @@ createSetting('VoidMaps', 'Void Maps', 'The zone at which you want all your void
 // createSetting('', '', '', 'value', '30');
 //Dropdown + context sensitive
 createSetting('Prestige', 'Prestige', 'Acquire prestiges through the selected item (inclusive) as soon as they are available in maps. Forces equip first mode. Automap must be enabled. THIS IS AN IMPORTANT SETTING related to speed climbing and should probably always be on something. If you find the script getting stuck somewhere, particularly where you should easily be able to kill stuff, setting this to an option lower down in the list will help ensure you are more powerful at all times, but will spend more time acquiring the prestiges in maps.', 'dropdown', 'Polierarm', ['Off', 'Supershield', 'Dagadder', 'Bootboost', 'Megamace', 'Hellishmet', 'Polierarm', 'Pantastic', 'Axeidic', 'Smoldershoulder', 'Greatersword', 'Bestplate', 'Harmbalest', 'GambesOP']);
+//Make a backup of the prestige setting: backup setting grabs the actual value of the primary setting any time it is changed, (line 412 of the function settingChanged())
+if (autoTrimpSettings["PrestigeBackup"] === undefined) {
+    autoTrimpSettings["PrestigeBackup"] = autoTrimpSettings["Prestige"];
+    autoTrimpSettings["PrestigeBackup"].id = "PrestigeBackup";
+    autoTrimpSettings["PrestigeBackup"].name = "PrestigeBackup";
+}
 createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-portal if you have a challenge active, the challenge setting dictates which challenge it will select for the next run. All challenge settings will portal right after the challenge ends, regardless. Helium Per Hour portals at cell 1 of the first level where your He/Hr went down even slightly compared to the current runs Best He/Hr. Take note, there is a Buffer option in the genBTC settings, which is like a grace percentage of how low it can dip without triggering.  CAUTION: Selecting He/hr may immediately portal you if its lower.', 'dropdown', 'Off', ['Off', 'Helium Per Hour', 'Balance', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted', 'Custom']);
 createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead','Corrupted']);
 createSetting('CustomAutoPortal', 'Custom Portal', 'Automatically portal AFTER clearing this level.(ie: setting to 200 would portal when you first reach level 201)', 'value', '200');
@@ -402,6 +408,9 @@ function settingChanged(id) {
     }
     if (autoTrimpSettings[id].type == 'dropdown') {
     	autoTrimpSettings[id].selected = document.getElementById(id).value;
+        //part of the prestige dropdown's "backup" system to prevent internal tampering via the dynamic prestige algorithm. everytime we see a user initiated change, make a backup.
+        if (id == "Prestige")
+            autoTrimpSettings["PrestigeBackup"].selected = document.getElementById(id).value;
     }
     updateCustomButtons();
     saveSettings();
@@ -517,7 +526,7 @@ function updateCustomButtons() {
     //eliminate any prestige toggling due to function prestigeChanging() being called & modifying the internal setting and the line below making the UI setting reflect it .
     //we want there to be a mismatch between the prestige settings in this case, but i have not figured out all the ramifications of skipping this check.
     //hopefully nothing breaks.
-    //The check was manually inserted into the function delayStartAgain() in the main script, so it can grab the value at startup, and nothing more. From then on out its allowed to be mismatched, but only the Dynamic Prestige would allow it to be mismatched so thats fine. Reloading the script will Modify/Bork this, grabbing the dynamic value instead of the user's set value = so not ideal.
+    //The check was manually inserted into the function delayStartAgain() in the main script, so it can grab the value at startup, and nothing more. From then on out its allowed to be mismatched, but only the Dynamic Prestige would allow it to be mismatched so thats fine. Sinec reloading the script will load the dynamic value instead of the user's set value, this alone was not ideal, and a way to "back up" the user setting was needed, and as such is now the method being used, as you can see from lines 56-61 in this file and instead, the BACKUP is loaded during the script's initial load.
     
     //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
 }
