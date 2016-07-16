@@ -2307,23 +2307,13 @@ function prestigeChanging(){
     if (lastzone < 0)
         return; //stop doing anything if lastzone is not set
     
-    //If we are between 20 and 10 zones before the last zone:
-    if(game.global.world >= (lastzone-20) && game.global.world < (lastzone-10) && game.global.lastClearedCell < 79){
-        if (game.global.mapBonus < 1)
-            autoTrimpSettings.Prestige.selected = "GambesOP";
-        else if (game.global.mapBonus >= 1)  
-            autoTrimpSettings.Prestige.selected = "Dagadder";
-    }
-    
-    //If we are within 10 zones of the last zone:
-    if(game.global.world >= (lastzone-10) && game.global.world < (lastzone) &&  game.global.lastClearedCell < 79){
+    //If we are between 20 and 10 zones before the last zone OR If we are within 10 zones of the last zone:
+    if((game.global.world >= (lastzone-20) && game.global.world < (lastzone-10) && game.global.lastClearedCell < 79)
+        ||
+        (game.global.world >= (lastzone-10) && game.global.world < (lastzone) &&  game.global.lastClearedCell < 79)){
         if (game.global.mapBonus < 1)
             autoTrimpSettings.Prestige.selected = "GambesOP";
         else if (game.global.mapBonus >= 1)
-            autoTrimpSettings.Prestige.selected = "Dagadder";
-        else if (game.global.mapBonus < maxPrestigeIndex)  
-            autoTrimpSettings.Prestige.selected = "GambesOP";
-        else if (game.global.mapBonus == maxPrestigeIndex)  
             autoTrimpSettings.Prestige.selected = "Dagadder";
     }
     
