@@ -391,21 +391,33 @@ function sortHeirlooms(){
 //Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.
 function autoHeirlooms() {
     var bestUpgrade;
+    
     if(!heirloomsShown && game.global.heirloomsExtra.length > 0){
-        sortHeirlooms();
+        //start by immediately carrying any protected heirlooms.
+        for(var extra in game.global.heirloomsExtra) {
+            var theLoom = game.global.heirloomsExtra[extra];
+            if ((theLoom.protected) && (game.global.heirloomsCarried.length < game.global.maxCarriedHeirlooms)){
+                selectHeirloom(extra, 'heirloomsExtra');
+                carryHeirloom();
+            }
+        }
+        //re-evaluate their worth (needed to refresh the worth array since we possibly moved the extras)
+        sortHeirlooms();        
         for(var carried in game.global.heirloomsCarried) {
             var theLoom = game.global.heirloomsCarried[carried];
             if(worth[theLoom.type].length == 0) continue;
             var index = worth[theLoom.type][0];
             if(theLoom.rarity < game.global.heirloomsExtra[index].rarity || (theLoom.rarity == game.global.heirloomsExtra[index].rarity && evaluateMods(carried, 'heirloomsCarried') < evaluateMods(index, 'heirloomsExtra'))) {
-                selectHeirloom(carried, 'heirloomsCarried');
-                stopCarryHeirloom();
-                selectHeirloom(index, 'heirloomsExtra');
-                carryHeirloom();
-                sortHeirlooms();
+                if (!theLoom.protected){
+                    selectHeirloom(carried, 'heirloomsCarried');
+                    stopCarryHeirloom();
+                    selectHeirloom(index, 'heirloomsExtra');
+                    carryHeirloom();
+                    sortHeirlooms();
+                }
             }
         }
-        if(game.global.heirloomsCarried.length < game.global.maxCarriedHeirlooms) {
+        if (game.global.heirloomsCarried.length < game.global.maxCarriedHeirlooms){
             if(worth.Shield.length > 0)
                 selectHeirloom(worth.Shield[0], 'heirloomsExtra');
             else if(worth.Staff.length > 0)
@@ -438,6 +450,54 @@ function autoHeirlooms() {
     //document.getElementById('selectedHeirloom').childNodes[0].childNodes[4/7/10/13].style.backgroundColor
     //advBtn.setAttribute("onmouseover", 'tooltip(\"Advanced Settings\", \"customText\", event, \"Leave off unless you know what you\'re doing with them.\")');
 }
+
+//commented out because it was never finished.
+/*
+function autoSwapHeirlooms(){
+    var bestfooddroploom = [];
+    var bestwooddroploom = [];
+    var bestmetaldroploom = [];
+    var bestgemdroploom = [];
+    
+    //game.global.StaffEquipped
+    for(var carried in game.global.heirloomsCarried) {
+        var theLoom = game.global.heirloomsCarried[carried];
+        if (theLoom.type != "Staff")
+            continue;
+        var effRating = evaluateMods(carried,'heirloomsCarried')
+    }
+    for(var extra in game.global.heirloomsExtra) {
+        var theLoom = game.global.heirloomsExtra[extra];
+        if (theLoom.type != "Staff")
+            continue;
+        var effRating = evaluateMods(extra,'heirloomsExtra)
+    }    
+    if(location.includes('Equipped'))
+        loom = game.global[location];
+    else
+        loom = game.global[location][loom];
+    
+    //-----------SWAP FUNCTION (search on critdamage and swap)---
+    var count = 0;
+    for (var carried in game.global.heirloomsCarried){
+        var heirloom = game.global.heirloomsCarried[carried];
+        for (var item in heirloom.mods){
+            if (item[0] == "critDamage" && item[1] > 300){
+                unequipHeirloom(game.global.ShieldEquipped, "heirloomsCarried");
+                game.global.ShieldEquipped = heirloom;
+                game.global.heirloomsCarried.splice(count, 1);
+            }
+        }
+        count++;
+    }
+    for (var item in heirloom.mods){
+        game.heirlooms[heirloom.type][heirloom.mods[item][0]].currentBonus += heirloom.mods[item][1];
+    }
+    populateHeirloomWindow();    
+    //-------OK------
+}
+*/
+
 
 //Determines the best heirloom mods
 function evaluateMods(loom, location, upgrade) {
@@ -2357,4 +2417,67 @@ function filterMessage2(what){
         toChange[x].style.display = displayed;
     }
     log.scrollTop = log.scrollHeight;
+}
+
+var hrlmProtBtn1 = document.createElement("DIV");
+hrlmProtBtn1.setAttribute('class', 'noselect heirloomBtnActive heirBtn');
+hrlmProtBtn1.setAttribute('onclick', 'protectHeirloom(this,true)');
+hrlmProtBtn1.innerHTML = 'Protect/Unprotect';  //since we cannot detect the selected heirloom on load, ambiguous name
+hrlmProtBtn1.id='protectHeirloomBTN1';
+var hrlmProtBtn2 = document.createElement("DIV");
+hrlmProtBtn2.setAttribute('class', 'noselect heirloomBtnActive heirBtn');
+hrlmProtBtn2.setAttribute('onclick', 'protectHeirloom(this,true)');
+hrlmProtBtn2.innerHTML = 'Protect/Unprotect';
+hrlmProtBtn2.id='protectHeirloomBTN2';
+var hrlmProtBtn3 = document.createElement("DIV");
+hrlmProtBtn3.setAttribute('class', 'noselect heirloomBtnActive heirBtn');
+hrlmProtBtn3.setAttribute('onclick', 'protectHeirloom(this,true)');
+hrlmProtBtn3.innerHTML = 'Protect/Unprotect';
+hrlmProtBtn3.id='protectHeirloomBTN3';
+document.getElementById('equippedHeirloomsBtnGroup').appendChild(hrlmProtBtn1);
+document.getElementById('carriedHeirloomsBtnGroup').appendChild(hrlmProtBtn2);
+document.getElementById('extraHeirloomsBtnGroup').appendChild(hrlmProtBtn3);
+
+
+function protectHeirloom(element,modify){
+    var selheirloom = game.global.selectedHeirloom;  //[number,location]
+    var heirloomlocation = selheirloom[1];
+    var heirloom = game.global[heirloomlocation];
+    if (selheirloom[0] != -1)
+        var heirloom = heirloom[selheirloom[0]];
+    //hard way ^^, easy way>>
+    //var heirloom = getSelectedHeirloom();
+    if (modify)    //sent by onclick of protect button, to toggle the state.
+        heirloom.protected = !heirloom.protected;
+        
+    if (!element) { //then we came from newSelectHeirloom
+        if (heirloomlocation.includes("Equipped"))
+            element = document.getElementById('protectHeirloomBTN1');
+        else if (heirloomlocation == "heirloomsCarried")
+            element = document.getElementById('protectHeirloomBTN2');
+        else if (heirloomlocation == "heirloomsExtra")
+            element = document.getElementById('protectHeirloomBTN3');
+    }
+    if (element)
+        element.innerHTML = heirloom.protected ? 'UnProtect' : 'Protect';
+}
+
+//wrapper for selectHeirloom, to handle the protect button
+function newSelectHeirloom(number, location, elem){
+    selectHeirloom(number, location, elem);
+    protectHeirloom();
+}
+
+//replacement function that inserts a new onclick action into the heirloom icons so it can populate the proper Protect icon. (yes this is the best way to do it.)
+function generateHeirloomIcon(heirloom, location, number){
+    if (typeof heirloom.name === 'undefined') return "<span class='icomoon icon-sad3'></span>";
+    var icon = (heirloom.type == "Shield") ? 'icomoon icon-shield3' : 'glyphicon glyphicon-grain';
+    var html = '<span class="heirloomThing heirloomRare' + heirloom.rarity;
+    if (location == "Equipped") html += ' equipped';
+    var locText = "";
+    if (location == "Equipped") locText += '-1,\'' + heirloom.type + 'Equipped\'';
+    else locText += number + ', \'heirlooms' + location + '\''; 
+    html += '" onmouseover="tooltip(\'Heirloom\', null, event, null, ' + locText + ')" onmouseout="tooltip(\'hide\')" onclick="newSelectHeirloom(';
+    html += locText + ', this)"> <span class="' + icon + '"></span></span>';
+    return html;
 }
