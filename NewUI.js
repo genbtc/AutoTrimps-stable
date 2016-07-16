@@ -509,13 +509,17 @@ function updateCustomButtons() {
     if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour" || autoTrimpSettings.AutoPortal.selected == "Custom") document.getElementById("HeliumHourChallenge").style.display = '';
     else document.getElementById("HeliumHourChallenge").style.display = 'none';
     
-    //update dropdown selections
-    document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
+    //update dropdown selections:
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('CustomAutoPortal').value = autoTrimpSettings.CustomAutoPortal.selected;
     
-
+    //eliminate any prestige toggling due to function prestigeChanging() being called & modifying the internal setting and the line below making the UI setting reflect it .
+    //we want there to be a mismatch between the prestige settings in this case, but i have not figured out all the ramifications of skipping this check.
+    //hopefully nothing breaks.
+    //The check was manually inserted into the function delayStartAgain() in the main script, so it can grab the value at startup, and nothing more. From then on out its allowed to be mismatched, but only the Dynamic Prestige would allow it to be mismatched so thats fine. Reloading the script will Modify/Bork this, grabbing the dynamic value instead of the user's set value = so not ideal.
+    
+    //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
 }
 
 

@@ -2244,6 +2244,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
+    document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
 }
 
 function mainLoop() {
@@ -2297,19 +2298,22 @@ function mainLoop() {
 //The idea is like this. We will stick to Dagger until the end of the run, then we will slowly start grabbing prestiges, so we can hit the Prestige we want by the last zone.
 //The keywords below "Dagadder" and "GambesOP" are merely representative of the minimum and maximum values. Toggling these on and off, the script will take care of itself, when set to min (Dagger) or max (Gambeson).
 //In this way, we will achieve the desired "maxPrestige" setting (which would be somewhere in the middle, like Polearm) by the end of the run. (instead of like in the past where it was gotten from the beginning and wasting time in early maps.)
+
 function prestigeChanging(){
     //find out the prestige we want to hit at the end.
     var maxPrestige = document.getElementById('Prestige').value;
     var maxPrestigeIndex = document.getElementById('Prestige').selectedIndex;
+    
     //find out the last zone (checks custom autoportal and challenge's portal zone)
     var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
     
-    if (lastzone < 0)
-        return; //stop doing anything if lastzone is not set
+    //stop doing anything if lastzone is not set
+    if (lastzone < 0) return;
     
+    // so that Dynamic Prestige somewhat accounts for Lead challenge not being able to farm on even levels. This would lead to it needing to farm twice as much on the odd levels. But we should exceed 5 at this point. This is a temp fix only.
     if (game.global.challengeActive == "Lead" && maxPrestigeIndex <=5)
         maxPrestigeIndex *= 2;
-    
+        
     //If we are between 20 and 10 zones before the last zone OR If we are within 10 zones of the last zone:
     if((game.global.world >= (lastzone-20) && game.global.world < (lastzone-10) && game.global.lastClearedCell < 79)
         ||
