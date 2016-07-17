@@ -1464,6 +1464,12 @@ function autoStance() {
             enemyHealth *= getCorruptScale("health");
             enemyDamage *= getCorruptScale("attack");
         }
+        if (enemy && enemy.corrupted == 'corruptStrong') {
+            enemyDamage *= 2;
+        }
+        if (enemy && enemy.corrupted == 'corruptTough') {
+            enemyHealth *= 5;
+        }
         if (game.global.challengeActive == 'Lead') {
             enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         }
@@ -1491,6 +1497,12 @@ function autoStance() {
         if (getCurrentMapObject().location == "Void" && enemy.corrupted){
             enemyHealth *= (getCorruptScale("health") / 2).toFixed(1);
             enemyDamage *= (getCorruptScale("attack") / 2).toFixed(1);
+        }
+        if (enemy && enemy.corrupted == 'corruptStrong') {
+            enemyDamage *= 2;
+        }
+        if (enemy && enemy.corrupted == 'corruptTough') {
+            enemyHealth *= 5;
         }
         if (game.global.challengeActive == 'Lead') {
             enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
