@@ -2057,6 +2057,8 @@ function autoPortal() {
             var zoneincremented = false;
             if(game.global.world > lastZone) {
                 lastZone = game.global.world;
+                console.log("The zone has been incremented. Level " + lastZone);
+                console.log("And the best helium this run was " + game.stats.bestHeliumHourThisRun.storedValue + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
                 zoneincremented = true;
             }
             if(game.global.world > game.stats.bestHeliumHourThisRun.atZone && zoneincremented == true) {
@@ -2333,7 +2335,7 @@ function prestigeChanging(){
     }
     
     //If we are over 20 zones away from the last zone (the beginning of the run), use dagger:
-    if (game.global.world < lastzone-20)  
+    if (game.global.world < lastzone-20 || game.global.mapBonus == 10)  
        autoTrimpSettings.Prestige.selected = "Dagadder";
 }
 
