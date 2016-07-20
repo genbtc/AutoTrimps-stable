@@ -453,31 +453,25 @@ function autoHeirlooms() {
 
 //commented out because it was never finished.
 /*
-function autoSwapHeirlooms(){
+function autoSwapHeirlooms(loomtype="Shield" || "Staff", loomlocation="heirloomsCarried" || "heirloomsExtra"){
     var bestfooddroploom = [];
     var bestwooddroploom = [];
     var bestmetaldroploom = [];
     var bestgemdroploom = [];
     
-    //game.global.StaffEquipped
-    for(var carried in game.global.heirloomsCarried) {
-        var theLoom = game.global.heirloomsCarried[carried];
-        if (theLoom.type != "Staff")
+    //search in loomlocation="heirloomsCarried" or "heirloomsExtra"
+    for(var eachloom in game.global[loomlocation]) {
+        var theLoom = game.global[loomlocation][eachloom];
+        if (theLoom.type != loomtype)
             continue;
-        var effRating = evaluateMods(carried,'heirloomsCarried')
-    }
-    for(var extra in game.global.heirloomsExtra) {
-        var theLoom = game.global.heirloomsExtra[extra];
-        if (theLoom.type != "Staff")
-            continue;
-        var effRating = evaluateMods(extra,'heirloomsExtra)
-    }    
-    if(location.includes('Equipped'))
-        loom = game.global[location];
+        var effRating = evaluateMods(eachloom,loomlocation);
+    } 
+    if(loomlocation.includes('Equipped'))
+        loom = game.global[loomlocation];
     else
-        loom = game.global[location][loom];
+        loom = game.global[loomlocation][loom];
     
-    //-----------SWAP FUNCTION (search on critdamage and swap)---
+    //---------- SHIELD SWAP FUNCTION (search on critdamage and swap)---
     var count = 0;
     for (var carried in game.global.heirloomsCarried){
         var heirloom = game.global.heirloomsCarried[carried];
