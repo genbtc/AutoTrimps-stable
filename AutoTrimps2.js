@@ -2326,16 +2326,26 @@ function prestigeChanging(){
     if (lastzone < 0)
         lastzone = game.global.lastPortal;
     
-    // so that Dynamic Prestige somewhat accounts for Lead challenge not being able to farm on even levels. This would lead to it needing to farm twice as much on the odd levels. But we should exceed 5 at this point. This is a temp fix only.
+    //Lead Challenge: Farm twice as much during odd zones, due to even zones farming being deactivated (and cap at 10)
     if (game.global.challengeActive == "Lead" && maxPrestigeIndex <=5)
         maxPrestigeIndex *= 2;
     
     //account for repeat button de-activating one zone too late.
-    maxPrestigeIndex =- 1;
+    maxPrestigeIndex -= 1;
     if (maxPrestigeIndex < 1)
         maxPrestigeIndex = 1;
-    //new algorithm
-    //game.mapUnlocks[targetPrestige].last >= game.global.world - 9 
+    
+    //possible new algorithm
+    //game.mapUnlocks[targetPrestige].last >= game.global.world - 9
+    //game.mapUnlocks["GambesOP"].last
+    //game.mapUnlocks["Harmabalest"].last
+    //game.mapUnlocks["Greatersword"].last
+    //game.mapUnlocks["Axeidic"].last
+    //game.mapUnlocks["Polierarm"].last
+    //game.mapUnlocks["Megamace"].last
+    //game.mapUnlocks["Dagadder"].last
+    //Find what we have:
+    //game.upgrades["Dagadder"].allowed
     
     //If we are between 20 and 10 zones before the last zone OR If we are within 10 zones of the last zone:
     if(game.global.world >= (lastzone-20) && game.global.world < (lastzone) && game.global.lastClearedCell < 79){
