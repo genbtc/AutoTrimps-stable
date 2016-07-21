@@ -2056,16 +2056,16 @@ function calculateNextHeliumHour (stacked) {
     return heliumNow;
 }
 
-var lastZone = 0;
+var lastHeliumZone = 0;
 function autoPortal() {
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone
         case "Helium Per Hour":
             game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
             var zoneincremented = false;
-            if(game.global.world > lastZone) {
-                lastZone = game.global.world;
-                console.log("The zone has been incremented. Level " + lastZone);
+            if(game.global.world > lastHeliumZone) {
+                lastHeliumZone = game.global.world;
+                console.log("The zone has been incremented. Level " + lastHeliumZone);
                 console.log("And the best helium this run was " + game.stats.bestHeliumHourThisRun.storedValue + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
                 zoneincremented = true;
             }
@@ -2168,6 +2168,7 @@ function doPortal(challenge) {
     if(challenge) selectChallenge(challenge);
     activateClicked();
     activatePortal();
+    lastHeliumZone = 0;
 }
 
 //adjust geneticists to reach desired breed timer
