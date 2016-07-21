@@ -2321,8 +2321,11 @@ function prestigeChanging(){
     //find out the last zone (checks custom autoportal and challenge's portal zone)
     var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
     
-    //stop doing anything if lastzone is not set
-    if (lastzone < 0) return;
+    //if we can't figure out lastzone (likely Helium per Hour AutoPortal setting), then use the last run's Portal zone.
+    if (lastzone < 0)
+        lastzone = game.global.lastPortal;
+        //stop doing anything if lastzone is not set (NOT ANYMORE)
+        //return;
     
     // so that Dynamic Prestige somewhat accounts for Lead challenge not being able to farm on even levels. This would lead to it needing to farm twice as much on the odd levels. But we should exceed 5 at this point. This is a temp fix only.
     if (game.global.challengeActive == "Lead" && maxPrestigeIndex <=5)
