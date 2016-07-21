@@ -2332,13 +2332,13 @@ function prestigeChanging(){
     
     //account for repeat button de-activating one zone too late.
     maxPrestigeIndex =- 1;
+    if (maxPrestigeIndex < 1)
+        maxPrestigeIndex = 1;
     //new algorithm
     //game.mapUnlocks[targetPrestige].last >= game.global.world - 9 
     
     //If we are between 20 and 10 zones before the last zone OR If we are within 10 zones of the last zone:
-    if((game.global.world >= (lastzone-20) && game.global.world < (lastzone-10) && game.global.lastClearedCell < 79)
-        ||
-        (game.global.world >= (lastzone-10) && game.global.world < (lastzone) &&  game.global.lastClearedCell < 79)){
+    if(game.global.world >= (lastzone-20) && game.global.world < (lastzone) && game.global.lastClearedCell < 79){
         if (game.global.mapBonus < maxPrestigeIndex)
             autoTrimpSettings.Prestige.selected = "GambesOP";
         else if (game.global.mapBonus >= maxPrestigeIndex)
