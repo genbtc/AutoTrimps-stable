@@ -1758,6 +1758,9 @@ function autoMap() {
                 shouldDoMaps = true;
             }
         }
+        
+        //Get 200% map bonus before attempting Spire
+        if(game.global.world == 200 && game.global.mapBonus < 10 && game.global.spireActive) shouldDoMaps = true;
 
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
         if(game.global.challengeActive == 'Toxicity' && game.global.lastClearedCell > 93 && game.challenges.Toxicity.stacks < 1500 && ((getPageSetting('MaxTox') && game.global.world > 59) || needToVoid)) {
@@ -1894,7 +1897,7 @@ function autoMap() {
                     }
                 }
                 //run Bionics before spire to farm.
-                if (getPageSetting('RunBionicBeforeSpire') && (game.global.world == 199 || game.global.world == 200) && theMap.name.includes('Bionic Wonderland')){                    
+                if (getPageSetting('RunBionicBeforeSpire') && (game.global.world == 200) && theMap.name.includes('Bionic Wonderland')){                    
                     //this is how to check if a bionic is green or not.
                     var bionicnumber = ((theMap.level - 125) / 15).toFixed(2);
                     //if numbers match, map is green, so run it. (do the pre-requisite bionics one at a time in order)
