@@ -368,6 +368,7 @@ function getScienceCostToUpgrade(upgrade) {
     }
 }
 
+//OLD:
 var worth = {'Shield': {}, 'Staff': {}};
 function sortHeirlooms(){
     worth = {'Shield': {}, 'Staff': {}};
@@ -388,10 +389,94 @@ function sortHeirlooms(){
     }
 }
 
-//Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.
-function autoHeirlooms() {
+
+//NEW:
+var worth2 = {'Shield': [], 'Staff': []};
+function sortHeirlooms2(){
+    worth2 = {'Shield': [], 'Staff': []};
+    for (var index in game.global.heirloomsExtra) {
+        var theLoom = game.global.heirloomsExtra[index];
+        var data = {'location': 'heirloomsExtra', 'index': index, 'rarity': theLoom.rarity, 'eff': evaluateMods(index, 'heirloomsExtra')};
+        worth2[theLoom.type].push(data);
+    }
+    //sort algorithm: high to low value, priority on rarity, followed by mod evaluation
+    var valuesort = function(a, b) {
+        if(b.rarity == a.rarity) {
+            return b.eff - a.eff;
+        }
+        else
+            return b.rarity - a.rarity;
+    };
+    // sort shield 
+    worth2['Shield'].sort(valuesort);
+    // sort staff
+    worth2['Staff'].sort(valuesort);
+}
+
+//NEW:
+function autoHeirlooms2() {
+    if(!heirloomsShown && game.global.heirloomsExtra.length > 0){
+        //start by dropping ALL carried heirlooms
+        var originalLength = game.global.heirloomsCarried.length;
+        for(var index=0; index < originalLength; index++) {
+            selectHeirloom(0, 'heirloomsCarried');
+            stopCarryHeirloom();
+        }
+        //immediately begin carrying any protected heirlooms.
+        for(var index in game.global.heirloomsExtra) {
+            var theLoom = game.global.heirloomsExtra[index];
+            if ((theLoom.protected) && (game.global.heirloomsCarried.length < game.global.maxCarriedHeirlooms)){
+                selectHeirloom(index, 'heirloomsExtra');
+                carryHeirloom();
+            }
+        }
+        sortHeirlooms2();
+        //now start by re-filling any empty carried slots with the most highly evaluated heirlooms
+        while (game.global.heirloomsCarried.length < game.global.maxCarriedHeirlooms){
+            //re-evaluate their worth (needed to refresh the worth array since we for sure re-arranged everything.)
+            sortHeirlooms2();
+            if (worth2["Shield"].length > 0){
+                var carryshield = worth2["Shield"].shift();
+                selectHeirloom(carryshield.index, 'heirloomsExtra');
+                carryHeirloom();
+            }
+            sortHeirlooms2();
+            if (worth2["Staff"].length > 0){
+                var carrystaff = worth2["Staff"].shift();
+                selectHeirloom(carrystaff.index, 'heirloomsExtra');
+                carryHeirloom();
+            }
+        }
+    }
+    else if(heirloomsShown && game.global.selectedHeirloom.length > 0){
+        heirloomUpgradeHighlighting();
+    }
+}
+
+//common to both autoheirloom1 and 2
+function heirloomUpgradeHighlighting() {
     var bestUpgrade;
-    
+    if(game.global.selectedHeirloom[1].includes('Equipped')) {
+        var loom = game.global[game.global.selectedHeirloom[1]];
+        bestUpgrade = evaluateMods(0, game.global.selectedHeirloom[1], true);
+        if(bestUpgrade.index) {
+            bestUpgrade.effect *= getModUpgradeCost(loom, bestUpgrade.index);
+            bestUpgrade.effect = bestUpgrade.effect.toFixed(6);
+            var styleIndex = 4 + (bestUpgrade.index * 3);
+            //enclose in backtic ` for template string $ stuff
+            document.getElementById('selectedHeirloom').childNodes[0].childNodes[styleIndex].style.backgroundColor = "lightblue";
+            document.getElementById('selectedHeirloom').childNodes[0].childNodes[styleIndex].setAttribute("onmouseover", `tooltip(\'Heirloom\', \"customText\", event, \'<div class=\"selectedHeirloomItem heirloomRare${loom.rarity}\"> AutoTrimps recommended upgrade for this item. </div>\'         )`);
+            document.getElementById('selectedHeirloom').childNodes[0].childNodes[styleIndex].setAttribute("onmouseout", 'tooltip(\'hide\')');
+            //lightblue = greyish
+            //swapClass("tooltipExtra", "tooltipExtraHeirloom", document.getElementById("tooltipDiv"));
+            //document.getElementById("tooltipDiv");
+        }
+    }   
+}
+
+//Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.
+//OLD:
+function autoHeirlooms() {
     if(!heirloomsShown && game.global.heirloomsExtra.length > 0){
         //start by immediately carrying any protected heirlooms.
         for(var extra in game.global.heirloomsExtra) {
@@ -426,29 +511,8 @@ function autoHeirlooms() {
         }
     }
     else if(heirloomsShown && game.global.selectedHeirloom.length > 0){
-        if(game.global.selectedHeirloom[1].includes('Equipped')) {
-            var loom = game.global[game.global.selectedHeirloom[1]];
-            bestUpgrade = evaluateMods(0, game.global.selectedHeirloom[1], true);
-            if(bestUpgrade.index) {
-                bestUpgrade.effect *= getModUpgradeCost(loom, bestUpgrade.index);
-                bestUpgrade.effect = bestUpgrade.effect.toFixed(6);
-                var styleIndex = 4 + (bestUpgrade.index * 3);
-                //enclose in backtic ` for template string $ stuff
-                document.getElementById('selectedHeirloom').childNodes[0].childNodes[styleIndex].style.backgroundColor = "lightblue";
-                document.getElementById('selectedHeirloom').childNodes[0].childNodes[styleIndex].setAttribute("onmouseover", `tooltip(\'Heirloom\', \"customText\", event, \'<div class=\"selectedHeirloomItem heirloomRare${loom.rarity}\"> AutoTrimps recommended upgrade for this item. </div>\'         )`);
-                document.getElementById('selectedHeirloom').childNodes[0].childNodes[styleIndex].setAttribute("onmouseout", 'tooltip(\'hide\')');
-                //lightblue = greyish
-                //swapClass("tooltipExtra", "tooltipExtraHeirloom", document.getElementById("tooltipDiv"));
-                //document.getElementById("tooltipDiv");
-            }
-        }
+        heirloomUpgradeHighlighting();
     }
-    //heirloomsShown
-    //getModReplaceCost(heirloomObj, modIndex)
-    //getModUpgradeCost(heirloomObj, modIndex)
-    //document.getElementById('extraHeirloomsHere').childNodes[INDEX].childNodes[1].style.border = "1px solid #00CC00"
-    //document.getElementById('selectedHeirloom').childNodes[0].childNodes[4/7/10/13].style.backgroundColor
-    //advBtn.setAttribute("onmouseover", 'tooltip(\"Advanced Settings\", \"customText\", event, \"Leave off unless you know what you\'re doing with them.\")');
 }
 
 //commented out because it was never finished.
@@ -2286,7 +2350,8 @@ function mainLoop() {
     if (getPageSetting('RunMapsWhenStuck')) autoMap();
     if (getPageSetting('GeneticistTimer') >= 0) manageGenes();
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();
-    if (getPageSetting('AutoHeirlooms')) autoHeirlooms();
+    if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2();
+    else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap();
     if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();
     autoLevelEquipment();
@@ -2330,41 +2395,55 @@ function prestigeChanging(){
     if (game.global.challengeActive == "Lead" && maxPrestigeIndex <=5)
         maxPrestigeIndex *= 2;
     
-    //account for repeat button de-activating one zone too late.
-    maxPrestigeIndex -= 1;
-    if (maxPrestigeIndex < 1)
-        maxPrestigeIndex = 1;
-    
-    //possible new algorithm
-    //game.mapUnlocks[targetPrestige].last >= game.global.world - 9
-    //game.mapUnlocks["GambesOP"].last
-    //game.mapUnlocks["Harmabalest"].last
-    //game.mapUnlocks["Greatersword"].last
-    //game.mapUnlocks["Axeidic"].last
-    //game.mapUnlocks["Polierarm"].last
-    //game.mapUnlocks["Megamace"].last
-    //game.mapUnlocks["Dagadder"].last
-    //Find what we have:
-    //game.upgrades["Dagadder"].allowed
-    
-    //If we are between 20 and 10 zones before the last zone OR If we are within 10 zones of the last zone:
-    if(game.global.world >= (lastzone-20) && game.global.world < (lastzone) && game.global.lastClearedCell < 79){
-        if (game.global.mapBonus < maxPrestigeIndex)
-            autoTrimpSettings.Prestige.selected = "GambesOP";
-        else if (game.global.mapBonus >= maxPrestigeIndex)
-            autoTrimpSettings.Prestige.selected = "Dagadder";
+    //Thanks to Hyppy for the following implementation involving mapstoFarm and zonestoFarm:
+    //
+    // Find total maps by multiplying the number of equipment pieces to acquire by the number of prestiges available by
+    // the last zone. Subtract 1 from the number of prestiges available to account for the Scientist II bonus
+    if (game.global.sLevel > 1)
+        var totalMapsToFarm = (maxPrestigeIndex-2)*((lastzone/5)-1);
+    else
+        var totalMapsToFarm = (maxPrestigeIndex-2)*((lastzone/5)); 
+    // For Scientist IV bonus, halve the required maps to farm
+    if (game.global.sLevel > 3)
+        totalMapsToFarm = Math.ceil(totalMapsToFarm/2);
+  
+    // For Lead runs, farm 10x the last odd 10 zones plus 5x for each necessary odd zone before.
+    if (game.global.challengeActive == "Lead"){
+        if (totalMapsToFarm > 50){
+            var zonesToFarm = Math.ceil(10+((totalMapsToFarm-50)/5));
+            // Add extra zones to account for dagger/shield that are found in the interim.
+            zonesToFarm = Math.ceil(10+(((totalMapsToFarm+zonesToFarm/2.5)-50)/5)) 
+        }
+        else
+            var zonesToFarm = Math.ceil(totalMapsToFarm/10);
     }
-    
-    //If we are on the last zone:
-    if(game.global.world == lastzone){
-        if (game.global.lastClearedCell < 79 && game.global.mapBonus < 9)
+    // For non-Lead runs, farm 10x the last 10 zones plus 5x for each necessary zone before
+    else if (totalMapsToFarm > 100){
+        var zonesToFarm = Math.ceil(10+((totalMapsToFarm-100)/5));
+        // Add extra zones to account for dagger/shield that are found in the interim.
+        zonesToFarm = Math.ceil(10+(((totalMapsToFarm+zonesToFarm/2.5)-100)/5))
+    }
+    else
+        var zonesToFarm = Math.ceil(totalMapsToFarm/10);
+       
+    //If we are in the zonesToFarm threshold and 10 or fewer zones before the last zone:
+    if(game.global.world <= (lastzone-zonesToFarm) && game.global.world >= (lastzone-10) &&  game.global.lastClearedCell < 79){
+        if (game.global.mapBonus < 9)
             autoTrimpSettings.Prestige.selected = "GambesOP";
         else if (game.global.mapBonus >= 9)
             autoTrimpSettings.Prestige.selected = "Dagadder";
     }
-    
-    //If we are over 20 zones away from the last zone (the beginning of the run), use dagger:
-    if (game.global.world < lastzone-20 || game.global.mapBonus == 10)  
+   
+    //If we are not within the last 10 zones but still need to farm, get 5 upgrades:
+    if(game.global.world <= (lastzone-zonesToFarm) && game.global.world <= (lastzone-10)  &&  game.global.lastClearedCell < 79){
+        if (game.global.mapBonus < 4)
+            autoTrimpSettings.Prestige.selected = "GambesOP";
+        else if (game.global.mapBonus >= 4)
+            autoTrimpSettings.Prestige.selected = "Dagadder";
+    }
+   
+    //If we are not in the prestige farming zone (the beginning of the run), use dagger:
+    if (game.global.world < lastzone-zonesToFarm || game.global.mapBonus == 10)  
        autoTrimpSettings.Prestige.selected = "Dagadder";
 }
 
