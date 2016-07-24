@@ -465,7 +465,7 @@ function autoHeirlooms2() {
             if(worth[opposite[theLoom.type]].length == 0) continue; //end loop quick if absolutely nothin to swap in
             var index = worth[opposite[theLoom.type]][0];
             //... and compare the carried against the best worth opposite type in the extra pile. (since part 3 above took care of the bests of each same type)
-            if(theLoom.rarity < game.global.heirloomsExtra[index].rarity || (theLoom.rarity == game.global.heirloomsExtra[index].rarity && evaluateMods(carried, 'heirloomsCarried') < evaluateMods(index, 'heirloomsExtra'))) {
+            if(theLoom.rarity < game.global.heirloomsExtra[index].rarity) {
                 if (!theLoom.protected){
                     selectHeirloom(carried, 'heirloomsCarried');
                     stopCarryHeirloom();
