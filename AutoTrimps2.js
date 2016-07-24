@@ -413,6 +413,13 @@ function worthOfHeirlooms2(){
     worth2['Shield'].sort(valuesort);
     // sort staff
     worth2['Staff'].sort(valuesort);
+    
+    //Output each carried Heirlooms worth to console (or say heirloomsExtra instead)
+    /*
+    for(var index in game.global.heirloomsCarried) {
+        console.log(evaluateMods(index, 'heirloomsCarried'));
+    }
+    */    
 }
 
 //Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.
