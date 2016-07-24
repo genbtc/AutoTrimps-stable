@@ -2050,7 +2050,17 @@ function autoMap() {
                     document.getElementById("mapLevelInput").value = game.global.world;
                 else
                     document.getElementById("mapLevelInput").value = siphlvl;
-                if (game.global.world > 70) {
+                if (game.global.world == 200 && game.global.spireActive) {
+                    sizeAdvMapsRange.value = 9;
+                    adjustMap('size', 9);
+                    difficultyAdvMapsRange.value = 9;
+                    adjustMap('difficulty', 9);
+                    lootAdvMapsRange.value = 9;
+                    adjustMap('loot', 9);
+                    
+                    biomeAdvMapsSelect.value = "Mountain";
+                    updateMapCost();                
+                } else if (game.global.world > 70) {
                     sizeAdvMapsRange.value = 9;
                     adjustMap('size', 9);
                     difficultyAdvMapsRange.value = 9;
@@ -2420,7 +2430,7 @@ function mainLoop() {
         }
     }
     //Run the dynamic prestige changing script below.
-    if (getPageSetting('DynamicPrestige')) prestigeChanging();
+    if (getPageSetting('DynamicPrestige')) prestigeChanging2();
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
     
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
@@ -2437,7 +2447,7 @@ function userscripts()
 //The idea is like this. We will stick to Dagger until the end of the run, then we will slowly start grabbing prestiges, so we can hit the Prestige we want by the last zone.
 //The keywords below "Dagadder" and "GambesOP" are merely representative of the minimum and maximum values. Toggling these on and off, the script will take care of itself, when set to min (Dagger) or max (Gambeson).
 //In this way, we will achieve the desired "maxPrestige" setting (which would be somewhere in the middle, like Polearm) by the end of the run. (instead of like in the past where it was gotten from the beginning and wasting time in early maps.)
-
+/*
 function prestigeChanging(){
     //find out the prestige we want to hit at the end.
     var maxPrestige = document.getElementById('Prestige').value;
@@ -2505,6 +2515,7 @@ function prestigeChanging(){
     if (game.global.world < lastzone-zonesToFarm || game.global.mapBonus == 10)  
        autoTrimpSettings.Prestige.selected = "Dagadder";
 }
+*/
 
  function prestigeChanging2(){
      //find out the equipment index of the prestige we want to hit at the end.
