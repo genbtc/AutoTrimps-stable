@@ -177,6 +177,26 @@ function getPageSetting(setting) {
     }
 }
 
+//programmatically sets the underlying variable of the UI Setting and the appropriate Button CSS style&color
+function setPageSetting(setting,value) {
+    if (autoTrimpSettings.hasOwnProperty(setting) == false) {
+        return false;
+    }
+    if (autoTrimpSettings[setting].type == 'boolean') {
+        // debug('found a boolean');
+        autoTrimpSettings[setting].enabled = value;
+        document.getElementById(setting).setAttribute('class', 'settingsBtn settingBtn' + autoTrimpSettings[setting].enabled);
+    } else if (autoTrimpSettings[setting].type == 'value') {
+        // debug('found a value');
+        autoTrimpSettings[setting].value = value;
+    } else if (autoTrimpSettings[setting].type == 'dropdown') {
+    	autoTrimpSettings[setting].selected = value;
+    }
+    updateCustomButtons();
+    saveSettings();
+    checkSettings();    
+}
+
 //Global debug message
 function debug(message, lootIcon) {
     if (enableDebug){
