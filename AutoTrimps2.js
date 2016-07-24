@@ -2469,35 +2469,35 @@ function prestigeChanging(){
     // For Lead runs, farm 10x the last odd 10 zones plus 5x for each necessary odd zone before.
     if (game.global.challengeActive == "Lead"){
         if (totalMapsToFarm > 50){
-            var zonesToFarm = Math.ceil(20+((totalMapsToFarm-50)/2));
+            var zonesToFarm = Math.ceil(10+((totalMapsToFarm-50)/5));
             // Add extra zones to account for dagger/shield that are found in the interim.
-            zonesToFarm = Math.ceil(20+(((totalMapsToFarm+zonesToFarm/2.5)-50)/2)) 
+            zonesToFarm = Math.ceil(10+(((totalMapsToFarm+zonesToFarm/2.5)-50)/5)) 
         }
         else
-            var zonesToFarm = Math.ceil(totalMapsToFarm/5);
+            var zonesToFarm = Math.ceil(totalMapsToFarm/10);
     }
     // For non-Lead runs, farm 10x the last 10 zones plus 5x for each necessary zone before
     else if (totalMapsToFarm > 100){
-        var zonesToFarm = Math.ceil(20+((totalMapsToFarm-100)/2));
+        var zonesToFarm = Math.ceil(10+((totalMapsToFarm-100)/5));
         // Add extra zones to account for dagger/shield that are found in the interim.
-        zonesToFarm = Math.ceil(20+(((totalMapsToFarm+zonesToFarm/2.5)-100)/2))
+        zonesToFarm = Math.ceil(10+(((totalMapsToFarm+zonesToFarm/2.5)-100)/5))
     }
     else
-        var zonesToFarm = Math.ceil(totalMapsToFarm/5);
+        var zonesToFarm = Math.ceil(totalMapsToFarm/10);
        
-    //If we are in the zonesToFarm threshold and 20 or fewer zones before the last zone, get 5 upgrades:
-    if(game.global.world <= (lastzone-zonesToFarm) && game.global.world >= (lastzone-20) &&  game.global.lastClearedCell < 79){
-        if (game.global.mapBonus < 4)
+    //If we are in the zonesToFarm threshold and 10 or fewer zones before the last zone:
+    if(game.global.world <= (lastzone-zonesToFarm) && game.global.world >= (lastzone-10) &&  game.global.lastClearedCell < 79){
+        if (game.global.mapBonus < 9)
             autoTrimpSettings.Prestige.selected = "GambesOP";
-        else if (game.global.mapBonus >= 4)
+        else if (game.global.mapBonus >= 9)
             autoTrimpSettings.Prestige.selected = "Dagadder";
     }
    
-    //If we are not within the last 10 zones but still need to farm, get 2 upgrades:
-    if(game.global.world <= (lastzone-zonesToFarm) && game.global.world <= (lastzone-20)  &&  game.global.lastClearedCell < 79){
-        if (game.global.mapBonus < 1)
+    //If we are not within the last 10 zones but still need to farm, get 5 upgrades:
+    if(game.global.world <= (lastzone-zonesToFarm) && game.global.world <= (lastzone-10)  &&  game.global.lastClearedCell < 79){
+        if (game.global.mapBonus < 4)
             autoTrimpSettings.Prestige.selected = "GambesOP";
-        else if (game.global.mapBonus >= 1)
+        else if (game.global.mapBonus >= 4)
             autoTrimpSettings.Prestige.selected = "Dagadder";
     }
    
