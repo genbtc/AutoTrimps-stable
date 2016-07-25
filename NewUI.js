@@ -524,6 +524,7 @@ function updateCustomButtons() {
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('CustomAutoPortal').value = autoTrimpSettings.CustomAutoPortal.selected;
+    document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
     
     //eliminate any prestige toggling due to function prestigeChanging() being called & modifying the internal setting and the line below making the UI setting reflect it .
     //we want there to be a mismatch between the prestige settings in this case, but i have not figured out all the ramifications of skipping this check.
