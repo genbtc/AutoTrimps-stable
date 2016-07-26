@@ -297,17 +297,19 @@ function autoToggle(what){
         else item.style.display = 'block'; 
     }
 }
-    //overloads the settings menu button to include hiding the auto menu settings.
-  function autoPlusSettingsMenu() {
-      var item = document.getElementById('autoSettings');
-      if(item.style.display === 'block')
+
+//overloads the settings menu button to include hiding the auto menu settings.
+function autoPlusSettingsMenu() {
+    var item = document.getElementById('autoSettings');
+    if(item.style.display === 'block')
         item.style.display='none';
-      item = document.getElementById('graphParent');
-      if(item.style.display === 'block')
+    item = document.getElementById('graphParent');
+    if(item.style.display === 'block')
         item.style.display='none';
     toggleSettingsMenu();
-  }
-
+}
+    
+  
 function createSetting(id, name, description, type, defaultValue, list, container) {
     var btnParent = document.createElement("DIV");
    // btnParent.setAttribute('class', 'optionContainer');

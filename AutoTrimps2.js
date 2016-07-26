@@ -2155,6 +2155,9 @@ function autoMap() {
             }
         }
     }
+    else {
+        enoughDamage = true; enoughHealth = true; shouldFarm = false;
+    }
 }
 
 //calculate helium we will get from the end of this zone. If (stacks), return helium we will get with max tox stacks
