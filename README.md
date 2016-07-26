@@ -1,13 +1,66 @@
 # AutoTrimps + genBTC
-Automation script for the idle incremental game Trimps  
+Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)
 
-**Installation instructions at the bottom of this README**
+## Discussion / Discord Channel
+Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C
+
+## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
 
-## Changed by genBTC:
-- Better Help-Tooltips
-- Add seperated  "genBTC's settings UI" button,
-- Add Export/Import/Reset autotrimps settings buttons.
+Option 1: Install Greasemonkey (Firefox) or Tampermonkey (Chrome)
+TamperMonkey Instructions:
+- Open the Tampermonkey dashboard and go to utilities – in the URL box paste https://raw.githubusercontent.com/genbtc/AutoTrimps/gh-pages/user.js and import
+- Alternatively, paste the contents of `user.js` into a user scrip
+- The script should automatically load everytime you go to https://trimps.github.io or the game on Kongregate
+- You will know you have the script loaded if you see the Automation and Graphs buttons in the game menu at the bottom
+
+Option 2: Via a Bookmark
+- Create new bookmark and set its target to:
+```js
+javascript:with(document)(head.appendChild(createElement('script')).src='https://genbtc.github.io/AutoTrimps/AutoTrimps2.js')._
+```
+- This bookmark button has to be clicked manually after you go to https://trimps.github.io or the game on Kongregate
+
+Option 3: Paste into console
+- You can copy and paste the entire contents of AutoTrimps2.js into the Dev Console (F12 in chrome) of the page. (make sure the dropdown box to the left of "Preserve Log" is set to "top" - or "mainFrame (indexKong.html)" for kongregate.
+
+Notes:
+If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
+Feel free to submit any bugs/suggestions as issues here on github.
+
+## Most recent changes by genBTC: 
+- Auto Golden Upgrades
+- Always Runs 10 maps for 200% map bonus before attempting Spire (happens after the first death)
+- AutoHeirlooms2 - new algorithm to sort/carry/recycle the Heirlooms (the original had a bug)
+- Cap Trainers to a % of Tributes - Only buy a trainer when its cost is less than X% of the cost of a tribute. Prevents competing with food resources, if you care.
+- Run Bionic Before Spire - meant as a one time function to farm the Bionic Wonderland maps for a LONG time before entering spire. (not HE/hr efficient)
+- Dynamic Prestige: Skip prestiges at the beginning of the run which saves time, and delay them until the end when you need them most and can provide resources from farming too)
+- Helium per Hour Portal "Buffer" - now you can customize how much He/Hr is allowed to drop before portaling
+- Auto Robo Trimp - activate the MagnetoShriek ability on the bosses every 5 levels starting from the level you specify.
+
+## Changed by genBTC since before 4/27/2016 and Trimps version 3.22:
+- Change Genetecist Timer to 10 sec instead of 11sec. (was commonly showing 11.4s because it rounds. that is too much)
+- 'Farm on >7 NomStacks': During Nom, take precautions not to get too many stacks. (On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On!')
+- Dynamic Siphonology - only when needed based on (Enemyhealth / baseDamage)
+Created a new setting in the advanced options. "Dynamic Siphonology".
+It will switch to the proper Map-level as soon as the current map is completed.
+So you can choose original behavior of always using the lowest level map, 
+or the modified behavior, which increases the map level based on your damage.
+The old behavior of "no siphonology at all when using DisableFarming" is no longer applied, under any circumstance.
+- Skip Gear Level 58&59: Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.
+- Cap Equip to 10: Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.
+- Delay Armor When needed: Delay buying armor prestige upgrades during Want More Damage or Farming automap-modes.
+- Add console debug messages to the map selection/buying/running section.
+- Put a numerical status on the "Farming"&"Want more Damage" UI indicator.
+This way you can see things progressing, instead of wondering what is going on.
+The number pertains to Enemy Health / Base Damage(non-stance). Above 16 means farm. Below 10 means stop farming.
+- Farm @ cell 61 (megamining) not 82 (megafarming).
+- Farm if enemyhealth : basedamage is between 10 and 16. (Used to be 10 and 15). 
+Means it will farm very slightly less.
+- Take Map Bonus +%Damage into account for farming decisions. (so you can farm less.)
+- Stop from firing all scientists when it reaches the threshhold. (250k farmers)
+Farmers will be maintained at the current level, not fired entirely. I
+corrected the commented explanation, since the number it stops buying at is 250k farmers, not 100k.
 - Add WarpStation Cap (deltaGiga+baseWarp) feature.
 Stop making warpstations if we are past the deltagiga + base
 warpstations (and no giga upgrade is available). Will also remove the
@@ -16,31 +69,9 @@ weapons,armor, etc.
 NOTE: (the cap will only work on incremental buys, it will not come into
 effect when the game uses a gigastation and immediately bulk-buys as
 many warpstations as it can afford. I think this is preferrable.)
-- Stop from firing all scientists when it reaches the threshhold. (250k farmers)
-Farmers will be maintained at the current level, not fired entirely. I
-corrected the commented explanation, since the number it stops buying at
-is 250k farmers, not 100k.
-- Take Map Bonus +%Damage into account for farming decisions. (so you can farm less.)
-- Farm if enemyhealth : basedamage is between 10 and 16. (Used to be 10 and 15). 
-Means it will farm very slightly less.
-- Farm @ cell 61 (megamining) not 82 (megafarming).
-- Put a numerical status on the "Farming"&"Want more Damage" UI indicator.
-This way you can see things progressing, instead of wondering what is going on.
-The number pertains to Enemy Health / Base Damage(non-stance). Above 16 means farm. Below 10 means stop farming.
-- Add console debug messages to the map selection/buying/running section.
-- Delay Armor When needed: Delay buying armor prestige upgrades during Want More Damage or Farming automap-modes.
-- Cap Equip to 10: Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.
-- Skip Gear Level 58&59: Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.
-- Dynamic Siphonology - only when needed based on (Enemyhealth / baseDamage)
-Created a new setting in the advanced options. "Dynamic Siphonology".
-It will switch to the proper Map-level as soon as the current map is completed.
-So you can choose original behavior of always using the lowest level
-map, or the modified behavior, which increases the map level based on your damage.
-The old behavior of "no siphonology at all when using DisableFarming" is
-no longer applied, under any circumstance.
-- 'Farm on >7 NomStacks': During Nom, take precautions not to get too many stacks. (On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On!')
-- Change Genetecist Timer to 10 sec instead of 11sec. (was commonly showing 11.4s because it rounds. that is too much)
-- Commit Changes from other branches as of 4/27/2016 to work with Trimps version 3.22 (and any internal syntax bug fixes)
+- Add Export/Import/Reset autotrimps settings buttons.
+- Add seperated  "genBTC's settings UI" button,
+- Better Help-Tooltips
 
 **Voidmaps and Toxicity changes:**
 
@@ -212,27 +243,6 @@ Some older date 2/10/2016?
 - Nom and Toxicity breed timer now set at 15 sec when using Manage breed timer option.
 - On a toxicity run, manually entering the following into the console will force the script to get max toxicity stacks on all zones 60 and above, for a max helium run for bone portal: `heliumGrowing = true`. Make sure to set it back to false after your long run(or reload).
 
-## Installation
-**Please backup your game via export before and during use to prevent losing your save due to corruption!**
-
-If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
-
-- Install greasemonkey/tampermonkey
-- Open the tampermonkey dashboard and go to utilities – in the URL box paste https://raw.githubusercontent.com/genbtc/AutoTrimps/gh-pages/user.js and import
-- Alternatively, paste the contents of `user.js` into a user script - go to https://trimps.github.io
-- You will know you have the script loaded if you see the Automation and Graphs buttons in the game menu at the bottom
-
-V2 is now bookmark compatible. Create new bookmark and set its target to:
-
-```js
-javascript:with(document)(head.appendChild(createElement('script')).src='https://genbtc.github.io/AutoTrimps/AutoTrimps2.js')._
-```
-
-You can also paste V2 into the console of the page. Geez so many options :/
-
-Feel free to submit any bugs/suggestions as issues here on github.
-
-I'm going to open up my discord channel for chat. Here is the link if you would like to come hang and chat about AutoTrimps: https://discord.gg/0VbWe0dxB9kIfV2C
 
 ## Colors for upgrades highlights
 

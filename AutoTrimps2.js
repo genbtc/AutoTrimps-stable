@@ -570,6 +570,11 @@ function heirloomUpgradeHighlighting() {
         }
     }   
 }
+
+//Automatically upgrades the best mod on the equipped shield and equipped staff. Runs until you run out of nullifium.
+//Do not tamper with this.
+function autoNull(){for(var e,d=[game.global.ShieldEquipped,game.global.StaffEquipped],o=0;2>o;o++){var l=d[o];if(e=evaluateMods(0,l.type+"Equipped",!0),e.index){selectedMod=e.index;var a=getModUpgradeCost(l,selectedMod);if(game.global.nullifium<a)continue;game.global.nullifium-=a;var i=getModUpgradeValue(l,selectedMod),t=l.mods[selectedMod];t[1]=i,"undefined"!=typeof t[3]?t[3]++:(t[2]=0,t[3]=1),game.heirlooms[l.type][l.mods[selectedMod][0]].currentBonus=i}}}
+
 //commented out because it was never finished.
 /*
 function autoSwapHeirlooms(loomtype="Shield" || "Staff", loomlocation="heirloomsCarried" || "heirloomsExtra"){
@@ -2456,7 +2461,8 @@ function mainLoop() {
     userscripts();
 }
 
-//left blank intentionally. the user will provide this.
+//left blank intentionally. the user will provide this. blank global vars are included as an example
+var globalvar0,globalvar1,globalvar2,globalvar3,globalvar4,globalvar5,globalvar6,globalvar7,globalvar8,globalvar9;
 function userscripts()
 {
     //insert code here:
