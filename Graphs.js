@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none;"><div id="graph" style="margin-bottom: 2vw;margin-top: 2vw;"></div></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coord', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
+var graphList = ['HeliumPerHour', 'Helium','AverageHeliumPerHour','AverageHeliumPerHourPerZone', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -195,14 +195,17 @@ function appendGraphs() {
 }
 
 function clearData(portal) {
+    //clear data of runs with portalnumbers prior than X (10) away from current portal number.
     if(portal) {
         while(allSaveData[0].totalPortals < game.global.totalPortals - portal) allSaveData.shift();
     }
+    //clear all.
     else {
         while(allSaveData[0].totalPortals < game.global.totalPortals) allSaveData.shift();
     }
 }
 
+//delete a specific portal number's graphs.
 function deleteSelected() {
     var txtboxvalue = document.getElementById('deleteSelectedTextBox').value;
     if (txtboxvalue == "")
@@ -227,11 +230,13 @@ function autoToggleGraph() {
     }
 }
 
+//unused for some reason:
 function autoPlusGraphMenu() {
     var item = document.getElementById('graphParent');
     if (item.style.display === 'block') item.style.display = 'none';
     toggleSettingsMenu();
 }
+
 var chart1;
 function setGraph(title, xTitle, yTitle, valueSuffix, formatter, series, yType) {
     chart1 = new Highcharts.Chart({
@@ -405,6 +410,51 @@ function setGraphData(graph) {
             yType = 'Linear';
             valueSuffix = ' Seconds';
             break;
+        case 'Cumulative Clear Time':
+            var graphData = [];
+            var currentPortal = -1;
+            var currentZone = -1;
+            var totaltime = 0;
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    //push a 0 to index 0 so that clear times line up with x-axis numbers
+                    graphData[graphData.length -1].data.push(0);
+                    totaltime =0;
+                }
+                if(currentZone < allSaveData[i].world && currentZone != -1) {
+                    totaltime += Math.round((allSaveData[i].currentTime - allSaveData[i-1].currentTime))
+                    graphData[graphData.length - 1].data.push(totaltime);
+                }
+                
+                //first time through, push 0s to zones we don't have data for. Probably only occurs if script is loaded in the middle of a run where it was previously not loaded (haven't tested this)
+                //this functionality could fix some of the weirdness in graphs from using bone portal?
+                if(currentZone == -1) {
+                    var loop = allSaveData[i].world - 1;
+                    while (loop > 0) {
+                        graphData[graphData.length -1].data.push(0);
+                        loop--;
+                    }
+                }
+                currentZone = allSaveData[i].world;
+
+            }
+            title = 'Cumulative Time at start of zone#';
+            xTitle = 'Zone';
+            yTitle = 'Cumulative Clear Time';
+            yType = 'datetime';
+            formatter =  function () {
+                var ser = this.series;
+                return '<span style="color:' + ser.color + '" >●</span> ' +
+                        ser.name + ': <b>' +
+                        Highcharts.dateFormat('%H:%M:%S', this.y) + '</b><br>';
+            
+            };
+            break;     
         case 'Helium':
             var currentPortal = -1;
             graphData = [];
@@ -434,7 +484,7 @@ function setGraphData(graph) {
                         data: []
                     });
                     currentPortal = allSaveData[i].totalPortals;
-                    if(allSaveData[i].world == 1)
+                    if(allSaveData[i].world == 1 && currentZone != -1 )
                         graphData[graphData.length -1].data.push(0);
                     
                     if(currentZone == -1 || allSaveData[i].world != 1) {
@@ -457,8 +507,127 @@ function setGraphData(graph) {
             yTitle = 'Helium';
             yType = 'Linear';
             break;
+
+        case 'AverageHeliumPerHour':
+            var currentPortal = -1;
+            var currentZone = -1;
+            graphData = [];
+            var count = 0;            var sumhel = 0;            var avghel = 0;            var sumavghel = 0;
+            var listavgs = [];
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    if(allSaveData[i].world == 1 && currentZone != -1 )
+                        graphData[graphData.length -1].data.push(0);
+                    
+                    if(currentZone == -1 || allSaveData[i].world != 1) {
+                        var loop = allSaveData[i].world;
+                        while (loop > 0) {
+                            graphData[graphData.length -1].data.push(0);
+                            loop--;
+                        }
+                    }
+                    //dump averages to a list to use later (does not run on the last one)
+                    if (Math.floor(sumavghel / count) > 0){
+                        listavgs.push({
+                            portal: allSaveData[i].totalPortals,
+                            avg: Math.floor(sumavghel / count)
+                        });
+                    }
+                    count = 0; sumhel = 0; avghel = 0; sumavghel = 0;
+                }
+                if(currentZone < allSaveData[i].world && currentZone != -1) {
+                    var cumutime = ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000);
+                    var hhour = Math.floor(allSaveData[i].heliumOwned / cumutime);                    
+                    sumhel += hhour;
+                    count++;
+                    avghel = sumhel / count;
+                    graphData[graphData.length - 1].data.push(avghel / cumutime);
+                    sumavghel += avghel / cumutime;
+                }
+                currentZone = allSaveData[i].world;                
+            }
+            var j = 0;
+            //change names of legend to include the average for that run.
+            for (var asdfg in listavgs){
+                graphData[j].name = 'Portal ' + listavgs[asdfg].portal + ': ' + listavgs[asdfg].avg;
+                j++;
+            }
+            //since average was not dumped for the last run, change the last one manually.
+            graphData[graphData.length - 1].name = 'Portal ' + allSaveData[allSaveData.length - 1].totalPortals + ': ' + Math.floor(sumavghel / count);
+                
+            title = 'Average Helium per Hour';
+            title = title + ": " + Math.floor(sumavghel / count);
+            xTitle = 'Zone';
+            yTitle = 'Helium';
+            yType = 'Linear';
+            break;            
+
+        case 'AverageHeliumPerHourPerZone':
+            var currentPortal = -1;
+            var currentZone = -1;
+            graphData = [];
+            var count = 0;            var sumhel = 0;            var avghel = 0;            var sumavghel = 0;
+            var listavgs = [];
+            var lastcumutime =0;
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    if(allSaveData[i].world == 1 && currentZone != -1 )
+                        graphData[graphData.length -1].data.push(0);
+                    
+                    if(currentZone == -1 || allSaveData[i].world != 1) {
+                        var loop = allSaveData[i].world;
+                        while (loop > 0) {
+                            graphData[graphData.length -1].data.push(0);
+                            loop--;
+                        }
+                    }
+                    //dump averages to a list to use later (does not run on the last one)
+                    if (Math.floor(sumavghel / count) > 0){
+                        listavgs.push({
+                            portal: allSaveData[i].totalPortals,
+                            avg: Math.floor(sumavghel / count)
+                        });
+                    }
+                    count = 0; sumhel = 0; avghel = 0; sumavghel = 0;
+                }
+                if(currentZone < allSaveData[i].world && currentZone != -1) {
+                    var cumutime = ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000);
+                    var thiscumutime = cumutime - lastcumutime;
+                    var hhour = Math.floor(allSaveData[i].heliumOwned / thiscumutime);                    
+                    sumhel += hhour;
+                    count++;
+                    avghel = sumhel / count;
+                    graphData[graphData.length - 1].data.push(hhour);
+                    sumavghel += avghel;
+                    lastcumutime = cumutime;
+                }
+                currentZone = allSaveData[i].world;                
+            }
+            var j = 0;
+            //change names of legend to include the average for that run.
+            for (var asdfg in listavgs){
+                graphData[j].name = 'Portal ' + listavgs[asdfg].portal + ': ' + listavgs[asdfg].avg;
+                j++;
+            }
+            //since average was not dumped for the last run, change the last one manually.
+            graphData[graphData.length - 1].name = 'Portal ' + allSaveData[allSaveData.length - 1].totalPortals + ': ' + Math.floor(sumavghel / count);
+            title = 'Average Helium per Hour per zone';
+            xTitle = 'Zone';
+            yTitle = 'Helium';
+            yType = 'Linear';
+            break;              
             
-            case 'Void Maps':
+        case 'Void Maps':
             var currentPortal = -1;
             var totalVoids = 0;
             var theChallenge = '';
@@ -491,49 +660,49 @@ function setGraphData(graph) {
             break;
       
         case 'Nullifium Gained':
-        var currentPortal = -1;
-        var totalNull = 0;
-        var theChallenge = '';
-        graphData = [];
-        var averagenulli = 0;
-        var sumnulli = 0;
-        var count = 0;
-        for (var i in allSaveData) {
-            if (allSaveData[i].totalPortals != currentPortal) {
-                if(currentPortal == -1) {
+            var currentPortal = -1;
+            var totalNull = 0;
+            var theChallenge = '';
+            graphData = [];
+            var averagenulli = 0;
+            var sumnulli = 0;
+            var count = 0;
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    if(currentPortal == -1) {
+                        theChallenge = allSaveData[i].challenge;
+                        currentPortal = allSaveData[i].totalPortals;
+                        graphData.push({
+                        name: 'Nullifium Gained',
+                        data: [],
+                        type: 'column'
+                    });
+                        continue;
+                    }
+                    graphData[0].data.push([allSaveData[i-1].totalPortals, totalNull]);
+                    count++;
+                    sumnulli += totalNull;
+                    //console.log("nulli was: " + totalNull + " " + count + " @ " + allSaveData[i].totalPortals);   //debug
                     theChallenge = allSaveData[i].challenge;
+                    totalNull = 0;
                     currentPortal = allSaveData[i].totalPortals;
-                    graphData.push({
-                    name: 'Nullifium Gained',
-                    data: [],
-                    type: 'column'
-                });
-                    continue;
+                    
                 }
-                graphData[0].data.push([allSaveData[i-1].totalPortals, totalNull]);
-                count++;
-                sumnulli += totalNull;
-                //console.log("nulli was: " + totalNull + " " + count + " @ " + allSaveData[i].totalPortals);   //debug
-                theChallenge = allSaveData[i].challenge;
-                totalNull = 0;
-                currentPortal = allSaveData[i].totalPortals;
-                
+                if(allSaveData[i].nullifium > totalNull) {
+                    totalNull = allSaveData[i].nullifium;                
+                }
             }
-            if(allSaveData[i].nullifium > totalNull) {
-                totalNull = allSaveData[i].nullifium;                
-            }
-        }
-        averagenulli = sumnulli / count;
-        //console.log("Average nulli was: " + averagenulli);
-        title = 'Nullifium Gained Per Portal';
-        if (averagenulli)
-            title = "Average " + title + " = " + averagenulli;
-        xTitle = 'Portal';
-        yTitle = 'Nullifium Gained';
-        yType = 'Linear';
-        break;
+            averagenulli = sumnulli / count;
+            //console.log("Average nulli was: " + averagenulli);
+            title = 'Nullifium Gained Per Portal';
+            if (averagenulli)
+                title = "Average " + title + " = " + averagenulli;
+            xTitle = 'Portal';
+            yTitle = 'Nullifium Gained';
+            yType = 'Linear';
+            break;
 
-            case 'Loot Sources':
+        case 'Loot Sources':
             graphData = [];
             graphData[0] = {name: 'Metal', data: lootData.metal};
             graphData[1] = {name: 'Wood', data: lootData.wood};
@@ -549,7 +718,7 @@ function setGraphData(graph) {
             break;
 
             
-            case 'Run Time':
+        case 'Run Time':
             var currentPortal = -1;
             var theChallenge = '';
             graphData = [];
@@ -585,7 +754,7 @@ function setGraphData(graph) {
             };
             break;
             
-            case 'Void Map History':
+        case 'Void Map History':
             var currentPortal = -1;
             graphData = [];
             for (var i in allSaveData) {
@@ -611,7 +780,7 @@ function setGraphData(graph) {
             yType = 'Linear';
             break;
             
-            case 'Coord':
+        case 'Coords':
             var currentPortal = -1;
             graphData = [];
             for (var i in allSaveData) {
@@ -651,7 +820,7 @@ function setGraphData(graph) {
             yType = 'Linear';
             break;
 
-            case 'Lastwarp':
+        case 'Lastwarp':
             var currentPortal = -1;
             graphData = [];
             for (var i in allSaveData) {
@@ -671,7 +840,7 @@ function setGraphData(graph) {
             yType = 'Linear';
             break; 
 
-            case 'Trimps':
+        case 'Trimps':
             var currentPortal = -1;
             graphData = [];
             for (var i in allSaveData) {
