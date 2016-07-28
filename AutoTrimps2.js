@@ -2490,6 +2490,7 @@ function mainLoop() {
     else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap();
     if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();
+    if (getPageSetting('AutoUpgradeHeirlooms')) autoNull();
     autoLevelEquipment();
     autoStance();
     if (getPageSetting('AutoFight')) {
