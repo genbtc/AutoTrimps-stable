@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none;"><div id="graph" style="margin-bottom: 2vw;margin-top: 2vw;"></div></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour', 'Helium','AverageHeliumPerHour','AverageHeliumPerHourPerZone', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
+var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -502,131 +502,12 @@ function setGraphData(graph) {
                 currentZone = allSaveData[i].world;
                 
             }
-            title = 'Helium/Hour';
+            title = 'Helium/Hour (Cumulative)';
             xTitle = 'Zone';
-            yTitle = 'Helium';
+            yTitle = 'Helium/Hour';
             yType = 'Linear';
             break;
 
-        case 'AverageHeliumPerHour':
-            var currentPortal = -1;
-            var currentZone = -1;
-            graphData = [];
-            var count = 0;            var sumhel = 0;            var avghel = 0;            var sumavghel = 0;
-            var listavgs = [];
-            for (var i in allSaveData) {
-                if (allSaveData[i].totalPortals != currentPortal) {
-                    graphData.push({
-                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
-                        data: []
-                    });
-                    currentPortal = allSaveData[i].totalPortals;
-                    if(allSaveData[i].world == 1 && currentZone != -1 )
-                        graphData[graphData.length -1].data.push(0);
-                    
-                    if(currentZone == -1 || allSaveData[i].world != 1) {
-                        var loop = allSaveData[i].world;
-                        while (loop > 0) {
-                            graphData[graphData.length -1].data.push(0);
-                            loop--;
-                        }
-                    }
-                    //dump averages to a list to use later (does not run on the last one)
-                    if (Math.floor(sumavghel / count) > 0){
-                        listavgs.push({
-                            portal: allSaveData[i].totalPortals,
-                            avg: Math.floor(sumavghel / count)
-                        });
-                    }
-                    count = 0; sumhel = 0; avghel = 0; sumavghel = 0;
-                }
-                if(currentZone < allSaveData[i].world && currentZone != -1) {
-                    var cumutime = ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000);
-                    var hhour = Math.floor(allSaveData[i].heliumOwned / cumutime);                    
-                    sumhel += hhour;
-                    count++;
-                    avghel = sumhel / count;
-                    graphData[graphData.length - 1].data.push(avghel / cumutime);
-                    sumavghel += avghel / cumutime;
-                }
-                currentZone = allSaveData[i].world;                
-            }
-            var j = 0;
-            //change names of legend to include the average for that run.
-            for (var asdfg in listavgs){
-                graphData[j].name = 'Portal ' + listavgs[asdfg].portal + ': ' + listavgs[asdfg].avg;
-                j++;
-            }
-            //since average was not dumped for the last run, change the last one manually.
-            graphData[graphData.length - 1].name = 'Portal ' + allSaveData[allSaveData.length - 1].totalPortals + ': ' + Math.floor(sumavghel / count);
-                
-            title = 'Average Helium per Hour';
-            title = title + ": " + Math.floor(sumavghel / count);
-            xTitle = 'Zone';
-            yTitle = 'Helium';
-            yType = 'Linear';
-            break;            
-
-        case 'AverageHeliumPerHourPerZone':
-            var currentPortal = -1;
-            var currentZone = -1;
-            graphData = [];
-            var count = 0;            var sumhel = 0;            var avghel = 0;            var sumavghel = 0;
-            var listavgs = [];
-            var lastcumutime =0;
-            for (var i in allSaveData) {
-                if (allSaveData[i].totalPortals != currentPortal) {
-                    graphData.push({
-                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
-                        data: []
-                    });
-                    currentPortal = allSaveData[i].totalPortals;
-                    if(allSaveData[i].world == 1 && currentZone != -1 )
-                        graphData[graphData.length -1].data.push(0);
-                    
-                    if(currentZone == -1 || allSaveData[i].world != 1) {
-                        var loop = allSaveData[i].world;
-                        while (loop > 0) {
-                            graphData[graphData.length -1].data.push(0);
-                            loop--;
-                        }
-                    }
-                    //dump averages to a list to use later (does not run on the last one)
-                    if (Math.floor(sumavghel / count) > 0){
-                        listavgs.push({
-                            portal: allSaveData[i].totalPortals,
-                            avg: Math.floor(sumavghel / count)
-                        });
-                    }
-                    count = 0; sumhel = 0; avghel = 0; sumavghel = 0;
-                }
-                if(currentZone < allSaveData[i].world && currentZone != -1) {
-                    var cumutime = ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000);
-                    var thiscumutime = cumutime - lastcumutime;
-                    var hhour = Math.floor(allSaveData[i].heliumOwned / thiscumutime);                    
-                    sumhel += hhour;
-                    count++;
-                    avghel = sumhel / count;
-                    graphData[graphData.length - 1].data.push(hhour);
-                    sumavghel += avghel;
-                    lastcumutime = cumutime;
-                }
-                currentZone = allSaveData[i].world;                
-            }
-            var j = 0;
-            //change names of legend to include the average for that run.
-            for (var asdfg in listavgs){
-                graphData[j].name = 'Portal ' + listavgs[asdfg].portal + ': ' + listavgs[asdfg].avg;
-                j++;
-            }
-            //since average was not dumped for the last run, change the last one manually.
-            graphData[graphData.length - 1].name = 'Portal ' + allSaveData[allSaveData.length - 1].totalPortals + ': ' + Math.floor(sumavghel / count);
-            title = 'Average Helium per Hour per zone';
-            xTitle = 'Zone';
-            yTitle = 'Helium';
-            yType = 'Linear';
-            break;              
-            
         case 'Void Maps':
             var currentPortal = -1;
             var totalVoids = 0;
