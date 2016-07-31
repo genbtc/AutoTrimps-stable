@@ -589,9 +589,9 @@ function setGraphData(graph) {
             graphData[1] = {name: 'Wood', data: lootData.wood};
             graphData[2] = {name: 'Food', data: lootData.food};
             graphData[3] = {name: 'Gems', data: lootData.gems};
-            title = 'Loot Sources';
+            title = 'Loot Sources (of all resources gained)';
             xTitle = 'Time';
-            yTitle = 'percentage looted (of all resources gained)';
+            yTitle = 'Ratio of looted to gathered';
             valueSuffix = '%';
             formatter = function () {
               return Highcharts.numberFormat(this.y,1);
@@ -681,7 +681,7 @@ function setGraphData(graph) {
             yType = 'Linear';
             break;
             
-            case 'Gigas':
+        case 'Gigas':
             var currentPortal = -1;
             graphData = [];
             for (var i in allSaveData) {

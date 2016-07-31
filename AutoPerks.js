@@ -179,11 +179,28 @@ AutoPerks.getOwnedPerks = function() {
     return perks;
 }
 
+//OLDway: Could be out of sync.
+/*
 AutoPerks.getHelium = function(portal) {
     if (portal)
         return game.global.totalHeliumEarned;                                   //use this when respeccing at portaling (call with argument=true)
     else
         return game.global.totalHeliumEarned - game.resources.helium.owned;     //for respec during this run we need to cancel out this run
+}
+*/
+
+//NEW way: Get accurate count of helium (not able to be wrong)
+AutoPerks.getHelium = function() {
+    //determines if we are in the portal screen or the perk screen.
+    var respecMax = (game.global.viewingUpgrades) ? game.global.heliumLeftover : game.global.heliumLeftover + game.resources.helium.owned;
+    //iterates all the perks and gathers up their heliumSpent counts.
+    for (var item in game.portal){
+        if (game.portal[item].locked) continue;
+        var portUpgrade = game.portal[item];
+        if (typeof portUpgrade.level === 'undefined') continue;
+        respecMax += portUpgrade.heliumSpent;
+    }
+    return respecMax;
 }
 
 AutoPerks.spendHelium = function(helium, perks) {
