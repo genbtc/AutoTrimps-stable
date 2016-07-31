@@ -86,60 +86,60 @@ function storeratios() {
 
 //BEGIN AUTOPERKS SCRIPT CODE:>
 AutoPerks.setDefaultRatios = function() {
-	var perks = document.getElementsByClassName("perkRatios");
-	var currentPerk;
-	for(var i = 0; i < perks.length; i++) {
-		currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
-		perks[i].value = currentPerk.value;
-	}
+    var perks = document.getElementsByClassName("perkRatios");
+    var currentPerk;
+    for(var i = 0; i < perks.length; i++) {
+        currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+        perks[i].value = currentPerk.value;
+    }
 }
 
 AutoPerks.setNewRatios = function() {
-	var perks = document.getElementsByClassName('perkRatios');
-	var currentPerk;
-	for(var i = 0; i < perks.length; i++) {
-		currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
-		currentPerk.updatedValue = parseFloat(perks[i].value);
-	}
+    var perks = document.getElementsByClassName('perkRatios');
+    var currentPerk;
+    for(var i = 0; i < perks.length; i++) {
+        currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+        currentPerk.updatedValue = parseFloat(perks[i].value);
+    }
 
-	toughness.updatedValue = resilience.updatedValue / 2;
-	// Manually update tier II perks
-	var tierIIPerks = AutoPerks.getTierIIPerks();
-	for(var i in tierIIPerks) tierIIPerks[i].updatedValue = tierIIPerks[i].parent.updatedValue / tierIIPerks[i].relativeIncrease;
+    toughness.updatedValue = resilience.updatedValue / 2;
+    // Manually update tier II perks
+    var tierIIPerks = AutoPerks.getTierIIPerks();
+    for(var i in tierIIPerks) tierIIPerks[i].updatedValue = tierIIPerks[i].parent.updatedValue / tierIIPerks[i].relativeIncrease;
 }
 
 AutoPerks.calculatePrice = function(perk, level) { // Calculate price of buying *next* level 
-	if(perk.type == 'exponential') return Math.ceil(level/2 + perk.base * Math.pow(1.3, level));
-	else if(perk.type == 'linear') return Math.ceil(perk.base + perk.increase * level);
+    if(perk.type == 'exponential') return Math.ceil(level/2 + perk.base * Math.pow(1.3, level));
+    else if(perk.type == 'linear') return Math.ceil(perk.base + perk.increase * level);
 }
 
 AutoPerks.calculateTotalPrice = function(perk, finalLevel) {
-	var totalPrice = 0;
-	for(var i = 0; i < finalLevel; i++) {
-		totalPrice += AutoPerks.calculatePrice(perk, i)
-	}
-	return totalPrice;
+    var totalPrice = 0;
+    for(var i = 0; i < finalLevel; i++) {
+        totalPrice += AutoPerks.calculatePrice(perk, i)
+    }
+    return totalPrice;
 }
 
 AutoPerks.calculateIncrease = function(perk, level) {
-	var increase = 0;
-	var value; // Allows for custom perk ratios.
+    var increase = 0;
+    var value; // Allows for custom perk ratios.
 
-	if(perk.updatedValue != -1) value = perk.updatedValue;
-	else value = perk.value;
+    if(perk.updatedValue != -1) value = perk.updatedValue;
+    else value = perk.value;
 
-	if(perk.compounding) increase = perk.baseIncrease;
-	else increase = (1 + (level + 1) * perk.baseIncrease) / ( 1 + level * perk.baseIncrease) - 1;
-	return increase / perk.baseIncrease * value;
+    if(perk.compounding) increase = perk.baseIncrease;
+    else increase = (1 + (level + 1) * perk.baseIncrease) / ( 1 + level * perk.baseIncrease) - 1;
+    return increase / perk.baseIncrease * value;
 }
 
 AutoPerks.initialise = function() {
-	var perks = AutoPerks.getOwnedPerks();	
-	for(var i in perks) {
-		perks[i].level = 0;
-		perks[i].spent = 0;
+    var perks = AutoPerks.getOwnedPerks();  
+    for(var i in perks) {
+        perks[i].level = 0;
+        perks[i].spent = 0;
         perks[i].updatedValue = perks[i].value;
-	}
+    }
     toughness.updatedValue = resilience.updatedValue / 2;
     // Manually update tier II perks
     var tierIIPerks = AutoPerks.getTierIIPerks();
@@ -147,26 +147,26 @@ AutoPerks.initialise = function() {
 }
 
 AutoPerks.parseData = function() {
-	AutoPerks.initialise(); // Reset all fixed perks to 0
+    AutoPerks.initialise(); // Reset all fixed perks to 0
     AutoPerks.setNewRatios();
-	var preSpentHe = 0;
-	//helium = game.global.totalHeliumEarned;    // == AutoPerks.getHelium(true)  //use this when respeccing at portaling (call with argument=true)
+    var preSpentHe = 0;
+    //helium = game.global.totalHeliumEarned;    // == AutoPerks.getHelium(true)  //use this when respeccing at portaling (call with argument=true)
     var helium = AutoPerks.getHelium()   //for respec during this run we need to cancel out this run
 
-	// Get owned perks
-	var fixedPerks = AutoPerks.getFixedPerks();
-	for (var i = 0; i < fixedPerks.length; i++) {
-		fixedPerks[i].level = game.portal[AutoPerks.capitaliseFirstLetter(fixedPerks[i].name)].level;
-		var price = AutoPerks.calculateTotalPrice(fixedPerks[i], fixedPerks[i].level);
-		fixedPerks[i].spent += price;
-		preSpentHe += price;
-	}
+    // Get owned perks
+    var fixedPerks = AutoPerks.getFixedPerks();
+    for (var i = 0; i < fixedPerks.length; i++) {
+        fixedPerks[i].level = game.portal[AutoPerks.capitaliseFirstLetter(fixedPerks[i].name)].level;
+        var price = AutoPerks.calculateTotalPrice(fixedPerks[i], fixedPerks[i].level);
+        fixedPerks[i].spent += price;
+        preSpentHe += price;
+    }
 
-	var remainingHelium = helium - preSpentHe;
-	// Get owned perks
-	var perks = AutoPerks.getOwnedPerks();
+    var remainingHelium = helium - preSpentHe;
+    // Get owned perks
+    var perks = AutoPerks.getOwnedPerks();
 
-	AutoPerks.spendHelium(remainingHelium, perks);
+    AutoPerks.spendHelium(remainingHelium, perks);
 }
 
 AutoPerks.getOwnedPerks = function() {
@@ -187,56 +187,56 @@ AutoPerks.getHelium = function(portal) {
 }
 
 AutoPerks.spendHelium = function(helium, perks) {
-	if(helium < 0) {
-		console.log("Not enough helium to buy fixed perks.");
+    if(helium < 0) {
+        console.log("Not enough helium to buy fixed perks.");
         //document.getElementById("nextCoordinated").innerHTML = "Not enough helium to buy fixed perks.";
-		return;
-	}
+        return;
+    }
     
     var perks = AutoPerks.getVariablePerks();
 
-	var effQueue = new FastPriorityQueue(function(a,b) { return a.efficiency > b.efficiency } ) // Queue that keeps most efficient purchase at the top
-	// Calculate base efficiency of all perks
-	for(var i in perks) {
-		var price = AutoPerks.calculatePrice(perks[i], 0);
-		var inc = AutoPerks.calculateIncrease(perks[i], 0);
-		perks[i].efficiency = inc/price;
-		effQueue.add(perks[i]);
-	}
+    var effQueue = new FastPriorityQueue(function(a,b) { return a.efficiency > b.efficiency } ) // Queue that keeps most efficient purchase at the top
+    // Calculate base efficiency of all perks
+    for(var i in perks) {
+        var price = AutoPerks.calculatePrice(perks[i], 0);
+        var inc = AutoPerks.calculateIncrease(perks[i], 0);
+        perks[i].efficiency = inc/price;
+        effQueue.add(perks[i]);
+    }
 
-	var mostEff = effQueue.poll();
-	var price = AutoPerks.calculatePrice(mostEff, mostEff.level); // Price of *next* purchase.
-	var inc;
-	while(price <= helium) {
-		// Purchase the most efficient perk
-		helium -= price;
-		mostEff.level++;
-		mostEff.spent += price;	
-		// Reduce its efficiency
-		inc = AutoPerks.calculateIncrease(mostEff, mostEff.level);
-		price = AutoPerks.calculatePrice(mostEff, mostEff.level);
-		mostEff.efficiency = inc/price;
-		// Add back into queue run again until out of helium
-		effQueue.add(mostEff);
-		mostEff = effQueue.poll();
-		price = AutoPerks.calculatePrice(mostEff, mostEff.level);
-	}
+    var mostEff = effQueue.poll();
+    var price = AutoPerks.calculatePrice(mostEff, mostEff.level); // Price of *next* purchase.
+    var inc;
+    while(price <= helium) {
+        // Purchase the most efficient perk
+        helium -= price;
+        mostEff.level++;
+        mostEff.spent += price; 
+        // Reduce its efficiency
+        inc = AutoPerks.calculateIncrease(mostEff, mostEff.level);
+        price = AutoPerks.calculatePrice(mostEff, mostEff.level);
+        mostEff.efficiency = inc/price;
+        // Add back into queue run again until out of helium
+        effQueue.add(mostEff);
+        mostEff = effQueue.poll();
+        price = AutoPerks.calculatePrice(mostEff, mostEff.level);
+    }
     
     //TODO: Use Dump perks and all that (sitting in bottom of this file).
     var dumpPerk = AutoPerks.getPerkByName("Looting_II");
 
-	for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
-		helium -= price;
-		dumpPerk.spent += price;
-		dumpPerk.level++;
-	}
+    for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
+        helium -= price;
+        dumpPerk.spent += price;
+        dumpPerk.level++;
+    }
 
-	AutoPerks.applyCalculations(perks);    
+    AutoPerks.applyCalculations(perks);    
 }
 
 
 AutoPerks.applyCalculations = function(perks){ 
-	// **BETA-version**: Apply calculations
+    // **BETA-version**: Apply calculations
     if (game.global.canRespecPerks) {
         respecPerks();
     }
@@ -266,13 +266,13 @@ AutoPerks.applyCalculations = function(perks){
 }
 
 AutoPerks.capitaliseFirstLetter = function(str) {
-	return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 AutoPerks.getPercent = function(spentHelium, totalHelium) {
-	var frac = spentHelium / totalHelium;
-	frac = (frac* 100).toPrecision(2);
-	return frac + "%";
+    var frac = spentHelium / totalHelium;
+    frac = (frac* 100).toPrecision(2);
+    return frac + "%";
 }
 
 // Thanks to genr8_ for refactoring this!
@@ -281,47 +281,47 @@ AutoPerks.lowercaseFirst = function(str) {
 }
  
 AutoPerks.FixedPerk = function(name, base, level, max) {
-	this.id = -1;
-	this.name = name;
-	this.base = base;
-	this.type = "exponential";
-	this.fixed = true;
-	this.level = level || 0;
-	this.spent = 0;
-	this.max = max || -1;
+    this.id = -1;
+    this.name = name;
+    this.base = base;
+    this.type = "exponential";
+    this.fixed = true;
+    this.level = level || 0;
+    this.spent = 0;
+    this.max = max || -1;
 }
 
 AutoPerks.VariablePerk = function(name, base, compounding, value, baseIncrease, level) {
-	this.id = -1;
-	this.name = name;
-	this.base = base;
-	this.type  = "exponential";
-	this.fixed = false;
-	this.compounding = compounding;
-	this.value = value;
-	this.updatedValue = -1;
-	this.baseIncrease = baseIncrease;
-	this.efficiency = -1;
-	this.level = level || 0;
-	this.spent = 0;
+    this.id = -1;
+    this.name = name;
+    this.base = base;
+    this.type  = "exponential";
+    this.fixed = false;
+    this.compounding = compounding;
+    this.value = value;
+    this.updatedValue = -1;
+    this.baseIncrease = baseIncrease;
+    this.efficiency = -1;
+    this.level = level || 0;
+    this.spent = 0;
 }
 
 AutoPerks.ArithmeticPerk = function(name, base, increase, baseIncrease, parent, level) { // Calculate a way to obtain parent automatically.
-	this.id = -1;
-	this.name = name;
-	this.base = base;
-	this.increase = increase;
-	this.type = "linear";
-	this.fixed = false;
-	this.compounding = false;
-	this.baseIncrease = baseIncrease;
-	this.parent = parent;
-	this.relativeIncrease = parent.baseIncrease / baseIncrease;
-	this.value = parent.value * this.relativeIncrease;
-	this.updatedValue = -1;
-	this.efficiency = -1;
-	this.level = level || 0;
-	this.spent = 0;
+    this.id = -1;
+    this.name = name;
+    this.base = base;
+    this.increase = increase;
+    this.type = "linear";
+    this.fixed = false;
+    this.compounding = false;
+    this.baseIncrease = baseIncrease;
+    this.parent = parent;
+    this.relativeIncrease = parent.baseIncrease / baseIncrease;
+    this.value = parent.value * this.relativeIncrease;
+    this.updatedValue = -1;
+    this.efficiency = -1;
+    this.level = level || 0;
+    this.spent = 0;
 }
 
 var siphonology = new AutoPerks.FixedPerk("siphonology", 100000, 3, 3);
@@ -354,202 +354,202 @@ var looting_II = new AutoPerks.ArithmeticPerk("looting_II", 100000, 10000, 0.002
 
 
 AutoPerks.getTierIIPerks = function() {
-	var perks = [];
-	for(var i in AutoPerks.perkHolder)
-		if(AutoPerks.perkHolder[i].type == "linear") perks.push(AutoPerks.perkHolder[i]);
-	return perks;
+    var perks = [];
+    for(var i in AutoPerks.perkHolder)
+        if(AutoPerks.perkHolder[i].type == "linear") perks.push(AutoPerks.perkHolder[i]);
+    return perks;
 }
 
 AutoPerks.getAllPerks = function() {
-	var perks = [];
-	for(var i in AutoPerks.perkHolder) perks.push(AutoPerks.perkHolder[i]);
-	return perks;
+    var perks = [];
+    for(var i in AutoPerks.perkHolder) perks.push(AutoPerks.perkHolder[i]);
+    return perks;
 }
 
 AutoPerks.getFixedPerks = function() {
-	var perks = [];
-	for(var i in AutoPerks.perkHolder) 
-		if(AutoPerks.perkHolder[i].fixed) perks.push(AutoPerks.perkHolder[i]);
+    var perks = [];
+    for(var i in AutoPerks.perkHolder) 
+        if(AutoPerks.perkHolder[i].fixed) perks.push(AutoPerks.perkHolder[i]);
     return perks;
 }
 
 AutoPerks.getVariablePerks = function() {
-	var perks = [];
-	for(var i in AutoPerks.perkHolder) 
-		if(!AutoPerks.perkHolder[i].fixed) perks.push(AutoPerks.perkHolder[i]);
+    var perks = [];
+    for(var i in AutoPerks.perkHolder) 
+        if(!AutoPerks.perkHolder[i].fixed) perks.push(AutoPerks.perkHolder[i]);
     return perks;
 }
 
 AutoPerks.getPerk = {};
 
 AutoPerks.setPerks = function() {
-	var perks = {};
-	for(var i in AutoPerks.perkHolder)
-		AutoPerks.getPerk[AutoPerks.perkHolder[i].name] = AutoPerks.perkHolder[i];
+    var perks = {};
+    for(var i in AutoPerks.perkHolder)
+        AutoPerks.getPerk[AutoPerks.perkHolder[i].name] = AutoPerks.perkHolder[i];
 }
 
 AutoPerks.perkHolder = [siphonology, anticipation, meditation, relentlessness, range, agility, bait, trumps, packrat, looting, toughness, power, motivation, pheromones, artisanistry, carpentry, resilience, coordinated, resourceful, overkill, 
-	toughness_II, power_II, motivation_II, carpentry_II, looting_II];
+    toughness_II, power_II, motivation_II, carpentry_II, looting_II];
 AutoPerks.setPerks();
 
 AutoPerks.getPerkByName = function(name) {
-	name = AutoPerks.lowercaseFirst(name);
-	return AutoPerks.getPerk[name];
+    name = AutoPerks.lowercaseFirst(name);
+    return AutoPerks.getPerk[name];
 }
 
 function lastpartfromSpendHelium(){
     //left off from var totalHelium = AutoPerks.getHelium();
     
-	var nextCoordAt = totalHelium - helium // Need to initialise this before rounding.
+    var nextCoordAt = totalHelium - helium // Need to initialise this before rounding.
 
-	var roundFlag = true; //document.getElementById("roundTier_II").checked;
-	var perksII = AutoPerks.getTierIIPerks();
-	var preLevels = perksII.map(function(me) { return me.level; }); // To restore levels for "next coordinated" calculations.
-	var preSpent = perksII.map(function(me) { return me.spent; }); // To restore levels for "next coordinated" calculations.
-	var buffer = new Array(5);
-	var diff = new Array(5);
-	for(var i = 0; i < buffer.length; i++) {
-		diff[i] = 0;
-		buffer[i] = 0;
-	}
-	
-	if(roundFlag) {
-		// Calculate price of rounding up or down to nearest multiple of 10.
-		for(var i = 0; i < perksII.length; i++) {
-			diff[i] = perksII[i].level % 10;
-			if(diff[i] >= 5) { // Round up
-				diff[i] = 10 - diff[i];  // Maps 5 -> 5, 6 -> 4, 7 -> 3 etc. 
-				for(var j = 0; j < diff[i]; j++)
-					buffer[i] += AutoPerks.calculatePrice(perksII[i], perksII[i].level + j);
-			} else { // Round down
-				diff[i] = -diff[i];
-				for(var j = -1; j >= diff[i]; j--)
-					buffer[i] -= AutoPerks.calculatePrice(perksII[i], perksII[i].level + j);
-			}
-		}
-		var tempCost = 0;
-		for(var i = 0; i < buffer.length; i++) tempCost += buffer[i];
-		if(tempCost <= helium) {
-			for(var i in perksII) {
-				perksII[i].level += diff[i];
-				perksII[i].spent += buffer[i]
-			}
-			helium -= tempCost;
-		} else { // Can't afford to round up and down, so round everything down.
-			console.log("Rounding Down");
-			for(var i in perksII) {
-				perksII[i]
-			}
-			buffer = 0;
-			diff = toughness_II.level % 10;
-			for(var i = 0; i < diff; i++) {
-				toughness_II.level--;
-				buffer = AutoPerks.calculatePrice(toughness_II, toughness_II.level);
-				toughness_II.spent -= buffer;
-				helium += buffer;
-			}
-			diff = power_II.level % 10;
-			for(var i = 0; i < diff; i++) {
-				power_II.level--;
-				buffer = AutoPerks.calculatePrice(power_II, power_II.level);
-				power_II.spent -= buffer;
-				helium += buffer;
-			}
-			diff = motivation_II.level % 10;
-			for(var i = 0; i < diff; i++) {
-				motivation_II.level--;
-				buffer = AutoPerks.calculatePrice(motivation_II, motivation_II.level);
-				motivation_II.spent -= buffer;
-				helium += buffer;
-			}
-			diff = carpentry_II.level % 10;
-			for(var i = 0; i < diff; i++) {
-				carpentry_II.level--;
-				buffer = AutoPerks.calculatePrice(carpentry_II, carpentry_II.level);
-				carpentry_II.spent -= buffer;
-				helium += buffer;
-			}
-			diff = looting_II.level % 10;
-			for(var i = 0; i < diff; i++) {
-				looting_II.level--;
-				buffer = AutoPerks.calculatePrice(looting_II, looting_II.level);
-				looting_II.spent -= buffer;
-				helium += buffer;
-			}
-		}
-	}
-
-    /*
-	for(var i in perks) {
-		document.getElementById(perks[i].name + "Level").value = perks[i].level; // set the final levels for each perk
-		document.getElementById(perks[i].name + "Spent").innerHTML = " " + capitaliseFirstLetter(perks[i].name) + " (" + getPercent(perks[i].spent, totalHelium) + " of total helium)";
-	}
-    */
-	
-	// Rounding should not affect "next coordinated" calculations.
-	if(roundFlag) {
-		toughness_II.level = preLevels[0];
-		power_II.level = preLevels[1];
-		motivation_II.level = preLevels[2];
-		carpentry_II.level = preLevels[3];
-		looting_II.level = preLevels[4];
-	}
+    var roundFlag = true; //document.getElementById("roundTier_II").checked;
+    var perksII = AutoPerks.getTierIIPerks();
+    var preLevels = perksII.map(function(me) { return me.level; }); // To restore levels for "next coordinated" calculations.
+    var preSpent = perksII.map(function(me) { return me.spent; }); // To restore levels for "next coordinated" calculations.
+    var buffer = new Array(5);
+    var diff = new Array(5);
+    for(var i = 0; i < buffer.length; i++) {
+        diff[i] = 0;
+        buffer[i] = 0;
+    }
+    
+    if(roundFlag) {
+        // Calculate price of rounding up or down to nearest multiple of 10.
+        for(var i = 0; i < perksII.length; i++) {
+            diff[i] = perksII[i].level % 10;
+            if(diff[i] >= 5) { // Round up
+                diff[i] = 10 - diff[i];  // Maps 5 -> 5, 6 -> 4, 7 -> 3 etc. 
+                for(var j = 0; j < diff[i]; j++)
+                    buffer[i] += AutoPerks.calculatePrice(perksII[i], perksII[i].level + j);
+            } else { // Round down
+                diff[i] = -diff[i];
+                for(var j = -1; j >= diff[i]; j--)
+                    buffer[i] -= AutoPerks.calculatePrice(perksII[i], perksII[i].level + j);
+            }
+        }
+        var tempCost = 0;
+        for(var i = 0; i < buffer.length; i++) tempCost += buffer[i];
+        if(tempCost <= helium) {
+            for(var i in perksII) {
+                perksII[i].level += diff[i];
+                perksII[i].spent += buffer[i]
+            }
+            helium -= tempCost;
+        } else { // Can't afford to round up and down, so round everything down.
+            console.log("Rounding Down");
+            for(var i in perksII) {
+                perksII[i]
+            }
+            buffer = 0;
+            diff = toughness_II.level % 10;
+            for(var i = 0; i < diff; i++) {
+                toughness_II.level--;
+                buffer = AutoPerks.calculatePrice(toughness_II, toughness_II.level);
+                toughness_II.spent -= buffer;
+                helium += buffer;
+            }
+            diff = power_II.level % 10;
+            for(var i = 0; i < diff; i++) {
+                power_II.level--;
+                buffer = AutoPerks.calculatePrice(power_II, power_II.level);
+                power_II.spent -= buffer;
+                helium += buffer;
+            }
+            diff = motivation_II.level % 10;
+            for(var i = 0; i < diff; i++) {
+                motivation_II.level--;
+                buffer = AutoPerks.calculatePrice(motivation_II, motivation_II.level);
+                motivation_II.spent -= buffer;
+                helium += buffer;
+            }
+            diff = carpentry_II.level % 10;
+            for(var i = 0; i < diff; i++) {
+                carpentry_II.level--;
+                buffer = AutoPerks.calculatePrice(carpentry_II, carpentry_II.level);
+                carpentry_II.spent -= buffer;
+                helium += buffer;
+            }
+            diff = looting_II.level % 10;
+            for(var i = 0; i < diff; i++) {
+                looting_II.level--;
+                buffer = AutoPerks.calculatePrice(looting_II, looting_II.level);
+                looting_II.spent -= buffer;
+                helium += buffer;
+            }
+        }
+    }
 
     /*
-	// Initiate dump perk prep and save for use after calculating next Coordinated
-	var selector = document.getElementById('dumpPerk').getElementsByTagName('select')[0];
-	var index = selector.selectedIndex;
-	var dumpFlag = true; 
-	if(selector.value != "None") { // Only dump if "none" is not selected.
-		var dumpPerk = AutoPerks.getPerkByName(selector[index].innerHTML);
-		var dumpLevel = dumpPerk.level;
-		console.log(capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level);
-	}
-	else dumpFlag = false;
+    for(var i in perks) {
+        document.getElementById(perks[i].name + "Level").value = perks[i].level; // set the final levels for each perk
+        document.getElementById(perks[i].name + "Spent").innerHTML = " " + capitaliseFirstLetter(perks[i].name) + " (" + getPercent(perks[i].spent, totalHelium) + " of total helium)";
+    }
     */
-	// Initiate dump perk prep and save for use after calculating next Coordinated
-	var index = 0;
-	
-	// Calculate when next Coordinated
-	var heliumNeeded = 0;
-	var coordOwned = false;
-	for(var i = 0; i < perks.length; i++) {
-		if(perks[i].name == "coordinated") coordOwned = true;
-	}
-	
-	if(coordOwned) {
-		while(mostEff.name != "coordinated") {
-			heliumNeeded += price;
-			mostEff.level++;
-			// Reduce its efficiency
-			inc = AutoPerks.calculateIncrease(mostEff, mostEff.level);
-			price = AutoPerks.calculatePrice(mostEff, mostEff.level);
-			mostEff.efficiency = inc/price;
-			// Add back into queue run again until out of helium
-			effQueue.add(mostEff);
-			mostEff = effQueue.poll();
-			price = AutoPerks.calculatePrice(mostEff, mostEff.level);
-		}
-		heliumNeeded += price;
-	}
+    
+    // Rounding should not affect "next coordinated" calculations.
+    if(roundFlag) {
+        toughness_II.level = preLevels[0];
+        power_II.level = preLevels[1];
+        motivation_II.level = preLevels[2];
+        carpentry_II.level = preLevels[3];
+        looting_II.level = preLevels[4];
+    }
 
-	nextCoordAt += heliumNeeded;
-	var length = Math.floor(Math.log(nextCoordAt)/Math.log(10));
-	var suffix = "";
-	var bigFlag = false; // For numbers larger than 1000T
-	if(length < 3) suffix = "";
-	else if(length < 6) suffix = "K";
-	else if(length < 9) suffix = "M";
-	else if(length < 12) suffix = "B";
-	else if(length < 15) suffix = "T";
-	else bigFlag = true;
-	if(!bigFlag) {
-		var pow = Math.floor(length / 3);
-		nextCoordAt = (nextCoordAt/Math.pow(1000, pow)).toPrecision(3);
-	}
-	if(coordOwned) document.getElementById("nextCoordinated").innerHTML = "Next Coordinated at: " + nextCoordAt + suffix;
-	else document.getElementById("nextCoordinated").innerHTML = "";
+    /*
+    // Initiate dump perk prep and save for use after calculating next Coordinated
+    var selector = document.getElementById('dumpPerk').getElementsByTagName('select')[0];
+    var index = selector.selectedIndex;
+    var dumpFlag = true; 
+    if(selector.value != "None") { // Only dump if "none" is not selected.
+        var dumpPerk = AutoPerks.getPerkByName(selector[index].innerHTML);
+        var dumpLevel = dumpPerk.level;
+        console.log(capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level);
+    }
+    else dumpFlag = false;
+    */
+    // Initiate dump perk prep and save for use after calculating next Coordinated
+    var index = 0;
+    
+    // Calculate when next Coordinated
+    var heliumNeeded = 0;
+    var coordOwned = false;
+    for(var i = 0; i < perks.length; i++) {
+        if(perks[i].name == "coordinated") coordOwned = true;
+    }
+    
+    if(coordOwned) {
+        while(mostEff.name != "coordinated") {
+            heliumNeeded += price;
+            mostEff.level++;
+            // Reduce its efficiency
+            inc = AutoPerks.calculateIncrease(mostEff, mostEff.level);
+            price = AutoPerks.calculatePrice(mostEff, mostEff.level);
+            mostEff.efficiency = inc/price;
+            // Add back into queue run again until out of helium
+            effQueue.add(mostEff);
+            mostEff = effQueue.poll();
+            price = AutoPerks.calculatePrice(mostEff, mostEff.level);
+        }
+        heliumNeeded += price;
+    }
 
-	//storeData();
+    nextCoordAt += heliumNeeded;
+    var length = Math.floor(Math.log(nextCoordAt)/Math.log(10));
+    var suffix = "";
+    var bigFlag = false; // For numbers larger than 1000T
+    if(length < 3) suffix = "";
+    else if(length < 6) suffix = "K";
+    else if(length < 9) suffix = "M";
+    else if(length < 12) suffix = "B";
+    else if(length < 15) suffix = "T";
+    else bigFlag = true;
+    if(!bigFlag) {
+        var pow = Math.floor(length / 3);
+        nextCoordAt = (nextCoordAt/Math.pow(1000, pow)).toPrecision(3);
+    }
+    if(coordOwned) document.getElementById("nextCoordinated").innerHTML = "Next Coordinated at: " + nextCoordAt + suffix;
+    else document.getElementById("nextCoordinated").innerHTML = "";
+
+    //storeData();
 }
 AutoPerks.setDefaultRatios();
