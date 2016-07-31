@@ -180,9 +180,9 @@ AutoPerks.getOwnedPerks = function() {
 
 AutoPerks.getHelium = function(portal) {
     if (portal)
-        return game.global.totalHeliumEarned;
+        return game.global.totalHeliumEarned;                                   //use this when respeccing at portaling (call with argument=true)
     else
-        return game.global.totalHeliumEarned - game.resources.helium.owned;
+        return game.global.totalHeliumEarned - game.resources.helium.owned;     //for respec during this run we need to cancel out this run
 }
 
 AutoPerks.spendHelium = function(helium, perks) {
@@ -508,9 +508,6 @@ function lastpartfromSpendHelium(){
     */
 	// Initiate dump perk prep and save for use after calculating next Coordinated
 	var index = 0;
-	var dumpFlag = true;
-    var dumpPerk = AutoPerks.getPerkByName("Looting_II");
-    var dumpLevel = dumpPerk.level;
 	
 	// Calculate when next Coordinated
 	var heliumNeeded = 0;
@@ -551,27 +548,7 @@ function lastpartfromSpendHelium(){
 	}
 	if(coordOwned) document.getElementById("nextCoordinated").innerHTML = "Next Coordinated at: " + nextCoordAt + suffix;
 	else document.getElementById("nextCoordinated").innerHTML = "";
-	if(dumpFlag) {
-		// Reload dump perk level and commence dumping.
-		dumpPerk.level = dumpLevel;
-		for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
-			helium -= price;
-			dumpPerk.spent += price;
-			dumpPerk.level++;
-		}
 
-		if(roundFlag  && dumpPerk.type == "linear") { // Can't round up at this stage, so round down.
-			buffer = 0;
-			diff = dumpPerk.level % 10;
-			for(var i = 0; i < diff; i++) {	
-				dumpPerk.level--;
-				buffer = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level);
-				dumpPerk.spent -= buffer;
-			}
-		}
-		document.getElementById(dumpPerk.name + "Level").value = dumpPerk.level;
-		document.getElementById(dumpPerk.name + "Spent").innerHTML = " " + capitaliseFirstLetter(dumpPerk.name) + " (" + getPercent(dumpPerk.spent, totalHelium) + " of total helium)";
-	}
 	//storeData();
 }
 AutoPerks.setDefaultRatios();
