@@ -30,6 +30,7 @@ AutoPerks.createInput = function(perkname,div) {
     var perk1input = document.createElement("Input");
     perk1input.id = perkname + 'Ratio';
     perk1input.setAttribute('style', 'text-align: center; width: 60px; color: black;');
+    perk1input.setAttribute('class', 'perkRatios');
     var perk1label = document.createElement("Label");
     perk1label.id = perkname + 'Label';
     perk1label.innerHTML = perkname;
@@ -40,27 +41,73 @@ AutoPerks.createInput = function(perkname,div) {
 }
 var customRatios = document.createElement("DIV");
 customRatios.id = 'customRatios';
+//Line1
 var ratios1 = document.createElement("DIV");
 ratios1.setAttribute('style', 'display: inline-block; text-align: left; width: 100%');
-AutoPerks.createInput("Overkill",ratios1);
-AutoPerks.createInput("Resourceful",ratios1);
-AutoPerks.createInput("Coordinated",ratios1);
-AutoPerks.createInput("Resilience",ratios1);
-AutoPerks.createInput("Carpentry",ratios1);
+var listratios1 = ["Overkill","Resourceful","Coordinated","Resilience","Carpentry"];
+// AutoPerks.createInput("Overkill",ratios1);
+// AutoPerks.createInput("Resourceful",ratios1);
+// AutoPerks.createInput("Coordinated",ratios1);
+// AutoPerks.createInput("Resilience",ratios1);
+// AutoPerks.createInput("Carpentry",ratios1);
+for (var i in listratios1){
+    AutoPerks.createInput(listratios1[i],ratios1);
+}
 var ratios2 = document.createElement("DIV");
 ratios2.setAttribute('style', 'display: inline-block; text-align: left; width: 100%');
-AutoPerks.createInput("Artisanistry",ratios2);
-AutoPerks.createInput("Pheromones",ratios2);
-AutoPerks.createInput("Motivation",ratios2);
-AutoPerks.createInput("Power",ratios2);
-AutoPerks.createInput("Looting",ratios2);
+//Line2
+var listratios2 = ["Artisanistry","Pheromones","Motivation","Power","Looting"];
+// AutoPerks.createInput("Artisanistry",ratios2);
+// AutoPerks.createInput("Pheromones",ratios2);
+// AutoPerks.createInput("Motivation",ratios2);
+// AutoPerks.createInput("Power",ratios2);
+// AutoPerks.createInput("Looting",ratios2);
+for (var i in listratios2){
+    AutoPerks.createInput(listratios2[i],ratios2);
+}
 customRatios.appendChild(ratios1);
 customRatios.appendChild(ratios2);
 // var challengecol = document.getElementById("challengeCol");
 // challengecol.appendChild(customRatios);
 buttonbar.appendChild(customRatios);
 
+/*save ratios to localstorage (not that good)
+function storeratios() {
+    var perkRatios = document.getElementsByClassName("perkRatios");
+    var ratiosarraydict = [];
+    for(var i=0; i < perkRatios.length; i++){
+        var item = perkRatios[i];
+        var data = {key: item.id, value: item.value};        
+        ratiosarraydict.push(data);
+    }
+    localstorage.setitem("perkRatios", ratiosarraydict);
+}
+*/
+
 //BEGIN AUTOPERKS SCRIPT CODE:>
+AutoPerks.setDefaultRatios = function() {
+	var perks = document.getElementsByClassName("perkRatios");
+	var currentPerk;
+	for(var i = 0; i < perks.length; i++) {
+		currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+		perks[i].value = currentPerk.value;
+	}
+}
+
+AutoPerks.setNewRatios = function() {
+	var perks = document.getElementsByClassName('perkRatios');
+	var currentPerk;
+	for(var i = 0; i < perks.length; i++) {
+		currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+		currentPerk.updatedValue = parseFloat(perks[i].value);
+	}
+
+	toughness.updatedValue = resilience.updatedValue / 2;
+	// Manually update tier II perks
+	var tierIIPerks = AutoPerks.getTierIIPerks();
+	for(var i in tierIIPerks) tierIIPerks[i].updatedValue = tierIIPerks[i].parent.updatedValue / tierIIPerks[i].relativeIncrease;
+}
+
 AutoPerks.calculatePrice = function(perk, level) { // Calculate price of buying *next* level 
 	if(perk.type == 'exponential') return Math.ceil(level/2 + perk.base * Math.pow(1.3, level));
 	else if(perk.type == 'linear') return Math.ceil(perk.base + perk.increase * level);
@@ -173,11 +220,17 @@ AutoPerks.spendHelium = function(helium, perks) {
 		mostEff = effQueue.poll();
 		price = AutoPerks.calculatePrice(mostEff, mostEff.level);
 	}
-	var totalHelium = AutoPerks.getHelium();
-    
-    AutoPerks.applyCalculations(perks);
     
     //TODO: Use Dump perks and all that (sitting in bottom of this file).
+    var dumpPerk = AutoPerks.getPerkByName("Looting_II");
+
+	for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
+		helium -= price;
+		dumpPerk.spent += price;
+		dumpPerk.level++;
+	}
+
+	AutoPerks.applyCalculations(perks);    
 }
 
 
@@ -521,3 +574,4 @@ function lastpartfromSpendHelium(){
 	}
 	//storeData();
 }
+AutoPerks.setDefaultRatios();
