@@ -1,3 +1,6 @@
+//Create blank AutoPerks object
+AutoPerks = {};
+
 //Import the Library
 var head = document.getElementsByTagName('head')[0];
 var queuescript = document.createElement('script');
@@ -8,7 +11,8 @@ head.appendChild(queuescript);
 //Create and Add button to Trimps Perk Window
 var buttonbar = document.getElementById("portalWrapper");
 var btnParent = document.createElement("DIV");
-btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; margin-top: 1vw; width: 10vw;');
+btnParent.id = 'allocatorBtnContainer';
+btnParent.setAttribute('style', 'display: inline-block; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; margin-top: 1vw; width: 10vw;');
 var allocatorBtn1 = document.createElement("DIV");
 allocatorBtn1.id = 'allocatorBTN1';
 if (game.global.canRespecPerks) {
@@ -21,9 +25,42 @@ allocatorBtn1.textContent = 'Automatically Allocate Perks';
 btnParent.appendChild(allocatorBtn1);
 buttonbar.appendChild(btnParent);
 
-//BEGIN AUTOPERKS SCRIPT CODE:>
-AutoPerks = {};
+//Create all perk customRatio boxes in Trimps perk window.
+AutoPerks.createInput = function(perkname,div) {
+    var perk1input = document.createElement("Input");
+    perk1input.id = perkname + 'Ratio';
+    perk1input.setAttribute('style', 'text-align: center; width: 60px; color: black;');
+    var perk1label = document.createElement("Label");
+    perk1label.id = perkname + 'Label';
+    perk1label.innerHTML = perkname;
+    perk1label.setAttribute('style', 'margin-right: 1vw; center; width: 120px; ');
+    //add to the div.
+    div.appendChild(perk1input);
+    div.appendChild(perk1label);
+}
+var customRatios = document.createElement("DIV");
+customRatios.id = 'customRatios';
+var ratios1 = document.createElement("DIV");
+ratios1.setAttribute('style', 'display: inline-block; text-align: left; width: 100%');
+AutoPerks.createInput("Overkill",ratios1);
+AutoPerks.createInput("Resourceful",ratios1);
+AutoPerks.createInput("Coordinated",ratios1);
+AutoPerks.createInput("Resilience",ratios1);
+AutoPerks.createInput("Carpentry",ratios1);
+var ratios2 = document.createElement("DIV");
+ratios2.setAttribute('style', 'display: inline-block; text-align: left; width: 100%');
+AutoPerks.createInput("Artisanistry",ratios2);
+AutoPerks.createInput("Pheromones",ratios2);
+AutoPerks.createInput("Motivation",ratios2);
+AutoPerks.createInput("Power",ratios2);
+AutoPerks.createInput("Looting",ratios2);
+customRatios.appendChild(ratios1);
+customRatios.appendChild(ratios2);
+// var challengecol = document.getElementById("challengeCol");
+// challengecol.appendChild(customRatios);
+buttonbar.appendChild(customRatios);
 
+//BEGIN AUTOPERKS SCRIPT CODE:>
 AutoPerks.calculatePrice = function(perk, level) { // Calculate price of buying *next* level 
 	if(perk.type == 'exponential') return Math.ceil(level/2 + perk.base * Math.pow(1.3, level));
 	else if(perk.type == 'linear') return Math.ceil(perk.base + perk.increase * level);
@@ -164,6 +201,7 @@ AutoPerks.applyCalculations = function(perks){
             buyPortalUpgrade(AutoPerks.capitaliseFirstLetter(FixedPerks[i].name));
         }
         game.global.buyAmt = preBuyAmt;
+        cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
         //activateClicked();    //click OK for them (disappears the window).
     }
     else {
