@@ -148,6 +148,7 @@ AutoPerks.initialise = function() {
 
 AutoPerks.parseData = function() {
 	AutoPerks.initialise(); // Reset all fixed perks to 0
+    AutoPerks.setNewRatios();
 	var preSpentHe = 0;
 	//helium = game.global.totalHeliumEarned;    // == AutoPerks.getHelium(true)  //use this when respeccing at portaling (call with argument=true)
     var helium = AutoPerks.getHelium()   //for respec during this run we need to cancel out this run
