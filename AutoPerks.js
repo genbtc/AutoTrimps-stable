@@ -255,8 +255,8 @@ AutoPerks.spendHelium = function(helium, perks) {
 }
 
 //Pushes the respec button, then the Clear All button, then assigns perk points based on what was calculated.
-AutoPerks.applyCalculations = function(perks){ 
-    // **BETA-version**: Apply calculations
+AutoPerks.applyCalculationsRespec = function(perks){ 
+    // **BETA-version**: Apply calculations with respec
     if (game.global.canRespecPerks) {
         respecPerks();
     }
@@ -265,13 +265,13 @@ AutoPerks.applyCalculations = function(perks){
         var preBuyAmt = game.global.buyAmt;
         for(var i in perks) {
             game.global.buyAmt = perks[i].level;
-            console.log(perks[i].name + " " + perks[i].level);
+            //console.log(perks[i].name + " " + perks[i].level);
             buyPortalUpgrade(AutoPerks.capitaliseFirstLetter(perks[i].name));
         }
         var FixedPerks = AutoPerks.getFixedPerks();
         for(var i in FixedPerks) {
             game.global.buyAmt = FixedPerks[i].level;
-            console.log(FixedPerks[i].name + " " + FixedPerks[i].level);
+            //console.log(FixedPerks[i].name + " " + FixedPerks[i].level);
             buyPortalUpgrade(AutoPerks.capitaliseFirstLetter(FixedPerks[i].name));
         }
         game.global.buyAmt = preBuyAmt;
@@ -283,6 +283,48 @@ AutoPerks.applyCalculations = function(perks){
         allocatorBtn1.setAttribute('class', 'settingsBtn settingBtnfalse');
         tooltip("Automatic Perk Allocation Error", "customText", event, "Respec is not available. You used it already, try again next portal. Press esc to close this tooltip." );
     }
+}
+
+//Assigns perk points without respeccing if nothing is needed to be negative.
+AutoPerks.applyCalculations = function(perks){ 
+    // **BETA-version**: Apply calculations without respec
+
+    var preBuyAmt = game.global.buyAmt;
+    var needsRespec = false;
+    for(var i in perks) {        
+        var capitalized = AutoPerks.capitaliseFirstLetter(perks[i].name);
+        game.global.buyAmt = perks[i].level - game.portal[capitalized].level;
+        //console.log(perks[i].name + " " + perks[i].level);        
+        
+        if (game.portal[capitalized].levelTemp < 0) {
+            needsRespec = true;
+            //console.log(perks[i].name + " was negative" + game.portal[capitalized].levelTemp);
+        }
+        else
+            buyPortalUpgrade(capitalized);
+    }
+    var FixedPerks = AutoPerks.getFixedPerks();
+    for(var i in FixedPerks) {
+        var capitalized = AutoPerks.capitaliseFirstLetter(FixedPerks[i].name);
+        game.global.buyAmt = FixedPerks[i].level - game.portal[capitalized].level;
+        //console.log(FixedPerks[i].name + " " + FixedPerks[i].level);
+        
+        if (game.portal[capitalized].levelTemp < 0) {
+            needsRespec = true;
+            //console.log(perks[i].name + " was negative" + game.portal[capitalized].levelTemp);
+        }
+        else
+            buyPortalUpgrade(capitalized);
+    }
+    game.global.buyAmt = preBuyAmt;
+    numTab(1,true);
+    cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
+    if (needsRespec == true){
+        cancelPortal();
+        viewPortalUpgrades();
+        AutoPerks.applyCalculationsRespec(perks);
+    }
+
 }
 
 AutoPerks.capitaliseFirstLetter = function(str) {
