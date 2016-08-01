@@ -26,12 +26,12 @@ btnParent.id = 'allocatorBtnContainer';
 btnParent.setAttribute('style', 'display: inline-block; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; margin-top: 1vw; width: 10vw;');
 var allocatorBtn1 = document.createElement("DIV");
 allocatorBtn1.id = 'allocatorBTN1';
-if (game.global.canRespecPerks) {
+//if (game.global.canRespecPerks) {
     allocatorBtn1.setAttribute('class', 'settingsBtn settingBtntrue');
     allocatorBtn1.setAttribute('onclick', 'AutoPerks.parseData()');
-}
-else
-    allocatorBtn1.setAttribute('class', 'settingsBtn settingBtnfalse');
+//}
+//else
+//    allocatorBtn1.setAttribute('class', 'settingsBtn settingBtnfalse');
 allocatorBtn1.textContent = 'Automatically Allocate Perks';
 btnParent.appendChild(allocatorBtn1);
 buttonbar.appendChild(btnParent);
@@ -45,7 +45,7 @@ AutoPerks.createInput = function(perkname,div) {
     var perk1label = document.createElement("Label");
     perk1label.id = perkname + 'Label';
     perk1label.innerHTML = perkname;
-    perk1label.setAttribute('style', 'margin-right: 1vw; center; width: 120px; ');
+    perk1label.setAttribute('style', 'margin-right: 1vw; width: 120px; ');
     //add to the div.
     div.appendChild(perk1input);
     div.appendChild(perk1label);
@@ -58,16 +58,27 @@ ratios1.setAttribute('style', 'display: inline-block; text-align: left; width: 1
 var listratios1 = ["Overkill","Resourceful","Coordinated","Resilience","Carpentry"];
 for (var i in listratios1)
     AutoPerks.createInput(listratios1[i],ratios1);
+customRatios.appendChild(ratios1);
 var ratios2 = document.createElement("DIV");
 ratios2.setAttribute('style', 'display: inline-block; text-align: left; width: 100%');
 //Line2
 var listratios2 = ["Artisanistry","Pheromones","Motivation","Power","Looting"];
 for (var i in listratios2)
     AutoPerks.createInput(listratios2[i],ratios2);
-customRatios.appendChild(ratios1);
+//Create dump perk dropdown
+var dumpperklabel = document.createElement("Label");
+dumpperklabel.id = 'DumpPerk Label';
+dumpperklabel.innerHTML = "Dump perk:";
+dumpperklabel.setAttribute('style', 'margin-right: 1vw;');
+var dumpperk = document.createElement("select");
+dumpperk.id = 'dumpPerk'
+dumpperk.setAttribute('style', 'text-align: center; width: 120px; color: black;');
+ratios2.appendChild(dumpperklabel);
+ratios2.appendChild(dumpperk);
+//List of the perk options are populated at the bottom of this file.
+
+//
 customRatios.appendChild(ratios2);
-// var challengecol = document.getElementById("challengeCol");
-// challengecol.appendChild(customRatios);
 buttonbar.appendChild(customRatios);
 
 /*save ratios to localstorage (not that good)
@@ -130,7 +141,7 @@ AutoPerks.parseData = function() {
 
     var helium = AutoPerks.getHelium();
 
-    // Get owned perks
+    // Get fixed perks
     var fixedPerks = AutoPerks.getFixedPerks();
     for (var i = 0; i < fixedPerks.length; i++) {
         fixedPerks[i].level = game.portal[AutoPerks.capitaliseFirstLetter(fixedPerks[i].name)].level;
@@ -155,16 +166,6 @@ AutoPerks.getOwnedPerks = function() {
     }
     return perks;
 }
-
-//OLDway: Could be out of sync.
-/*
-AutoPerks.getHelium = function(portal) {
-    if (portal)
-        return game.global.totalHeliumEarned;                                   //use this when respeccing at portaling (call with argument=true)
-    else
-        return game.global.totalHeliumEarned - game.resources.helium.owned;     //for respec during this run we need to cancel out this run
-}
-*/
 
 //NEW way: Get accurate count of helium (not able to be wrong)
 AutoPerks.getHelium = function() {
@@ -242,6 +243,7 @@ AutoPerks.spendHelium = function(helium, perks) {
     }
     
     //NOTES: Dump Perk is being perma-fixed @ Looting 2. This needs a dropdown box.
+    /*
     var dumpPerk = AutoPerks.getPerkByName("Looting_II");
 
     for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
@@ -249,6 +251,24 @@ AutoPerks.spendHelium = function(helium, perks) {
         dumpPerk.spent += price;
         dumpPerk.level++;
     }
+    */
+    
+    
+	// Initiate dump perk
+    
+	var selector = document.getElementById('dumpPerk');
+	var index = selector.selectedIndex;
+    
+    if(selector.value != "None") {
+        var dumpPerk = AutoPerks.getPerkByName(selector[index].innerHTML);
+        console.log(AutoPerks.capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level);
+        for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
+            helium -= price;
+            dumpPerk.spent += price;
+            dumpPerk.level++;
+        }
+    }
+    
 
     //fiddle with the game and do actual stuff
     AutoPerks.applyCalculations(perks);    
@@ -275,6 +295,7 @@ AutoPerks.applyCalculationsRespec = function(perks){
             buyPortalUpgrade(AutoPerks.capitaliseFirstLetter(FixedPerks[i].name));
         }
         game.global.buyAmt = preBuyAmt;
+        numTab(1,true);
         cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
         //activateClicked();    //click OK for them (disappears the window).
     }
@@ -296,7 +317,7 @@ AutoPerks.applyCalculations = function(perks){
         game.global.buyAmt = perks[i].level - game.portal[capitalized].level;
         //console.log(perks[i].name + " " + perks[i].level);        
         
-        if (game.portal[capitalized].levelTemp < 0) {
+        if (perks[i].level < game.portal[capitalized].level) {
             needsRespec = true;
             //console.log(perks[i].name + " was negative" + game.portal[capitalized].levelTemp);
         }
@@ -309,7 +330,7 @@ AutoPerks.applyCalculations = function(perks){
         game.global.buyAmt = FixedPerks[i].level - game.portal[capitalized].level;
         //console.log(FixedPerks[i].name + " " + FixedPerks[i].level);
         
-        if (game.portal[capitalized].levelTemp < 0) {
+        if (perks[i].level < game.portal[capitalized].level) {
             needsRespec = true;
             //console.log(perks[i].name + " was negative" + game.portal[capitalized].levelTemp);
         }
@@ -459,3 +480,13 @@ AutoPerks.getPerkByName = function(name) {
 }
 
 AutoPerks.setDefaultRatios();
+
+//populate dump perk dropdown list 
+var dumpDropdown = document.getElementById('dumpPerk');
+var html = "";
+var dumpperks = AutoPerks.getVariablePerks();
+for(var i = 0; i < dumpperks.length; i++)
+    html += "<option id='"+dumpperks[i].name+"Dump'>"+AutoPerks.capitaliseFirstLetter(dumpperks[i].name)+"</option>"
+html += "<option id='none'>None</option></select>";
+dumpDropdown.innerHTML = html;
+dumpDropdown.selectedIndex = dumpDropdown.length - 2; // Second to last element is looting_II
