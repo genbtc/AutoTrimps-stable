@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoPerks
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0-beta-7-31-2016
+// @version      1.0.02-beta-7-31-2016
 // @description  Trimps Automatic Perk Calculator
 // @author       zxv, genBTC
 // @include      *trimps.github.io*
@@ -26,12 +26,8 @@ btnParent.id = 'allocatorBtnContainer';
 btnParent.setAttribute('style', 'display: inline-block; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; margin-top: 1vw; width: 10vw;');
 var allocatorBtn1 = document.createElement("DIV");
 allocatorBtn1.id = 'allocatorBTN1';
-//if (game.global.canRespecPerks) {
-    allocatorBtn1.setAttribute('class', 'settingsBtn settingBtntrue');
-    allocatorBtn1.setAttribute('onclick', 'AutoPerks.parseData()');
-//}
-//else
-//    allocatorBtn1.setAttribute('class', 'settingsBtn settingBtnfalse');
+allocatorBtn1.setAttribute('class', 'settingsBtn settingBtntrue');
+allocatorBtn1.setAttribute('onclick', 'AutoPerks.parseData()');
 allocatorBtn1.textContent = 'Automatically Allocate Perks';
 btnParent.appendChild(allocatorBtn1);
 buttonbar.appendChild(btnParent);
@@ -242,23 +238,9 @@ AutoPerks.spendHelium = function(helium, perks) {
         price = AutoPerks.calculatePrice(mostEff, mostEff.level);
     }
     
-    //NOTES: Dump Perk is being perma-fixed @ Looting 2. This needs a dropdown box.
-    /*
-    var dumpPerk = AutoPerks.getPerkByName("Looting_II");
-
-    for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
-        helium -= price;
-        dumpPerk.spent += price;
-        dumpPerk.level++;
-    }
-    */
-    
-    
-	// Initiate dump perk
-    
+	//Begin selectable dump perk code   
 	var selector = document.getElementById('dumpPerk');
 	var index = selector.selectedIndex;
-    
     if(selector.value != "None") {
         var dumpPerk = AutoPerks.getPerkByName(selector[index].innerHTML);
         console.log(AutoPerks.capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level);
@@ -268,9 +250,9 @@ AutoPerks.spendHelium = function(helium, perks) {
             dumpPerk.level++;
         }
     }
-    
+    //end dump perk code.
 
-    //fiddle with the game and do actual stuff
+    //re-arrange perk points and stuff
     AutoPerks.applyCalculations(perks);    
 }
 
@@ -315,12 +297,9 @@ AutoPerks.applyCalculations = function(perks){
     for(var i in perks) {        
         var capitalized = AutoPerks.capitaliseFirstLetter(perks[i].name);
         game.global.buyAmt = perks[i].level - game.portal[capitalized].level;
-        //console.log(perks[i].name + " " + perks[i].level);        
-        
-        if (perks[i].level < game.portal[capitalized].level) {
+        //console.log(perks[i].name + " " + perks[i].level);
+        if (perks[i].level < game.portal[capitalized].level)
             needsRespec = true;
-            //console.log(perks[i].name + " was negative" + game.portal[capitalized].levelTemp);
-        }
         else
             buyPortalUpgrade(capitalized);
     }
@@ -329,11 +308,8 @@ AutoPerks.applyCalculations = function(perks){
         var capitalized = AutoPerks.capitaliseFirstLetter(FixedPerks[i].name);
         game.global.buyAmt = FixedPerks[i].level - game.portal[capitalized].level;
         //console.log(FixedPerks[i].name + " " + FixedPerks[i].level);
-        
-        if (perks[i].level < game.portal[capitalized].level) {
+        if (perks[i].level < game.portal[capitalized].level)
             needsRespec = true;
-            //console.log(perks[i].name + " was negative" + game.portal[capitalized].levelTemp);
-        }
         else
             buyPortalUpgrade(capitalized);
     }
@@ -341,8 +317,12 @@ AutoPerks.applyCalculations = function(perks){
     numTab(1,true);
     cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
     if (needsRespec == true){
+        var whichscreen = game.global.viewingUpgrades;
         cancelPortal();
-        viewPortalUpgrades();
+        if (whichscreen){
+            viewPortalUpgrades();
+        else
+            portalClicked();
         AutoPerks.applyCalculationsRespec(perks);
     }
 
