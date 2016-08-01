@@ -41,7 +41,7 @@ AutoPerks.createInput = function(perkname,div) {
     var perk1label = document.createElement("Label");
     perk1label.id = perkname + 'Label';
     perk1label.innerHTML = perkname;
-    perk1label.setAttribute('style', 'margin-right: 1vw; width: 120px; ');
+    perk1label.setAttribute('style', 'margin-right: 1vw; width: 120px; color: white;');
     //add to the div.
     div.appendChild(perk1input);
     div.appendChild(perk1label);
@@ -65,7 +65,7 @@ for (var i in listratios2)
 var dumpperklabel = document.createElement("Label");
 dumpperklabel.id = 'DumpPerk Label';
 dumpperklabel.innerHTML = "Dump perk:";
-dumpperklabel.setAttribute('style', 'margin-right: 1vw;');
+dumpperklabel.setAttribute('style', 'margin-right: 1vw; color: white;');
 var dumpperk = document.createElement("select");
 dumpperk.id = 'dumpPerk'
 dumpperk.setAttribute('style', 'text-align: center; width: 120px; color: black;');
@@ -319,7 +319,7 @@ AutoPerks.applyCalculations = function(perks){
     if (needsRespec == true){
         var whichscreen = game.global.viewingUpgrades;
         cancelPortal();
-        if (whichscreen){
+        if (whichscreen)
             viewPortalUpgrades();
         else
             portalClicked();
