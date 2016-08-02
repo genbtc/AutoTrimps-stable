@@ -1874,10 +1874,13 @@ function autoMap() {
         //Get 200% map bonus before attempting Spire
         if(game.global.world == 200 && game.global.mapBonus < 10 && game.global.spireActive) shouldDoMaps = true;
 
+
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
         if(game.global.challengeActive == 'Toxicity' && game.global.lastClearedCell > 93 && game.challenges.Toxicity.stacks < 1500 && ((getPageSetting('MaxTox') && game.global.world > 59) || needToVoid)) {
             shouldDoMaps = true;
-            //we willl get at least 85 toxstacks from the 1st voidmap
+            //we willl get at least 85 toxstacks from the 1st voidmap (unless we have overkill)
+//            if (!game.portal.Overkill.locked && game.stats.cellsOverkilled.value)
+                
             stackingTox = !(needToVoid && game.challenges.Toxicity.stacks > 1415);
 
             //force abandon army
@@ -1926,8 +1929,7 @@ function autoMap() {
         else shouldDoMap = "create";
          
         //set the repeatBionics flag (farm bionics before spire), for the repeat management code below.
-        var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 5; //WARNING: Currently repeats infinitely, no cue to exit, not sure under what conditions it should exit. When Farming is done? When is that? When player's Block exceeds cell 100's Spire improbability's attack?  We can get the attack data with this command: getSpireStats(100, "Improbability", "attack"). Needs to know there are no more prestige items so we can set this to false.
-
+        var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 5;
 
         //Look through all the maps we have - find Uniques or Voids and figure out if we need to run them.
         for (var map in game.global.mapsOwnedArray) {
@@ -1939,6 +1941,8 @@ function autoMap() {
                 doVoids = true;
                 //check to make sure we won't get 1-shot in nostance by boss
                 var eAttack = getEnemyMaxAttack(game.global.world, theMap.size, 'Voidsnimp', theMap.difficulty);
+                if (game.global.world >= 181 || (game.global.challengeActive == "Corrupted" && game.global.world >= 60))
+                    eAttack *= (getCorruptScale("attack") / 2).toFixed(1);
                 var ourHealth = baseHealth;
                 if(game.global.challengeActive == 'Balance') {
                     var stacks = game.challenges.Balance.balanceStacks ? (game.challenges.Balance.balanceStacks > theMap.size) ? theMap.size : game.challenges.Balance.balanceStacks : false;
@@ -2020,12 +2024,8 @@ function autoMap() {
                     //Count number of prestige items left,
                     var prestigeitemsleft = addSpecials(true, true, theMap);
                     //Always run Bionic Wonderland VI (if there are still prestige items available)
-                    if (theMap.name == 'Bionic Wonderland VI' && prestigeitemsleft > 0){
-                        shouldDoMap = theMap.id;
-                        break;
-                    }
-                    //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI) - Code will not get to here if we have items still.
-                    if (theMap.name == 'Bionic Wonderland VII' && prestigeitemsleft > 0){
+                    //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI)
+                    if ((prestigeitemsleft > 0 && (theMap.name == 'Bionic Wonderland VI' || theMap.name == 'Bionic Wonderland VII')){
                         shouldDoMap = theMap.id;
                         break;
                     }
@@ -2208,6 +2208,7 @@ function autoMap() {
         }
     }
     else {
+        //clear any of the stale messages from the previous run, between zones 1-6 after portal.
         enoughDamage = true; enoughHealth = true; shouldFarm = false;
     }
 }
@@ -2229,6 +2230,7 @@ function calculateHelium (stacks) {
     amt += Math.round(baseAmt * level);
     
     if (game.portal.Looting.level) amt += (amt * game.portal.Looting.level * game.portal.Looting.modifier);
+    if (game.portal.Looting_II.level) amt += (amt * game.portal.Looting_II.level * game.portal.Looting_II.modifier);
     
     if (game.global.challengeActive == "Toxicity"){
         var toxMult = (game.challenges.Toxicity.lootMult * game.challenges.Toxicity.stacks) / 100;
@@ -2389,7 +2391,7 @@ function manageGenes() {
     //if we need to hire geneticists
     //Don't hire geneticists if total breed time remaining is greater than our target breed time
     //Don't hire geneticists if we have already reached 30 anti stacks (put off further delay to next trimp group)
-    if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < 30) && game.resources.trimps.soldiers > 0 && inDamageStance && !breedFire) {
+    if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && inDamageStance && !breedFire) {
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
         if (fWorkers < 1 && canAffordJob('Geneticist', false)) {
