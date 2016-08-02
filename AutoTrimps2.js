@@ -2024,7 +2024,7 @@ function autoMap() {
                     var prestigeitemsleft = addSpecials(true, true, theMap);
                     //Always run Bionic Wonderland VI (if there are still prestige items available)
                     //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI)
-                    if ((prestigeitemsleft > 0 && (theMap.name == 'Bionic Wonderland VI' || theMap.name == 'Bionic Wonderland VII')){
+                    if ((prestigeitemsleft > 0 && (theMap.name == 'Bionic Wonderland VI' || theMap.name == 'Bionic Wonderland VII'))){
                         shouldDoMap = theMap.id;
                         break;
                     }
