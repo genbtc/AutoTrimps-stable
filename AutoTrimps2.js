@@ -2113,62 +2113,58 @@ function autoMap() {
                 mapsClicked();
             return;
         }
-        //repeat button management
-        if (!game.global.preMapsActive) {
-            if (game.global.mapsActive) {
-                
-                //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
-                //or repeatbionics is true and there are still prestige items available to get
-                if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) || (repeatBionics && addSpecials(true, true, game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)]) > 0)) {
-                    var targetPrestige = autoTrimpSettings.Prestige.selected;
-                    //make sure repeat map is on
-                    if (!game.global.repeatMap) {
-                        repeatClicked();
-                    }
-                    //if we aren't here for dmg/hp, and we see the prestige we are after on the last cell of this map, and it's the last one available, turn off repeat to avoid an extra map cycle
-                    if (!shouldDoMaps && (game.global.mapGridArray[game.global.mapGridArray.length - 1].special == targetPrestige && game.mapUnlocks[targetPrestige].last >= game.global.world - 9 )) {
-                        repeatClicked();
-                    }
-                    //avoid another map cycle due to having the amount of tox stacks we need.
-                    if (stackingTox && (game.challenges.Toxicity.stacks + game.global.mapGridArray.length - (game.global.lastClearedMapCell + 1) >= 1500)){
-                        repeatClicked();
-                    }
-                    //turn off repeat maps if we doing Watch maps.
-                    if (shouldDoWatchMaps)
-                        repeatClicked();
-                } else {
-                    //otherwise, make sure repeat map is off
-                    if (game.global.repeatMap) {
-                        repeatClicked();
-                    }
+        //repeat button management (inside a map):
+        if (!game.global.preMapsActive && game.global.mapsActive) {
+            //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
+            //or repeatbionics is true and there are still prestige items available to get
+            if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) || (repeatBionics && addSpecials(true, true, game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)]) > 0)) {
+                var targetPrestige = autoTrimpSettings.Prestige.selected;
+                //make sure repeat map is on
+                if (!game.global.repeatMap) {
+                    repeatClicked();
                 }
-            } else if (!game.global.mapsActive) {
-                if (shouldDoMap != "world") {
-                    //if shouldFarm, don't switch until after megamining. if "wants damage", go in first 10 cells of zone (do map bonus simultaneously)
-                    //if need prestige, go immediately.
-                    if (!game.global.switchToMaps){
-                        if ((shouldDoMaps && game.global.lastClearedCell < 10) || (shouldFarm && game.global.lastClearedCell >= 59) || needPrestige || doVoids || shouldDoMap!="world")
-                            mapsClicked();
-                    }
-                    ////Get Impatient/Abandon if: need prestige / _NEED_ to do void maps / on lead in odd world. AND a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone )
-                    if(
-                        game.global.switchToMaps 
-                        && 
-                        (needPrestige || doVoids || (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1)) 
-                        && 
-                            (
-                            (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1)
-                            || (game.global.challengeActive == 'Lead' && game.global.lastClearedCell > 93) 
-                            || (doVoids && game.global.lastClearedCell > 93)
-                            )
-                        ){
-                        mapsClicked();
-                    }
+                //if we aren't here for dmg/hp, and we see the prestige we are after on the last cell of this map, and it's the last one available, turn off repeat to avoid an extra map cycle
+                if (!shouldDoMaps && (game.global.mapGridArray[game.global.mapGridArray.length - 1].special == targetPrestige && game.mapUnlocks[targetPrestige].last >= game.global.world - 9 )) {
+                    repeatClicked();
                 }
-                //forcibly run watch maps
+                //avoid another map cycle due to having the amount of tox stacks we need.
+                if (stackingTox && (game.challenges.Toxicity.stacks + game.global.mapGridArray.length - (game.global.lastClearedMapCell + 1) >= 1500)){
+                    repeatClicked();
+                }
+                //turn off repeat maps if we doing Watch maps.
                 if (shouldDoWatchMaps)
-                    mapsClicked();                
+                    repeatClicked();
+            } else {
+                //otherwise, make sure repeat map is off
+                if (game.global.repeatMap) {
+                    repeatClicked();
+                }
             }
+        //clicks the maps button, once or twice (inside the world):
+        } else if (!game.global.preMapsActive && !game.global.mapsActive) {
+            if (shouldDoMap != "world") {
+                //if we should not be in the world, click map button once (and wait patiently until death)
+                if (!game.global.switchToMaps){
+                    mapsClicked();
+                }
+                //Get Impatient/Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone)
+                if(
+                    game.global.switchToMaps 
+                    && 
+                    (needPrestige || doVoids || (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1)) 
+                    && 
+                        (
+                        (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1)
+                        || (game.global.challengeActive == 'Lead' && game.global.lastClearedCell > 93) 
+                        || (doVoids && game.global.lastClearedCell > 93)
+                        )
+                    ){
+                    mapsClicked();
+                }
+            }
+            //forcibly run watch maps
+            if (shouldDoWatchMaps)
+                mapsClicked();
         } else if (game.global.preMapsActive) {
             if (shouldDoMap == "world") {
                 mapsClicked();  //go back
