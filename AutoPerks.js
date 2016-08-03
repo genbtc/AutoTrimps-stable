@@ -64,14 +64,33 @@ for (var i in listratios2)
 //Create dump perk dropdown
 var dumpperklabel = document.createElement("Label");
 dumpperklabel.id = 'DumpPerk Label';
-dumpperklabel.innerHTML = "Dump perk:";
+dumpperklabel.innerHTML = "Dump Perk:";
 dumpperklabel.setAttribute('style', 'margin-right: 1vw; color: white;');
 var dumpperk = document.createElement("select");
-dumpperk.id = 'dumpPerk'
+dumpperk.id = 'dumpPerk';
 dumpperk.setAttribute('style', 'text-align: center; width: 120px; color: black;');
 ratios2.appendChild(dumpperklabel);
 ratios2.appendChild(dumpperk);
 //List of the perk options are populated at the bottom of this file.
+//Create ratioPreset dropdown
+var ratioPresetLabel = document.createElement("Label");
+ratioPresetLabel.id = 'Ratio Preset Label';
+ratioPresetLabel.innerHTML = "Ratio Preset:";
+ratioPresetLabel.setAttribute('style', 'margin-right: 1vw; color: white;');
+var ratioPreset = document.createElement("select");
+ratioPreset.id = 'ratioPreset';
+ratioPreset.setAttribute('style', 'text-align: center; width: 110px; color: black;');
+//List of the perk options are populated at the bottom of this file.
+//populate dump perk dropdown list 
+var html = "<option id='zxvPreset'>ZXV (default)</option>"
+html += "<option id='TruthPreset'>Truth</option>"
+html += "<option id='nSheetzPreset'>nSheetz</option>"
+html += "<option id='customPreset'>Custom</option></select>"
+ratioPreset.innerHTML = html;
+ratioPreset.selectedIndex = 0; // First element is zxv (default) ratio.
+ratioPreset.setAttribute('onchange', 'AutoPerks.setDefaultRatios()');
+ratios1.appendChild(ratioPresetLabel);
+ratios1.appendChild(ratioPreset);
 
 //
 customRatios.appendChild(ratios2);
@@ -96,10 +115,11 @@ function storeratios() {
 //executed manually at the very last line of this file.
 AutoPerks.setDefaultRatios = function() {
     var perks = document.getElementsByClassName("perkRatios");
+    var ratioSet = document.getElementById("ratioPreset").selectedIndex;
     var currentPerk;
     for(var i = 0; i < perks.length; i++) {
         currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
-        perks[i].value = currentPerk.value;
+        perks[i].value = currentPerk.value[ratioSet];
     }
 }
 
@@ -379,7 +399,7 @@ AutoPerks.ArithmeticPerk = function(name, base, increase, baseIncrease, parent, 
     this.baseIncrease = baseIncrease;
     this.parent = parent;
     this.relativeIncrease = parent.baseIncrease / baseIncrease;
-    this.value = parent.value * this.relativeIncrease;
+    this.value = parent.value.map(function(me) { return me * this.relativeIncrease; });
     this.updatedValue = -1;
     this.efficiency = -1;
     this.level = level || 0;
@@ -395,18 +415,18 @@ var agility = new AutoPerks.FixedPerk("agility", 4, 20, 20);
 var bait = new AutoPerks.FixedPerk("bait", 4, 30);
 var trumps = new AutoPerks.FixedPerk("trumps", 3, 30);
 var packrat = new AutoPerks.FixedPerk("packrat", 3, 30);
-//the ratios are hardcoded into the following lines: example: looting: 20
-var looting = new AutoPerks.VariablePerk("looting", 1, false, 20, 0.05);
-var toughness = new AutoPerks.VariablePerk("toughness", 1, false, 1, 0.05);
-var power = new AutoPerks.VariablePerk("power", 1, false, 1, 0.05);
-var motivation = new AutoPerks.VariablePerk("motivation", 2, false, 1.5, 0.05);
-var pheromones = new AutoPerks.VariablePerk("pheromones", 3, false, 0.5, 0.1);
-var artisanistry = new AutoPerks.VariablePerk("artisanistry", 15, true, 1.5, 0.1);
-var carpentry = new AutoPerks.VariablePerk("carpentry", 25, true, 8, 0.1);
-var resilience = new AutoPerks.VariablePerk("resilience", 100, true, 1, 0.1);
-var coordinated = new AutoPerks.VariablePerk("coordinated", 150000, true, 25, 0.1);
-var resourceful = new AutoPerks.VariablePerk("resourceful", 50000, true, 2, 0.05);
-var overkill = new AutoPerks.VariablePerk("overkill", 1000000, true, 3, 0.005);
+//the ratios are hardcoded into the following lines: example: looting: [20, 24, 42] as [zxv, truth, nsheetz]
+var looting = new AutoPerks.VariablePerk("looting", 1, false, [20, 24, 42], 0.05);
+var toughness = new AutoPerks.VariablePerk("toughness", 1, false, [1, 4, 1.75], 0.05);
+var power = new AutoPerks.VariablePerk("power", 1, false, [1, 4, 5], 0.05);
+var motivation = new AutoPerks.VariablePerk("motivation", 2, false, [1.5, 4, 4], 0.05);
+var pheromones = new AutoPerks.VariablePerk("pheromones", 3, false, [0.5, 4, 1.7], 0.1);
+var artisanistry = new AutoPerks.VariablePerk("artisanistry", 15, true, [1.5, 2, 5], 0.1);
+var carpentry = new AutoPerks.VariablePerk("carpentry", 25, true, [ 8, 24, 29], 0.1);
+var resilience = new AutoPerks.VariablePerk("resilience", 100, true, [1, 8, 3.5], 0.1);
+var coordinated = new AutoPerks.VariablePerk("coordinated", 150000, true, [25, 60, 100], 0.1);
+var resourceful = new AutoPerks.VariablePerk("resourceful", 50000, true, [2, 2, 2], 0.05);
+var overkill = new AutoPerks.VariablePerk("overkill", 1000000, true, [3, 3, 5], 0.005);
 //tier2 perks
 var toughness_II = new AutoPerks.ArithmeticPerk("toughness_II", 20000, 500, 0.01, toughness);
 var power_II = new AutoPerks.ArithmeticPerk("power_II", 20000, 500, 0.01, power);
