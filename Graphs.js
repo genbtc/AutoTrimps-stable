@@ -331,19 +331,26 @@ function pushData() {
     localStorage.setItem('allSaveData', JSON.stringify(allSaveData));
 }
 
-
-function gatherInfo() {
+function initializeData() {
+    //initialize fresh with a blank array if needed
     if (allSaveData === null) {
         allSaveData = [];
     }
-    
+    //fill the array with the first data point
     if (allSaveData.length === 0) {
         pushData();
-    } else if (allSaveData[allSaveData.length - 1].world != game.global.world) {
+    }
+}
+
+//main function of the graphs script - runs every second.
+function gatherInfo() {
+    initializeData();
+    //if we have reached a new zone, push a new data point (main
+    if (allSaveData.length > 0 && allSaveData[allSaveData.length - 1].world != game.global.world) {
         pushData();
     }
 
-    //clear filtered loot data upon portaling. <5 check to hopefully throw out bone portal shenanigans
+    //clear filtered loot data upon portaling. < 5 check to hopefully throw out bone portal shenanigans
     if(allSaveData[allSaveData.length -1].totalPortals != game.global.totalPortals && game.global.world < 5) {
     	for(var r in filteredLoot) {
     		for(var b in filteredLoot[r]){
@@ -351,13 +358,10 @@ function gatherInfo() {
     		}
     	}
     }
-    // graphData = setColor(graphData);
-
-
 }
 
 function drawGraph() {
-        setGraphData(document.getElementById('graphSelection').value);
+    setGraphData(document.getElementById('graphSelection').value);
 }
 
 function setGraphData(graph) {
@@ -370,7 +374,7 @@ function setGraphData(graph) {
         return '<span style="color:' + ser.color + '" >●</span> ' +
                 ser.name + ': <b>' + 
                 Highcharts.numberFormat(this.y, 0,'.', ',') + valueSuffix + '</b><br>';
-            };
+    };
             
     switch (graph) {
         case 'Clear Time':
@@ -472,6 +476,7 @@ function setGraphData(graph) {
             yTitle = 'Helium';
             yType = 'Linear';
             break;
+            
         case 'HeliumPerHour':
             var currentPortal = -1;
             var currentZone = -1;
@@ -772,7 +777,7 @@ function getLootData() {
 
 setInterval(getLootData, 30000);
 
-//overwriting default game functions!!!!!!!!!!!!!!!!!!!!!!
+//BEGIN overwriting default game functions!!!!!!!!!!!!!!!!!!!!!!
 game.badGuys.Jestimp.loot = 
 function() {
     var elligible = ["food", "wood", "metal", "science"];
@@ -824,10 +829,9 @@ function addResCheckMax(what, number, noStat, fromGather, nonFilteredLoot) {
 	if (nonFilteredLoot && game.options.menu.useAverages.enabled){
 		addAvg(what, number);
 	}
-}
+}//END overwriting default game functions!!!!!!!!!!!!!!!!!!!!!!
 
-//END game function overwrite
-
+//Initialize the saved data objects, and load data/grab from browser if found.
 var allSaveData = [];
 var graphData = [];
 var tmpGraphData = JSON.parse(localStorage.getItem('allSaveData'));
@@ -836,5 +840,5 @@ if (tmpGraphData !== null) {
     allSaveData = tmpGraphData;
 }
 
+//run the main gatherInfo function 1 time every second
 setInterval(gatherInfo, 1000);
-
