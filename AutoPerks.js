@@ -238,6 +238,10 @@ AutoPerks.spendHelium = function(helium, perks) {
         var price = AutoPerks.calculatePrice(perks[i], 0);
         var inc = AutoPerks.calculateIncrease(perks[i], 0);
         perks[i].efficiency = inc/price;
+        if(perks[i].efficiency == 0) {
+            console.log("Perk ratios must be positive values.");
+            return;
+        }
         effQueue.add(perks[i]);
     }
 

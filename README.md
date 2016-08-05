@@ -39,8 +39,8 @@ Feel free to submit any bugs/suggestions as issues here on github.
 ## Most recent feature changes by genBTC (up to date as of 8/5/2016): 
 - Minutes to Farm Before Spire - force some time to be spent so you can for sure complete Spire (recommended: 3-10 minutes)
 - Auto Upgrade Heirlooms - spends ALL your nullifium on the recommended upgrades
-- Auto Golden Upgrades
-- Always Runs 10 maps for 200% map bonus before attempting Spire (happens after the first death)
+- Auto Golden Upgrades = Buys all the Golden Helium, Battle, or Voids when available.
+- Always Runs 10 maps for 200% map bonus before attempting Spire (happens after the first death if you don't select "Map At Spire" in regular Trimps settings)
 - AutoHeirlooms2 - new algorithm to sort/carry/recycle the Heirlooms (the original had a bug)
 - Cap Trainers to a % of Tributes - Only buy a trainer when its cost is less than X% of the cost of a tribute. Prevents from competing with food resources, if you care.
 - Run Bionic Before Spire - meant as a one time function (like max tox is) to farm the Bionic Wonderland maps for a LONG time(2 hours-ish) before entering Spire. (not HE/hr efficient)
@@ -58,7 +58,7 @@ So you can choose original behavior of always using the lowest level map,
 or the modified behavior, which increases the map level based on your damage.
 The old behavior of "no siphonology at all when using DisableFarming" is no longer applied, under any circumstance.
 - Skip Gear Level 58&59: Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.
-- Cap Equip to 10: Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.
+- Cap Equip to 10: Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, should not impact Zone 60+.
 - Delay Armor When needed: Delay buying armor prestige upgrades during Want More Damage or Farming automap-modes.
 - Add console debug messages to the map selection/buying/running section.
 - Put a numerical status on the "Farming"&"Want more Damage" UI indicator.

@@ -1801,7 +1801,7 @@ function autoMap() {
         autoTrimpSettings.Prestige.selected = "Bestplate";
     }    
     //Control in-map right-side-buttons for people who can't control themselves. If you wish to use these buttons manually, turn off autoMaps temporarily.
-    if(game.options.menu.repeatUntil.enabled != 0) toggleSetting('repeatUntil');
+    if(game.options.menu.repeatUntil.enabled == 2) toggleSetting('repeatUntil');
     if(game.options.menu.exitTo.enabled != 0) toggleSetting('exitTo');
     if(game.options.menu.repeatVoids.enabled != 0) toggleSetting('repeatVoids');
     
@@ -2037,7 +2037,7 @@ function autoMap() {
         //sort the array (harder/highvalue last):
         var voidArraySorted = voidArray.sort(function(a, b) {
             return a.sortByDiff - b.sortByDiff;
-        });        
+        });
         for (var map in voidArraySorted) {
             var theMap = voidArraySorted[map];
             //Only proceed if we needToVoid right now.
@@ -2114,7 +2114,7 @@ function autoMap() {
         if (!game.global.preMapsActive && game.global.mapsActive) {
             //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
             //or repeatbionics is true and there are still prestige items available to get
-            if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps)) || (repeatBionics && addSpecials(true, true, game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)]) > 0)) {
+            if (shouldDoMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps)) || (repeatBionics && addSpecials(true, true, getCurrentMapObject()) > 0)) {
                 var targetPrestige = autoTrimpSettings.Prestige.selected;
                 //make sure repeat map is on
                 if (!game.global.repeatMap) {
@@ -2212,20 +2212,27 @@ function autoMap() {
                     biomeAdvMapsSelect.value = "Random";
                     updateMapCost();
                 }
-                //if we are farming (for resources), make sure it's metal, and put low priority on size
+                //if we are "Farming" for resources, make sure it's metal
                 if(shouldFarm) {
                     biomeAdvMapsSelect.value = "Mountain";
-                    while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                        sizeAdvMapsRange.value -= 1;
-                    }
                 } else {
-                    //prioritize size over difficulty? Not sure. high Helium that just wants prestige = yes.
+                    //if we can't afford the map:
+                    //Put a priority on small size, and increase the difficulty? for high Helium that just wants prestige = yes.
                     //Really just trying to prevent prestige mapping from getting stuck
                     while (difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
                         difficultyAdvMapsRange.value -= 1;
                     }
                 }
-                //if we can't afford the map we designed, pick our highest map
+                //Common:
+                //if we still cant afford the map, lower the size slider (make it larger) (doesn't matter much for farming.)
+                while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
+                    sizeAdvMapsRange.value -= 1;
+                }
+                //if we STILL cant afford the map, lower the loot slider (less loot)
+                while (lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
+                    lootAdvMapsRange.value -= 1;
+                }
+                //if we can't afford the map we designed, pick our highest existing map
                 if (updateMapCost(true) > game.resources.fragments.owned) {
                     selectMap(game.global.mapsOwnedArray[highestMap].id);
                     debug("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value, '*crying2');
