@@ -326,7 +326,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 name: name,
                 description: description,
                 type: type,
-                enabled: defaultValue ? defaultValue : false;
+                enabled: defaultValue ? defaultValue : false
             };
         }
         btn.setAttribute('class', 'settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
