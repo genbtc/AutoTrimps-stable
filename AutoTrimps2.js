@@ -12,10 +12,7 @@
 //Variables/////////////////////////////
 ////////////////////////////////////////
 var AutoTrimpsDebugTabVisible = true;
-
-var runInterval = 100; //How often to loop through logic
-var startupDelay = 2000;
-var enableDebug = true; //Spam console?
+var enableDebug = true; //Spam console
 var autoTrimpSettings = new Object();
 var bestBuilding;
 var scienceNeeded;
@@ -33,6 +30,12 @@ var preBuyAmt = game.global.buyAmt;
 var preBuyFiring = game.global.firing;
 var preBuyTooltip = game.global.lockTooltip;
 var preBuymaxSplit = game.global.maxSplit;
+
+////////////////////////////////////////
+//Magic Numbers/////////////////////////
+////////////////////////////////////////
+var runInterval = 100;      //How often to loop through logic
+var startupDelay = 2000;    //How long to wait for everything to load
 
 ////////////////////////////////////////
 //List Variables////////////////////////
@@ -323,11 +326,17 @@ function highlightHousing() {
             if (game.buildings[keysSorted[best]].owned < max || max == -1) {
                 bestBuilding = keysSorted[best];
                 
-                //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
-                if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation" &&
-                    (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation'))))
-                    bestBuilding = null;
-                
+                if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
+                    //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
+                    if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
+                        bestBuilding = null;
+                }
+                if (getPageSetting('WarpstationWall') && bestBuilding == "Warpstation") {
+                    //Warpstation Wall - allow only warps that cost 1/n'th less then current metal (try to save metal for next prestige) 
+                    var costratio = 4;  //(1/4th)                    
+                    if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > game.resources.metal.owned/costratio)
+                        bestBuilding = null;
+                }
                 break;
             }
         }
@@ -1090,8 +1099,12 @@ function initializeAutoTrimps() {
     toggleSettingsMenu();
 }
 
-function easyMode() {
-    if (game.buildings.Tribute.owned > 1500) {
+function workerRatios() {
+    if (game.global.world == 200 && game.global.spireActive) {
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '80';
+        autoTrimpSettings.MinerRatio.value = '20';
+    } else if (game.buildings.Tribute.owned > 1500) {
         autoTrimpSettings.FarmerRatio.value = '1';
         autoTrimpSettings.LumberjackRatio.value = '2';
         autoTrimpSettings.MinerRatio.value = '22';    
@@ -1208,8 +1221,8 @@ function buyBuildings() {
 function setTitle() {
     document.title = '(' + game.global.world + ')' + ' Trimps ' + document.getElementById('versionNumber').innerHTML;
     //for the dummies like me who always forget to turn automaps back on after portaling
-    if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.RunMapsWhenStuck.enabled == false) {
-        settingChanged("RunMapsWhenStuck");
+    if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false) {
+        settingChanged("AutoMaps");
     }
 }
 
@@ -1780,6 +1793,18 @@ var HDratio = 0;
 function autoMap() {
     //allow script to handle abandoning
     if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
+    //if we are prestige mapping, force equip first mode
+    if(autoTrimpSettings.Prestige.selected != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
+    //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
+    if(document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
+        document.getElementById('Prestige').selectedIndex = 11;
+        autoTrimpSettings.Prestige.selected = "Bestplate";
+    }    
+    //Control in-map right-side-buttons for people who can't control themselves. If you wish to use these buttons manually, turn off autoMaps temporarily.
+    if(game.options.menu.repeatUntil.enabled != 0) toggleSetting('repeatUntil');
+    if(game.options.menu.exitTo.enabled != 0) toggleSetting('exitTo');
+    if(game.options.menu.repeatVoids.enabled != 0) toggleSetting('repeatVoids');
+    
         
     //calculate average crits
     baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
@@ -1809,8 +1834,9 @@ function autoMap() {
                                                                 || 
                                  (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids')))
                          && ((voidsuntil != -1 && game.global.world <= voidsuntil) || (voidsuntil == -1) || !getPageSetting('RunNewVoids')) ;
-    if (game.global.mapsUnlocked) {
-      
+
+//BEGIN AUTOMAPS:                         
+    if (game.global.mapsUnlocked) {      
         needPrestige = (autoTrimpSettings.Prestige.selected != "Off" && game.mapUnlocks[autoTrimpSettings.Prestige.selected].last <= game.global.world - 5 && game.global.mapsUnlocked && game.global.challengeActive != "Frugal");
         if(game.global.challengeActive == "Toxicity") {
             //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
@@ -1842,19 +1868,11 @@ function autoMap() {
         if (baseDamage > 0){
             var shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm;
         }
-        var shouldDoMap = "world";
-        
+        var shouldDoMap = "world";       
         
         
         //if we are at max map bonus, and we don't need to farm, don't do maps
         if(game.global.mapBonus == 10 && !shouldFarm) shouldDoMaps = false;
-        //if we are prestige mapping, force equip first mode
-        if(autoTrimpSettings.Prestige.selected != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
-        //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
-        if(document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
-            document.getElementById('Prestige').selectedIndex = 11;
-            autoTrimpSettings.Prestige.selected = "Bestplate";
-        }
         
         //FarmWhenNomStacks7
         if(game.global.challengeActive == 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
@@ -1869,10 +1887,6 @@ function autoMap() {
                 shouldDoMaps = true;
             }
         }
-        
-        //Get 200% map bonus before attempting Spire
-        if(game.global.world == 200 && game.global.mapBonus < 10 && game.global.spireActive) shouldDoMaps = true;
-
 
         //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
         if(game.global.challengeActive == 'Toxicity' && game.global.lastClearedCell > 93 && game.challenges.Toxicity.stacks < 1500 && ((getPageSetting('MaxTox') && game.global.world > 59) || needToVoid)) {
@@ -1898,10 +1912,20 @@ function autoMap() {
             shouldDoMaps = true;
             shouldDoWatchMaps = true;
         }
+        //Farm X Minutes Before Spire:
+        if (game.global.world == 200 && game.global.lastClearedCell > 20 && ((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire')) {
+            shouldDoMaps = true;
+            shouldDoSpireMaps = true;
+        }
+        //Get 200% map bonus before attempting Spire
+        if(game.global.world == 200 && game.global.mapBonus < 10 && game.global.spireActive) {
+            shouldDoMaps = true;
+            shouldDoSpireMaps = true;
+        }
+
         
         //Create siphonology on demand section.
         var siphlvl = game.global.world - game.portal.Siphonology.level;
-
         if (getPageSetting('DynamicSiphonology')){
             for (siphlvl; siphlvl < game.global.world; siphlvl++) {
                 //check HP vs damage and find how many siphonology levels we need.
@@ -1930,10 +1954,9 @@ function autoMap() {
         //set the repeatBionics flag (farm bionics before spire), for the repeat management code below.
         var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 5;
         
-        //Run Unique Maps:
+        //Look through all the maps we have - find Uniques and figure out if we need to run them.
         for (var map in game.global.mapsOwnedArray) {
-            var theMap = game.global.mapsOwnedArray[map];
-            
+            var theMap = game.global.mapsOwnedArray[map];            
             if (theMap.noRecycle && getPageSetting('RunUniqueMaps')) {
                 if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0) {
                     shouldDoMap = theMap.id;
@@ -1985,37 +2008,12 @@ function autoMap() {
                         shouldDoMap = theMap.id;
                         break;
                     }
-                }
-                
+                }                
                 //other unique maps here
             }
         }
-        /*
-        //VoidMaps: Function number 1 in reverse order, with 10x and 1x
-        var voidArray = [];
-        //values are hardest to easiest. (easiest has the highest value)
-        var prefixes = [0,"Destructive", "Poisonous", "Heinous", "Deadly"];
-        var suffixes = [0,"Pit", "Nightmare", "Void", "Descent"];
-        for (var map in game.global.mapsOwnedArray) {
-            var theMap = game.global.mapsOwnedArray[map];
-            if(theMap.location == 'Void') {
-                for (word in prefixes) { 
-                    if (theMap.name.includes(prefixes[word]))
-                        theMap.sortByDiff = 10 * word; 
-                }
-                for (word in suffixes) { 
-                    if (theMap.name.includes(suffixes[word]))
-                        theMap.sortByDiff += 1 * word; 
-                }
-                voidArray.push(theMap);
-            }
-        }
-        //sort the array (easier/highvalue first):
-        var voidArraySorted = voidArray.sort(function(a, b) {
-            return b.sortByDiff - a.sortByDiff;
-        });
-        */
-        //VoidMaps: make sorted voidArray:
+        
+        //voidArray: make an array with all our voidmaps, so we can sort them by real-world difficulty level
         var voidArray = [];
         //values are easiest to hardest. (hardest has the highest value)
         var prefixlist = {'Deadly':10, 'Heinous':11, 'Poisonous':20, 'Destructive':30};
@@ -2040,7 +2038,6 @@ function autoMap() {
         var voidArraySorted = voidArray.sort(function(a, b) {
             return a.sortByDiff - b.sortByDiff;
         });        
-        //Look through all the maps we have - find Uniques or Voids and figure out if we need to run them.
         for (var map in voidArraySorted) {
             var theMap = voidArraySorted[map];
             //Only proceed if we needToVoid right now.
@@ -2117,7 +2114,7 @@ function autoMap() {
         if (!game.global.preMapsActive && game.global.mapsActive) {
             //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
             //or repeatbionics is true and there are still prestige items available to get
-            if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige)) || (repeatBionics && addSpecials(true, true, game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)]) > 0)) {
+            if (shouldDoMap == game.global.currentMapId && (!game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)].noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps)) || (repeatBionics && addSpecials(true, true, game.global.mapsOwnedArray[getMapIndex(game.global.currentMapId)]) > 0)) {
                 var targetPrestige = autoTrimpSettings.Prestige.selected;
                 //make sure repeat map is on
                 if (!game.global.repeatMap) {
@@ -2143,7 +2140,7 @@ function autoMap() {
         //clicks the maps button, once or twice (inside the world):
         } else if (!game.global.preMapsActive && !game.global.mapsActive) {
             if (shouldDoMap != "world") {
-                //if we should not be in the world, click map button once (and wait patiently until death)
+                //if we should not be in the world, and the button is not already clicked, click map button once (and wait patiently until death)
                 if (!game.global.switchToMaps){
                     mapsClicked();
                 }
@@ -2162,7 +2159,7 @@ function autoMap() {
                     mapsClicked();
                 }
             }
-            //forcibly run watch maps
+            //forcibly run watch maps (or null maps)
             if (shouldDoWatchMaps)
                 mapsClicked();
         } else if (game.global.preMapsActive) {
@@ -2182,7 +2179,7 @@ function autoMap() {
                     lootAdvMapsRange.value = 9;
                     adjustMap('loot', 9);
                     
-                    biomeAdvMapsSelect.value = "Mountain";
+                    biomeAdvMapsSelect.value = "Forest";    //wood
                     updateMapCost();                
                 } else if (game.global.world > 70) {
                     sizeAdvMapsRange.value = 9;
@@ -2192,7 +2189,7 @@ function autoMap() {
                     lootAdvMapsRange.value = 9;
                     adjustMap('loot', 9);
 
-                    biomeAdvMapsSelect.value = "Mountain";
+                    biomeAdvMapsSelect.value = "Mountain";  //metal
                     updateMapCost();
                 } else if (game.global.world < 16) {
                     sizeAdvMapsRange.value = 9;
@@ -2306,8 +2303,8 @@ function autoPortal() {
             var zoneincremented = false;
             if(game.global.world > lastHeliumZone) {
                 lastHeliumZone = game.global.world;
-                console.log("The zone has been incremented. Level " + lastHeliumZone);
-                console.log("And the best helium this run was " + game.stats.bestHeliumHourThisRun.storedValue + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
+                //console.log("The zone has been incremented. Level " + lastHeliumZone);
+                //console.log("And the best helium this run was " + game.stats.bestHeliumHourThisRun.storedValue + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
                 zoneincremented = true;
             }
             if(game.global.world > game.stats.bestHeliumHourThisRun.atZone && zoneincremented == true) {
@@ -2315,7 +2312,7 @@ function autoPortal() {
                 var myHeliumHr = game.stats.heliumHour.value();
                 var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
                 if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
-                    debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr);
+                    debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
                     pushData();
                     if(autoTrimpSettings.HeliumHourChallenge.selected != 'None') 
                         doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
@@ -2345,10 +2342,6 @@ function autoPortal() {
                 pushData();
                 doPortal(autoTrimpSettings.AutoPortal.selected);
             }
-            break;
-        case "Spire":
-            if(game.global.world >= 201)
-                doPortal("Lead");
             break;
         default:
             break;
@@ -2389,10 +2382,7 @@ function checkSettings() {
             break;
         case "Corrupted":
             portalLevel = 191;
-            break;              
-        case "Spire":
-            portalLevel = 201;
-            break;        
+            break;
     }
     if(portalLevel == -1)
         return portalLevel;
@@ -2494,6 +2484,20 @@ function autoGoldenUpgrades() {
     buyGoldenUpgrade(setting);
 }
 
+function betterAutoFight() {
+    //Manually fight instead of using builtin auto-fight
+    if (game.global.autoBattle) {
+        if (!game.global.pauseFight) {
+            pauseFight(); //Disable autofight
+        }
+    }
+    lowLevelFight = game.resources.trimps.maxSoldiers < (game.resources.trimps.owned - game.resources.trimps.employed) * 0.5 && (game.resources.trimps.owned - game.resources.trimps.employed) > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
+    if (game.upgrades.Battle.done && !game.global.fighting && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
+        fightManual();
+        // debug('triggered fight');
+    }
+}
+
 ////////////////////////////////////////
 //Main Logic Loop///////////////////////
 ////////////////////////////////////////
@@ -2528,38 +2532,25 @@ function mainLoop() {
     setScienceNeeded();  //determine how much science is needed
     updateValueFields(); //refresh the UI
 
-    if (getPageSetting('EasyMode')) easyMode();
-    if (getPageSetting('BuyUpgrades')) buyUpgrades();
-    autoGoldenUpgrades();
-    if (getPageSetting('BuyStorage')) buyStorage();
-    if (getPageSetting('BuyBuildings')) buyBuildings();
-    if (getPageSetting('BuyJobs')) buyJobs();
-    if (getPageSetting('ManualGather')) manualLabor();
-    if (getPageSetting('RunMapsWhenStuck')) autoMap();
-    if (getPageSetting('GeneticistTimer') >= 0) manageGenes();
-    if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();
-    if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2();
-    else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();
-    if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap();
-    if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();
-    if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();
-    autoLevelEquipment();
-    autoStance();
-    if (getPageSetting('AutoFight')) {
-        //Manually fight instead of using builtin auto-fight
-        if (game.global.autoBattle) {
-            if (!game.global.pauseFight) {
-                pauseFight(); //Disable autofight
-            }
-        }
-        lowLevelFight = game.resources.trimps.maxSoldiers < (game.resources.trimps.owned - game.resources.trimps.employed) * 0.5 && (game.resources.trimps.owned - game.resources.trimps.employed) > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
-        if (game.upgrades.Battle.done && !game.global.fighting && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
-            fightManual();
-            // debug('triggered fight');
-        }
-    }
-    //Run the dynamic prestige changing script below.
-    if (getPageSetting('DynamicPrestige')) prestigeChanging2();
+    if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"
+    if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"
+    autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (genBTC settings area)
+    if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"
+    if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"
+    if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"    
+    if (getPageSetting('ManualGather')) manualLabor();  //"Auto Gather/Build"
+    if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"    
+    if (getPageSetting('GeneticistTimer') >= 0) manageGenes(); //"Genetecist Timer" / "Manage Breed Timer"
+    if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 60)
+    if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (genBTC settings area)
+    else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"
+    if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
+    if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (genBTC settings area)
+    if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (genBTC settings area)
+    autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
+    autoStance();                                           //"Auto Stance"
+    if (getPageSetting('AutoFight')) betterAutoFight();     //"Better Auto Fight"
+    if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
     
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
