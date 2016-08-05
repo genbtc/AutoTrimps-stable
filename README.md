@@ -124,25 +124,25 @@ See changelog at the original version's github page: https://github.com/zininzin
 Since javascript is easily human readable, Much can be learned by reading the source code, starting with this knowledge:
 
 The mainLoop() consists of the following subroutine functions, all of which are enable-able/disable-able by their buttons.:
-    workerRatios();         //"Auto Worker Ratios"
-    buyUpgrades();          //"Buy Upgrades"
-    autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
-    buyStorage();           //"Buy Storage"
-    buyBuildings();         //"Buy Buildings"
-    buyJobs();              //"Buy Jobs"    
-    manualLabor();          //"Auto Gather/Build"
-    autoMap();              //"Auto Maps"    
-    manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
-    autoPortal();           //"Auto Portal" (hidden until level 60)
-    autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
-    toggleAutoTrap();       //"Trap Trimps"
-    autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
-    autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
-    autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
-    autoStance();           //"Auto Stance"
-    betterAutoFight();      //"Better Auto Fight"
-    prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
-    
-    userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
+-     workerRatios();         //"Auto Worker Ratios"
+-     buyUpgrades();          //"Buy Upgrades"
+-     autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
+-     buyStorage();           //"Buy Storage"
+-     buyBuildings();         //"Buy Buildings"
+-     buyJobs();              //"Buy Jobs"    
+-     manualLabor();          //"Auto Gather/Build"
+-     autoMap();              //"Auto Maps"    
+-     manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
+-     autoPortal();           //"Auto Portal" (hidden until level 60)
+-     autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
+-     toggleAutoTrap();       //"Trap Trimps"
+-     autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
+-     autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
+-     autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
+-     autoStance();           //"Auto Stance"
+-     betterAutoFight();      //"Better Auto Fight"
+-     prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
+-     
+-     userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
 
 Once you have determined the function you wish to examine, CTRL+F to find it and read its code. There are lots of comments. In this way you can determine why AutoTrimps is acting a certain way.
