@@ -2,18 +2,20 @@
 Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)
 
 ## Discussion / Discord Channel
-Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C
+Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
 
-Option 1: Install Greasemonkey (Firefox) or Tampermonkey (Chrome)
+Option 1: Install Tampermonkey (Chrome) or Greasemonkey (Firefox)
 
-TamperMonkey Instructions:
+Chrome/TamperMonkey Instructions:
 - Open the Tampermonkey dashboard and go to utilities – in the URL box paste https://raw.githubusercontent.com/genbtc/AutoTrimps/gh-pages/user.js and import
 - Alternatively, paste the contents of `user.js` into a user scrip
 - The script should automatically load everytime you go to https://trimps.github.io or the game on Kongregate
 - You will know you have the script loaded if you see the Automation and Graphs buttons in the game menu at the bottom
+
+FireFox/GreaseMonkey instructions not available, please write some for us.
 
 Option 2: Via a Bookmark (does not work with Kongregate)
 - Create new bookmark and set its target to:
@@ -34,19 +36,19 @@ Notes:
 If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
 Feel free to submit any bugs/suggestions as issues here on github.
 
-## Most recent changes by genBTC: 
-- Minutes to Farm Before Spire - force some time to be spent so you can for sure complete Spire 
+## Most recent feature changes by genBTC (up to date as of 8/5/2016): 
+- Minutes to Farm Before Spire - force some time to be spent so you can for sure complete Spire (recommended: 3-10 minutes)
 - Auto Upgrade Heirlooms - spends ALL your nullifium on the recommended upgrades
 - Auto Golden Upgrades
 - Always Runs 10 maps for 200% map bonus before attempting Spire (happens after the first death)
 - AutoHeirlooms2 - new algorithm to sort/carry/recycle the Heirlooms (the original had a bug)
-- Cap Trainers to a % of Tributes - Only buy a trainer when its cost is less than X% of the cost of a tribute. Prevents competing with food resources, if you care.
-- Run Bionic Before Spire - meant as a one time function to farm the Bionic Wonderland maps for a LONG time before entering spire. (not HE/hr efficient)
+- Cap Trainers to a % of Tributes - Only buy a trainer when its cost is less than X% of the cost of a tribute. Prevents from competing with food resources, if you care.
+- Run Bionic Before Spire - meant as a one time function (like max tox is) to farm the Bionic Wonderland maps for a LONG time(2 hours-ish) before entering Spire. (not HE/hr efficient)
 - Dynamic Prestige: Skip prestiges at the beginning of the run which saves time, and delay them until the end when you need them most and can provide resources from farming too)
 - Helium per Hour Portal "Buffer" - now you can customize how much He/Hr is allowed to drop before portaling
-- Auto Robo Trimp - activate the MagnetoShriek ability on the bosses every 5 levels starting from the level you specify.
+- Auto Robo Trimp - activate the MagnetoShriek ability on the bosses every 5 levels starting from the level you specify. (recommended set to 60)
 
-## Changed by genBTC since before 4/27/2016 and Trimps version 3.22:
+## Feature changes added by genBTC since before 4/27/2016 and Trimps version 3.22:
 - Change Genetecist Timer to 10 sec instead of 11sec. (was commonly showing 11.4s because it rounds. that is too much)
 - 'Farm on >7 NomStacks': During Nom, take precautions not to get too many stacks. (On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On!')
 - Dynamic Siphonology - only when needed based on (Enemyhealth / baseDamage)
@@ -63,45 +65,30 @@ The old behavior of "no siphonology at all when using DisableFarming" is no long
 This way you can see things progressing, instead of wondering what is going on.
 The number pertains to Enemy Health / Base Damage(non-stance). Above 16 means farm. Below 10 means stop farming.
 - Farm @ cell 61 (megamining) not 82 (megafarming).
-- Farm if enemyhealth : basedamage is between 10 and 16. (Used to be 10 and 15). 
+- Farm if enemyHealth divided by baseDamage (in X stance) is between 10 and 16. (Used to be 10 and 15). 
 Means it will farm very slightly less.
 - Take Map Bonus +%Damage into account for farming decisions. (so you can farm less.)
 - Stop from firing all scientists when it reaches the threshhold. (250k farmers)
 Farmers will be maintained at the current level, not fired entirely. I
-corrected the commented explanation, since the number it stops buying at is 250k farmers, not 100k.
 - Add WarpStation Cap (deltaGiga+baseWarp) feature.
 Stop making warpstations if we are past the deltagiga + base
 warpstations (and no giga upgrade is available). Will also remove the
 green highlight around the icon. This will save you metal to use on
 weapons,armor, etc.
-NOTE: (the cap will only work on incremental buys, it will not come into
-effect when the game uses a gigastation and immediately bulk-buys as
-many warpstations as it can afford. I think this is preferrable.)
-- Add Export/Import/Reset autotrimps settings buttons.
-- Add seperated  "genBTC's settings UI" button,
-- Better Help-Tooltips
+NOTE: (the cap will ONLY work on incremental buys, it will not come into
+effect when the game uses a gigastation and immediately BULK-buys as
+many warpstations as it can afford. In this way it can buy over the cap. I think this is actually preferrable.)
+- Add an Export/Import/Reset AutoTrimps settings buttons.
+- Add a seperate "genBTC's settings UI" button,
+- Better Tooltip Help
 
 **Voidmaps and Toxicity changes:**
 
-Voidmaps:
-- Do voids @ cell 96 Instead of 98. (to prevent overkill). This change
-was tried to be committed before by spindrjr, but it only applied to Tox runs.
-
-Voidmap + Max-Tox runs:
-- If we need to do a voidmap and have already more than 1415 stacks,
-(smallest voidmap is 85 cells)  consider tox-stack finished.
-For normal-tox:
-- Instead of starting the voidmap at 1400 stacks, start at
-(1500-theVoidmap.size) in case its an 85 cell voidmap.
-
-Regular Tox-Run:
-- Avoid another non-unique map cycle due to having the amount of tox
-stacks we need.
-
-Max-Tox Run:
-- During a Toxicity + Max Tox run AutoPortal, unset the MaxTox setting
-from the settings page, so we dont' run 2 Max-Tox's in a row (will go
-back to normal Tox run).
+- Voidmaps: Do voids @ cell 96 Instead of 98. (to prevent overkill). Before, it only applied to Tox runs.
+- Voidmap + Max-Tox runs: If we need to do a voidmap and have already more than 1415 stacks, (smallest voidmap is 85 cells)  consider tox-stack finished.
+- For normal-tox: Instead of starting the voidmap at 1400 stacks, start at (1500-theVoidmap.size) in case its an 85 cell voidmap.
+- Regular Tox-Run:  Avoid another non-unique map cycle due to having the amount of tox stacks we need.
+- Max-Tox Run: During a Toxicity + Max Tox run AutoPortal, unset the MaxTox setting from the settings page, so we dont' run 2 Max-Tox's in a row (will go back to normal Tox run).
 
 ## Original Version's Previous Recent changes
 See changelog at the original version's github page: https://github.com/zininzinin/AutoTrimps
@@ -116,7 +103,7 @@ See changelog at the original version's github page: https://github.com/zininzin
 - Yellow border - upgrade is available, but not affordable
 - Orange border - upgrade is available, affordable, but will actually reduce stat in question
 - Red border - you have enough resources to level equip after upgrade to surpass it's current stats.
-- Green border on hoses - Best for gems 
+- Green border on buildings - Best for gems 
 
 
 ## Detailed Code Documentation:
@@ -142,7 +129,6 @@ The mainLoop() consists of the following subroutine functions, all of which are 
 -     autoStance();           //"Auto Stance"
 -     betterAutoFight();      //"Better Auto Fight"
 -     prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
--     
 -     userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
 
 Once you have determined the function you wish to examine, CTRL+F to find it and read its code. There are lots of comments. In this way you can determine why AutoTrimps is acting a certain way.
