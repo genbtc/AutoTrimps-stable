@@ -336,6 +336,13 @@ function gatherInfo() {
     if (allSaveData === null) {
         allSaveData = [];
     }
+    
+    if (allSaveData.length === 0) {
+        pushData();
+    } else if (allSaveData[allSaveData.length - 1].world != game.global.world) {
+        pushData();
+    }
+
     //clear filtered loot data upon portaling. <5 check to hopefully throw out bone portal shenanigans
     if(allSaveData[allSaveData.length -1].totalPortals != game.global.totalPortals && game.global.world < 5) {
     	for(var r in filteredLoot) {
@@ -344,14 +351,6 @@ function gatherInfo() {
     		}
     	}
     }
-    
-    if (allSaveData.length === 0) {
-        pushData();
-    } else if (allSaveData[allSaveData.length - 1].world != game.global.world) {
-        pushData();
-    }
-
-
     // graphData = setColor(graphData);
 
 
@@ -653,13 +652,6 @@ function setGraphData(graph) {
             yTitle = 'Number of Void Maps';
             yType = 'Linear';
             break;
-               
-            
-            title = 'MetalCost of Equipment to Buildings\' Ratio - (Artisan vs Resourceful)';
-            xTitle = 'Zone';
-            yTitle = 'Percent';
-            yType = 'Linear';
-            break;
             
         case 'Coords':
             var currentPortal = -1;
@@ -672,7 +664,7 @@ function setGraphData(graph) {
                     });
                     currentPortal = allSaveData[i].totalPortals;
                 }
-                if (allSaveData[i].coord)
+                if (allSaveData[i].coord >= 0)
                     graphData[graphData.length - 1].data.push(allSaveData[i].coord);
             }
             title = 'Coordination History';
@@ -745,15 +737,6 @@ function setGraphData(graph) {
     if (oldData != JSON.stringify(graphData)) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
     }
-}
-
-
-function updateCustomStats() {
-    var timeThisPortal = new Date().getTime() - game.global.portalTime;
-    timeThisPortal /= 3600000;
-    var resToUse = game.resources.helium.owned;
-    var heHr = prettify(Math.floor(game.resources.helium.owned / timeThisPortal));
-    document.getElementById('customHeHour').innerHTML = heHr + "/Hr";
 }
 
 var filteredLoot = {
