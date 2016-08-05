@@ -1,12 +1,11 @@
-TODO LIST: 6/1/2016
+TODO LIST: 8/1/2016
 
 New Features:
 ----------------
-Documentation
-Update README
-Code Comments
+Documentation (still needs to be started)
+Update README (always do this)
+Code Comments (getting better)
 Visible Version Status Number in UI
-Show the Average on the Nullifium graph
 
 Bugfixes:
 ----------------
@@ -22,5 +21,4 @@ Void Map Farming
 Programming/CodeWise:
 ----------------------
 Rewrite the automaps way of deciding/picking/buying/running maps.
-While doing this, comment out the extra *2 from the baseDamage
 Also while doing this, determine more refined rules for entering the 3 modes: want dmg/want health/farming
