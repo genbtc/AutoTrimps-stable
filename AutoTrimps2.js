@@ -637,14 +637,16 @@ function evaluateMods(loom, location, upgrade) {
     for(var m in loom.mods) {
         var critmult = getPlayerCritDamageMult();
         var critchance = getPlayerCritChance();
+        var cmb = (critmult - game.heirlooms.Shield.critDamage.currentBonus/100);
+        var ccb = (critchance - game.heirlooms.Shield.critChance.currentBonus/100);        
         switch(loom.mods[m][0]) {
             case 'critChance': 
-                tempEff = ((loom.mods[m][1]/100) * (critmult - game.heirlooms.Shield.critDamage.currentBonus/100))/((critchance - game.heirlooms.Shield.critChance.currentBonus/100) * (critmult - game.heirlooms.Shield.critDamage.currentBonus/100) + 1 - (critchance - game.heirlooms.Shield.critChance.currentBonus/100));
+                tempEff = ((loom.mods[m][1]/100) * cmb)/(ccb * cmb + 1 - ccb);                
                 eff += tempEff;
                 if(upgrade){
                     if(loom.mods[m][1] >= 30) break;
                     steps = game.heirlooms.Shield.critChance.steps[loom.rarity];
-                    tempEff = (steps[2]/100 * critmult)/((critchance * critmult) + 1 - critchance);
+                    tempEff = ((steps[2]/100) * critmult)/((critchance * critmult) + 1 - critchance);
                     tempEff = tempEff / getModUpgradeCost(loom, m);
                     if(tempEff > bestUpgrade.effect) {
                         bestUpgrade.effect = tempEff;
@@ -654,11 +656,11 @@ function evaluateMods(loom, location, upgrade) {
                 }
                 break;
             case 'critDamage':
-                tempEff = ((loom.mods[m][1]/100) * (critchance - game.heirlooms.Shield.critChance.currentBonus/100))/((critmult - game.heirlooms.Shield.critDamage.currentBonus/100) * (critchance - game.heirlooms.Shield.critChance.currentBonus/100) + 1 - (critchance - game.heirlooms.Shield.critChance.currentBonus/100));
+                tempEff = ((loom.mods[m][1]/100) * ccb)/(cmb * ccb + 1 - ccb);
                 eff += tempEff;
                 if(upgrade){
                     steps = game.heirlooms.Shield.critDamage.steps[loom.rarity];
-                    tempEff = (critchance * (steps[2]/100))/((critmult * critchance) + 1 - critchance);
+                    tempEff = ((steps[2]/100)* critchance)/((critchance * critmult) + 1 - critchance);
                     tempEff = tempEff / getModUpgradeCost(loom, m);
                     if(tempEff > bestUpgrade.effect) {
                         bestUpgrade.effect = tempEff;
