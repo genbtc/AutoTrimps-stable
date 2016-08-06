@@ -1921,7 +1921,7 @@ function autoMap() {
             shouldDoSpireMaps = true;
         }
         //Get 200% map bonus before attempting Spire
-        if(game.global.world == 200 && game.global.mapBonus < 10 && game.global.spireActive) {
+        if(game.global.world == 200 && game.global.mapBonus < 9 && game.global.spireActive) {
             shouldDoMaps = true;
             shouldDoSpireMaps = true;
         }
