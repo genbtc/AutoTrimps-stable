@@ -1912,6 +1912,7 @@ function autoMap() {
             shouldDoMaps = true;
             shouldDoWatchMaps = true;
         }
+        var shouldDoSpireMaps = false;
         //Farm X Minutes Before Spire:
         if (game.global.world == 200 && game.global.lastClearedCell > 20 && ((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire')) {
             shouldDoMaps = true;
