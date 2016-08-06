@@ -92,28 +92,24 @@ ratioPreset.selectedIndex = 0; // First element is zxv (default) ratio.
 ratioPreset.setAttribute('onchange', 'AutoPerks.setDefaultRatios()');
 ratios1.appendChild(ratioPresetLabel);
 ratios1.appendChild(ratioPreset);
-
 //
 customRatios.appendChild(ratios2);
 buttonbar.appendChild(customRatios);
 
-/*save ratios to localstorage (not that good)
-function storeratios() {
-    var perkRatios = document.getElementsByClassName("perkRatios");
-    var ratiosarraydict = [];
-    for(var i=0; i < perkRatios.length; i++){
-        var item = perkRatios[i];
-        var data = {key: item.id, value: item.value};        
-        ratiosarraydict.push(data);
-    }
-    localstorage.setitem("perkRatios", ratiosarraydict);
-}
-*/
-
 //BEGIN AUTOPERKS SCRIPT CODE:>
+
+AutoPerks.saveCustomRatios = function() {
+    var perks = document.getElementsByClassName('perkRatios');
+    var customRatios = [];
+    for(var i = 0; i < perks.length; i++) {
+        customRatios.push({'id':perks[i].id,'value':parseFloat(perks[i].value)});
+    }
+    localStorage.setItem('AutoPerksCustomRatios', JSON.stringify(customRatios));
+}
 
 //sets the ratioboxes with the default ratios embedded in the script when perks are instanciated. hardcoded @ lines 333-360 (ish)
 //executed manually at the very last line of this file.
+//loads custom ratio selections from localstorage if applicable
 AutoPerks.setDefaultRatios = function() {
     var perks = document.getElementsByClassName("perkRatios");
     var ratioSet = document.getElementById("ratioPreset").selectedIndex;
@@ -121,6 +117,26 @@ AutoPerks.setDefaultRatios = function() {
     for(var i = 0; i < perks.length; i++) {
         currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
         perks[i].value = currentPerk.value[ratioSet];
+    }
+    //grab custom ratios if saved.
+    if (ratioSet == document.getElementById("ratioPreset").length-1) {
+        var tmp = JSON.parse(localStorage.getItem('AutoPerksCustomRatios'));
+        if (tmp !== null) 
+            customRatios = tmp;
+        else {
+            // If "custom" is manually selected, and no file was found, start by setting all perks to 0.
+            for(var i = 0; i < perks.length; i++) {
+                perks[i].value = 0;     //initialize to 0.
+            }
+            return; //then exit.
+        }
+        //if we have ratios in the storage file, load them
+        for(var i = 0; i < perks.length; i++) {
+            //do a quick sanity check (order)
+            if (customRatios[i].id != perks[i].id) continue;
+            currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+            perks[i].value = customRatios[i].value;
+        }        
     }
 }
 
@@ -149,6 +165,9 @@ AutoPerks.initialise = function() {
     }
     //grab new ratios if any
     AutoPerks.setNewRatios();
+    //save custom ratios if set.
+    if (document.getElementById("ratioPreset").selectedIndex == document.getElementById("ratioPreset").length-1)
+        AutoPerks.saveCustomRatios();
 }
 
 AutoPerks.parseData = function() {
