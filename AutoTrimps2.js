@@ -1809,7 +1809,7 @@ function autoMap() {
     
         
     //calculate average crits
-    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
+    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()));
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
     baseDamage *= mapbonusmulti;
@@ -1820,7 +1820,7 @@ function autoMap() {
     
     //farm if basedamage is between 10 and 16)
     if(!getPageSetting('DisableFarm')) {
-        shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 20 : getEnemyMaxHealth(game.global.world) / baseDamage > 32;
+        shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 10 : getEnemyMaxHealth(game.global.world) / baseDamage > 16;
     }
     //DECIMAL VOID MAPS:
     var voidMapLevelSetting = getPageSetting('VoidMaps');
@@ -1856,7 +1856,7 @@ function autoMap() {
             }
             pierceMod += (game.challenges.Lead.stacks * 0.001);
             baseDamage /= mapbonusmulti;
-            shouldFarm = enemyHealth / baseDamage > 10;
+            shouldFarm = enemyHealth / baseDamage > 5;
         }
         if(game.global.totalVoidMaps == 0 || !needToVoid)
             doVoids = false;
@@ -1864,7 +1864,7 @@ function autoMap() {
         enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod))
                         || 
                         baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod)));
-        enoughDamage = baseDamage * 8 > enemyHealth;
+        enoughDamage = baseDamage * 4 > enemyHealth;
         HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
         //prevents map-screen from flickering on and off during startup when base damage is 0.
         if (baseDamage > 0){
@@ -1933,7 +1933,7 @@ function autoMap() {
             for (siphlvl; siphlvl < game.global.world; siphlvl++) {
                 //check HP vs damage and find how many siphonology levels we need.
                 var maphp = getEnemyMaxHealth(siphlvl);
-                if (baseDamage * 4 < maphp){
+                if (baseDamage * 2 < maphp){
                     break;
                 }
             }
