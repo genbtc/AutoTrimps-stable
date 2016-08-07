@@ -802,13 +802,13 @@ function evaluateMods(loom, location, upgrade) {
                     else if(!checkForMod('critChance', index, location)){
                         steps = game.heirlooms[loom.type].critChance.steps[loom.rarity];
                         av = steps[0] + ((steps[1] - steps[0])/2);
-                        tempEff = (av * cmd)/(ccb * cmd + 1 - ccb);
+                        tempEff = (av * cmb)/(ccb * cmb + 1 - ccb);
                         eff += tempEff;
                     }
                     else if(!checkForMod('critDamage', index, location)){
                         steps = game.heirlooms[loom.type].critDamage.steps[loom.rarity];
                         av = steps[0] + ((steps[1] - steps[0])/2);
-                        tempEff = (av * ccb)/(cmd * ccb + 1 - ccb);
+                        tempEff = (av * ccb)/(cmb * ccb + 1 - ccb);
                         eff += tempEff;
                     }
                 }
