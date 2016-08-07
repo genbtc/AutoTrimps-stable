@@ -726,6 +726,20 @@ function evaluateMods(loom, location, upgrade) {
                     }
                 }
                 break;
+            case 'DragimpSpeed':
+                tempEff = 0.75*loom.mods[m][1]/100;
+                eff += tempEff;
+                if(upgrade) {
+                    steps = game.heirlooms.defaultSteps[loom.rarity];
+                    tempEff = (0.75*steps[2]/100)/((game.heirlooms.Staff.DragimpSpeed.currentBonus/100) + 1);
+                    tempEff = tempEff / getModUpgradeCost(loom, m);
+                    if(tempEff > bestUpgrade.effect) {
+                        bestUpgrade.effect = tempEff;
+                        bestUpgrade.name = 'DragimpSpeed';
+                        bestUpgrade.index = m;
+                    }
+                }
+                break;                
             case 'gemsDrop':
                 tempEff = 0.75*loom.mods[m][1]/100;
                 eff += tempEff;
@@ -739,7 +753,7 @@ function evaluateMods(loom, location, upgrade) {
                         bestUpgrade.index = m;
                     }
                 }
-                break;
+                break;                
             case 'FarmerSpeed':
                 tempEff = 0.5*loom.mods[m][1]/100;
                 eff += tempEff;
@@ -764,20 +778,6 @@ function evaluateMods(loom, location, upgrade) {
                     if(tempEff > bestUpgrade.effect) {
                         bestUpgrade.effect = tempEff;
                         bestUpgrade.name = 'LumberjackSpeed';
-                        bestUpgrade.index = m;
-                    }
-                }
-                break;
-            case 'DragimpSpeed':
-                tempEff = 0.75*loom.mods[m][1]/100;
-                eff += tempEff;
-                if(upgrade) {
-                    steps = game.heirlooms.defaultSteps[loom.rarity];
-                    tempEff = (0.5*steps[2]/100)/((game.heirlooms.Staff.DragimpSpeed.currentBonus/100) + 1);
-                    tempEff = tempEff / getModUpgradeCost(loom, m);
-                    if(tempEff > bestUpgrade.effect) {
-                        bestUpgrade.effect = tempEff;
-                        bestUpgrade.name = 'DragimpSpeed';
                         bestUpgrade.index = m;
                     }
                 }
