@@ -784,42 +784,41 @@ function evaluateMods(loom, location, upgrade) {
                 break;
             case 'empty':
                 var av;
-                //some other function?
                 if(upgrade) break;
                 //value empty mod as the average of the best mod it doesn't have. If it has all good mods, empty slot has no value
                 if(loom.type == 'Shield') {
                     if(!checkForMod('trimpAttack', index, location)){
-                        steps = game.heirlooms.Shield.trimpAttack.steps[loom.rarity];
+                        steps = game.heirlooms[loom.type].trimpAttack.steps[loom.rarity];
                         av = steps[0] + ((steps[1] - steps[0])/2);
                         tempEff = av/100;
                         eff += tempEff;
                     }
                     else if(!checkForMod('voidMaps', index, location)){
-                        steps = game.heirlooms.Shield.voidMaps.steps[loom.rarity];
+                        steps = game.heirlooms[loom.type].voidMaps.steps[loom.rarity];
                         av = steps[0] + ((steps[1] - steps[0])/2);
                         tempEff = (steps[2]/100);
                         eff += tempEff;
                     }
                     else if(!checkForMod('critChance', index, location)){
-                        steps = game.heirlooms.Shield.critChance.steps[loom.rarity];
+                        steps = game.heirlooms[loom.type].critChance.steps[loom.rarity];
                         av = steps[0] + ((steps[1] - steps[0])/2);
-                        tempEff = (av * (critmult - game.heirlooms.Shield.critDamage.currentBonus/100))/((critchance - game.heirlooms.Shield.critChance.currentBonus/100) * (critmult - game.heirlooms.Shield.critDamage.currentBonus/100) + 1 - (critchance - game.heirlooms.Shield.critChance.currentBonus/100));
+                        tempEff = (av * cmd)/(ccb * cmd + 1 - ccb);
                         eff += tempEff;
                     }
                     else if(!checkForMod('critDamage', index, location)){
-                        steps = game.heirlooms.Shield.critDamage.steps[loom.rarity];
+                        steps = game.heirlooms[loom.type].critDamage.steps[loom.rarity];
                         av = steps[0] + ((steps[1] - steps[0])/2);
-                        tempEff = (av * (critchance - game.heirlooms.Shield.critChance.currentBonus/100))/((critmult - game.heirlooms.Shield.critDamage.currentBonus/100) * (critchance - game.heirlooms.Shield.critChance.currentBonus/100) + 1 - (critchance - game.heirlooms.Shield.critChance.currentBonus/100));
+                        tempEff = (av * ccb)/(cmd * ccb + 1 - ccb);
                         eff += tempEff;
                     }
                 }
                 if(loom.type == 'Staff') {
                     steps = game.heirlooms.defaultSteps[loom.rarity];
                     av = steps[0] + ((steps[1] - steps[0])/2);
-                    if(!checkForMod('MinerSpeed', index, location) || !checkForMod('metalDrop', index, location)){
+                    if(!checkForMod('MinerSpeed', index, location) || !checkForMod('metalDrop', index, location) || !checkForMod('DragimpSpeed', index, location) || !checkForMod('gemsDrop', index, location)){
                         eff += 0.75*av/100;
                     }
-                    else if(!checkForMod('LumberjackSpeed', index, location) || !checkForMod('FarmerSpeed', index, location) || !checkForMod('DragimpSpeed', index, location)){
+                    else if(!checkForMod('FarmerSpeed', index, location) || !checkForMod('LumberjackSpeed', index, location)) {
                         eff += 0.5*av/100;  
                     }
                 }
