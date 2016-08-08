@@ -2095,10 +2095,16 @@ function autoMap() {
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";
-                //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                
+            //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.    
+            else if (needFarmSpire)
+                if (game.global.mapsOwnedArray[highestMap].location == 'Mountain')
+                    selectedMap = game.global.mapsOwnedArray[highestMap].id;
+                else
+                    selectedMap = "create";
+            //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                                
             else if (siphonMap != -1)
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
-                //if we dont' have an appropriate max level map, or a siphon map, we need to make one
+            //if we dont' have an appropriate max level map, or a siphon map, we need to make one
             else
                 selectedMap = "create";
         }
