@@ -2511,6 +2511,11 @@ function betterAutoFight() {
     }
 }
 
+//Exits the Spire after completing the specified cell.
+function exitSpireCell() {    
+    if(game.global.world == 200 && game.global.spireActive && game.global.lastClearedCell >= getPageSetting('ExitSpireCell')-1) 
+        endSpire();    
+}
 ////////////////////////////////////////
 //Main Logic Loop///////////////////////
 ////////////////////////////////////////
@@ -2565,7 +2570,7 @@ function mainLoop() {
     if (getPageSetting('AutoFight')) betterAutoFight();     //"Better Auto Fight"
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
-    
+    if (getPageSetting('ExitSpireCell')) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     userscripts();
 }
