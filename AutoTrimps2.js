@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2-genbtc-8-6-2016
+// @version      2.1.2-genbtc-8-7-2016
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -11,10 +11,10 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2-genbtc-8-6-2016'
+var ATversion = '2.1.2-genbtc-8-6-2016';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
-var autoTrimpSettings = new Object();
+var autoTrimpSettings = {};
 var bestBuilding;
 var scienceNeeded;
 var breedFire = false;
@@ -193,16 +193,16 @@ function setPageSetting(setting,value) {
         // debug('found a value');
         autoTrimpSettings[setting].value = value;
     } else if (autoTrimpSettings[setting].type == 'dropdown') {
-    	autoTrimpSettings[setting].selected = value;
+        autoTrimpSettings[setting].selected = value;
     }
     updateCustomButtons();
     saveSettings();
-    checkSettings();    
+    checkSettings();
 }
 
 //Global debug message
 function debug(message, lootIcon) {
-    if (enableDebug){
+    if (enableDebug) {
         console.log(timeStamp() + ' ' + message);
         message2(message, "AutoTrimps", lootIcon);
     }
@@ -1870,7 +1870,7 @@ function autoMap() {
     if (baseDamage > 0){
         var shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm;
     }
-    var shouldDoMap = "world";       
+    var selectedMap = "world";       
     
 //BEGIN AUTOMAPS DECISIONS:
     //if we are at max map bonus, and we don't need to farm, don't do maps
@@ -1953,42 +1953,42 @@ function autoMap() {
     });
     //if there are no non-unique maps, there will be nothing in keysSorted, so set to create a map
     if (keysSorted[0]) var highestMap = keysSorted[0];
-    else shouldDoMap = "create";
+    else selectedMap = "create";
     
     //Look through all the maps we have - find Uniques and figure out if we need to run them.
     for (var map in game.global.mapsOwnedArray) {
         var theMap = game.global.mapsOwnedArray[map];            
         if (theMap.noRecycle && getPageSetting('RunUniqueMaps')) {
             if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0) {
-                shouldDoMap = theMap.id;
+                selectedMap = theMap.id;
                 break;
             }
             if (theMap.name == 'Dimension of Anger' && document.getElementById("portalBtn").style.display == "none") {
                 var doaDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 20 + doaDifficulty) continue; 
-                shouldDoMap = theMap.id;
+                selectedMap = theMap.id;
                 break;
             }
             //run the prison only if we are 'cleared' to run level 80 + 1 level per 200% difficulty. Could do more accurate calc if needed
             if(theMap.name == 'The Prison' && (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse")) {
                 var prisonDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world >= 80 + prisonDifficulty) {
-                    shouldDoMap = theMap.id;
+                    selectedMap = theMap.id;
                     break;
                 }
             }
             if(theMap.name == 'The Block' && !game.upgrades.Shieldblock.allowed && (game.global.challengeActive == "Scientist" || game.global.challengeActive == "Trimp" || getPageSetting('BuyShieldblock'))) {
-                shouldDoMap = theMap.id;
+                selectedMap = theMap.id;
                 break;
             }
             if(theMap.name == 'Trimple of Doom' && game.global.challengeActive == "Meditate") {
-                shouldDoMap = theMap.id;
+                selectedMap = theMap.id;
                 break;
             }
             if(theMap.name == 'Bionic Wonderland' && game.global.challengeActive == "Crushed" ) {
                 var wonderlandDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world >= 125 + wonderlandDifficulty) {
-                    shouldDoMap = theMap.id;
+                    selectedMap = theMap.id;
                     break;
                 }
             }
@@ -1998,7 +1998,7 @@ function autoMap() {
                 var bionicnumber = ((theMap.level - 125) / 15).toFixed(2);
                 //if numbers match, map is green, so run it. (do the pre-requisite bionics one at a time in order)
                 if (bionicnumber == game.global.bionicOwned && bionicnumber < 5){ 
-                    shouldDoMap = theMap.id;
+                    selectedMap = theMap.id;
                     break;
                 }
                 //Count number of prestige items left,
@@ -2006,7 +2006,7 @@ function autoMap() {
                 //Always run Bionic Wonderland VI (if there are still prestige items available)
                 //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI)
                 if ((prestigeitemsleft > 0 && (theMap.name == 'Bionic Wonderland VI' || theMap.name == 'Bionic Wonderland VII'))){
-                    shouldDoMap = theMap.id;
+                    selectedMap = theMap.id;
                     break;
                 }
             }                
@@ -2074,7 +2074,7 @@ function autoMap() {
                 if(getPageSetting('DisableFarm'))
                     shouldFarm = false;
             }
-            shouldDoMap = theMap.id;
+            selectedMap = theMap.id;
             //Restart the voidmap if we hit 30 nomstacks on the final boss
             if(game.global.mapsActive && game.global.challengeActive == "Nom" && getPageSetting('FarmWhenNomStacks7')) {
                 if(game.global.mapGridArray[theMap.size-1].nomStacks >= 100) {
@@ -2087,22 +2087,22 @@ function autoMap() {
 
     //map if we don't have health/dmg or we need to clear void maps or if we are prestige mapping, and our set item has a new prestige available 
     if (shouldDoMaps || doVoids || needPrestige) {
-        //shouldDoMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
-        if (shouldDoMap == "world") {
+        //selectedMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
+        if (selectedMap == "world") {
             //if needPrestige, TRY to find current level map as the highest level map we own.
             if (needPrestige)
                 if (game.global.world == game.global.mapsOwnedArray[highestMap].level)
-                    shouldDoMap = game.global.mapsOwnedArray[highestMap].id;
+                    selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
-                    shouldDoMap = "create";
+                    selectedMap = "create";
                 //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                
             else if (siphonMap != -1)
-                shouldDoMap = game.global.mapsOwnedArray[siphonMap].id;
+                selectedMap = game.global.mapsOwnedArray[siphonMap].id;
                 //if we dont' have an appropriate max level map, or a siphon map, we need to make one
             else
-                shouldDoMap = "create";
+                selectedMap = "create";
         }
-        //if shouldDoMap != world, it already has a map ID and will be run below            
+        //if selectedMap != world, it already has a map ID and will be run below            
     }
     
     //don't map on even worlds if on Lead, except if person is dumb and wants to void on even  
@@ -2118,7 +2118,7 @@ function autoMap() {
         var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 5;
         //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
         //or repeatbionics is true and there are still prestige items available to get
-        if (shouldDoMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps)) || (repeatBionics && addSpecials(true, true, getCurrentMapObject()) > 0)) {
+        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps)) || (repeatBionics && addSpecials(true, true, getCurrentMapObject()) > 0)) {
             var targetPrestige = autoTrimpSettings.Prestige.selected;
             //make sure repeat map is on
             if (!game.global.repeatMap) {
@@ -2143,7 +2143,7 @@ function autoMap() {
         }
     //clicks the maps button, once or twice (inside the world):
     } else if (!game.global.preMapsActive && !game.global.mapsActive) {
-        if (shouldDoMap != "world") {
+        if (selectedMap != "world") {
             //if we should not be in the world, and the button is not already clicked, click map button once (and wait patiently until death)
             if (!game.global.switchToMaps){
                 mapsClicked();
@@ -2168,10 +2168,10 @@ function autoMap() {
             mapsClicked();
         }
     } else if (game.global.preMapsActive) {
-        if (shouldDoMap == "world") {
+        if (selectedMap == "world") {
             mapsClicked();  //go back
         } 
-        else if (shouldDoMap == "create") {
+        else if (selectedMap == "create") {
             if (needPrestige)
                 document.getElementById("mapLevelInput").value = game.global.world;
             else
@@ -2256,7 +2256,7 @@ function autoMap() {
             //if we already have a map picked, run it
         } else {
             selectMap(shouldDoMap);
-            debug("Already have a map picked: Running map: " + shouldDoMap + 
+            debug("Already have a map picked: Running map: " + selectedMap + 
                 " Level: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].level +
                 " Name: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].name, 'th-large');
             runMap();

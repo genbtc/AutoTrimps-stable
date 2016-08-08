@@ -195,7 +195,7 @@ function appendGraphs() {
 }
 
 function clearData(portal) {
-    //clear data of runs with portalnumbers prior than X (10) away from current portal number.
+    //clear data of runs with portalnumbers prior than X (15) away from current portal number.
     if(portal) {
         while(allSaveData[0].totalPortals < game.global.totalPortals - portal) allSaveData.shift();
     }
@@ -315,7 +315,6 @@ function pushData() {
         heliumOwned: game.resources.helium.owned,
         currentTime: new Date().getTime(),
         portalTime: game.global.portalTime,
-        resources: game.resources,
         world: game.global.world,
         challenge: game.global.challengeActive,
         voids: game.global.totalVoidMaps,
@@ -326,8 +325,8 @@ function pushData() {
         coord: game.upgrades.Coordination.done,
         lastwarp: game.global.lastWarp
     });
-    //only keep 10 portals worth of runs to prevent filling storage
-    clearData(10);
+    //only keep 15 portals worth of runs to prevent filling storage
+    clearData(15);
     localStorage.setItem('allSaveData', JSON.stringify(allSaveData));
 }
 
