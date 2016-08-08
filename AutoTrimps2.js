@@ -11,7 +11,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2-genbtc-8-6-2016';
+var ATversion = '2.1.2-genbtc-8-7-2016';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2255,10 +2255,10 @@ function autoMap() {
             }
             //if we already have a map picked, run it
         } else {
-            selectMap(shouldDoMap);
+            selectMap(selectedMap);
             debug("Already have a map picked: Running map: " + selectedMap + 
-                " Level: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].level +
-                " Name: " + game.global.mapsOwnedArray[getMapIndex(shouldDoMap)].name, 'th-large');
+                " Level: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].level +
+                " Name: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].name, 'th-large');
             runMap();
         }
     }
