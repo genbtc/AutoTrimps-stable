@@ -1811,6 +1811,8 @@ function autoMap() {
         enoughDamage = true; enoughHealth = true; shouldFarm = false;
         return;
     }
+    //if we are in mapology and we have no credits, exit
+    if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) return;
     //FIND VOID MAPS LEVEL:
     var voidMapLevelSetting = getPageSetting('VoidMaps');
     //decimal void maps are possible, using string function to avoid false float precision (0.29999999992). javascript can compare ints to strings anyway.
@@ -2529,6 +2531,7 @@ function delayStartAgain(){
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
+var OVKcellsWorld = 0;
 function mainLoop() {
     stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
     game.global.addonUser = true;
@@ -2570,6 +2573,9 @@ function mainLoop() {
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
     
+    //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
+    if (game.portal.Overkill.level) OVKcellsWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length
+    
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     userscripts();
 }
@@ -2603,12 +2609,13 @@ function prestigeChanging2(){
  	// Find total prestiges needed by determining current prestiges versus the desired prestiges by the end of the run
  	var neededPrestige = 0;
  	for (i = 1; i <= maxPrestigeIndex ; i++){
- 		if (game.mapUnlocks[autoTrimpSettings.Prestige.list[i]].last <= lastzone){
- 			// For Scientist IV bonus, halve the required prestiges to farm
+        var lastp = game.mapUnlocks[autoTrimpSettings.Prestige.list[i]].last;
+ 		if (lastp <= lastzone){
+            var addto = Math.ceil((lastzone + 1 - lastp)/5);
+            // For Scientist IV bonus, halve the required prestiges to farm
  			if (game.global.sLevel > 3)
- 				neededPrestige += Math.ceil(Math.ceil((lastzone + 1 - game.mapUnlocks[autoTrimpSettings.Prestige.list[i]].last)/5)/2);
- 			else
- 				neededPrestige += Math.ceil((lastzone + 1 - game.mapUnlocks[autoTrimpSettings.Prestige.list[i]].last)/5);
+ 				addto += Math.ceil(addto/2);
+ 			neededPrestige += addto; 				
  		}
  	}
     // For Lead runs, we hack this by doubling the neededPrestige to acommodate odd zone-only farming. This might overshoot a bit
@@ -2634,8 +2641,6 @@ function prestigeChanging2(){
  	else
  		zonesToFarm = 6 + Math.ceil((neededPrestige - 35)/5);
  
-
- 	
      //If we are in the zonesToFarm threshold, kick off the prestige farming
      if(game.global.world > (lastzone-zonesToFarm) && game.global.lastClearedCell < 79){
         // Default map bonus threshold

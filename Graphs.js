@@ -44,11 +44,12 @@ document.getElementById('graphParent').appendChild(btn1);
 
 //clear data button
 var btn2 = document.createElement("button");
-var t = document.createTextNode("Clear All Data");
+var t = document.createTextNode("Clear All Previous Data");
 btn2.appendChild(t);
 btn2.setAttribute("onclick", "clearData(); drawGraph();");
 btn2.setAttribute("class", "settingBtn");
-if(game.options.menu.darkTheme.enabled != 2) btn2.setAttribute("style", "color:black");
+btn2.setAttribute('style', 'margin-left: 10vw; ');
+if(game.options.menu.darkTheme.enabled != 2) btn2.setAttribute("style", "color:black; margin-left: 10vw; ");
 document.getElementById('graphParent').appendChild(btn2);
 
 
