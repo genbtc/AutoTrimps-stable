@@ -2548,6 +2548,7 @@ function mainLoop() {
     if(document.getElementById('tipTitle').innerHTML == 'Corruption') cancelTooltip();
     //auto-close the Spire notification checkbox
     if(document.getElementById('tipTitle').innerHTML == 'Spire') cancelTooltip();
+    if (getPageSetting('ExitSpireCell')) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
     setTitle();          //set the browser title
     setScienceNeeded();  //determine how much science is needed
     updateValueFields(); //refresh the UI
@@ -2572,7 +2573,7 @@ function mainLoop() {
     if (getPageSetting('AutoFight')) betterAutoFight();     //"Better Auto Fight"
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
-    if (getPageSetting('ExitSpireCell')) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
+    
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     userscripts();
 }
