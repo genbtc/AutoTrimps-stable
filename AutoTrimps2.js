@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2-genbtc-8-7-2016
+// @version      2.1.2.1-genbtc-8-9-2016
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -11,7 +11,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2-genbtc-8-7-2016';
+var ATversion = '2.1.2.1-genbtc-8-9-2016';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2544,11 +2544,11 @@ function mainLoop() {
     if(document.getElementById('tipTitle').innerHTML == 'Corruption') cancelTooltip();
     //auto-close the Spire notification checkbox
     if(document.getElementById('tipTitle').innerHTML == 'Spire') cancelTooltip();
-    if (getPageSetting('ExitSpireCell')) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
     setTitle();          //set the browser title
     setScienceNeeded();  //determine how much science is needed
     updateValueFields(); //refresh the UI
-
+    
+    if (getPageSetting('ExitSpireCell')) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"
     if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"
     autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (genBTC settings area)
@@ -2634,13 +2634,15 @@ function prestigeChanging2(){
  	else
  		zonesToFarm = 6 + Math.ceil((neededPrestige - 35)/5);
  
- 	// Default map bonus threshold
- 	var mapThreshold = 4;
+
  	
      //If we are in the zonesToFarm threshold, kick off the prestige farming
      if(game.global.world > (lastzone-zonesToFarm) && game.global.lastClearedCell < 79){
-        // Would be 9 but the map repeat button stays on for 1 extra.
-        mapThreshold = 8 - (lastzone - game.global.world);
+        // Default map bonus threshold
+        var mapThreshold = 4;
+        var zonegap = lastzone - game.global.world;
+        if (zonegap <= 4)// Would be +5 but the map repeat button stays on for 1 extra.
+            mapThreshold += zonegap;
  		
  		if (game.global.mapBonus < mapThreshold)
              autoTrimpSettings.Prestige.selected = "GambesOP";

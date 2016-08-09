@@ -138,6 +138,7 @@ AutoPerks.setDefaultRatios = function() {
             perks[i].value = customRatios[i].value;
         }        
     }
+    localStorage.setItem('AutoPerksSelectedRatioPresetID', ratioSet);
 }
 
 //updates the internal perk variables with values grabbed from the custom ratio input boxes that the user may have changed.
