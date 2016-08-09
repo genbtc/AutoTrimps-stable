@@ -72,7 +72,7 @@ advBtn.setAttribute('onclick', 'autoToggle(\'advancedSettings\')');
 advBtn.innerHTML = 'Advanced Settings';
 advBtn.setAttribute("onmouseover", 'tooltip(\"Advanced Settings\", \"customText\", event, \"Leave off unless you know what you\'re doing with them.\")');
 advBtn.setAttribute("onmouseout", 'tooltip("hide")');
-advBtn.setAttribute('style', 'margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw;');
+advBtn.setAttribute('style', 'margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; font-size: 0.8vw;');
 advBtn.id='advancedSettingsBTN';
 advHeader.appendChild(advBtn);
 
@@ -98,7 +98,7 @@ genbtcBtn.setAttribute('onclick', 'autoToggle(\'genbtcadvancedSettings\')');
 genbtcBtn.innerHTML = 'genBTC Advanced Settings';
 genbtcBtn.setAttribute("onmouseover", 'tooltip(\"genBTC Advanced Settings\", \"customText\", event, \"Leave off unless you know what you\'re doing with them.\")');
 genbtcBtn.setAttribute("onmouseout", 'tooltip("hide")');
-genbtcBtn.setAttribute('style', 'margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw;');
+genbtcBtn.setAttribute('style', 'margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw;  font-size: 0.8vw;');
 genbtcBtn.id='genbtcadvancedSettingsBTN';
 advHeader.appendChild(genbtcBtn);
 //
@@ -117,12 +117,17 @@ createSetting('DelayArmorWhenNeeded', 'Delay Armor', 'Delay buying armor prestig
 createSetting('DynamicSiphonology', 'Dynamic Siphonology', 'Use the right level of siphonology based on your damage output.', 'boolean', true, null, 'genbtcadvancedSettings');
 createSetting('FarmWhenNomStacks7', 'Farm on >7 NomStacks', 'On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On! (exits when we get under 20x)', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('AutoRoboTrimp', 'AutoRoboTrimp', 'Use RoboTrimps ability starting at this level, and every 5 levels thereafter. (set to 0 to disable)', 'value', '60', null, 'genbtcadvancedSettings');
-createSetting('HeliumHrBuffer', 'Helium/Hr Buffer %', 'When using the He/Hr Autoportal, it will portal if your He/Hr drops by this amount of % lower than your best for current run, default is 0% (ie: set to 5 to portal at 95% of your best)', 'value', '0', null, 'genbtcadvancedSettings');
+createSetting('HeliumHrBuffer', 'He/Hr Portal Buffer %', 'When using the He/Hr Autoportal, it will portal if your He/Hr drops by this amount of % lower than your best for current run, default is 0% (ie: set to 5 to portal at 95% of your best)', 'value', '0', null, 'genbtcadvancedSettings');
 createSetting('DynamicPrestige', 'Dynamic Prestige', 'EXPERIMENTAL: Skip getting prestiges at first, and Gradually work up to the desired Prestige setting you have set. Runs with Dagger to save a significant amount of time until we need better gear, then starts increasing the prestige setting near the end of the run. ---NEW ALGORITHM 7/23/2016--- Examines which prestiges you have, how many missing ones youd need to achieve the desired target and starts running 5 maps or 2 maps every zone, Until the target prestige is reached. Example: For mace, starts getting the prerequisite prestiges 10 zones away from max, then more and more, finally reaching the desired prestige by the last final zone (also goes for 9 mapbonus on the last zone). IMPORTANT NOTE PLEASE READ: Final Zone Number is inherently tied to the AutoPortal setting. When using the Helium per Hour setting, it uses the zone we portaled at last run (game.global.lastPortal). If the AutoPortal is set to a challenge, it will use the last zone of the challenge. CAUTION: EXPERIMENTAL, please come to Discord chat if you have problems.', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('RunBionicBeforeSpire', 'Run Bionic Before Spire', 'Run the Bionic Wonderlands I through VI and then repeatedly farms VI(level 200) before attempting Spire, for the purpose of farming. WARNING: The point at which it stops farming has yet to be fully decided upon or set in stone, so it currently runs Bionic VI until it runs out of new prestige item rewards, then runs Bionic VII until it runs out of prestige items from that one, and then attempts the spire. This amounts to somewhere around 144 minutes. DO NOT USE WITH HE/HR PORTAL. Not meant to be used every time, He/Hr suffers.', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('TrainerCaptoTributes', 'Cap Trainers to a % of Tributes', 'Only Buy a Trainer when its cost is LESS than X% of cost of a tribute. This setting can work in combination with the other one, or set the other one to -1 and this will take full control. Default: -1 (Disabled). 50% is close to the point where the cap does nothing. You can go as low as you want but recommended is 10% to 1%. (example: Trainer cost of 5001, Tribute cost of 100000, @ 5%, it would NOT buy the trainer.)', 'value', '-1', null, 'genbtcadvancedSettings');
 createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'Automatically Buy the specified Golden Upgrades as they become available.', 'dropdown', 'Off', ["Off","Helium", "Battle", "Void"], 'genbtcadvancedSettings');
+var AGULabel = document.createElement("Label");
+AGULabel.id = 'AutoGoldenUpgradesLabel';
+AGULabel.innerHTML = "Golden Upgrades:";
+AGULabel.setAttribute('style', 'margin-right: 0.4vw; font-size: 0.8vw;');
+document.getElementById("AutoGoldenUpgrades").parentNode.insertBefore(AGULabel,document.getElementById("AutoGoldenUpgrades"))
 createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buy the upgrade the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null,'genbtcadvancedSettings');
 createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm level 200 maps for X minutes before continuing to beat spire (0 to disable)', 'value', '0', null, 'genbtcadvancedSettings');
 createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Exits the Spire after completing cell X. example: 40 for Row 4. (0 to disable)', 'value', '0', null, 'genbtcadvancedSettings');
@@ -134,7 +139,7 @@ importexportBtn.setAttribute('onclick', 'autoToggle(\'importexportSettings\')');
 importexportBtn.innerHTML = 'Import/Export Settings';
 importexportBtn.setAttribute("onmouseover", 'tooltip(\"Import/Export Settings\", \"customText\", event, \"Expand the Import/Export/Reset Autotrimps section.\")');
 importexportBtn.setAttribute("onmouseout", 'tooltip("hide")');
-importexportBtn.setAttribute('style', 'margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw;');
+importexportBtn.setAttribute('style', 'margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; font-size: 0.8vw;');
 importexportBtn.id='importexportSettingsBTN';
 advHeader.appendChild(importexportBtn);
 //
@@ -400,12 +405,19 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     } else if (type == 'infoclick') {
         btn.setAttribute('class', 'btn btn-info');
         btn.setAttribute("onclick", 'AutoTrimpsTooltip(\'' + defaultValue + '\', null, \'update\')');
+        btn.setAttribute("style", "display: block; font-size: 0.8vw;");
         btn.textContent = name;
         btnParent.style.width = '';
         btnParent.appendChild(btn);
         if(container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
-    }        
+        return;
+    }
+    //make sure names/descriptions match what we have stored.
+    if (autoTrimpSettings[id].name != name)
+        autoTrimpSettings[id].name = name;
+    if (autoTrimpSettings[id].description != description)
+        autoTrimpSettings[id].description = description;    
 }
 
 function settingChanged(id) {

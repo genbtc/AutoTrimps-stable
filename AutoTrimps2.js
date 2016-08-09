@@ -2310,27 +2310,23 @@ function calculateNextHeliumHour (stacked) {
 var lastHeliumZone = 0;
 function autoPortal() {
     switch (autoTrimpSettings.AutoPortal.selected) {
-        //portal if we have lower He/hr than the previous zone
+        //portal if we have lower He/hr than the previous zone (or buffer)
         case "Helium Per Hour":
             game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
-            var zoneincremented = false;
             if(game.global.world > lastHeliumZone) {
                 lastHeliumZone = game.global.world;
-                //console.log("The zone has been incremented. Level " + lastHeliumZone);
-                //console.log("And the best helium this run was " + game.stats.bestHeliumHourThisRun.storedValue + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
-                zoneincremented = true;
-            }
-            if(game.global.world > game.stats.bestHeliumHourThisRun.atZone && zoneincremented == true) {
-                var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
-                var myHeliumHr = game.stats.heliumHour.value();
-                var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
-                if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
-                    debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
-                    pushData();
-                    if(autoTrimpSettings.HeliumHourChallenge.selected != 'None') 
-                        doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
-                    else 
-                        doPortal();
+                if(game.global.world > game.stats.bestHeliumHourThisRun.atZone) {
+                    var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
+                    var myHeliumHr = game.stats.heliumHour.value();
+                    var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
+                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
+                        debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
+                        pushData();
+                        if(autoTrimpSettings.HeliumHourChallenge.selected != 'None') 
+                            doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
+                        else 
+                            doPortal();
+                    }
                 }
             }
             break;
@@ -2540,7 +2536,7 @@ function mainLoop() {
         firstgiga: getPageSetting('FirstGigastation'),
         deltagiga: getPageSetting('DeltaGigastation')
     }    
-    if(getPageSetting('PauseScript')) return;
+    if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled) return;
     if(game.global.viewingUpgrades) return;
     //auto-close breaking the world textbox
     if(document.getElementById('tipTitle').innerHTML == 'The Improbability') cancelTooltip();
