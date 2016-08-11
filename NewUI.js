@@ -108,7 +108,7 @@ genbtcadv.style.display = 'none';
 document.getElementById("autoSettings").appendChild(genbtcadv);
 
 //genBTC advanced settings - option buttons.
-createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga. Without this, if a Giga wasnt available, it would level infinitely. ', 'boolean', null, null, 'genbtcadvancedSettings');
+createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('WarpstationWall', 'Warpstation Wall', 'Do not level Warpstations if it costs over 1/4th of the current metal we own. (Experimental) ', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('CapEquip', 'Cap Equip to 10', 'Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('AlwaysArmorLvl2', 'Always Buy Lvl 2 Armor', 'Always Buy the 2nd point of Armor even if we dont need the HP. Its the most cost effective level, and the HP _need_ script isnt always adequate.', 'boolean', null, null, 'genbtcadvancedSettings');

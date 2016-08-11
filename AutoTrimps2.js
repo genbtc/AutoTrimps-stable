@@ -263,108 +263,6 @@ function postBuy() {
     game.global.maxSplit = preBuymaxSplit;
 }
 
-function safeBuyBuilding(building) {
-    //limit to 1 building per queue
-    for (var b in game.global.buildingsQueue) {
-        if (game.global.buildingsQueue[b].includes(building)) return false;
-    }
-    preBuy();
-    game.global.buyAmt = 1;
-    if (!canAffordBuilding(building)) {
-        postBuy();
-        return false;
-    }
-    game.global.firing = false;
-    //avoid slow building from clamping
-    //buy as many warpstations as we can afford
-    if(building == 'Warpstation'){
-        game.global.buyAmt = 'Max';
-        game.global.maxSplit = 1;
-        buyBuilding(building, true, true);
-        debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*rocket');
-        return;
-    }
-    debug('Building ' + building, '*hammer2');
-    buyBuilding(building, true, true);
-    postBuy();
-    return true;
-}
-
-//Outlines the most efficient housing based on gems (credits to Belaith)
-function highlightHousing() {
-    var oldBuy = game.global.buyAmt;
-    game.global.buyAmt = 1;
-    var allHousing = ["Mansion", "Hotel", "Resort", "Gateway", "Collector", "Warpstation"];
-    var unlockedHousing = [];
-    for (var house in allHousing) {
-        if (game.buildings[allHousing[house]].locked === 0) {
-            unlockedHousing.push(allHousing[house]);
-        }
-    }
-    if (unlockedHousing.length) {
-        var obj = {};
-        for (var house in unlockedHousing) {
-            var building = game.buildings[unlockedHousing[house]];
-            var cost = 0;
-            cost += getBuildingItemPrice(building, "gems", false, 1);
-            var ratio = cost / building.increase.by;
-            //don't consider Gateway if we can't afford it right now - hopefully to prevent game waiting for fragments to buy gateway when collector could be bought right now
-            if(unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway')) continue;
-            obj[unlockedHousing[house]] = ratio;
-            if (document.getElementById(unlockedHousing[house]).style.border = "1px solid #00CC00") {
-                document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
-                // document.getElementById(unlockedHousing[house]).removeEventListener("click", update);
-            }
-        }
-        var keysSorted = Object.keys(obj).sort(function(a, b) {
-            return obj[a] - obj[b];
-        });
-        bestBuilding = null;
-        //loop through the array and find the first one that isn't limited by max settings
-        for (var best in keysSorted) {
-            var max = getPageSetting('Max' + keysSorted[best]);
-            if (max === false) max = -1;
-            if (game.buildings[keysSorted[best]].owned < max || max == -1) {
-                bestBuilding = keysSorted[best];
-                
-                if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
-                    //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
-                    if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
-                        bestBuilding = null;
-                }
-                if (getPageSetting('WarpstationWall') && bestBuilding == "Warpstation") {
-                    //Warpstation Wall - allow only warps that cost 1/n'th less then current metal (try to save metal for next prestige) 
-                    var costratio = 4;  //(1/4th)                    
-                    if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > game.resources.metal.owned/costratio)
-                        bestBuilding = null;
-                }
-                break;
-            }
-        }
-        if (bestBuilding) {
-            document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
-        }
-        // document.getElementById(bestBuilding).addEventListener('click', update, false);
-    } else {
-        bestBuilding = null;
-    }
-    game.global.buyAmt = oldBuy;
-}
-
-function buyFoodEfficientHousing() {
-    var houseWorth = game.buildings.House.locked ? 0 : game.buildings.House.increase.by / getBuildingItemPrice(game.buildings.House, "food", false, 1);
-    var hutWorth = game.buildings.Hut.increase.by / getBuildingItemPrice(game.buildings.Hut, "food", false, 1);
-    var hutAtMax = (game.buildings.Hut.owned >= autoTrimpSettings.MaxHut.value && autoTrimpSettings.MaxHut.value != -1);
-    //if hutworth is more, but huts are maxed , still buy up to house max
-    if ((houseWorth > hutWorth || hutAtMax) && canAffordBuilding('House') && (game.buildings.House.owned < autoTrimpSettings.MaxHouse.value || autoTrimpSettings.MaxHouse.value == -1)) {
-        safeBuyBuilding('House');
-    } else {
-        if (!hutAtMax) {
-            safeBuyBuilding('Hut');
-        }
-    }
-}
-
 function safeBuyJob(jobTitle, amount) {
     if (amount === undefined) amount = 1;
     if (amount === 0) return false;
@@ -388,6 +286,170 @@ function safeBuyJob(jobTitle, amount) {
     return true;
 }
 
+//Returns the amount of stats that the equipment (or gym) will give when bought.
+function Effect(gameResource, equip) {
+    if (equip.Equip) {
+        return gameResource[equip.Stat + 'Calculated'];
+    } else {
+        //That be Gym
+        var oldBlock = gameResource.increase.by * gameResource.owned;
+        var Mod = game.upgrades.Gymystic.done ? (game.upgrades.Gymystic.modifier + (0.01 * (game.upgrades.Gymystic.done - 1))) : 1;
+        var newBlock = gameResource.increase.by * (gameResource.owned + 1) * Mod;
+        return newBlock - oldBlock;
+    }
+}
+
+//Returns the cost after Artisanistry of a piece of equipment.
+function Cost(gameResource, equip) {
+    preBuy();
+    game.global.buyAmt = 1;
+    var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
+    if (equip.Equip) price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
+    postBuy();
+    return price;
+}
+
+//Returns the amount of stats that the prestige will give when bought.
+function PrestigeValue(what) {
+    var name = game.upgrades[what].prestiges;
+    var equipment = game.equipment[name];
+    var stat;
+    if (equipment.blockNow) stat = "block";
+    else stat = (typeof equipment.health !== 'undefined') ? "health" : "attack";
+    var toReturn = Math.round(equipment[stat] * Math.pow(1.19, ((equipment.prestige) * game.global.prestige[stat]) + 1));
+    return toReturn;
+}
+
+function getScienceCostToUpgrade(upgrade) {
+    var upgradeObj = game.upgrades[upgrade];
+    if (upgradeObj.cost.resources.science !== undefined ? upgradeObj.cost.resources.science[0] !== undefined : false) {
+        return Math.floor(upgradeObj.cost.resources.science[0] * Math.pow(upgradeObj.cost.resources.science[1], (upgradeObj.done)));
+    } else if (upgradeObj.cost.resources.science !== undefined && upgradeObj.cost.resources.science[0] == undefined){
+        return upgradeObj.cost.resources.science;
+    } else {
+        return 0;
+    }
+}
+
+function setScienceNeeded() {
+    scienceNeeded = 0;
+    for (var upgrade in upgradeList) {
+        upgrade = upgradeList[upgrade];
+        if (game.upgrades[upgrade].allowed > game.upgrades[upgrade].done) { //If the upgrade is available
+            if (game.global.world == 1 && game.global.totalHeliumEarned<=100 && upgrade.startsWith("Speed")) continue;  //skip speed upgrades on fresh game until level 2
+            scienceNeeded += getScienceCostToUpgrade(upgrade);
+        }
+    }
+}
+
+function setTitle() {
+    document.title = '(' + game.global.world + ')' + ' Trimps ' + document.getElementById('versionNumber').innerHTML;
+    //for the dummies like me who always forget to turn automaps back on after portaling
+    if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false) {
+        settingChanged("AutoMaps");
+    }
+}
+
+function getEnemyMaxAttack(world, level, name, diff, corrupt) {
+    var amt = 0;
+    var adjWorld = ((world - 1) * 100) + level;
+    amt += 50 * Math.sqrt(world) * Math.pow(3.27, world / 2);
+    amt -= 10;
+    if (world == 1){
+        amt *= 0.35;
+        amt = (amt * 0.20) + ((amt * 0.75) * (level / 100));
+    }
+    else if (world == 2){
+        amt *= 0.5;
+        amt = (amt * 0.32) + ((amt * 0.68) * (level / 100));
+    }
+    else if (world < 60)
+        amt = (amt * 0.375) + ((amt * 0.7) * (level / 100));
+    else{ 
+        amt = (amt * 0.4) + ((amt * 0.9) * (level / 100));
+        amt *= Math.pow(1.15, world - 59);
+    }
+    if (world < 60) amt *= 0.85;
+    if (world > 6 && game.global.mapsActive) amt *= 1.1;
+    if (diff) { 
+        amt *= diff;
+    }    
+    if (!corrupt)
+        amt *= game.badGuys[name].attack;
+    else {
+        amt *= getCorruptScale("attack");
+    }
+    return Math.floor(amt);
+}
+
+function getEnemyMaxHealth(world, level, corrupt) {
+    if (!level)
+        level = 30;
+    var amt = 0;
+    amt += 130 * Math.sqrt(world) * Math.pow(3.265, world / 2);
+    amt -= 110;
+    if (world == 1 || world == 2 && level < 10) {
+        amt *= 0.6;
+        amt = (amt * 0.25) + ((amt * 0.72) * (level / 100));
+    }
+    else if (world < 60)
+        amt = (amt * 0.4) + ((amt * 0.4) * (level / 110));
+    else {
+        amt = (amt * 0.5) + ((amt * 0.8) * (level / 100));
+        amt *= Math.pow(1.1, world - 59);
+    }
+    if (world < 60) amt *= 0.75;        
+    if (world > 5 && game.global.mapsActive) amt *= 1.1;
+    if (!corrupt)
+        amt *= game.badGuys["Grimp"].health;
+    else
+        amt *= getCorruptScale("health");
+    return Math.floor(amt);
+}
+
+function getBreedTime(remaining,round) {
+    var trimps = game.resources.trimps;
+    var breeding = trimps.owned - trimps.employed;
+    var trimpsMax = trimps.realMax();
+
+    var potencyMod = trimps.potency;
+    //Broken Planet
+    if (game.global.brokenPlanet) potencyMod /= 10;
+    //Pheromones
+    potencyMod *= 1+ (game.portal.Pheromones.level * game.portal.Pheromones.modifier);
+    //Geneticist
+    if (game.jobs.Geneticist.owned > 0) potencyMod *= Math.pow(.98, game.jobs.Geneticist.owned);
+    //Quick Trimps
+    if (game.unlocks.quickTrimps) potencyMod *= 2;
+    if (game.global.challengeActive == "Toxicity" && game.challenges.Toxicity.stacks > 0){
+        potencyMod *= Math.pow(game.challenges.Toxicity.stackMult, game.challenges.Toxicity.stacks);
+    }
+    if (game.global.voidBuff == "slowBreed"){
+        potencyMod *= 0.2;
+    }
+
+    potencyMod = calcHeirloomBonus("Shield", "breedSpeed", potencyMod);
+    breeding = breeding * potencyMod;
+    updatePs(breeding, true);
+    potencyMod = (1 + (potencyMod / 10));
+    var timeRemaining = log10((trimpsMax - trimps.employed) / (trimps.owned - trimps.employed)) / log10(potencyMod);
+    timeRemaining /= 10;
+    if (remaining)
+        return parseFloat(timeRemaining.toFixed(1));
+
+    var fullBreed = 0;
+    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
+    var totalTime = log10((trimpsMax - trimps.employed) / (trimpsMax - adjustedMax - trimps.employed)) / log10(potencyMod);
+
+    totalTime /= 10;
+
+    return parseFloat(totalTime.toFixed(1));
+}
+
+////////////////////////////////////////
+//Heirloom Functions////////////////////
+////////////////////////////////////////
+
 //OLD:
 //renamed from sortHeirlooms to worthOfHeirlooms
 var worth = {'Shield': {}, 'Staff': {}};
@@ -402,7 +464,7 @@ function worthOfHeirlooms(){
     for (var x in worth){
         worth[x] = Object.keys(worth[x]).sort(function(a, b) {
             if(worth[x][b] == worth[x][a]) {
-                return evaluateMods(b, 'heirloomsExtra') - evaluateMods(a, 'heirloomsExtra');
+                return evaluateHeirloomMods(b, 'heirloomsExtra') - evaluateHeirloomMods(a, 'heirloomsExtra');
             }
             else
                 return worth[x][b] - worth[x][a];
@@ -418,7 +480,7 @@ function worthOfHeirlooms2(){
     worth2 = {'Shield': [], 'Staff': []};
     for (var index in game.global.heirloomsExtra) {
         var theLoom = game.global.heirloomsExtra[index];
-        var data = {'location': 'heirloomsExtra', 'index': index, 'rarity': theLoom.rarity, 'eff': evaluateMods(index, 'heirloomsExtra')};
+        var data = {'location': 'heirloomsExtra', 'index': index, 'rarity': theLoom.rarity, 'eff': evaluateHeirloomMods(index, 'heirloomsExtra')};
         worth2[theLoom.type].push(data);
     }
     //sort algorithm: high to low value, priority on rarity, followed by mod evaluation
@@ -437,7 +499,7 @@ function worthOfHeirlooms2(){
     //Output each carried Heirlooms worth to console (or say heirloomsExtra instead)
     /*
     for(var index in game.global.heirloomsCarried) {
-        console.log(evaluateMods(index, 'heirloomsCarried'));
+        console.log(evaluateHeirloomMods(index, 'heirloomsCarried'));
     }
     */    
 }
@@ -528,7 +590,7 @@ function autoHeirlooms() {
             var theLoom = game.global.heirloomsCarried[carried];
             if(worth[theLoom.type].length == 0) continue;
             var index = worth[theLoom.type][0];
-            if(theLoom.rarity < game.global.heirloomsExtra[index].rarity || (theLoom.rarity == game.global.heirloomsExtra[index].rarity && evaluateMods(carried, 'heirloomsCarried') < evaluateMods(index, 'heirloomsExtra'))) {
+            if(theLoom.rarity < game.global.heirloomsExtra[index].rarity || (theLoom.rarity == game.global.heirloomsExtra[index].rarity && evaluateHeirloomMods(carried, 'heirloomsCarried') < evaluateHeirloomMods(index, 'heirloomsExtra'))) {
                 if (!theLoom.protected){
                     selectHeirloom(carried, 'heirloomsCarried');
                     stopCarryHeirloom();
@@ -557,7 +619,7 @@ function heirloomUpgradeHighlighting() {
     var bestUpgrade;
     if(game.global.selectedHeirloom[1].includes('Equipped')) {
         var loom = game.global[game.global.selectedHeirloom[1]];
-        bestUpgrade = evaluateMods(0, game.global.selectedHeirloom[1], true);
+        bestUpgrade = evaluateHeirloomMods(0, game.global.selectedHeirloom[1], true);
         if(bestUpgrade.index) {
             bestUpgrade.effect *= getModUpgradeCost(loom, bestUpgrade.index);
             bestUpgrade.effect = bestUpgrade.effect.toFixed(6);
@@ -575,7 +637,7 @@ function heirloomUpgradeHighlighting() {
 
 //Automatically upgrades the best mod on the equipped shield and equipped staff. Runs until you run out of nullifium.
 //Do not tamper with this.
-function autoNull(){for(var e,d=[game.global.ShieldEquipped,game.global.StaffEquipped],o=0;2>o;o++){var l=d[o];if(e=evaluateMods(0,l.type+"Equipped",!0),e.index){selectedMod=e.index;var a=getModUpgradeCost(l,selectedMod);if(game.global.nullifium<a)continue;game.global.nullifium-=a;var i=getModUpgradeValue(l,selectedMod),t=l.mods[selectedMod];t[1]=i,"undefined"!=typeof t[3]?t[3]++:(t[2]=0,t[3]=1),game.heirlooms[l.type][l.mods[selectedMod][0]].currentBonus=i}}}
+function autoNull(){for(var e,d=[game.global.ShieldEquipped,game.global.StaffEquipped],o=0;2>o;o++){var l=d[o];if(e=evaluateHeirloomMods(0,l.type+"Equipped",!0),e.index){selectedMod=e.index;var a=getModUpgradeCost(l,selectedMod);if(game.global.nullifium<a)continue;game.global.nullifium-=a;var i=getModUpgradeValue(l,selectedMod),t=l.mods[selectedMod];t[1]=i,"undefined"!=typeof t[3]?t[3]++:(t[2]=0,t[3]=1),game.heirlooms[l.type][l.mods[selectedMod][0]].currentBonus=i}}}
 
 //commented out because it was never finished.
 /*
@@ -590,7 +652,7 @@ function autoSwapHeirlooms(loomtype="Shield" || "Staff", loomlocation="heirlooms
         var theLoom = game.global[loomlocation][eachloom];
         if (theLoom.type != loomtype)
             continue;
-        var effRating = evaluateMods(eachloom,loomlocation);
+        var effRating = evaluateHeirloomMods(eachloom,loomlocation);
     } 
     if(loomlocation.includes('Equipped'))
         loom = game.global[loomlocation];
@@ -618,9 +680,17 @@ function autoSwapHeirlooms(loomtype="Shield" || "Staff", loomlocation="heirlooms
 }
 */
 
+//Heirloom helper function
+function checkForMod(what, loom, location){
+    var heirloom = game.global[location][loom];
+    for (var mod in heirloom.mods){
+        if (heirloom.mods[mod][0] == what) return true;
+    }
+    return false;
+}
 
 //Determines the best heirloom mods
-function evaluateMods(loom, location, upgrade) {
+function evaluateHeirloomMods(loom, location, upgrade) {
     var index = loom;
     var bestUpgrade = {
         'index': null,
@@ -830,19 +900,208 @@ function evaluateMods(loom, location, upgrade) {
     return eff;
 }
 
-//Heirloom helper function
-function checkForMod(what, loom, location){
-    var heirloom = game.global[location][loom];
-    for (var mod in heirloom.mods){
-        if (heirloom.mods[mod][0] == what) return true;
+
+////////////////////////////////////////
+//Main Functions////////////////////////
+////////////////////////////////////////
+
+function initializeAutoTrimps() {
+    debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
+    loadPageVariables();
+
+    var atscript = document.getElementById('AutoTrimps-script')
+      , base = 'https://genbtc.github.io/AutoTrimps'
+      ;
+    if (atscript !== null) {
+        base = atscript.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
     }
-    return false;
+    document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
+    document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
+    toggleSettingsMenu();
+    toggleSettingsMenu();
 }
 
-//map of resource to jobs
-var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};
-//back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
-function evaluateEfficiency(equipName) {
+function workerRatios() {
+    if (game.global.world == 200 && game.global.spireActive) {
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '40';
+        autoTrimpSettings.MinerRatio.value = '8';
+    } else if (game.buildings.Tribute.owned > 1500) {
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '2';
+        autoTrimpSettings.MinerRatio.value = '22';    
+    } else if (game.buildings.Tribute.owned > 1000) {
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '1';
+        autoTrimpSettings.MinerRatio.value = '10';    
+    } else if (game.resources.trimps.realMax() > 3000000) {
+        autoTrimpSettings.FarmerRatio.value = '3';
+        autoTrimpSettings.LumberjackRatio.value = '1';
+        autoTrimpSettings.MinerRatio.value = '4';
+    } else if (game.resources.trimps.realMax() > 300000) {
+        autoTrimpSettings.FarmerRatio.value = '3';
+        autoTrimpSettings.LumberjackRatio.value = '3';
+        autoTrimpSettings.MinerRatio.value = '5';
+    } else {
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '1';
+        autoTrimpSettings.MinerRatio.value = '1';
+    }
+    if (game.global.challengeActive == 'Watch'){
+        autoTrimpSettings.FarmerRatio.value = '1';
+        autoTrimpSettings.LumberjackRatio.value = '1';
+        autoTrimpSettings.MinerRatio.value = '1';
+    }
+}
+
+//An error-resilient function that will actually purchase buildings and return a success status
+function safeBuyBuilding(building) {
+    //limit to 1 building per queue
+    for (var b in game.global.buildingsQueue) {
+        if (game.global.buildingsQueue[b].includes(building)) return false;
+    }
+    preBuy();
+    game.global.buyAmt = 1;
+    if (!canAffordBuilding(building)) {
+        postBuy();
+        return false;
+    }
+    game.global.firing = false;
+    //avoid slow building from clamping
+    //buy as many warpstations as we can afford
+    if(building == 'Warpstation'){
+        game.global.buyAmt = 'Max';
+        game.global.maxSplit = 1;
+        buyBuilding(building, true, true);
+        debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*rocket');
+        return;
+    }
+    debug('Building ' + building, '*hammer2');
+    buyBuilding(building, true, true);
+    postBuy();
+    return true;
+}
+
+//Outlines the most efficient housing based on gems (credits to Belaith)
+function highlightHousing() {
+    var oldBuy = game.global.buyAmt;
+    game.global.buyAmt = 1;
+    var allHousing = ["Mansion", "Hotel", "Resort", "Gateway", "Collector", "Warpstation"];
+    var unlockedHousing = [];
+    for (var house in allHousing) {
+        if (game.buildings[allHousing[house]].locked === 0) {
+            unlockedHousing.push(allHousing[house]);
+        }
+    }
+    if (unlockedHousing.length) {
+        var obj = {};
+        for (var house in unlockedHousing) {
+            var building = game.buildings[unlockedHousing[house]];
+            var cost = 0;
+            cost += getBuildingItemPrice(building, "gems", false, 1);
+            var ratio = cost / building.increase.by;
+            //don't consider Gateway if we can't afford it right now - hopefully to prevent game waiting for fragments to buy gateway when collector could be bought right now
+            if(unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway')) continue;
+            obj[unlockedHousing[house]] = ratio;
+            if (document.getElementById(unlockedHousing[house]).style.border = "1px solid #00CC00") {
+                document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
+                // document.getElementById(unlockedHousing[house]).removeEventListener("click", update);
+            }
+        }
+        var keysSorted = Object.keys(obj).sort(function(a, b) {
+            return obj[a] - obj[b];
+        });
+        bestBuilding = null;
+        //loop through the array and find the first one that isn't limited by max settings
+        for (var best in keysSorted) {
+            var max = getPageSetting('Max' + keysSorted[best]);
+            if (max === false) max = -1;
+            if (game.buildings[keysSorted[best]].owned < max || max == -1) {
+                bestBuilding = keysSorted[best];
+                
+                if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
+                    //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
+                    if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
+                        bestBuilding = null;
+                }
+                if (getPageSetting('WarpstationWall') && bestBuilding == "Warpstation") {
+                    //Warpstation Wall - allow only warps that cost 1/n'th less then current metal (try to save metal for next prestige) 
+                    var costratio = 4;  //(1/4th)                    
+                    if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > game.resources.metal.owned/costratio)
+                        bestBuilding = null;
+                }
+                break;
+            }
+        }
+        if (bestBuilding) {
+            document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
+        }
+        // document.getElementById(bestBuilding).addEventListener('click', update, false);
+    } else {
+        bestBuilding = null;
+    }
+    game.global.buyAmt = oldBuy;
+}
+
+//Helper function to buy best "Food" Buildings
+function buyFoodEfficientHousing() {
+    var houseWorth = game.buildings.House.locked ? 0 : game.buildings.House.increase.by / getBuildingItemPrice(game.buildings.House, "food", false, 1);
+    var hutWorth = game.buildings.Hut.increase.by / getBuildingItemPrice(game.buildings.Hut, "food", false, 1);
+    var hutAtMax = (game.buildings.Hut.owned >= autoTrimpSettings.MaxHut.value && autoTrimpSettings.MaxHut.value != -1);
+    //if hutworth is more, but huts are maxed , still buy up to house max
+    if ((houseWorth > hutWorth || hutAtMax) && canAffordBuilding('House') && (game.buildings.House.owned < autoTrimpSettings.MaxHouse.value || autoTrimpSettings.MaxHouse.value == -1)) {
+        safeBuyBuilding('House');
+    } else {
+        if (!hutAtMax) {
+            safeBuyBuilding('Hut');
+        }
+    }
+}
+
+//Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym,Tribute,Nursery)s
+function buyBuildings() {
+    if(game.global.world!=1 && ((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist")))
+        return;
+    highlightHousing();
+
+    //if housing is highlighted
+    if (bestBuilding !== null) {
+        //insert gigastation logic here ###############
+        if (!safeBuyBuilding(bestBuilding)) {
+            buyFoodEfficientHousing();
+        }
+    } else {
+        buyFoodEfficientHousing();
+    }
+    
+    if(getPageSetting('MaxWormhole') > 0 && game.buildings.Wormhole.owned < getPageSetting('MaxWormhole') && !game.buildings.Wormhole.locked) safeBuyBuilding('Wormhole');
+
+    //Buy non-housing buildings
+    if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
+        safeBuyBuilding('Gym');
+    }
+    if (!game.buildings.Tribute.locked && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {
+        safeBuyBuilding('Tribute');
+    }
+    var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
+    //only buy nurseries if enabled,   and we need to lower our breed time, or our target breed time is 0, or we aren't trying to manage our breed time before geneticists, and they aren't locked
+    //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
+    if ((targetBreed < getBreedTime() || targetBreed == 0 || !getPageSetting('ManageBreedtimer') || 
+        (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
+        (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false))) && !game.buildings.Nursery.locked) 
+    {
+        if ((getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1) && 
+            (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Warpstation, "gems", false, 1) || game.buildings.Warpstation.locked) && 
+            (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Collector, "gems", false, 1) || game.buildings.Collector.locked || !game.buildings.Warpstation.locked))
+        {
+            safeBuyBuilding('Nursery');
+        }
+    }
+}
+
+//Back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
+var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
+function evaluateEquipmentEfficiency(equipName) {
     var equip = equipmentList[equipName];
     var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
     if (equipName == 'Shield') {
@@ -898,6 +1157,7 @@ function evaluateEfficiency(equipName) {
             }
         }
     }
+    //what this means:
     //wall (don't buy any more equipment, buy prestige first) is true if the limit equipment option is on and we are past our limit 
     //res = 0 sets the efficiency to 0 so that it will be disregarded. if not, efficiency will still be somenumber that is cheaper, 
     //      and the algorithm will get stuck on whatever equipment we have capped, and not buy other equipment.
@@ -927,211 +1187,6 @@ function evaluateEfficiency(equipName) {
         Status: Status,
         Wall: Wall
     };
-}
-
-//Returns the amount of stats that the equipment (or gym) will give when bought.
-function Effect(gameResource, equip) {
-    if (equip.Equip) {
-        return gameResource[equip.Stat + 'Calculated'];
-    } else {
-        //That be Gym
-        var oldBlock = gameResource.increase.by * gameResource.owned;
-        var Mod = game.upgrades.Gymystic.done ? (game.upgrades.Gymystic.modifier + (0.01 * (game.upgrades.Gymystic.done - 1))) : 1;
-        var newBlock = gameResource.increase.by * (gameResource.owned + 1) * Mod;
-        return newBlock - oldBlock;
-    }
-}
-
-//Returns the cost after Artisanistry of a piece of equipment.
-function Cost(gameResource, equip) {
-    preBuy();
-    game.global.buyAmt = 1;
-    var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
-    if (equip.Equip) price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
-    postBuy();
-    return price;
-}
-
-//Returns the amount of stats that the prestige will give when bought.
-function PrestigeValue(what) {
-    var name = game.upgrades[what].prestiges;
-    var equipment = game.equipment[name];
-    var stat;
-    if (equipment.blockNow) stat = "block";
-    else stat = (typeof equipment.health !== 'undefined') ? "health" : "attack";
-    var toReturn = Math.round(equipment[stat] * Math.pow(1.19, ((equipment.prestige) * game.global.prestige[stat]) + 1));
-    return toReturn;
-}
-
-function getScienceCostToUpgrade(upgrade) {
-    var upgradeObj = game.upgrades[upgrade];
-    if (upgradeObj.cost.resources.science !== undefined ? upgradeObj.cost.resources.science[0] !== undefined : false) {
-        return Math.floor(upgradeObj.cost.resources.science[0] * Math.pow(upgradeObj.cost.resources.science[1], (upgradeObj.done)));
-    } else if (upgradeObj.cost.resources.science !== undefined && upgradeObj.cost.resources.science[0] == undefined){
-        return upgradeObj.cost.resources.science;
-    } else {
-        return 0;
-    }
-}
-
-function setScienceNeeded() {
-    scienceNeeded = 0;
-    for (var upgrade in upgradeList) {
-        upgrade = upgradeList[upgrade];
-        if (game.upgrades[upgrade].allowed > game.upgrades[upgrade].done) { //If the upgrade is available
-            if (game.global.world == 1 && game.global.totalHeliumEarned<=100 && upgrade.startsWith("Speed")) continue;  //skip speed upgrades on fresh game until level 2
-            scienceNeeded += getScienceCostToUpgrade(upgrade);
-        }
-    }
-}
-
-function getEnemyMaxAttack(world, level, name, diff, corrupt) {
-    var amt = 0;
-    var adjWorld = ((world - 1) * 100) + level;
-    amt += 50 * Math.sqrt(world) * Math.pow(3.27, world / 2);
-    amt -= 10;
-    if (world == 1){
-        amt *= 0.35;
-        amt = (amt * 0.20) + ((amt * 0.75) * (level / 100));
-    }
-    else if (world == 2){
-        amt *= 0.5;
-        amt = (amt * 0.32) + ((amt * 0.68) * (level / 100));
-    }
-    else if (world < 60)
-        amt = (amt * 0.375) + ((amt * 0.7) * (level / 100));
-    else{ 
-        amt = (amt * 0.4) + ((amt * 0.9) * (level / 100));
-        amt *= Math.pow(1.15, world - 59);
-    }
-    if (world < 60) amt *= 0.85;
-    if (world > 6 && game.global.mapsActive) amt *= 1.1;
-    if (diff) { 
-        amt *= diff;
-    }    
-    if (!corrupt)
-        amt *= game.badGuys[name].attack;
-    else {
-        amt *= getCorruptScale("attack");
-    }
-    return Math.floor(amt);
-}
-
-function getEnemyMaxHealth(world, level, corrupt) {
-    if (!level)
-        level = 30;
-    var amt = 0;
-    amt += 130 * Math.sqrt(world) * Math.pow(3.265, world / 2);
-    amt -= 110;
-    if (world == 1 || world == 2 && level < 10) {
-        amt *= 0.6;
-        amt = (amt * 0.25) + ((amt * 0.72) * (level / 100));
-    }
-    else if (world < 60)
-        amt = (amt * 0.4) + ((amt * 0.4) * (level / 110));
-    else {
-        amt = (amt * 0.5) + ((amt * 0.8) * (level / 100));
-        amt *= Math.pow(1.1, world - 59);
-    }
-    if (world < 60) amt *= 0.75;		
-    if (world > 5 && game.global.mapsActive) amt *= 1.1;
-    if (!corrupt)
-        amt *= game.badGuys["Grimp"].health;
-    else
-        amt *= getCorruptScale("health");
-    return Math.floor(amt);
-}
-
-function getBreedTime(remaining,round) {
-    var trimps = game.resources.trimps;
-    var breeding = trimps.owned - trimps.employed;
-    var trimpsMax = trimps.realMax();
-
-    var potencyMod = trimps.potency;
-    //Broken Planet
-    if (game.global.brokenPlanet) potencyMod /= 10;
-    //Pheromones
-    potencyMod *= 1+ (game.portal.Pheromones.level * game.portal.Pheromones.modifier);
-    //Geneticist
-    if (game.jobs.Geneticist.owned > 0) potencyMod *= Math.pow(.98, game.jobs.Geneticist.owned);
-    //Quick Trimps
-    if (game.unlocks.quickTrimps) potencyMod *= 2;
-    if (game.global.challengeActive == "Toxicity" && game.challenges.Toxicity.stacks > 0){
-        potencyMod *= Math.pow(game.challenges.Toxicity.stackMult, game.challenges.Toxicity.stacks);
-    }
-    if (game.global.voidBuff == "slowBreed"){
-        potencyMod *= 0.2;
-    }
-
-    potencyMod = calcHeirloomBonus("Shield", "breedSpeed", potencyMod);
-    breeding = breeding * potencyMod;
-    updatePs(breeding, true);
-    potencyMod = (1 + (potencyMod / 10));
-    var timeRemaining = log10((trimpsMax - trimps.employed) / (trimps.owned - trimps.employed)) / log10(potencyMod);
-    timeRemaining /= 10;
-    if (remaining)
-        return parseFloat(timeRemaining.toFixed(1));
-
-    var fullBreed = 0;
-    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
-    var totalTime = log10((trimpsMax - trimps.employed) / (trimpsMax - adjustedMax - trimps.employed)) / log10(potencyMod);
-
-    totalTime /= 10;
-
-    return parseFloat(totalTime.toFixed(1));
-}
-
-////////////////////////////////////////
-//Main Functions////////////////////////
-////////////////////////////////////////
-
-function initializeAutoTrimps() {
-    debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
-    loadPageVariables();
-
-    var atscript = document.getElementById('AutoTrimps-script')
-      , base = 'https://genbtc.github.io/AutoTrimps'
-      ;
-    if (atscript !== null) {
-        base = atscript.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
-    }
-    document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
-    toggleSettingsMenu();
-    toggleSettingsMenu();
-}
-
-function workerRatios() {
-    if (game.global.world == 200 && game.global.spireActive) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '40';
-        autoTrimpSettings.MinerRatio.value = '8';
-    } else if (game.buildings.Tribute.owned > 1500) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '2';
-        autoTrimpSettings.MinerRatio.value = '22';    
-    } else if (game.buildings.Tribute.owned > 1000) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '10';    
-    } else if (game.resources.trimps.realMax() > 3000000) {
-        autoTrimpSettings.FarmerRatio.value = '3';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '4';
-    } else if (game.resources.trimps.realMax() > 300000) {
-        autoTrimpSettings.FarmerRatio.value = '3';
-        autoTrimpSettings.LumberjackRatio.value = '3';
-        autoTrimpSettings.MinerRatio.value = '5';
-    } else {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '1';
-    }
-    if (game.global.challengeActive == 'Watch'){
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '1';
-    }
 }
 
 //Buys all available non-equip upgrades listed in var upgradeList
@@ -1179,55 +1234,7 @@ function buyStorage() {
     }
 }
 
-//Buy all non-storage buildings
-function buyBuildings() {
-    if(game.global.world!=1 && ((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist")))
-        return;
-    highlightHousing();
-
-    //if housing is highlighted
-    if (bestBuilding !== null) {
-        //insert gigastation logic here ###############
-        if (!safeBuyBuilding(bestBuilding)) {
-            buyFoodEfficientHousing();
-        }
-    } else {
-        buyFoodEfficientHousing();
-    }
-    
-    if(getPageSetting('MaxWormhole') > 0 && game.buildings.Wormhole.owned < getPageSetting('MaxWormhole') && !game.buildings.Wormhole.locked) safeBuyBuilding('Wormhole');
-
-    //Buy non-housing buildings
-    if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
-        safeBuyBuilding('Gym');
-    }
-    if (!game.buildings.Tribute.locked && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {
-        safeBuyBuilding('Tribute');
-    }
-    var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
-    //only buy nurseries if enabled,   and we need to lower our breed time, or our target breed time is 0, or we aren't trying to manage our breed time before geneticists, and they aren't locked
-    //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
-    if ((targetBreed < getBreedTime() || targetBreed == 0 || !getPageSetting('ManageBreedtimer') || 
-        (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
-        (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false))) && !game.buildings.Nursery.locked) 
-    {
-        if ((getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1) && 
-            (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Warpstation, "gems", false, 1) || game.buildings.Warpstation.locked) && 
-            (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Collector, "gems", false, 1) || game.buildings.Collector.locked || !game.buildings.Warpstation.locked))
-        {
-            safeBuyBuilding('Nursery');
-        }
-    }
-}
-
-function setTitle() {
-    document.title = '(' + game.global.world + ')' + ' Trimps ' + document.getElementById('versionNumber').innerHTML;
-    //for the dummies like me who always forget to turn automaps back on after portaling
-    if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false) {
-        settingChanged("AutoMaps");
-    }
-}
-
+//Hires and Fires all workers (farmers/lumberjacks/miners/scientists/trainers/explorers)
 function buyJobs() {
     var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     var trimps = game.resources.trimps;
@@ -1353,6 +1360,7 @@ function buyJobs() {
 
 }
 
+//"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
 function autoLevelEquipment() {
     //if((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
         //return;
@@ -1407,7 +1415,7 @@ function autoLevelEquipment() {
         // debug('Game Resource: ' + gameResource);
         if (!gameResource.locked) {
             document.getElementById(equipName).style.color = 'white';
-            var evaluation = evaluateEfficiency(equipName);
+            var evaluation = evaluateEquipmentEfficiency(equipName);
             // debug(equipName + ' evaluation ' + evaluation.Status);
             var BKey = equip.Stat + equip.Resource;
             // debug(equipName + ' bkey ' + BKey);
@@ -1497,10 +1505,10 @@ function autoLevelEquipment() {
     postBuy();
 }
 
+//"Auto Gather/Build"
 function manualLabor() {
     var ManualGather = 'metal';
-    var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
-    
+    var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;    
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=100) {
@@ -1603,7 +1611,8 @@ function manualLabor() {
     }
 }
 
-//function written by Belaith
+//Autostance - function originally created by Belaith (in 1971)
+//Automatically swap formations (stances) to avoid dying
 function autoStance() {
     if (game.global.gridArray.length === 0) return;
     
@@ -1784,7 +1793,7 @@ function autoStance() {
     baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
 }
 
-//core function written by Belaith
+
 var stackingTox = false;
 var doVoids = false;
 var needToVoid = false;
@@ -1792,6 +1801,8 @@ var needPrestige = false;
 var voidCheckPercent = 0;
 var HDratio = 0;
 
+//AutoMap - function originally created by Belaith (in 1971)
+//anything/everything to do with maps.
 function autoMap() {
     //allow script to handle abandoning
     if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
@@ -2272,6 +2283,8 @@ function autoMap() {
     }
 }
 
+/*
+unused. rudimentary.
 //calculate helium we will get from the end of this zone. If (stacks), return helium we will get with max tox stacks
 function calculateHelium (stacks) {
     var world = game.global.world;
@@ -2289,7 +2302,7 @@ function calculateHelium (stacks) {
     amt += Math.round(baseAmt * level);
     
     if (game.portal.Looting.level) amt += (amt * game.portal.Looting.level * game.portal.Looting.modifier);
-    if (game.portal.Looting_II.level) amt += (amt * game.portal.Looting_II.level * game.portal.Looting_II.modifier);
+    if (game.portal.Looting_II.level) amt += (amt * game.portal.Looting_II.level * game.portal.Looting_II.modifier);    //added
     
     if (game.global.challengeActive == "Toxicity"){
         var toxMult = (game.challenges.Toxicity.lootMult * game.challenges.Toxicity.stacks) / 100;
@@ -2308,8 +2321,10 @@ function calculateNextHeliumHour (stacked) {
     if(stacked) heliumNow = Math.floor((game.resources.helium.owned + calculateHelium(true)) / (timeThisPortal + (1500 - game.challenges.Toxicity.stacks) / 7200000));
     return heliumNow;
 }
+*/
 
 var lastHeliumZone = 0;
+//Decide When to Portal
 function autoPortal() {
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone (or buffer)
@@ -2359,7 +2374,7 @@ function autoPortal() {
     }
 }
 
-
+//Checks portal related UI settings (TODO: split into two, and move the validation check to NewUI)
 function checkSettings() {
     var portalLevel = -1;
     var leadCheck = false;
@@ -2404,6 +2419,7 @@ function checkSettings() {
     return portalLevel;
 }
 
+//Actually Portal.
 function doPortal(challenge) {
     if(!game.global.portalActive) return;
     portalClicked();
@@ -2413,7 +2429,7 @@ function doPortal(challenge) {
     lastHeliumZone = 0;
 }
 
-//adjust geneticists to reach desired breed timer
+//Controls "Manage Breed Timer" and "Genetecist Timer" - adjust geneticists to reach desired breed timer
 function manageGenes() {
     var fWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     if(getPageSetting('ManageBreedtimer')) {
@@ -2470,7 +2486,80 @@ function manageGenes() {
 
 }
 
+//Change prestiges as we go (original idea thanks to Hider)
+//The idea is like this. We will stick to Dagger until the end of the run, then we will slowly start grabbing prestiges, so we can hit the Prestige we want by the last zone.
+//The keywords below "Dagadder" and "GambesOP" are merely representative of the minimum and maximum values. Toggling these on and off, the script will take care of itself, when set to min (Dagger) or max (Gambeson).
+//In this way, we will achieve the desired "maxPrestige" setting (which would be somewhere in the middle, like Polearm) by the end of the run. (instead of like in the past where it was gotten from the beginning and wasting time in early maps.)
+//Function originally written by Hyppy (in July 2016)
+function prestigeChanging2(){
+     //find out the equipment index of the prestige we want to hit at the end.
+     var maxPrestigeIndex = document.getElementById('Prestige').selectedIndex;
+    // Cancel dynamic prestige logic if maxPrestigeIndex is less than or equal to 2 (dagger)
+    if (maxPrestigeIndex <= 2)
+        return;
+        
+     //find out the last zone (checks custom autoportal and challenge's portal zone)
+     var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
+     
+     //if we can't figure out lastzone (likely Helium per Hour AutoPortal setting), then use the last run's Portal zone.
+     if (lastzone < 0)
+         lastzone = game.global.lastPortal;
+     
+    // Find total prestiges needed by determining current prestiges versus the desired prestiges by the end of the run
+    var neededPrestige = 0;
+    for (i = 1; i <= maxPrestigeIndex ; i++){
+        var lastp = game.mapUnlocks[autoTrimpSettings.Prestige.list[i]].last;
+        if (lastp <= lastzone){
+            var addto = Math.ceil((lastzone + 1 - lastp)/5);
+            // For Scientist IV bonus, halve the required prestiges to farm
+            if (game.global.sLevel > 3)
+                addto += Math.ceil(addto/2);
+            neededPrestige += addto;                
+        }
+    }
+    // For Lead runs, we hack this by doubling the neededPrestige to acommodate odd zone-only farming. This might overshoot a bit
+    if (game.global.challengeActive == 'Lead')  
+        neededPrestige *= 2;
+    
+    // Determine the number of zones we want to farm.  We will farm 4 maps per zone, then ramp up to 9 maps by the final zone
+    var zonesToFarm = 0;
+    if (neededPrestige == 0){
+        autoTrimpSettings.Prestige.selected = "Dagadder";
+        return;
+    }
+    else if (neededPrestige <= 9)//next 9
+        zonesToFarm = 1;
+    else if (neededPrestige <= 17)//next 8
+        zonesToFarm = 2;
+    else if (neededPrestige <= 24)//next 7
+        zonesToFarm = 3;
+    else if (neededPrestige <= 30)//next 6
+        zonesToFarm = 4;
+    else if (neededPrestige <= 35)//next 5
+        zonesToFarm = 5;
+    else
+        zonesToFarm = 6 + Math.ceil((neededPrestige - 35)/5);
+ 
+    //If we are in the zonesToFarm threshold, kick off the prestige farming
+    if(game.global.world > (lastzone-zonesToFarm) && game.global.lastClearedCell < 79){
+        // Default map bonus threshold
+        var mapThreshold = 4;
+        var zonegap = lastzone - game.global.world;
+        if (zonegap <= 4)// Would be +5 but the map repeat button stays on for 1 extra.
+            mapThreshold += zonegap;
 
+        if (game.global.mapBonus < mapThreshold)
+             autoTrimpSettings.Prestige.selected = "GambesOP";
+         else if (game.global.mapBonus >= mapThreshold)
+             autoTrimpSettings.Prestige.selected = "Dagadder";
+    }
+            
+    //If we are not in the prestige farming zone (the beginning of the run), use dagger:
+    if (game.global.world <= lastzone-zonesToFarm || game.global.mapBonus == 10)  
+     autoTrimpSettings.Prestige.selected = "Dagadder";
+}
+
+//Activate Robo Trimp
 function autoRoboTrimp() {
     //exit if the cooldown is active, or we havent unlocked robotrimp.
     if (game.global.roboTrimpCooldown > 0 || !game.global.roboTrimpLevel) return;
@@ -2495,6 +2584,7 @@ function autoGoldenUpgrades() {
     buyGoldenUpgrade(setting);
 }
 
+//Handles manual fighting automatically, in a different way.
 function betterAutoFight() {
     //Manually fight instead of using builtin auto-fight
     if (game.global.autoBattle) {
@@ -2516,8 +2606,9 @@ function exitSpireCell() {
     if(game.global.world == 200 && game.global.spireActive && game.global.lastClearedCell >= getPageSetting('ExitSpireCell')-1) 
         endSpire();    
 }
+
 ////////////////////////////////////////
-//Main Logic Loop///////////////////////
+//Main DELAY Loop///////////////////////
 ////////////////////////////////////////
 
 setTimeout(delayStart, startupDelay);
@@ -2530,6 +2621,10 @@ function delayStartAgain(){
     updateCustomButtons();
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
+
+////////////////////////////////////////
+//Main LOGIC Loop///////////////////////
+////////////////////////////////////////
 
 var OVKcellsWorld = 0;
 function mainLoop() {
@@ -2587,79 +2682,9 @@ function userscripts()
     //insert code here:
 }
 
-//Change prestiges as we go (original idea thanks to Hider)
-//The idea is like this. We will stick to Dagger until the end of the run, then we will slowly start grabbing prestiges, so we can hit the Prestige we want by the last zone.
-//The keywords below "Dagadder" and "GambesOP" are merely representative of the minimum and maximum values. Toggling these on and off, the script will take care of itself, when set to min (Dagger) or max (Gambeson).
-//In this way, we will achieve the desired "maxPrestige" setting (which would be somewhere in the middle, like Polearm) by the end of the run. (instead of like in the past where it was gotten from the beginning and wasting time in early maps.)
-//Function written by Hyppy
-function prestigeChanging2(){
-     //find out the equipment index of the prestige we want to hit at the end.
-     var maxPrestigeIndex = document.getElementById('Prestige').selectedIndex;
- 	// Cancel dynamic prestige logic if maxPrestigeIndex is less than or equal to 2 (dagger)
- 	if (maxPrestigeIndex <= 2)
- 		return;
- 		
-     //find out the last zone (checks custom autoportal and challenge's portal zone)
-     var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
-     
-     //if we can't figure out lastzone (likely Helium per Hour AutoPortal setting), then use the last run's Portal zone.
-     if (lastzone < 0)
-         lastzone = game.global.lastPortal;
-     
- 	// Find total prestiges needed by determining current prestiges versus the desired prestiges by the end of the run
- 	var neededPrestige = 0;
- 	for (i = 1; i <= maxPrestigeIndex ; i++){
-        var lastp = game.mapUnlocks[autoTrimpSettings.Prestige.list[i]].last;
- 		if (lastp <= lastzone){
-            var addto = Math.ceil((lastzone + 1 - lastp)/5);
-            // For Scientist IV bonus, halve the required prestiges to farm
- 			if (game.global.sLevel > 3)
- 				addto += Math.ceil(addto/2);
- 			neededPrestige += addto; 				
- 		}
- 	}
-    // For Lead runs, we hack this by doubling the neededPrestige to acommodate odd zone-only farming. This might overshoot a bit
- 	if (game.global.challengeActive == 'Lead') 	
-        neededPrestige *= 2;
- 	
- 	// Determine the number of zones we want to farm.  We will farm 4 maps per zone, then ramp up to 9 maps by the final zone
- 	var zonesToFarm = 0;
- 	if (neededPrestige == 0){
- 		autoTrimpSettings.Prestige.selected = "Dagadder";
- 		return;
- 	}
- 	else if (neededPrestige <= 9)//next 9
- 		zonesToFarm = 1;
- 	else if (neededPrestige <= 17)//next 8
- 		zonesToFarm = 2;
- 	else if (neededPrestige <= 24)//next 7
- 		zonesToFarm = 3;
- 	else if (neededPrestige <= 30)//next 6
- 		zonesToFarm = 4;
- 	else if (neededPrestige <= 35)//next 5
- 		zonesToFarm = 5;
- 	else
- 		zonesToFarm = 6 + Math.ceil((neededPrestige - 35)/5);
- 
-     //If we are in the zonesToFarm threshold, kick off the prestige farming
-     if(game.global.world > (lastzone-zonesToFarm) && game.global.lastClearedCell < 79){
-        // Default map bonus threshold
-        var mapThreshold = 4;
-        var zonegap = lastzone - game.global.world;
-        if (zonegap <= 4)// Would be +5 but the map repeat button stays on for 1 extra.
-            mapThreshold += zonegap;
- 		
- 		if (game.global.mapBonus < mapThreshold)
-             autoTrimpSettings.Prestige.selected = "GambesOP";
-         else if (game.global.mapBonus >= mapThreshold)
-             autoTrimpSettings.Prestige.selected = "Dagadder";
-     }
-            
-      //If we are not in the prestige farming zone (the beginning of the run), use dagger:
-      if (game.global.world <= lastzone-zonesToFarm || game.global.mapBonus == 10)  
-         autoTrimpSettings.Prestige.selected = "Dagadder";
-  }
-
+////////////////////////////////////////
+//HTML/CSS/DOM Overwrites //////////////
+////////////////////////////////////////
 
 //we copied message function because this was not able to be called from function debug() without getting a weird scope? related "cannot find function" error.
 var lastmessagecount = 1;
