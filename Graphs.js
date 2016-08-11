@@ -13,7 +13,7 @@ newItem.setAttribute("class", "btn btn-default");
 newItem.setAttribute("onclick", "autoToggleGraph(); drawGraph();");
 var settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
 settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
-document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none;"><div id="graph" style="margin-bottom: 2vw;margin-top: 2vw;"></div></div>';
+document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none;"><div id="graph" style="margin-bottom: 1vw;margin-top: 1vw;"></div></div>';
 
 //Create the dropdown for what graph to show
 var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
@@ -103,6 +103,26 @@ if(game.options.menu.darkTheme.enabled != 2)
 document.getElementById('graphParent').appendChild(btnImpApp);
 btnImpApp.setAttribute("onclick", 'GraphsImportExportTooltip(\'AppendGraphs\', null, \'update\')');
 */
+
+//deselect all button
+var btn4 = document.createElement("button");
+var t = document.createTextNode("Invert Selection");
+btn4.appendChild(t);
+btn4.setAttribute("onclick", "toggleSelectedGraphs()");
+btn4.setAttribute("class", "settingBtn");
+btn4.setAttribute('style', 'position:relative; float:right;');
+if(game.options.menu.darkTheme.enabled != 2) btn4.setAttribute("style", "color:black; position:relative; float:right; margin-right: 10px; ");
+document.getElementById('graphParent').appendChild(btn4);
+
+//all off/on
+var btn5 = document.createElement("button");
+var t = document.createTextNode("All Off/On");
+btn5.appendChild(t);
+btn5.setAttribute("onclick", "toggleAllGraphs()");
+btn5.setAttribute("class", "settingBtn");
+btn5.setAttribute('style', 'position:relative; float:right;');
+if(game.options.menu.darkTheme.enabled != 2) btn5.setAttribute("style", "color:black; position:relative; float:right; margin-right: 20px; ");
+document.getElementById('graphParent').appendChild(btn5);
 
 //tips bottom line
 var tips = document.createElement('div');
@@ -195,14 +215,40 @@ function appendGraphs() {
     drawGraph();
 }
 
-function clearData(portal) {
-    //clear data of runs with portalnumbers prior than X (15) away from current portal number.
-    if(portal) {
-        while(allSaveData[0].totalPortals < game.global.totalPortals - portal) allSaveData.shift();
+//Invert graph selections
+function toggleSelectedGraphs() {
+    for (var i=0; i < chart1.series.length; i++){
+        var run = chart1.series[i];
+        if (run.visible)
+            run.hide();
+        else
+            run.show();
     }
-    //clear all.
-    else {
-        while(allSaveData[0].totalPortals < game.global.totalPortals) allSaveData.shift();
+}
+
+//Turn all graphs on/off (to the opposite of which one we are closer to)
+function toggleAllGraphs() {
+    var count = 0;
+    for (var i=0; i < chart1.series.length; i++){
+        var run = chart1.series[i];
+        if (run.visible)
+            count++;
+    }
+    for (var i=0; i < chart1.series.length; i++){
+        var run = chart1.series[i];
+        if (count > chart1.series.length/2)
+            run.hide();
+        else
+            run.show();
+    }    
+}
+
+function clearData(portal) {
+    //clear data of runs with portalnumbers prior than X (15) away from current portal number. (or 0 = clear all)
+    if(!portal) 
+        portal = 0;
+    while(allSaveData[0].totalPortals < game.global.totalPortals - portal) {
+        allSaveData.shift();
     }
 }
 
@@ -243,7 +289,17 @@ function setGraph(title, xTitle, yTitle, valueSuffix, formatter, series, yType) 
     chart1 = new Highcharts.Chart({
         chart: {
             renderTo: 'graph',
-            zoomType: 'xy'
+            zoomType: 'xy',
+            //move reset button out of the way.
+            resetZoomButton: {
+                position: {
+                    align: 'right',
+                    verticalAlign: 'top', 
+                    x: -15,
+                    y: 10
+                },
+                relativeTo: 'chart'
+            }            
         },
         title: {
             text: title,
