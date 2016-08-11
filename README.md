@@ -11,10 +11,10 @@ Option 1: Install Tampermonkey (Chrome) or Greasemonkey (Firefox)
 
 Chrome/TamperMonkey Instructions:
 - Open the Tampermonkey dashboard and go to utilities – in the URL box paste https://raw.githubusercontent.com/genbtc/AutoTrimps/gh-pages/user.js and import
-- Alternatively, paste the contents of `user.js` into a user scrip
+- Alternatively, paste the contents of `user.js` into a user script (pay attention, it says user.js - this redirects to AutoTrimps2.js)
 - The script should automatically load everytime you go to https://trimps.github.io or the game on Kongregate
 - You will know you have the script loaded if you see the Automation and Graphs buttons in the game menu at the bottom
-
+- DO NOT PASTE THE FULL 2000+ line contents of the script into tampermonkey! It will not work properly!
 FireFox/GreaseMonkey instructions not available, please write some for us.
 
 Option 2: Via a Bookmark (does not work with Kongregate)
