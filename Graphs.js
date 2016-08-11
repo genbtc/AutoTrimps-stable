@@ -13,7 +13,7 @@ newItem.setAttribute("class", "btn btn-default");
 newItem.setAttribute("onclick", "autoToggleGraph(); drawGraph();");
 var settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
 settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
-document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none;"><div id="graph" style="margin-bottom: 1vw;margin-top: 1vw;"></div></div>';
+document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 50vh"><div id="graph" style="margin-bottom: 0.6%;margin-top: 0.4%; height: 88%"></div><div id="graphFooter" style="height: 48px"></div>';
 
 //Create the dropdown for what graph to show
 var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
@@ -31,7 +31,7 @@ for (var item in graphList) {
     option.text = graphList[item];
     btn.appendChild(option);
 }
-document.getElementById('graphParent').appendChild(btn);
+document.getElementById('graphFooter').appendChild(btn);
 
 //refresh graph button - probably don't need different variables but I don't know what I'm doing!
 var btn1 = document.createElement("button");
@@ -40,7 +40,7 @@ btn1.appendChild(u);
 btn1.setAttribute("onclick", "drawGraph()");
 btn1.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2) btn1.setAttribute("style", "color:black");
-document.getElementById('graphParent').appendChild(btn1);
+document.getElementById('graphFooter').appendChild(btn1);
 
 //clear data button
 var btn2 = document.createElement("button");
@@ -50,14 +50,14 @@ btn2.setAttribute("onclick", "clearData(); drawGraph();");
 btn2.setAttribute("class", "settingBtn");
 btn2.setAttribute('style', 'margin-left: 10vw; ');
 if(game.options.menu.darkTheme.enabled != 2) btn2.setAttribute("style", "color:black; margin-left: 10vw; ");
-document.getElementById('graphParent').appendChild(btn2);
+document.getElementById('graphFooter').appendChild(btn2);
 
 
 //textbox for clear data button
 var textboxbtn3 = document.createElement("input");
 textboxbtn3.setAttribute("id", "deleteSelectedTextBox");
-textboxbtn3.setAttribute("style", "width: 80px;margin-left: 250px; margin-right: 5px; color:black");
-document.getElementById('graphParent').appendChild(textboxbtn3);
+textboxbtn3.setAttribute("style", "width: 5vw;margin-left: 13vw; margin-right: 5px; color:black");
+document.getElementById('graphFooter').appendChild(textboxbtn3);
 
 //delete selected button
 var btn3 = document.createElement("button");
@@ -66,7 +66,7 @@ btn3.appendChild(tt);
 btn3.setAttribute("onclick", "deleteSelected(); drawGraph();");
 btn3.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2) btn3.setAttribute("style", "color:black");
-document.getElementById('graphParent').appendChild(btn3);
+document.getElementById('graphFooter').appendChild(btn3);
 
 //Create Graphs export button.
 var btnExp = document.createElement("button");
@@ -74,10 +74,10 @@ var exp = document.createTextNode("Export your Graph Database");
 btnExp.appendChild(exp);
 btnExp.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2)
-    btnExp.setAttribute("style", "margin-left: 250px; margin-right: 5px; color:black");
+    btnExp.setAttribute("style", "margin-left: 13vw; margin-right: 5px; color:black");
 else
-    btnExp.setAttribute("style", "margin-left: 250px; margin-right: 5px;");
-document.getElementById('graphParent').appendChild(btnExp);
+    btnExp.setAttribute("style", "margin-left: 13vw; margin-right: 5px;");
+document.getElementById('graphFooter').appendChild(btnExp);
 btnExp.setAttribute("onclick", 'GraphsImportExportTooltip(\'ExportGraphs\', null, \'update\')');
 
 /*
@@ -90,7 +90,7 @@ btnImp.appendChild(imp);
 btnImp.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2)
     btnImp.setAttribute("style", "color:black");
-document.getElementById('graphParent').appendChild(btnImp);
+document.getElementById('graphFooter').appendChild(btnImp);
 btnImp.setAttribute("onclick", 'GraphsImportExportTooltip(\'ImportGraphs\', null, \'update\')');
 
 //Create Graphs append  button.
@@ -100,7 +100,7 @@ btnImpApp.appendChild(impapp);
 btnImpApp.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2)
     btnImpApp.setAttribute("style", "color:black");
-document.getElementById('graphParent').appendChild(btnImpApp);
+document.getElementById('graphFooter').appendChild(btnImpApp);
 btnImpApp.setAttribute("onclick", 'GraphsImportExportTooltip(\'AppendGraphs\', null, \'update\')');
 */
 
@@ -111,8 +111,8 @@ btn4.appendChild(t);
 btn4.setAttribute("onclick", "toggleSelectedGraphs()");
 btn4.setAttribute("class", "settingBtn");
 btn4.setAttribute('style', 'position:relative; float:right;');
-if(game.options.menu.darkTheme.enabled != 2) btn4.setAttribute("style", "color:black; position:relative; float:right; margin-right: 10px; ");
-document.getElementById('graphParent').appendChild(btn4);
+if(game.options.menu.darkTheme.enabled != 2) btn4.setAttribute("style", "color:black; position:relative; float:right; margin-right: 0.5vw; ");
+document.getElementById('graphFooter').appendChild(btn4);
 
 //all off/on
 var btn5 = document.createElement("button");
@@ -121,13 +121,13 @@ btn5.appendChild(t);
 btn5.setAttribute("onclick", "toggleAllGraphs()");
 btn5.setAttribute("class", "settingBtn");
 btn5.setAttribute('style', 'position:relative; float:right;');
-if(game.options.menu.darkTheme.enabled != 2) btn5.setAttribute("style", "color:black; position:relative; float:right; margin-right: 20px; ");
-document.getElementById('graphParent').appendChild(btn5);
+if(game.options.menu.darkTheme.enabled != 2) btn5.setAttribute("style", "color:black; position:relative; float:right; margin-right: 1vw; ");
+document.getElementById('graphFooter').appendChild(btn5);
 
 //tips bottom line
 var tips = document.createElement('div');
 tips.innerHTML = 'Tips: You can zoom by dragging a box around an area. You can turn series off by clicking them on the legend. To delete a portal, Type its portal number in the box and press Delete Selected';
-document.getElementById('graphParent').appendChild(tips);
+document.getElementById('graphFooter').appendChild(tips);
 
 function GraphsImportExportTooltip(what, isItIn, event) {
 	if (game.global.lockTooltip) 
