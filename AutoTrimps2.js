@@ -2608,6 +2608,14 @@ function exitSpireCell() {
         endSpire();    
 }
 
+//use S stance
+function useScryerStance() {
+   if (game.global.world > 180 && game.global.highestlevelcleared >= 180 && !game.global.mapsActive && !game.global.preMapsActive)
+       setformation(4);
+   else
+       autoStance();    //falls back to autostance when not using S. 
+}
+
 ////////////////////////////////////////
 //Main DELAY Loop///////////////////////
 ////////////////////////////////////////
@@ -2664,10 +2672,11 @@ function mainLoop() {
     if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (genBTC settings area)
     if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (genBTC settings area)
     autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
-    autoStance();                                           //"Auto Stance"
-//    if (game.global.world >= 60 && game.global.highestLevelCleared >= 180) {
-//        setFormation(4);
-//    }
+
+    if (getPageSetting('UseScryerStance') 
+        useScryerStance();                                  //"Use Scryer Stance"
+    else
+        autoStance();                                           //"Auto Stance"
     if (getPageSetting('AutoFight')) betterAutoFight();     //"Better Auto Fight"
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
