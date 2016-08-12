@@ -2120,7 +2120,7 @@ function autoMap() {
                     selectedMap = "create";
                 var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
                 //FIX FOR FIREFOX.
-                if (isFirefox && selectedMap = "create" && game.global.mapsOwnedArray[highestMap].level == 200 && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
+                if (isFirefox && selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == 200 && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
                     var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
                     if (nextmap && nextmap.location == 'Mountain')
                         selectedMap = nextmap.id;
