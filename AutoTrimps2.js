@@ -1972,11 +1972,11 @@ function autoMap() {
     for (var map in game.global.mapsOwnedArray) {
         var theMap = game.global.mapsOwnedArray[map];            
         if (theMap.noRecycle && getPageSetting('RunUniqueMaps')) {
-            if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0) {
+            if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased) {
                 selectedMap = theMap.id;
                 break;
             }
-            if (theMap.name == 'Dimension of Anger' && document.getElementById("portalBtn").style.display == "none") {
+            if (theMap.name == 'Dimension of Anger' && document.getElementById("portalBtn").style.display == "none" && !game.talents.portal.purchased) {
                 var doaDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 20 + doaDifficulty) continue; 
                 selectedMap = theMap.id;
