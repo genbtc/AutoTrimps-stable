@@ -2120,6 +2120,7 @@ function autoMap() {
                     var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
                     if (nextmap && nextmap.location == 'Mountain')
                         selectedMap = nextmap.id;
+                }
                 else
                     selectedMap = "create";
             //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                                
