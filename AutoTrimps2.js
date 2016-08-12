@@ -2116,8 +2116,10 @@ function autoMap() {
             else if (needFarmSpire)
                 if (game.global.mapsOwnedArray[highestMap].location == 'Mountain')
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
-                else if (game.global.mapsOwnedArray[highestMap].location == 'Forest' && game.global.mapsOwnedArray[highestMap].level == 200 && game.global.mapsOwnedArray[parseInt(highestMap)+1].location == 'Mountain')
-                    selectedMap = game.global.mapsOwnedArray[parseInt(highestMap)+1].id;
+                else if (game.global.mapsOwnedArray[highestMap].location == 'Forest' && game.global.mapsOwnedArray[highestMap].level == 200) {
+                    var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
+                    if (nextmap && nextmap.location == 'Mountain')
+                        selectedMap = nextmap.id;
                 else
                     selectedMap = "create";
             //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                                
