@@ -2107,24 +2107,27 @@ function autoMap() {
         //selectedMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
         if (selectedMap == "world") {
             //if needPrestige, TRY to find current level map as the highest level map we own.
-            if (needPrestige)
+            if (needPrestige) {
                 if (game.global.world == game.global.mapsOwnedArray[highestMap].level)
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";
             //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.    
-            else if (needFarmSpire)
+            } else if (needFarmSpire) {
                 if (game.global.mapsOwnedArray[highestMap].location == 'Mountain')
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
-                else if (game.global.mapsOwnedArray[highestMap].location == 'Forest' && game.global.mapsOwnedArray[highestMap].level == 200) {
+                else
+                    selectedMap = "create";
+                //FIX FOR FIREFOX.
+                if (selectedMap = "create" && game.global.mapsOwnedArray[highestMap].level == 200 && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
                     var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
                     if (nextmap && nextmap.location == 'Mountain')
                         selectedMap = nextmap.id;
+                    else
+                        selectedMap = "create";                    
                 }
-                else
-                    selectedMap = "create";
             //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                                
-            else if (siphonMap != -1)
+            } else if (siphonMap != -1)
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
             //if we dont' have an appropriate max level map, or a siphon map, we need to make one
             else
