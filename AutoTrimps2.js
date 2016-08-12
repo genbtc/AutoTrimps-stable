@@ -1392,7 +1392,14 @@ function autoLevelEquipment() {
     };
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
-    
+    //Take Spire as a special case.
+    var spirecheck = (game.global.world == 200 && game.global.spireActive);
+    if (spirecheck) {
+        var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 40;
+        enemyDamage = getSpireStats(cell,"Snimp","attack");
+        enemyHealth = getSpireStats(cell,"Snimp","health");
+    }
+
     //below challenge multiplier not necessarily accurate, just fudge factors
     if(game.global.challengeActive == "Toxicity") {
         //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
