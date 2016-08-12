@@ -2523,12 +2523,13 @@ function prestigeChanging2(){
     var neededPrestige = 0;
     for (i = 1; i <= maxPrestigeIndex ; i++){
         var lastp = game.mapUnlocks[autoTrimpSettings.Prestige.list[i]].last;
-        if (lastp <= lastzone){
-            var addto = Math.ceil((lastzone + 1 - lastp)/5);
+        if (lastp <= lastzone - 5){
+            var rem = lastzone - lastp;
+            var addto = Math.floor(rem/5);
             // For Scientist IV bonus, halve the required prestiges to farm
             if (game.global.sLevel > 3)
-                addto += Math.ceil(addto/2);
-            neededPrestige += addto;                
+                addto = Math.ceil(addto/2);
+            neededPrestige += addto;
         }
     }
     // For Lead runs, we hack this by doubling the neededPrestige to acommodate odd zone-only farming. This might overshoot a bit
@@ -2541,30 +2542,19 @@ function prestigeChanging2(){
         autoTrimpSettings.Prestige.selected = "Dagadder";
         return;
     }
-    else if (neededPrestige <= 9)//next 9
-        zonesToFarm = 1;
-    else if (neededPrestige <= 17)//next 8
-        zonesToFarm = 2;
-    else if (neededPrestige <= 24)//next 7
-        zonesToFarm = 3;
-    else if (neededPrestige <= 30)//next 6
-        zonesToFarm = 4;
-    else if (neededPrestige <= 35)//next 5
-        zonesToFarm = 5;
-    else
-        zonesToFarm = 6 + Math.ceil((neededPrestige - 35)/5);
- 
-    //If we are in the zonesToFarm threshold, kick off the prestige farming
-    if(game.global.world > (lastzone-zonesToFarm) && game.global.lastClearedCell < 79){
-        // Default map bonus threshold
-        var mapThreshold = 4;
-        var zonegap = lastzone - game.global.world;
-        if (zonegap <= 4)// Would be +5 but the map repeat button stays on for 1 extra.
-            mapThreshold += zonegap;
 
-        if (game.global.mapBonus < mapThreshold)
-             autoTrimpSettings.Prestige.selected = "GambesOP";
-         else if (game.global.mapBonus >= mapThreshold)
+    zonesToFarm = Math.ceil(neededPrestige/maxPrestigeIndex);
+ 
+    //If we are in the zonesToFarm threshold, kick off the additional prestige maps
+    if(game.global.world > (lastzone-zonesToFarm)){
+        if (game.global.mapBonus < maxPrestigeIndex) {
+            //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
+            if(game.global.slowDone == true)
+                autoTrimpSettings.Prestige.selected = "GambesOP";
+            else
+                autoTrimpSettings.Prestige.selected = "Bestplate";
+        }
+        else if (game.global.mapBonus > maxPrestigeIndex)
              autoTrimpSettings.Prestige.selected = "Dagadder";
     }
             
