@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.2-genbtc-8-11-2016
+// @version      2.1.2.3-genbtc-8-12-2016+ScryerStance
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -11,7 +11,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.2-genbtc-8-11-2016';
+var ATversion = '2.1.2.3-genbtc-8-12-2016+ScryerStance';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2621,11 +2621,42 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
-   if (game.global.world > 180 && game.global.highestLevelCleared >= 180 && !game.global.mapsActive && !game.global.preMapsActive) {
-       setFormation(4);
-   } else {
-       autoStance();    //falls back to autostance when not using S. 
-   }
+    if (game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180) return;
+    //grab settings variables
+    var useinmaps = getPageSetting('ScryerUseinMaps');
+    var useinvoids = getPageSetting('ScryerUseinVoidMaps');
+    var useinspire = getPageSetting('ScryerUseinSpire');
+    //var useinspiresafes = getPageSetting('ScryerUseinSpireSafes');
+    var minzone = getPageSetting('ScryerMinZone');
+    var maxzone = getPageSetting('ScryerMaxZone');
+    
+    //decide if we are going to use it.
+    var mapcheck = game.global.mapsActive;
+    var run = !mapcheck;    //initially set run with the opposite of "are we in a map" (if false, run will be true which means "run if we are in world")
+    if (mapcheck) {
+        //if we are in a map, set to check if he wants to use S in maps.
+        run = useinmaps;
+        //if we are in a void, set to check if he wants to use S in voids.
+        if (getCurrentMapObject().location == "Void")
+            run = useinvoids;
+    }
+    else {
+        //if we aren't in a map, are we in spire? if not, just go with run in world.
+        var spirecheck = (game.global.world == 200 && game.global.spireActive);
+        run = spirecheck ? useinspire : run;        
+    }
+    if (run == true && game.global.world >= 60 && (game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0)) {
+        setFormation(4);    //set the S stance
+        //calculate internal script variables normally processed by autostance.
+        baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
+        baseBlock = game.global.soldierCurrentBlock;
+        baseHealth = game.global.soldierHealthMax;
+        baseDamage *= 2;
+        baseBlock *= 2;
+        baseHealth *= 2;
+    } else {
+        autoStance();    //falls back to autostance when not using S. 
+    }
 }
 
 ////////////////////////////////////////
