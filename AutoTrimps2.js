@@ -2665,9 +2665,9 @@ function mainLoop() {
     if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (genBTC settings area)
     autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
     autoStance();                                           //"Auto Stance"
-    if (game.global.world >= 60 && game.global.highestLevelCleared >= 180) {
-        setFormation(4);
-    }
+//    if (game.global.world >= 60 && game.global.highestLevelCleared >= 180) {
+//        setFormation(4);
+//    }
     if (getPageSetting('AutoFight')) betterAutoFight();     //"Better Auto Fight"
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
