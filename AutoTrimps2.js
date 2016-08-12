@@ -2673,7 +2673,7 @@ function mainLoop() {
     if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (genBTC settings area)
     autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
 
-    if (getPageSetting('UseScryerStance') 
+    if (getPageSetting('UseScryerStance')) 
         useScryerStance();                                  //"Use Scryer Stance"
     else
         autoStance();                                           //"Auto Stance"
