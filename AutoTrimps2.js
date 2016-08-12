@@ -1880,8 +1880,9 @@ function autoMap() {
     enoughDamage = baseDamage * 4 > enemyHealth;
     HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
+    var shouldDoMaps;
     if (baseDamage > 0){
-        var shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm;
+        shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm;
     }
     var selectedMap = "world";       
     
@@ -1965,8 +1966,11 @@ function autoMap() {
         return obj[b] - obj[a];
     });
     //if there are no non-unique maps, there will be nothing in keysSorted, so set to create a map
-    if (keysSorted[0]) var highestMap = keysSorted[0];
-    else selectedMap = "create";
+    var highestMap;
+    if (keysSorted[0])
+        highestMap = keysSorted[0];
+    else 
+        selectedMap = "create";
     
     //Look through all the maps we have - find Uniques and figure out if we need to run them.
     for (var map in game.global.mapsOwnedArray) {
@@ -2500,11 +2504,11 @@ function prestigeChanging2(){
         return;
         
      //find out the last zone (checks custom autoportal and challenge's portal zone)
-     var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
+    var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
      
      //if we can't figure out lastzone (likely Helium per Hour AutoPortal setting), then use the last run's Portal zone.
-     if (lastzone < 0)
-         lastzone = game.global.lastPortal;
+    if (lastzone < 0)
+        lastzone = game.global.lastPortal;
      
     // Find total prestiges needed by determining current prestiges versus the desired prestiges by the end of the run
     var neededPrestige = 0;
@@ -2557,7 +2561,7 @@ function prestigeChanging2(){
             
     //If we are not in the prestige farming zone (the beginning of the run), use dagger:
     if (game.global.world <= lastzone-zonesToFarm || game.global.mapBonus == 10)  
-     autoTrimpSettings.Prestige.selected = "Dagadder";
+        autoTrimpSettings.Prestige.selected = "Dagadder";
 }
 
 //Activate Robo Trimp
