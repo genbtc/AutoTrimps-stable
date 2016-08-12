@@ -2610,7 +2610,7 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
-   if (game.global.world > 180 && game.global.highestlevelcleared >= 180 && !game.global.mapsActive && !game.global.preMapsActive)
+   if (game.global.world > 180 && game.global.highestLevelCleared >= 180 && !game.global.mapsActive && !game.global.preMapsActive) {
        setFormation(4);
    else
        autoStance();    //falls back to autostance when not using S. 
