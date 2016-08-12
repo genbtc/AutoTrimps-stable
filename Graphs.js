@@ -13,10 +13,10 @@ newItem.setAttribute("class", "btn btn-default");
 newItem.setAttribute("onclick", "autoToggleGraph(); drawGraph();");
 var settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
 settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
-document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 50vh"><div id="graph" style="margin-bottom: 0.6%;margin-top: 0.4%; height: 88%"></div><div id="graphFooter" style="height: 48px"></div>';
+document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 600px"><div id="graph" style="margin-bottom: 15px;margin-top: 10px; height: 540px;"></div><div id="graphFooter" style="height: 50px;"></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
+var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -56,7 +56,7 @@ document.getElementById('graphFooter').appendChild(btn2);
 //textbox for clear data button
 var textboxbtn3 = document.createElement("input");
 textboxbtn3.setAttribute("id", "deleteSelectedTextBox");
-textboxbtn3.setAttribute("style", "width: 5vw;margin-left: 13vw; margin-right: 5px; color:black");
+textboxbtn3.setAttribute("style", "width: 2.5vw;margin-left: 10vw; margin-right: 5px; color:black");
 document.getElementById('graphFooter').appendChild(textboxbtn3);
 
 //delete selected button
@@ -74,9 +74,9 @@ var exp = document.createTextNode("Export your Graph Database");
 btnExp.appendChild(exp);
 btnExp.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2)
-    btnExp.setAttribute("style", "margin-left: 13vw; margin-right: 5px; color:black");
+    btnExp.setAttribute("style", "margin-left: 10vw; margin-right: 5px; color:black");
 else
-    btnExp.setAttribute("style", "margin-left: 13vw; margin-right: 5px;");
+    btnExp.setAttribute("style", "margin-left: 10vw; margin-right: 5px;");
 document.getElementById('graphFooter').appendChild(btnExp);
 btnExp.setAttribute("onclick", 'GraphsImportExportTooltip(\'ExportGraphs\', null, \'update\')');
 
@@ -295,8 +295,8 @@ function setGraph(title, xTitle, yTitle, valueSuffix, formatter, series, yType) 
                 position: {
                     align: 'right',
                     verticalAlign: 'top', 
-                    x: -15,
-                    y: 10
+                    x: -20,
+                    y: 15
                 },
                 relativeTo: 'chart'
             }            
@@ -375,9 +375,10 @@ function pushData() {
         world: game.global.world,
         challenge: game.global.challengeActive,
         voids: game.global.totalVoidMaps,
-        heirlooms: game.stats.totalHeirlooms,
+        heirlooms: {"value": game.stats.totalHeirlooms.value, "valueTotal":game.stats.totalHeirlooms.valueTotal},
         nullifium: recycleAllExtraHeirlooms(true),
         gigas: game.upgrades.Gigastation.done,
+        gigasleft: game.upgrades.Gigastation.allowed - game.upgrades.Gigastation.done,
         trimps: game.resources.trimps.realMax(),
         coord: game.upgrades.Coordination.done,
         lastwarp: game.global.lastWarp
@@ -753,6 +754,26 @@ function setGraphData(graph) {
             yTitle = 'Number of Gigas';
             yType = 'Linear';
             break;
+
+        case 'UnusedGigas':
+            var currentPortal = -1;
+            graphData = [];
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                }
+                if (allSaveData[i].gigasleft >= 0)
+                    graphData[graphData.length - 1].data.push(allSaveData[i].gigasleft);
+            }
+            title = 'Unused Gigastations';
+            xTitle = 'Zone';
+            yTitle = 'Number of Gigas';
+            yType = 'Linear';
+            break;            
 
         case 'Lastwarp':
             var currentPortal = -1;
