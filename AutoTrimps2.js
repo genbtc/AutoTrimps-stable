@@ -2610,7 +2610,8 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
-    if (game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180) {
+    var skipbosses = getPageSetting('ScryerSkipBossPastVoids') && (game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98)
+    if (game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180 || skipbosses ) {
         autoStance();    //falls back to autostance when not using S. 
         return;
     }
