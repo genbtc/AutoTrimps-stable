@@ -2189,10 +2189,11 @@ function autoMap() {
                 mapsClicked();
             }
             //Get Impatient/Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone)
-            if(
-                game.global.switchToMaps 
-                && 
-                (needPrestige || doVoids || (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1)) 
+            if (game.global.switchToMaps && 
+                (needPrestige || doVoids || 
+                (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) || 
+                (!enoughDamage && game.global.lastClearedCell < 5) || 
+                (shouldFarm && game.global.lastClearedCell >= 59)) 
                 && 
                     (
                     (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1)
