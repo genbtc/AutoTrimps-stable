@@ -1853,8 +1853,8 @@ function autoMap() {
     
 //START CALCULATING DAMAGES
     //PREPARE SOME VARIABLES
-    //calculate crits (baseDamage was calced in function autoStance)
-    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()));
+    //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are adding two hits here (non-crit + crit) and we want the average between them.
+    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
     baseDamage *= mapbonusmulti;    
