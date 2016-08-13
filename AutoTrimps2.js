@@ -2239,48 +2239,54 @@ function autoMap() {
             else
                 document.getElementById("mapLevelInput").value = siphlvl;
             if (game.global.world == 200 && game.global.spireActive) {
+                //Spire (9/9/9 Wood):
                 sizeAdvMapsRange.value = 9;
                 adjustMap('size', 9);
                 difficultyAdvMapsRange.value = 9;
                 adjustMap('difficulty', 9);
                 lootAdvMapsRange.value = 9;
-                adjustMap('loot', 9);
-                
+                adjustMap('loot', 9);                
                 biomeAdvMapsSelect.value = "Forest";    //wood
-                updateMapCost();                
-            } else if (game.global.world > 70) {
+                updateMapCost();            
+            } else if (game.global.world >= 70) {
+                //Zone 70+ (9/9/9 Metal):
                 sizeAdvMapsRange.value = 9;
                 adjustMap('size', 9);
                 difficultyAdvMapsRange.value = 9;
                 adjustMap('difficulty', 9);
                 lootAdvMapsRange.value = 9;
                 adjustMap('loot', 9);
-
-                biomeAdvMapsSelect.value = "Mountain";  //metal
+                biomeAdvMapsSelect.value = "Mountain";  //metal is the current meta
                 updateMapCost();
-            } else if (game.global.world < 16) {
-                sizeAdvMapsRange.value = 9;
-                adjustMap('size', 9);
-                difficultyAdvMapsRange.value = 0;
-                adjustMap('difficulty', 0);
-                lootAdvMapsRange.value = 0;
-                adjustMap('loot', 0);
-
-                biomeAdvMapsSelect.value = "Random";
-                updateMapCost();
-            } else {
+            } else if (game.global.world >= 47) {
+                //Zone 47-70 (9/9/4 Metal):
                 sizeAdvMapsRange.value = 9;
                 adjustMap('size', 9);
                 difficultyAdvMapsRange.value = 9;
                 adjustMap('difficulty', 9);
+                lootAdvMapsRange.value = 4;
+                adjustMap('loot', 4);
+                biomeAdvMapsSelect.value = "Mountain";  //metal is the current meta
+                updateMapCost();                         
+            } else {
+                //Zone 6-16 (9/0/0 Random):
+                //Zone 16-47 (9/9/0 Random):
+                sizeAdvMapsRange.value = 9;
+                adjustMap('size', 9);
+                if (game.global.world >= 16) {
+                    difficultyAdvMapsRange.value = 9;
+                    adjustMap('difficulty', 9);
+                } else {
+                    difficultyAdvMapsRange.value = 0;
+                    adjustMap('difficulty', 0);
+                }
                 lootAdvMapsRange.value = 0;
                 adjustMap('loot', 0);
-
                 biomeAdvMapsSelect.value = "Random";
                 updateMapCost();
             }
-            //if we are "Farming" for resources, make sure it's metal
-            if(shouldFarm || needFarmSpire) {
+            //if we are "Farming" for resources, make sure it's metal (and always aim for lowest difficulty)
+            if(shouldFarm || !enoughDamage || !enoughHealth || needFarmSpire) {
                 biomeAdvMapsSelect.value = "Mountain";
             } else {
                 //if we can't afford the map:
