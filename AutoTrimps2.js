@@ -407,6 +407,26 @@ function getEnemyMaxHealth(world, level, corrupt) {
     return Math.floor(amt);
 }
 
+function getCurrentEnemy(current) {
+    if (!current)
+        current = 1;
+    var enemy;
+    if (!game.global.mapsActive && !game.global.preMapsActive) {
+        if (typeof game.global.gridArray[game.global.lastClearedCell + current] === 'undefined') {
+            enemy = game.global.gridArray[0];
+        } else {
+            enemy = game.global.gridArray[game.global.lastClearedCell + current];
+        }
+    } else if (game.global.mapsActive && !game.global.preMapsActive) {
+        if (typeof game.global.mapGridArray[game.global.lastClearedMapCell + current] === 'undefined') {
+            enemy = game.global.mapGridArray[0];
+        } else {
+            enemy = game.global.mapGridArray[game.global.lastClearedMapCell + current];
+        }
+    }
+    return enemy;
+}
+
 function getBreedTime(remaining,round) {
     var trimps = game.resources.trimps;
     var breeding = trimps.owned - trimps.employed;
@@ -1619,12 +1639,10 @@ function manualLabor() {
     }
 }
 
-//Autostance - function originally created by Belaith (in 1971)
-//Automatically swap formations (stances) to avoid dying
-function autoStance() {
-    if (game.global.gridArray.length === 0) return;
-    
+function calcBaseDamageinX() {
+    //baseDamage
     baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
+    //D stance
     if (game.global.formation == 2) {
         baseDamage /= 4;
     } else if (game.global.formation != "0") {
@@ -1633,6 +1651,7 @@ function autoStance() {
 
     //baseBlock
     baseBlock = game.global.soldierCurrentBlock;
+    //B stance
     if (game.global.formation == 3) {
         baseBlock /= 4;
     } else if (game.global.formation != "0") {
@@ -1641,12 +1660,22 @@ function autoStance() {
 
     //baseHealth
     baseHealth = game.global.soldierHealthMax;
+    //H stance
     if (game.global.formation == 1) {
         baseHealth /= 4;
     } else if (game.global.formation != "0") {
         baseHealth *= 2;
     }
+    //S stance is accounted for (combination of all the above's else clauses)
+}
+    
+//Autostance - function originally created by Belaith (in 1971)
+//Automatically swap formations (stances) to avoid dying
+function autoStance() {
+    //get back to a baseline of no stance (X)
+    calcBaseDamageinX();
     //no need to continue
+    if (game.global.gridArray.length === 0) return;    
     if (!getPageSetting('AutoStance')) return;
 
     //start analyzing autostance
@@ -1654,11 +1683,7 @@ function autoStance() {
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var enemy;
     if (!game.global.mapsActive && !game.global.preMapsActive) {
-        if (typeof game.global.gridArray[game.global.lastClearedCell + 1] === 'undefined') {
-            enemy = game.global.gridArray[0];
-        } else {
-            enemy = game.global.gridArray[game.global.lastClearedCell + 1];
-        }
+        enemy = getCurrentEnemy();
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate"));
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
@@ -1688,11 +1713,7 @@ function autoStance() {
         var bDamage = enemyDamage - baseBlock * 4 > enemyDamage * (0.1 + pierceMod) ? enemyDamage - baseBlock * 4 : enemyDamage * (0.1 + pierceMod);
         var bHealth = baseHealth/2;
     } else if (game.global.mapsActive && !game.global.preMapsActive) {
-        if (typeof game.global.mapGridArray[game.global.lastClearedMapCell + 1] === 'undefined') {
-            enemy = game.global.mapGridArray[0];
-        } else {
-            enemy = game.global.mapGridArray[game.global.lastClearedMapCell + 1];
-        }
+        enemy = getCurrentEnemy();
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
@@ -1849,7 +1870,7 @@ function autoMap() {
     if(game.global.totalVoidMaps == 0 || !needToVoid)
         doVoids = false;
     //calculate if we are behind on prestiges
-    needPrestige = (autoTrimpSettings.Prestige.selected != "Off" && game.mapUnlocks[autoTrimpSettings.Prestige.selected].last <= game.global.world - 5 && game.global.mapsUnlocked && game.global.challengeActive != "Frugal");
+    needPrestige = autoTrimpSettings.Prestige.selected != "Off" && game.mapUnlocks[autoTrimpSettings.Prestige.selected].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
     
 //START CALCULATING DAMAGES
     //PREPARE SOME VARIABLES
@@ -2451,7 +2472,7 @@ function doPortal(challenge) {
     lastHeliumZone = 0;
 }
 
-//Controls "Manage Breed Timer" and "Genetecist Timer" - adjust geneticists to reach desired breed timer
+//Controls "Manage Breed Timer" and "Geneticist Timer" - adjust geneticists to reach desired breed timer
 function manageGenes() {
     var fWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     if(getPageSetting('ManageBreedtimer')) {
@@ -2623,6 +2644,7 @@ function exitSpireCell() {
 //use S stance
 function useScryerStance() {
     if (game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180) return;
+    calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
     //grab settings variables
     var useinmaps = getPageSetting('ScryerUseinMaps');
     var useinvoids = getPageSetting('ScryerUseinVoidMaps');
@@ -2648,13 +2670,6 @@ function useScryerStance() {
     }
     if (run == true && game.global.world >= 60 && (game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0)) {
         setFormation(4);    //set the S stance
-        //calculate internal script variables normally processed by autostance.
-        baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
-        baseBlock = game.global.soldierCurrentBlock;
-        baseHealth = game.global.soldierHealthMax;
-        baseDamage *= 2;
-        baseBlock *= 2;
-        baseHealth *= 2;
     } else {
         autoStance();    //falls back to autostance when not using S. 
     }
@@ -2708,7 +2723,7 @@ function mainLoop() {
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"    
     if (getPageSetting('ManualGather')) manualLabor();  //"Auto Gather/Build"
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"    
-    if (getPageSetting('GeneticistTimer') >= 0) manageGenes(); //"Genetecist Timer" / "Manage Breed Timer"
+    if (getPageSetting('GeneticistTimer') >= 0) manageGenes(); //"Geneticist Timer" / "Manage Breed Timer"
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 60)
     if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (genBTC settings area)
     else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"
