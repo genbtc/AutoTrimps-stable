@@ -1973,8 +1973,9 @@ function autoMap() {
     
     //Dynamic Siphonology section (when necessary)
     var siphlvl = game.global.world - game.portal.Siphonology.level;
+    var maxlvl = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
     if (getPageSetting('DynamicSiphonology')){
-        for (siphlvl; siphlvl < game.global.world; siphlvl++) {
+        for (siphlvl; siphlvl < maxlvl; siphlvl++) {
             //check HP vs damage and find how many siphonology levels we need.
             var maphp = getEnemyMaxHealth(siphlvl);
             if (baseDamage * 2 < maphp){
@@ -2332,46 +2333,6 @@ function autoMap() {
     }
 }
 
-/*
-unused. rudimentary.
-//calculate helium we will get from the end of this zone. If (stacks), return helium we will get with max tox stacks
-function calculateHelium (stacks) {
-    var world = game.global.world;
-    var level = 100 + ((world - 1) * 100);
-    var amt = 0;
-    var baseAmt;
-    
-    if(world < 59) baseAmt = 1;
-    else baseAmt = 5;
-    
-    level = Math.round((level - 1900) / 100);
-    level *= 1.35;
-    if(level < 0) level = 0;
-    amt += Math.round(baseAmt * Math.pow(1.23, Math.sqrt(level)));
-    amt += Math.round(baseAmt * level);
-    
-    if (game.portal.Looting.level) amt += (amt * game.portal.Looting.level * game.portal.Looting.modifier);
-    if (game.portal.Looting_II.level) amt += (amt * game.portal.Looting_II.level * game.portal.Looting_II.modifier);    //added
-    
-    if (game.global.challengeActive == "Toxicity"){
-        var toxMult = (game.challenges.Toxicity.lootMult * game.challenges.Toxicity.stacks) / 100;
-        if(toxMult > 2.25 || stacks) toxMult = 2.25;
-        amt *= (1 + toxMult);
-    }
-    amt = Math.floor(amt);
-    return amt;
-}
-//calculate our helium per hour including our helium for the end of this zone, assuming we finish the zone right now (and get that helium right now)
-//if (stacked), calculate with maximum toxicity stacks
-function calculateNextHeliumHour (stacked) {
-    var timeThisPortal = new Date().getTime() - game.global.portalTime;
-    timeThisPortal /= 3600000;
-    var heliumNow = Math.floor((game.resources.helium.owned + calculateHelium()) / timeThisPortal);
-    if(stacked) heliumNow = Math.floor((game.resources.helium.owned + calculateHelium(true)) / (timeThisPortal + (1500 - game.challenges.Toxicity.stacks) / 7200000));
-    return heliumNow;
-}
-*/
-
 var lastHeliumZone = 0;
 //Decide When to Portal
 function autoPortal() {
@@ -2649,17 +2610,30 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
-    if (game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180) return;
+    if (game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180) {
+        autoStance();    //falls back to autostance when not using S. 
+        return;
+    }
     calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
     //grab settings variables
     var useinmaps = getPageSetting('ScryerUseinMaps');
     var useinvoids = getPageSetting('ScryerUseinVoidMaps');
     var useinspire = getPageSetting('ScryerUseinSpire');
+    var useoverkill = getPageSetting('ScryerUseWhenOverkill');
     //var useinspiresafes = getPageSetting('ScryerUseinSpireSafes');
     var minzone = getPageSetting('ScryerMinZone');
     var maxzone = getPageSetting('ScryerMaxZone');
+
+    var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
+    var Sstance = 0.5;
+    var ovkldmg = avgDamage * Sstance * (game.portal.Overkill.level*0.005);
+    //are we going to overkill ?
+    var ovklHDratio = getCurrentEnemy().maxHealth / ovkldmg;
+
+    //console.log("HealthDmgRatio = " + ovklHDratio);
+    //shouldFarm = ovkldmg > getEnemyMaxHealth(game.global.world);
     
-    //decide if we are going to use it.
+    //decide if we are going to use S.
     var mapcheck = game.global.mapsActive;
     var run = !mapcheck;    //initially set run with the opposite of "are we in a map" (if false, run will be true which means "run if we are in world")
     if (mapcheck) {
@@ -2674,7 +2648,7 @@ function useScryerStance() {
         var spirecheck = (game.global.world == 200 && game.global.spireActive);
         run = spirecheck ? useinspire : run;        
     }
-    if (run == true && game.global.world >= 60 && (game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0)) {
+    if (run == true && game.global.world >= 60 && (((game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0))||(useoverkill && ovklHDratio < 8))) {
         setFormation(4);    //set the S stance
     } else {
         autoStance();    //falls back to autostance when not using S. 
