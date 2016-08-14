@@ -244,7 +244,7 @@ function getPerSecBeforeManual(job) {
         if (game.global.challengeActive == "Lead" && ((game.global.world % 2) == 1)) perSec*= 2;
         perSec = calcHeirloomBonus("Staff", job + "Speed", perSec);
     }
-    return perSec
+    return perSec;
 }
 
 //Called before buying things that can be purchased in bulk
@@ -413,13 +413,13 @@ function getCurrentEnemy(current) {
     var enemy;
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         if (typeof game.global.gridArray[game.global.lastClearedCell + current] === 'undefined') {
-            enemy = game.global.gridArray[0];
+            enemy = game.global.gridArray[game.global.gridArray.length - 1];
         } else {
             enemy = game.global.gridArray[game.global.lastClearedCell + current];
         }
     } else if (game.global.mapsActive && !game.global.preMapsActive) {
         if (typeof game.global.mapGridArray[game.global.lastClearedMapCell + current] === 'undefined') {
-            enemy = game.global.mapGridArray[0];
+            enemy = game.global.mapGridArray[game.global.gridArray.length - 1];
         } else {
             enemy = game.global.mapGridArray[game.global.lastClearedMapCell + current];
         }
@@ -2611,7 +2611,7 @@ function exitSpireCell() {
 //use S stance
 function useScryerStance() {
     var skipbosses = getPageSetting('ScryerSkipBossPastVoids') && (game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98)
-    if (game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180 || skipbosses ) {
+    if (game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180 || skipbosses ) {
         autoStance();    //falls back to autostance when not using S. 
         return;
     }
@@ -2621,6 +2621,7 @@ function useScryerStance() {
     var useinvoids = getPageSetting('ScryerUseinVoidMaps');
     var useinspire = getPageSetting('ScryerUseinSpire');
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
+    var skipcorrupteds = getPageSetting('ScryerSkipCorrupteds');
     //var useinspiresafes = getPageSetting('ScryerUseinSpireSafes');
     var minzone = getPageSetting('ScryerMinZone');
     var maxzone = getPageSetting('ScryerMaxZone');
@@ -2631,24 +2632,17 @@ function useScryerStance() {
     //are we going to overkill ?
     var ovklHDratio = getCurrentEnemy().maxHealth / ovkldmg;
 
-    //console.log("HealthDmgRatio = " + ovklHDratio);
-    //shouldFarm = ovkldmg > getEnemyMaxHealth(game.global.world);
+    var iscorrupt = getCurrentEnemy(1).corrupted;
+    var isnextcorrupt = getCurrentEnemy(2).corrupted; // && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
     
     //decide if we are going to use S.
     var mapcheck = game.global.mapsActive;
     var run = !mapcheck;    //initially set run with the opposite of "are we in a map" (if false, run will be true which means "run if we are in world")
-    if (mapcheck) {
-        //if we are in a map, set to check if he wants to use S in maps.
-        run = useinmaps;
-        //if we are in a void, set to check if he wants to use S in voids.
-        if (getCurrentMapObject().location == "Void")
-            run = useinvoids;
-    }
-    else {
-        //if we aren't in a map, are we in spire? if not, just go with run in world.
-        var spirecheck = (game.global.world == 200 && game.global.spireActive);
-        run = spirecheck ? useinspire : run;        
-    }
+    //if we are in a map, and set to useinmaps, or in a void and set to useinvoids
+    //else if we aren't in a map, are we in spire and set to useinspire? if not, just go with run in world.
+    run = mapcheck ? (useinmaps||(getCurrentMapObject().location == "Void"&&useinvoids)) : ((game.global.world == 200&&game.global.spireActive) ? useinspire : run);
+    //skip corrupteds.
+    run = iscorrupt ? (!skipcorrupteds || ovklHDratio < 8) : run;    
     if (run == true && game.global.world >= 60 && (((game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0))||(useoverkill && ovklHDratio < 8))) {
         setFormation(4);    //set the S stance
     } else {
