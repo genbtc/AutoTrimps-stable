@@ -1874,8 +1874,8 @@ function autoMap() {
     
 //START CALCULATING DAMAGES
     //PREPARE SOME VARIABLES
-    //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are adding two hits here (non-crit + crit) and we want the average between them.
-    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
+    //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are adding two hits here (non-crit + crit)
+    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()));
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
     baseDamage *= mapbonusmulti;    
@@ -2640,7 +2640,8 @@ function useScryerStance() {
     var run = !mapcheck;    //initially set run with the opposite of "are we in a map" (if false, run will be true which means "run if we are in world")
     //if we are in a map, and set to useinmaps, or in a void and set to useinvoids
     //else if we aren't in a map, are we in spire and set to useinspire? if not, just go with run in world.
-    run = mapcheck ? (useinmaps||(getCurrentMapObject().location == "Void"&&useinvoids)) : ((game.global.world == 200&&game.global.spireActive) ? useinspire : run);
+    var nowinvoid = mapcheck && getCurrentMapObject().location == "Void";
+    run = mapcheck ? ((useinmaps&&!nowinvoid)||(nowinvoid&&useinvoids)) : ((game.global.world == 200&&game.global.spireActive) ? useinspire : run);
     //skip corrupteds.
     run = iscorrupt ? (!skipcorrupteds || ovklHDratio < 8) : run;    
     if (run == true && game.global.world >= 60 && (((game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0))||(useoverkill && ovklHDratio < 8))) {
