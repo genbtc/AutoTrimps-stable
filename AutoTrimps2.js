@@ -2632,8 +2632,8 @@ function useScryerStance() {
     //are we going to overkill ?
     var ovklHDratio = getCurrentEnemy().maxHealth / ovkldmg;
 
-    var iscorrupt = getCurrentEnemy(1).corrupted;
-    var isnextcorrupt = getCurrentEnemy(2).corrupted; // && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
+    var iscorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).corrupted;
+    var isnextcorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).corrupted; // && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
     
     //decide if we are going to use S.
     var mapcheck = game.global.mapsActive;
