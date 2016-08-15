@@ -2621,6 +2621,8 @@ function useScryerStance() {
     var useinvoids = getPageSetting('ScryerUseinVoidMaps');
     var useinspire = getPageSetting('ScryerUseinSpire');
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
+    if (useoverkill && game.portal.Overkill.level == 0)
+        setPageSetting('ScryerUseWhenOverkill',false);
     var skipcorrupteds = getPageSetting('ScryerSkipCorrupteds');
     //var useinspiresafes = getPageSetting('ScryerUseinSpireSafes');
     var minzone = getPageSetting('ScryerMinZone');
@@ -2641,7 +2643,8 @@ function useScryerStance() {
     //if we are in a map, and set to useinmaps, or in a void and set to useinvoids
     //else if we aren't in a map, are we in spire and set to useinspire? if not, just go with run in world.
     var nowinvoid = mapcheck && getCurrentMapObject().location == "Void";
-    run = mapcheck ? ((useinmaps&&!nowinvoid)||(nowinvoid&&useinvoids)) : ((game.global.world == 200&&game.global.spireActive) ? useinspire : run);
+    var nowinspire = (game.global.world == 200&&game.global.spireActive);
+    run = mapcheck ? ((useinmaps&&!nowinvoid)||(nowinvoid&&useinvoids)) : (nowinspire ? useinspire : run);
     //skip corrupteds.
     run = iscorrupt ? (!skipcorrupteds || ovklHDratio < 8) : run;    
     if (run == true && game.global.world >= 60 && (((game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0))||(useoverkill && ovklHDratio < 8))) {
