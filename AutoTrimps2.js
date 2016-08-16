@@ -2625,17 +2625,20 @@ function useScryerStance() {
         setPageSetting('ScryerUseWhenOverkill',false);
     var skipcorrupteds = getPageSetting('ScryerSkipCorrupteds');
     //var useinspiresafes = getPageSetting('ScryerUseinSpireSafes');
-    var minzone = getPageSetting('ScryerMinZone');
-    var maxzone = getPageSetting('ScryerMaxZone');
+    var min_zone = getPageSetting('ScryerMinZone');
+    var max_zone = getPageSetting('ScryerMaxZone');
+    var valid_min = game.global.world >= 60 && game.global.world > min_zone;
+    var valid_max = max_zone <= 0 || game.global.world < max_zone;
+    var valid_for_zone = valid_min && valid_max;
 
     var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
     var Sstance = 0.5;
     var ovkldmg = avgDamage * Sstance * (game.portal.Overkill.level*0.005);
     //are we going to overkill ?
-    var ovklHDratio = getCurrentEnemy().maxHealth / ovkldmg;
+    var ovklHDratio = getCurrentEnemy(1).maxHealth / ovkldmg;
 
-    var iscorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).corrupted;
-    var isnextcorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).corrupted; // && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
+    var iscorrupt = getCurrentEnemy(1).corrupted;
+    //var isnextcorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).corrupted; // && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
     
     //decide if we are going to use S.
     var mapcheck = game.global.mapsActive;
@@ -2651,7 +2654,7 @@ function useScryerStance() {
         if (useoverkill && ovklHDratio < 8)
             run = true;
     }
-    if (run == true && game.global.world >= 60 && (((game.global.world >= minzone || minzone <= 0) && (game.global.world < maxzone || maxzone <= 0))||(useoverkill && ovklHDratio < 8))) {
+    if (run == true && valid_for_zone ||(useoverkill && ovklHDratio < 8))) {
         setFormation(4);    //set the S stance
     } else {
         autoStance();    //falls back to autostance when not using S. 
