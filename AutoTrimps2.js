@@ -2614,16 +2614,21 @@ function useScryerStance() {
         autoStance();
         return;
     }
-   
+    
     calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
-    var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
-    var Sstance = 0.5;
-    var ovkldmg = avgDamage * Sstance * (game.portal.Overkill.level*0.005);
-    //are we going to overkill ?
-    var ovklHDratio = getCurrentEnemy().maxHealth / ovkldmg;
-    if (ovklHDratio < 8) {
-        setFormation(4);
-        return;
+    var useoverkill = getPageSetting('ScryerUseWhenOverkill');
+    if (useoverkill && game.portal.Overkill.level == 0)
+        setPageSetting('ScryerUseWhenOverkill',false);
+    if (useoverkill) {
+        var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
+        var Sstance = 0.5;
+        var ovkldmg = avgDamage * Sstance * (game.portal.Overkill.level*0.005);
+        //are we going to overkill ?
+        var ovklHDratio = getCurrentEnemy(1).maxHealth / ovkldmg;
+        if (ovklHDratio < 8) {
+            setFormation(4);
+            return;
+        }
     }
        
     //check preconditions
