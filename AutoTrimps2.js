@@ -2619,7 +2619,7 @@ function useScryerStance() {
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
     if (useoverkill && game.portal.Overkill.level == 0)
         setPageSetting('ScryerUseWhenOverkill',false);
-    if (game.portal.Overkill.level > 0) {
+    if (useoverkill && game.portal.Overkill.level > 0) {
         var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
         var Sstance = 0.5;
         var ovkldmg = avgDamage * Sstance * (game.portal.Overkill.level*0.005);
