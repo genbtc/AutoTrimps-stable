@@ -177,6 +177,9 @@ function getPageSetting(setting) {
     } else if (autoTrimpSettings[setting].type == 'value') {
         // debug('found a value');
         return parseFloat(autoTrimpSettings[setting].value);
+    } else if (autoTrimpSettings[setting].type == 'multitoggle') {
+        // debug('found a multitoggle');
+        return parseInt(autoTrimpSettings[setting].value);
     }
 }
 
@@ -188,11 +191,16 @@ function setPageSetting(setting,value) {
     if (autoTrimpSettings[setting].type == 'boolean') {
         // debug('found a boolean');
         autoTrimpSettings[setting].enabled = value;
-        document.getElementById(setting).setAttribute('class', 'settingsBtn settingBtn' + autoTrimpSettings[setting].enabled);
+        document.getElementById(setting).setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[setting].enabled);
     } else if (autoTrimpSettings[setting].type == 'value') {
         // debug('found a value');
         autoTrimpSettings[setting].value = value;
+    } else if (autoTrimpSettings[setting].type == 'multitoggle') {
+        // debug('found a value');
+        autoTrimpSettings[setting].value = value;        
+        document.getElementById(setting).setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[setting].value);
     } else if (autoTrimpSettings[setting].type == 'dropdown') {
+        // debug('found a dropdown');
         autoTrimpSettings[setting].selected = value;
     }
     updateCustomButtons();
@@ -2635,26 +2643,26 @@ function useScryerStance() {
     
 
     //check for spire
-    use_auto = use_auto || game.global.world == 200 && game.global.spireActive && !getPageSetting('ScryerUseinSpire');
+    use_auto = use_auto || game.global.world == 200 && game.global.spireActive && !getPageSetting('ScryerUseinSpire2');
     //check for voids
-    use_auto = use_auto || game.global.mapsActive && getCurrentMapObject().location == "Void" && !getPageSetting('ScryerUseinVoidMaps');
+    use_auto = use_auto || game.global.mapsActive && getCurrentMapObject().location == "Void" && !getPageSetting('ScryerUseinVoidMaps2');
     //check for maps
-    use_auto = use_auto || game.global.mapsActive && !getPageSetting('ScryerUseinMaps');
+    use_auto = use_auto || game.global.mapsActive && !getPageSetting('ScryerUseinMaps2');
     //check for bosses
-    use_auto = use_auto || getPageSetting('ScryerSkipBossPastVoids') && game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98;
+    use_auto = use_auto || getPageSetting('ScryerSkipBoss2') && game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98;
     if (use_auto) {
         autoStance();    //falls back to autostance when not using S.
         return;
     }
-   
+    
     //check for corrupted cells
-    var iscorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).corrupted;
+    var iscorrupt = getCurrentEnemy(1).corrupted;
     //var isnextcorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).corrupted && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
-    if(iscorrupt && getPageSetting('ScryerSkipCorrupteds')) {
+    if(iscorrupt && getPageSetting('ScryerSkipCorrupteds2')) {
         autoStance();
         return;
     }
-   
+    
     var min_zone = getPageSetting('ScryerMinZone');
     var max_zone = getPageSetting('ScryerMaxZone');
     var valid_min = game.global.world > min_zone;
