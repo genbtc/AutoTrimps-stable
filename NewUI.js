@@ -172,12 +172,13 @@ createSetting('UseScryerStance', 'Use Scryer Stance', 'Stay in Scryer stance in 
 createSetting('ScryerUseinMaps', 'Use in Maps', 'Use in Maps.', 'boolean', null,null, 'scryerSettings');
 createSetting('ScryerUseinVoidMaps', 'Use in Void Maps', 'Use in Void Maps.', 'boolean', false,null, 'scryerSettings');
 createSetting('ScryerUseinSpire', 'Use in Spire(All)', 'Use in Spire (all cells).', 'boolean', false,null, 'scryerSettings');
-createSetting('ScryerSkipBossPastVoids', 'Skip Cell 100 above VoidLevel', 'Skips all world Improbabilities/Bosses on cell 100 if you are past the level you have your voidmaps set to run at.', 'boolean', false,null, 'scryerSettings');
-createSetting('ScryerSkipCorrupteds', 'Skip Corrupted Cells', 'Skip all corrupted cells unless you can overkill them.', 'boolean', false,null, 'scryerSettings');
+createSetting('ScryerSkipBossPastVoids', 'Skip Cell 100 above VoidLevel', 'Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at.', 'boolean', false,null, 'scryerSettings');
+createSetting('ScryerSkipCorrupteds', 'Skip Corrupted Cells', 'Doesnt use Scrying stance for corrupted cells unless you can overkill them.', 'boolean', false,null, 'scryerSettings');
 //createSetting('ScryerUseinSpireSafes', 'Use in Spire(Safes)', 'Use on Spire cells marked with the safe icons - high loot *50 metal reward.', 'boolean', false,null, 'scryerSettings');
 createSetting('ScryerMinZone', 'Min Zone', 'Minimum zone to start using scryer in.(inclusive) rec:(60 or 181)', 'value', '181', null, 'scryerSettings');
 createSetting('ScryerMaxZone', 'Max Zone', 'Zone to STOP using scryer at.(not inclusive) Use at your own discretion. rec: (0 or -1 to disable.)', 'value', '-1',null, 'scryerSettings');
 createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use pre-181 when we can Overkill in S stance, for double loot with no speed penalty. NOTE: Overrides zone settings.', 'boolean', false,null, 'scryerSettings');
+//createSetting('TEMPvarMultiToggle', ['TEMPvarMultiToggle0','TEMPvarMultiToggle1','TEMPvarMultiToggle2'], 'Master description for all 3 settings', 'multitoggle', 0, null, 'scryerSettings');
 
 //moved pause-button to be more visible. has its own logic down in createSetting.
 createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps (not including the graphs module)', 'boolean', null, null, 'pause');
@@ -201,43 +202,43 @@ function loadAutoTrimps() {
 }
 
 function AutoTrimpsTooltip(what, isItIn, event) {
-	if (game.global.lockTooltip) 
+    if (game.global.lockTooltip) 
         return;
-	var elem = document.getElementById("tooltipDiv");
-	swapClass("tooltipExtra", "tooltipExtraNone", elem);
-	var ondisplay = null; // if non-null, called after the tooltip is displayed
-	var tooltipText;
-	var costText = "";
-	if (what == "ExportAutoTrimps"){
-		tooltipText = "This is your AUTOTRIMPS save string. There are many like it but this one is yours. Save this save somewhere safe so you can save time next time. <br/><br/><textarea id='exportArea' style='width: 100%' rows='5'>" + JSON.stringify(autoTrimpSettings) + "</textarea>";
+    var elem = document.getElementById("tooltipDiv");
+    swapClass("tooltipExtra", "tooltipExtraNone", elem);
+    var ondisplay = null; // if non-null, called after the tooltip is displayed
+    var tooltipText;
+    var costText = "";
+    if (what == "ExportAutoTrimps"){
+        tooltipText = "This is your AUTOTRIMPS save string. There are many like it but this one is yours. Save this save somewhere safe so you can save time next time. <br/><br/><textarea id='exportArea' style='width: 100%' rows='5'>" + JSON.stringify(autoTrimpSettings) + "</textarea>";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip()'>Got it</div>";
-		if (document.queryCommandSupported('copy')){
-			costText += "<div id='clipBoardBtn' class='btn btn-success'>Copy to Clipboard</div>";
-			ondisplay = function(){
-				document.getElementById('exportArea').select();
-				document.getElementById('clipBoardBtn').addEventListener('click', function(event) {
-				    document.getElementById('exportArea').select();
-					  try {
-						document.execCommand('copy');
-					  } catch (err) {
-						document.getElementById('clipBoardBtn').innerHTML = "Error, not copied";
-					  }
-				});
+        if (document.queryCommandSupported('copy')){
+            costText += "<div id='clipBoardBtn' class='btn btn-success'>Copy to Clipboard</div>";
+            ondisplay = function(){
+                document.getElementById('exportArea').select();
+                document.getElementById('clipBoardBtn').addEventListener('click', function(event) {
+                    document.getElementById('exportArea').select();
+                      try {
+                        document.execCommand('copy');
+                      } catch (err) {
+                        document.getElementById('clipBoardBtn').innerHTML = "Error, not copied";
+                      }
+                });
             };
-		}
+        }
         else {
             ondisplay = function(){
                 document.getElementById('exportArea').select();
             };
-		}
-		costText += "</div>";
-	}
-	if (what == "ImportAutoTrimps"){
+        }
+        costText += "</div>";
+    }
+    if (what == "ImportAutoTrimps"){
         //runs the loadAutoTrimps() function.
-		tooltipText = "Import your AUTOTRIMPS save string! It'll be fine, I promise.<br/><br/><textarea id='importBox' style='width: 100%' rows='5'></textarea>";
-		costText="<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); loadAutoTrimps();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
-		ondisplay = function () {
-			document.getElementById('importBox').focus();
+        tooltipText = "Import your AUTOTRIMPS save string! It'll be fine, I promise.<br/><br/><textarea id='importBox' style='width: 100%' rows='5'></textarea>";
+        costText="<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); loadAutoTrimps();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
+        ondisplay = function () {
+            document.getElementById('importBox').focus();
         };
     }
     if (what == "DefaultAutoTrimps"){
@@ -247,12 +248,12 @@ function AutoTrimpsTooltip(what, isItIn, event) {
     game.global.lockTooltip = true;
     elem.style.left = "33.75%";
     elem.style.top = "25%";
-	document.getElementById("tipTitle").innerHTML = what;
-	document.getElementById("tipText").innerHTML = tooltipText;
-	document.getElementById("tipCost").innerHTML = costText;
-	elem.style.display = "block";
-	if (ondisplay !== null)
-		ondisplay();
+    document.getElementById("tipTitle").innerHTML = what;
+    document.getElementById("tipText").innerHTML = tooltipText;
+    document.getElementById("tipCost").innerHTML = costText;
+    elem.style.display = "block";
+    if (ondisplay !== null)
+        ondisplay();
 }
 
 function automationMenuInit() {
@@ -301,10 +302,10 @@ function automationMenuInit() {
     //create container for settings buttons
     document.getElementById("settingsRow").innerHTML += '<div id="autoSettings" style="display: none;margin-bottom: 2vw;margin-top: 2vw;"></div>';
    //shrink padding for fight buttons to help fit automaps button/status
-   	var btns = document.getElementsByClassName("fightBtn");
-		for (var x = 0; x < btns.length; x++){
-        	btns[x].style.padding = "0.01vw 0.01vw";
-		}
+    var btns = document.getElementsByClassName("fightBtn");
+        for (var x = 0; x < btns.length; x++){
+            btns[x].style.padding = "0.01vw 0.01vw";
+        }
 
 }
 
@@ -362,7 +363,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 enabled: defaultValue ? defaultValue : false
             };
         }
-        btn.setAttribute('class', 'settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
+        btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
@@ -413,7 +414,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btn.id = id;
         if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
         else btn.setAttribute("style", "color:black");
-        btn.setAttribute("class", "settingsBtn");
+        btn.setAttribute("class", "noselect settingsBtn");
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
         btn.setAttribute("onchange", 'settingChanged("' + id + '")');
@@ -439,6 +440,25 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         if(container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
         return;
+    } else if (type == 'multitoggle') {
+        defaultValue = defaultValue ? defaultValue : 0;
+        if (autoTrimpSettings[id] === undefined) {
+            autoTrimpSettings[id] = {
+                id: id,
+                name: name,
+                description: description,
+                type: type,
+                value: defaultValue
+            };
+        }
+        btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].value);
+        btn.setAttribute("onclick", 'settingChanged("' + id + '")');
+        btn.setAttribute("onmouseover", 'tooltip(\"' + name[defaultValue] + '\", \"customText\", event, \"' + description + '\")');
+        btn.setAttribute("onmouseout", 'tooltip("hide")');
+        btn.textContent = name[defaultValue];
+        btnParent.appendChild(btn);
+        if(container) document.getElementById(container).appendChild(btnParent);
+        else document.getElementById("autoSettings").appendChild(btnParent);      
     }
     //make sure names/descriptions match what we have stored.
     if (autoTrimpSettings[id].name != name)
@@ -448,13 +468,22 @@ function createSetting(id, name, description, type, defaultValue, list, containe
 }
 
 function settingChanged(id) {
-    if (autoTrimpSettings[id].type == 'boolean') {
-        autoTrimpSettings[id].enabled = !autoTrimpSettings[id].enabled;
-        document.getElementById(id).setAttribute('class', 'settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
+    var btn = autoTrimpSettings[id];
+    if (btn.type == 'boolean') {
+        btn.enabled = !btn.enabled;
+        document.getElementById(id).setAttribute('class', 'noselect settingsBtn settingBtn' + btn.enabled);
         updateCustomButtons();
     }
-    if (autoTrimpSettings[id].type == 'dropdown') {
-    	autoTrimpSettings[id].selected = document.getElementById(id).value;
+    if (btn.type == 'multitoggle') {
+        btn.value++;
+        if (btn.value > btn.name.length-1)
+            btn.value = 0;
+        document.getElementById(id).setAttribute('class', 'noselect settingsBtn settingBtn' + btn.value);
+        document.getElementById(id).textContent = btn.name[btn.value];
+        updateCustomButtons();
+    }    
+    if (btn.type == 'dropdown') {
+        btn.selected = document.getElementById(id).value;
         //part of the prestige dropdown's "backup" system to prevent internal tampering via the dynamic prestige algorithm. everytime we see a user initiated change, make a backup.
         if (id == "Prestige")
             autoTrimpSettings["PrestigeBackup"].selected = document.getElementById(id).value;
@@ -536,18 +565,18 @@ function updateValueFields() {
         }
     }
     //automaps status
-        var status = document.getElementById('autoMapStatus');
+    var status = document.getElementById('autoMapStatus');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
-   else if(needPrestige && !doVoids) status.innerHTML = 'Prestige';
-   else if(doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
-   else if(needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
-   else if(doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
-   else if(shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
-   else if(stackingTox) status.innerHTML = 'Getting Tox Stacks';
-   else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
-   else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
-   else if (!enoughHealth) status.innerHTML = 'Want more health';   
-   else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
+    else if(needPrestige && !doVoids) status.innerHTML = 'Prestige';
+    else if(doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
+    else if(needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
+    else if(doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
+    else if(shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
+    else if(stackingTox) status.innerHTML = 'Getting Tox Stacks';
+    else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
+    else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
+    else if (!enoughHealth) status.innerHTML = 'Want more health';   
+    else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
 }
 
 function updateCustomButtons() {
