@@ -2610,54 +2610,52 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
-    var skipbosses = getPageSetting('ScryerSkipBossPastVoids') && (game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98)
-    if (game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180 || skipbosses ) {
-        autoStance();    //falls back to autostance when not using S. 
+    if (game.global.world <= 60) {
+        autoStance();
         return;
     }
+   
     calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
-    //grab settings variables
-    var useinmaps = getPageSetting('ScryerUseinMaps');
-    var useinvoids = getPageSetting('ScryerUseinVoidMaps');
-    var useinspire = getPageSetting('ScryerUseinSpire');
-    var useoverkill = getPageSetting('ScryerUseWhenOverkill');
-    if (useoverkill && game.portal.Overkill.level == 0)
-        setPageSetting('ScryerUseWhenOverkill',false);
-    var skipcorrupteds = getPageSetting('ScryerSkipCorrupteds');
-    //var useinspiresafes = getPageSetting('ScryerUseinSpireSafes');
-    var min_zone = getPageSetting('ScryerMinZone');
-    var max_zone = getPageSetting('ScryerMaxZone');
-    var valid_min = game.global.world >= 60 && game.global.world > min_zone;
-    var valid_max = max_zone <= 0 || game.global.world < max_zone;
-    var valid_for_zone = valid_min && valid_max;
-
     var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
     var Sstance = 0.5;
     var ovkldmg = avgDamage * Sstance * (game.portal.Overkill.level*0.005);
     //are we going to overkill ?
-    var ovklHDratio = getCurrentEnemy(1).maxHealth / ovkldmg;
-
-    var iscorrupt = getCurrentEnemy(1).corrupted;
-    //var isnextcorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).corrupted; // && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
-    
-    //decide if we are going to use S.
-    var mapcheck = game.global.mapsActive;
-    var run = !mapcheck;    //initially set run with the opposite of "are we in a map" (if false, run will be true which means "run if we are in world")
-    //if we are in a map, and set to useinmaps, or in a void and set to useinvoids
-    //else if we aren't in a map, are we in spire and set to useinspire? if not, just go with run in world.
-    var nowinvoid = mapcheck && getCurrentMapObject().location == "Void";
-    var nowinspire = (game.global.world == 200&&game.global.spireActive);
-    run = mapcheck ? ((useinmaps&&!nowinvoid)||(nowinvoid&&useinvoids)) : (nowinspire ? useinspire : run);
-    //skip corrupteds.
-    if (iscorrupt && skipcorrupteds) {
-        run = false;
-        if (useoverkill && ovklHDratio < 8)
-            run = true;
+    var ovklHDratio = getCurrentEnemy().maxHealth / ovkldmg;
+    if (ovklHDratio < 8) {
+        setFormation(4);
+        return;
     }
-    if (run == true && valid_for_zone ||(useoverkill && ovklHDratio < 8))) {
-        setFormation(4);    //set the S stance
+       
+    //check preconditions
+    var use_auto = game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
+    //check for spire
+    use_auto = use_auto || game.global.world == 200 && game.global.spireActive && !getPageSetting('ScryerUseinSpire');
+    //check for voids
+    use_auto = use_auto || game.global.mapsActive && getCurrentMapObject().location == "Void" && !getPageSetting('ScryerUseinVoidMaps');
+    //check for maps
+    use_auto = use_auto || game.global.mapsActive && !getPageSetting('ScryerUseinMaps');
+    //check for bosses
+    use_auto = use_auto || getPageSetting('ScryerSkipBossPastVoids') && game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98;
+    if (use_auto) {
+        autoStance();    //falls back to autostance when not using S.
+        return;
+    }
+   
+    //check for corrupted cells
+    var iscorrupt = getCurrentEnemy(1) && getCurrentEnemy(1).corrupted;
+    //var isnextcorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).corrupted && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
+    if(iscorrupt && getPageSetting('ScryerSkipCorrupteds')) {
+        autoStance();
+    }
+   
+    var min_zone = getPageSetting('ScryerMinZone');
+    var max_zone = getPageSetting('ScryerMaxZone');
+    var valid_min = game.global.world > min_zone;
+    var valid_max = max_zone <= 0 || game.global.world < max_zone;
+    if(valid_min && valid_max) {
+        setFormation(4);
     } else {
-        autoStance();    //falls back to autostance when not using S. 
+        autoStance();
     }
 }
 
