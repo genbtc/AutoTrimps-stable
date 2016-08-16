@@ -1862,11 +1862,10 @@ function autoMap() {
         voidMapLevelSettingMap = 93;
     if (voidMapLevelSettingMap.length == 1) voidMapLevelSettingMap += "0";  //entering 187.70 becomes 187.7, this will bring it back to 187.70
     var voidsuntil = getPageSetting('RunNewVoidsUntil');
-    needToVoid = voidMapLevelSetting > 0 && game.global.totalVoidMaps > 0 && game.global.lastClearedCell + 1 >= voidMapLevelSettingMap && 
-                                ((game.global.world == voidMapLevelSettingZone && !getPageSetting('RunNewVoids')) 
+    needToVoid = voidMapLevelSetting > 0 && game.global.totalVoidMaps > 0 && game.global.lastClearedCell + 1 >= voidMapLevelSettingMap &&
+                                    ((game.global.world == voidMapLevelSettingZone && (voidsuntil == -1 || !getPageSetting('RunNewVoids')))
                                                                 || 
-                                 (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids')))
-                         && ((voidsuntil != -1 && game.global.world <= voidsuntil) || (voidsuntil == -1) || !getPageSetting('RunNewVoids'));
+                                 (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids') && voidsuntil != -1 && game.global.world <= voidsuntil));
     if(game.global.totalVoidMaps == 0 || !needToVoid)
         doVoids = false;
     //calculate if we are behind on prestiges
@@ -2610,7 +2609,10 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
-    if (game.global.world <= 60) {
+    //check preconditions
+    var use_auto = game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
+    use_auto = use_auto || game.global.world <= 60;
+    if (use_auto) {
         autoStance();
         return;
     }
@@ -2630,9 +2632,8 @@ function useScryerStance() {
             return;
         }
     }
-       
-    //check preconditions
-    var use_auto = game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
+    
+
     //check for spire
     use_auto = use_auto || game.global.world == 200 && game.global.spireActive && !getPageSetting('ScryerUseinSpire');
     //check for voids
