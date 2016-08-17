@@ -169,12 +169,12 @@ scryerSettingsadv.style.display = 'none';
 document.getElementById("autoSettings").appendChild(scryerSettingsadv);
 //Manage settings - option buttons - Scryer settings
 createSetting('UseScryerStance', 'Use Scryer Stance', 'Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Current point is to get Dark Essence. EXPERIMENTAL. This is the Master button. All other buttons have no effect if this one is off.', 'boolean',true,null,'scryerSettings');
-createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. NOTE: Overrides zone settings.', 'boolean', false,null, 'scryerSettings');
-createSetting('ScryerUseinMaps2', ['Never Use in Maps','Always Use in Maps'], 'Never/Always Use in Maps.', 'multitoggle', 0,null, 'scryerSettings');
-createSetting('ScryerUseinVoidMaps2', ['Never Use in VoidMaps','Always Use in VoidMaps'], 'Never/Always Use in Void Maps.', 'multitoggle', 0,null, 'scryerSettings');
+createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. Reccomended this be on, so you can NOTE: Overrides zone settings.', 'boolean', false,null, 'scryerSettings');
+createSetting('ScryerUseinMaps2', ['Never Use in Maps','Always Use in Maps'], 'Never/Always Use in Maps. (Obeys zone settings)', 'multitoggle', 0,null, 'scryerSettings');
+createSetting('ScryerUseinVoidMaps2', ['Never Use in VoidMaps','Always Use in VoidMaps'], 'Never/Always Use in Void Maps. (Obeys zone settings)', 'multitoggle', 0,null, 'scryerSettings');
 createSetting('ScryerUseinSpire2', ['Never Use in Spire','Always Use in Spire'],'Never/Always Use in Spire.', 'multitoggle', 0,null, 'scryerSettings');
-createSetting('ScryerSkipBoss2', ['Use on Cell 100','Never Use on Cell 100 above VoidLevel','Never Use on Cell 100 (ALL)'], 'Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at.', 'multitoggle', 0,null, 'scryerSettings');
-createSetting('ScryerSkipCorrupteds2', ['Use S on Corrupteds','Skip S on Corrupteds','Use S on Overkill Corrupteds'], 'Doesnt use Scrying stance for corrupted cells unless you can overkill them.', 'multitoggle', 0,null, 'scryerSettings');
+createSetting('ScryerSkipBoss2', ['Use on Cell 100','Never Use on Cell 100 above VoidLevel','Never Use on Cell 100 (ALL)'], 'Use=Default, Never Use: Above VoidLevel, or Never Use: ALL (cell 100 of all levels--currently not working--). Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at.', 'multitoggle', 0,null, 'scryerSettings');
+createSetting('ScryerSkipCorrupteds2', ['Use S on Corrupteds','Skip S on Corrupteds','Use S on Overkill Corrupteds'], 'Currently not working. Doesnt use Scrying stance for corrupted cells unless you can overkill them.', 'multitoggle', 0,null, 'scryerSettings');
 //migrate old buttons. once.
 if (autoTrimpSettings["MigratedOldScryer1"] === undefined) {
     autoTrimpSettings["ScryerUseinMaps2"].value = 1 * autoTrimpSettings["ScryerUseinMaps"].enabled;
@@ -187,7 +187,8 @@ if (autoTrimpSettings["MigratedOldScryer1"] === undefined) {
     settingChanged("ScryerSkipBoss2");settingChanged("ScryerSkipBoss2");settingChanged("ScryerSkipBoss2");
     autoTrimpSettings["ScryerSkipCorrupteds2"].value = 1 * autoTrimpSettings["ScryerSkipCorrupteds"].enabled;
     settingChanged("ScryerSkipCorrupteds2");settingChanged("ScryerSkipCorrupteds2");settingChanged("ScryerSkipCorrupteds2");
-    createSetting('MigratedOldScryer1', 'MigratedOldScryer1', 'Migrate old scryer stance buttons one time and onetime only.', 'boolean',true,null,'scryerSettings');    
+    createSetting('MigratedOldScryer1', 'Buttons have New Behavior', 'Migrated old scryer stance buttons (one time and onetime only). Will Disappear on refresh. The new buttons are multi-way toggle buttons. The buttons needed to be modified, and your settings migrated over.', 'boolean',true,null,'scryerSettings');    
+    saveSettings();
 }
 //createSetting('ScryerUseinSpireSafes', 'Use in Spire(Safes)', 'Use on Spire cells marked with the safe icons - high loot *50 metal reward.', 'boolean', false,null, 'scryerSettings');
 createSetting('ScryerMinZone', 'Min Zone', 'Minimum zone to start using scryer in.(inclusive) rec:(60 or 181)', 'value', '181', null, 'scryerSettings');
@@ -470,7 +471,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name[defaultValue] + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
-        btn.textContent = name[defaultValue];
+        btn.textContent = autoTrimpSettings[id].name[autoTrimpSettings[id].value];
         btnParent.appendChild(btn);
         if(container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);      
