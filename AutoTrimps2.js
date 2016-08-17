@@ -2617,7 +2617,7 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
-    //check preconditions
+    //check preconditions   (exit quick, if impossible to use)
     var use_auto = game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
     use_auto = use_auto || game.global.world <= 60;
     if (use_auto) {
@@ -2629,11 +2629,12 @@ function useScryerStance() {
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
     if (useoverkill && game.portal.Overkill.level == 0)
         setPageSetting('ScryerUseWhenOverkill',false);
+    //Overkill button being on and being able to overkill in S will override any other setting, regardless.
     if (useoverkill && game.portal.Overkill.level > 0) {
         var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
         var Sstance = 0.5;
         var ovkldmg = avgDamage * Sstance * (game.portal.Overkill.level*0.005);
-        //are we going to overkill ?
+        //are we going to overkill in S?
         var ovklHDratio = getCurrentEnemy(1).maxHealth / ovkldmg;
         if (ovklHDratio < 8) {
             setFormation(4);
@@ -2641,33 +2642,35 @@ function useScryerStance() {
         }
     }
     
-
+//Any of these being true will indicate scryer should not be used, and cause the function to dump back to regular autoStance():
     //check for spire
     use_auto = use_auto || game.global.world == 200 && game.global.spireActive && !getPageSetting('ScryerUseinSpire2');
     //check for voids
     use_auto = use_auto || game.global.mapsActive && getCurrentMapObject().location == "Void" && !getPageSetting('ScryerUseinVoidMaps2');
     //check for maps
     use_auto = use_auto || game.global.mapsActive && !getPageSetting('ScryerUseinMaps2');
-    //check for bosses
-    use_auto = use_auto || getPageSetting('ScryerSkipBoss2') && game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98;
+    //check for bosses above voidlevel
+    use_auto = use_auto || getPageSetting('ScryerSkipBoss2') == 1 && game.global.world > getPageSetting('VoidMaps') && game.global.lastClearedCell == 98;
+    //check for bosses (all levels)
+    use_auto = use_auto || getPageSetting('ScryerSkipBoss2') == 2 && game.global.lastClearedCell == 98;
     if (use_auto) {
         autoStance();    //falls back to autostance when not using S.
         return;
     }
     
-    //check for corrupted cells
+    //check for corrupted cells (and exit)
     var iscorrupt = getCurrentEnemy(1).corrupted;
-    //var isnextcorrupt = getCurrentEnemy(2) && getCurrentEnemy(2).corrupted && baseDamage*getPlayerCritDamageMult() > getCurrentEnemy().health/2))
-    if(iscorrupt && getPageSetting('ScryerSkipCorrupteds2')) {
+    if (iscorrupt && getPageSetting('ScryerSkipCorrupteds2')) {
         autoStance();
         return;
     }
     
+    //Default.
     var min_zone = getPageSetting('ScryerMinZone');
     var max_zone = getPageSetting('ScryerMaxZone');
     var valid_min = game.global.world > min_zone;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
-    if(valid_min && valid_max) {
+    if (valid_min && valid_max) {
         setFormation(4);
     } else {
         autoStance();
