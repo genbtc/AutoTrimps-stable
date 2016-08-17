@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 600px"><div id="graph" style="margin-bottom: 15px;margin-top: 10px; height: 540px;"></div><div id="graphFooter" style="height: 50px;"></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
+var graphList = ['HeliumPerHour','HeliumPerHour Delta', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -568,7 +568,46 @@ function setGraphData(graph) {
             yTitle = 'Helium/Hour';
             yType = 'Linear';
             break;
-
+        case 'HeliumPerHour Delta':
+            var currentPortal = -1;
+            var currentZone = -1;
+            graphData = [];
+            var nowhehr=0;var lasthehr=0;
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    if(allSaveData[i].world == 1 && currentZone != -1 )
+                        graphData[graphData.length -1].data.push(0);
+                    
+                    if(currentZone == -1 || allSaveData[i].world != 1) {
+                        var loop = allSaveData[i].world;
+                        while (loop > 0) {
+                            graphData[graphData.length -1].data.push(0);
+                            loop--;
+                        }
+                    }
+                    nowhehr = 0; lasthehr = 0;
+                }
+                if(currentZone < allSaveData[i].world && currentZone != -1) {
+                    nowhehr = Math.floor(allSaveData[i].heliumOwned / ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000));
+                    if (lasthehr == 0)
+                        lasthehr = nowhehr;
+                    graphData[graphData.length - 1].data.push(nowhehr-lasthehr);
+                }            
+                currentZone = allSaveData[i].world;
+                lasthehr = nowhehr;
+                
+            }
+            title = 'Helium/Hour Delta(Difference) - between current and last zone.';
+            xTitle = 'Zone';
+            yTitle = 'Difference in Helium/Hour';
+            yType = 'Linear';
+            break;
+                       
         case 'Void Maps':
             var currentPortal = -1;
             var totalVoids = 0;
@@ -818,6 +857,14 @@ function setGraphData(graph) {
     }
     if (oldData != JSON.stringify(graphData)) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
+    }
+    if (graph == 'HeliumPerHourSlope') {
+        var plotLineoptions = {
+                value: 0,
+                width: 2,
+                color: 'red'
+            };
+        chart1.yAxis[0].addPlotLine(plotLineoptions);
     }
 }
 
