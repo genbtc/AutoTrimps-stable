@@ -178,15 +178,15 @@ createSetting('ScryerSkipCorrupteds2', ['Use S on Corrupteds','Skip S on Corrupt
 //migrate old buttons. once.
 if (autoTrimpSettings["MigratedOldScryer1"] === undefined) {
     autoTrimpSettings["ScryerUseinMaps2"].value = 1 * autoTrimpSettings["ScryerUseinMaps"].enabled;
-    document.getElementById("ScryerUseinMaps2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerUseinMaps2"].value);
+    settingChanged("ScryerUseinMaps2");settingChanged("ScryerUseinMaps2");
     autoTrimpSettings["ScryerUseinVoidMaps2"].value = 1 * autoTrimpSettings["ScryerUseinVoidMaps"].enabled;
-    document.getElementById("ScryerUseinVoidMaps2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerUseinVoidMaps2"].value);
+    settingChanged("ScryerUseinVoidMaps2");settingChanged("ScryerUseinVoidMaps2");
     autoTrimpSettings["ScryerUseinSpire2"].value = 1 * autoTrimpSettings["ScryerUseinSpire"].enabled;
-    document.getElementById("ScryerUseinSpire2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerUseinSpire2"].value);
+    settingChanged("ScryerUseinSpire2");settingChanged("ScryerUseinSpire2");
     autoTrimpSettings["ScryerSkipBoss2"].value = 1 * autoTrimpSettings["ScryerSkipBossPastVoids"].enabled;
-    document.getElementById("ScryerSkipBoss2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerSkipBoss2"].value);
+    settingChanged("ScryerSkipBoss2");settingChanged("ScryerSkipBoss2");settingChanged("ScryerSkipBoss2");
     autoTrimpSettings["ScryerSkipCorrupteds2"].value = 1 * autoTrimpSettings["ScryerSkipCorrupteds"].enabled;
-    document.getElementById("ScryerSkipCorrupteds2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerSkipCorrupteds2"].value);
+    settingChanged("ScryerSkipCorrupteds2");settingChanged("ScryerSkipCorrupteds2");settingChanged("ScryerSkipCorrupteds2");
     createSetting('MigratedOldScryer1', 'MigratedOldScryer1', 'Migrate old scryer stance buttons one time and onetime only.', 'boolean',true,null,'scryerSettings');    
 }
 //createSetting('ScryerUseinSpireSafes', 'Use in Spire(Safes)', 'Use on Spire cells marked with the safe icons - high loot *50 metal reward.', 'boolean', false,null, 'scryerSettings');
