@@ -1871,9 +1871,9 @@ function autoMap() {
     if (voidMapLevelSettingMap.length == 1) voidMapLevelSettingMap += "0";  //entering 187.70 becomes 187.7, this will bring it back to 187.70
     var voidsuntil = getPageSetting('RunNewVoidsUntil');
     needToVoid = voidMapLevelSetting > 0 && game.global.totalVoidMaps > 0 && game.global.lastClearedCell + 1 >= voidMapLevelSettingMap &&
-                                    ((game.global.world == voidMapLevelSettingZone && (voidsuntil == -1 || !getPageSetting('RunNewVoids')))
+                                    ((game.global.world == voidMapLevelSettingZone && !getPageSetting('RunNewVoids'))
                                                                 || 
-                                 (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids') && voidsuntil != -1 && game.global.world <= voidsuntil));
+                                 (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids') && (voidsuntil == -1 || game.global.world <= voidsuntil)));
     if(game.global.totalVoidMaps == 0 || !needToVoid)
         doVoids = false;
     //calculate if we are behind on prestiges
