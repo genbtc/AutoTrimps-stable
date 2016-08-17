@@ -171,15 +171,24 @@ document.getElementById("autoSettings").appendChild(scryerSettingsadv);
 createSetting('UseScryerStance', 'Use Scryer Stance', 'Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Current point is to get Dark Essence. EXPERIMENTAL. This is the Master button. All other buttons have no effect if this one is off.', 'boolean',true,null,'scryerSettings');
 createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. NOTE: Overrides zone settings.', 'boolean', false,null, 'scryerSettings');
 createSetting('ScryerUseinMaps2', ['Never Use in Maps','Always Use in Maps'], 'Never/Always Use in Maps.', 'multitoggle', 0,null, 'scryerSettings');
-autoTrimpSettings["ScryerUseinMaps2"].value = 1 * autoTrimpSettings["ScryerUseinMaps"].enabled;
 createSetting('ScryerUseinVoidMaps2', ['Never Use in VoidMaps','Always Use in VoidMaps'], 'Never/Always Use in Void Maps.', 'multitoggle', 0,null, 'scryerSettings');
-autoTrimpSettings["ScryerUseinVoidMaps2"].value = 1 * autoTrimpSettings["ScryerUseinVoidMaps"].enabled;
 createSetting('ScryerUseinSpire2', ['Never Use in Spire','Always Use in Spire'],'Never/Always Use in Spire.', 'multitoggle', 0,null, 'scryerSettings');
-autoTrimpSettings["ScryerUseinSpire2"].value = 1 * autoTrimpSettings["ScryerUseinSpire"].enabled;
 createSetting('ScryerSkipBoss2', ['Use on Cell 100','Never Use on Cell 100 above VoidLevel','Never Use on Cell 100 (ALL)'], 'Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at.', 'multitoggle', 0,null, 'scryerSettings');
-autoTrimpSettings["ScryerSkipBoss2"].value = 1 * autoTrimpSettings["ScryerSkipBossPastVoids"].enabled;
 createSetting('ScryerSkipCorrupteds2', ['Use S on Corrupteds','Skip S on Corrupteds','Use S on Overkill Corrupteds'], 'Doesnt use Scrying stance for corrupted cells unless you can overkill them.', 'multitoggle', 0,null, 'scryerSettings');
-autoTrimpSettings["ScryerSkipCorrupteds2"].value = 1 * autoTrimpSettings["ScryerSkipCorrupteds"].enabled;
+//migrate old buttons. once.
+if (autoTrimpSettings["MigratedOldScryer1"] === undefined) {
+    autoTrimpSettings["ScryerUseinMaps2"].value = 1 * autoTrimpSettings["ScryerUseinMaps"].enabled;
+    document.getElementById("ScryerUseinMaps2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerUseinMaps2"].value);
+    autoTrimpSettings["ScryerUseinVoidMaps2"].value = 1 * autoTrimpSettings["ScryerUseinVoidMaps"].enabled;
+    document.getElementById("ScryerUseinVoidMaps2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerUseinVoidMaps2"].value);
+    autoTrimpSettings["ScryerUseinSpire2"].value = 1 * autoTrimpSettings["ScryerUseinSpire"].enabled;
+    document.getElementById("ScryerUseinSpire2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerUseinSpire2"].value);
+    autoTrimpSettings["ScryerSkipBoss2"].value = 1 * autoTrimpSettings["ScryerSkipBossPastVoids"].enabled;
+    document.getElementById("ScryerSkipBoss2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerSkipBoss2"].value);
+    autoTrimpSettings["ScryerSkipCorrupteds2"].value = 1 * autoTrimpSettings["ScryerSkipCorrupteds"].enabled;
+    document.getElementById("ScryerSkipCorrupteds2").setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings["ScryerSkipCorrupteds2"].value);
+    createSetting('MigratedOldScryer1', 'MigratedOldScryer1', 'Migrate old scryer stance buttons one time and onetime only.', 'boolean',true,null,'scryerSettings');    
+}
 //createSetting('ScryerUseinSpireSafes', 'Use in Spire(Safes)', 'Use on Spire cells marked with the safe icons - high loot *50 metal reward.', 'boolean', false,null, 'scryerSettings');
 createSetting('ScryerMinZone', 'Min Zone', 'Minimum zone to start using scryer in.(inclusive) rec:(60 or 181)', 'value', '181', null, 'scryerSettings');
 createSetting('ScryerMaxZone', 'Max Zone', 'Zone to STOP using scryer at.(not inclusive) Use at your own discretion. rec: (0 or -1 to disable.)', 'value', '-1',null, 'scryerSettings');
