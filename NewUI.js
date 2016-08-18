@@ -169,14 +169,16 @@ scryerSettingsadv.style.display = 'none';
 document.getElementById("autoSettings").appendChild(scryerSettingsadv);
 //Manage settings - option buttons - Scryer settings
 createSetting('UseScryerStance', 'Use Scryer Stance', 'Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Current point is to get Dark Essence. EXPERIMENTAL. This is the Master button. All other buttons have no effect if this one is off.', 'boolean',true,null,'scryerSettings');
-createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. Reccomend this be on. NOTE: This being on, and being able to overkill in S will ALL other settings.', 'boolean', false,null, 'scryerSettings');
+createSetting('ScryerMinZone', 'Min Zone', 'Minimum zone to start using scryer in.(inclusive) rec:(60 or 181)', 'value', '181', null, 'scryerSettings');
+createSetting('ScryerMaxZone', 'Max Zone', 'Zone to STOP using scryer at.(not inclusive) Use at your own discretion. rec: (0 or -1 to disable.)', 'value', '-1',null, 'scryerSettings');
+createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. Reccommend this be on. NOTE: This being on, and being able to overkill in S will override ALL other settings. This is a logical shortcut that disregards all the other settings. If you ONLY want to use S during Overkill, as a workaround: turn this on and Min zone: to 9000 and everything else off. ', 'boolean', false,null, 'scryerSettings');
 createSetting('ScryerUseinMaps2', ['Maybe Use in Maps','Force Use in Maps'], 'Maybe/Force Use in Maps. Does not have to be on for Overkill Button to use S in maps. (Obeys zone settings)', 'multitoggle', 0,null, 'scryerSettings');
 createSetting('ScryerUseinVoidMaps2', ['Maybe Use in VoidMaps','Force Use in VoidMaps'], 'Maybe/Force Use in Void Maps. Does not have to be on for Overkill Button to use S in VoidMaps. (Obeys zone settings)', 'multitoggle', 0,null, 'scryerSettings');
 createSetting('ScryerUseinSpire2', ['Maybe Use in Spire','Force Use in Spire'],'Maybe/Force Use in Spire. Does not have to be on for Overkill Button to use S in Spire. ', 'multitoggle', 0,null, 'scryerSettings');
 createSetting('ScryerSkipBoss2', ['Use on Cell 100 (Default)','Never Use on Cell 100 above VoidLevel','Never Use on Cell 100 (ALL Levels)'], 'Use=Default, Never Use: Above VoidLevel, or Never Use: ALL Levels(cell 100). Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at. (or all levels, if set.)', 'multitoggle', 0,null, 'scryerSettings');
 createSetting('ScryerSkipCorrupteds2', ['Default behavior on Corrupteds','Dont Use S on Corrupteds'], 'UNLESS you can overkill them. (Turning this on doesnt use S stance for corrupted cells UNLESS you can overkill them.) Off just means default (corrupteds are treated like normal cells), SO something else has to be ON to trigger Scryer to be used on normal as well as any corrupted cells.', 'multitoggle', 0,null, 'scryerSettings');
 //migrate old buttons. once.
-if (autoTrimpSettings["MigratedOldScryer1"] === undefined) {
+if (autoTrimpSettings["MigratedOldScryer1"] === undefined && (autoTrimpSettings["ScryerUseinMaps"])) {
     autoTrimpSettings["ScryerUseinMaps2"].value = 1 * autoTrimpSettings["ScryerUseinMaps"].enabled;
     settingChanged("ScryerUseinMaps2");settingChanged("ScryerUseinMaps2");
     autoTrimpSettings["ScryerUseinVoidMaps2"].value = 1 * autoTrimpSettings["ScryerUseinVoidMaps"].enabled;
@@ -191,8 +193,7 @@ if (autoTrimpSettings["MigratedOldScryer1"] === undefined) {
     saveSettings();
 }
 //createSetting('ScryerUseinSpireSafes', 'Use in Spire(Safes)', 'Use on Spire cells marked with the safe icons - high loot *50 metal reward.', 'boolean', false,null, 'scryerSettings');
-createSetting('ScryerMinZone', 'Min Zone', 'Minimum zone to start using scryer in.(inclusive) rec:(60 or 181)', 'value', '181', null, 'scryerSettings');
-createSetting('ScryerMaxZone', 'Max Zone', 'Zone to STOP using scryer at.(not inclusive) Use at your own discretion. rec: (0 or -1 to disable.)', 'value', '-1',null, 'scryerSettings');
+
 
 //createSetting('TEMPvarMultiToggle', ['TEMPvarMultiToggle0','TEMPvarMultiToggle1','TEMPvarMultiToggle2'], 'Master description for all 3 settings', 'multitoggle', 0, null, 'scryerSettings');
 
