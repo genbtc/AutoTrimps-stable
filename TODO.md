@@ -4,7 +4,8 @@ Near Future:
 ------------
 Essence graph
 Add notes to graph runs.
-
+ it doesnt go into the map bonus mode soon enough because of the fact that its gauging the zone on non-corrupted enemies
+  //we will get at least 85 toxstacks from the 1st voidmap UNLESS we have overkill, then we dont get enough.
 
 New Features To Add:
 ----------------

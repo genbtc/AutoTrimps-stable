@@ -435,6 +435,18 @@ function getCurrentEnemy(current) {
     return enemy;
 }
 
+function getCorruptedCellsNum() {
+    var enemy;
+    var corrupteds = 0;
+    for (var i = 0; i < game.global.gridArray.length - 1; i++) {
+        enemy = game.global.gridArray[i];
+        if (enemy.corrupted)
+            corrupteds++;
+    }
+    return corrupteds;    
+}
+
+
 function getBreedTime(remaining,round) {
     var trimps = game.resources.trimps;
     var breeding = trimps.owned - trimps.employed;
@@ -1886,7 +1898,21 @@ function autoMap() {
     baseDamage *= mapbonusmulti;    
     //get average enemyhealth and damage for the next zone, cell 30, snimp type and multiply it by a factor of .85 (don't ask why)
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
-    var enemyHealth = getEnemyMaxHealth(game.global.world + 1);    
+    var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
+    //Corruption Zone Proportionality Farming Calculator:
+    if (getPageSetting('CorruptionCalc') && game.global.world >= 181){
+        var cptnum = getCorruptedCellsNum();     //count corrupted cells
+        var cpthlth = getCorruptScale("health"); //get corrupted health mod
+        var cptpct = cptnum / 100;               //percentage of zone which is corrupted.
+        var hlthprop = cptpct * cpthlth;         //Proportion of cells corrupted * health of a corrupted cell
+        if (hlthprop >= 1)                       //dont allow sub-1 numbers to make the number less
+            enemyHealth *= hlthprop;
+        var cptatk = getCorruptScale("attack");  //get corrupted attack mod
+        var atkprop = cptpct * cptatk;           //Proportion of cells corrupted * attack of a corrupted cell
+        if (atkprop >= 1)
+            enemyDamage *= atkprop;
+        //console.log("enemy dmg:" + enemyDamage + " enemy hp:" + enemyHealth + " base dmg: " + baseDamage);
+    }
     //farm if basedamage is between 10 and 16)
     if(!getPageSetting('DisableFarm')) {
         shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 10 : getEnemyMaxHealth(game.global.world) / baseDamage > 16;

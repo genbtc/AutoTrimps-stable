@@ -131,6 +131,7 @@ document.getElementById("AutoGoldenUpgrades").parentNode.insertBefore(AGULabel,d
 createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buy the upgrade the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null,'genbtcadvancedSettings');
 createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm level 200 maps for X minutes before continuing to beat spire (0 to disable)', 'value', '0', null, 'genbtcadvancedSettings');
 createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Exits the Spire after completing cell X. example: 40 for Row 4. (0 to disable)', 'value', '0', null, 'genbtcadvancedSettings');
+createSetting('CorruptionCalc', 'Corruption Farm Mode', 'Enabling this will cause the Automaps routine to take amount of corruption in a zone into account, to decide whether it should do maps first for map bonus. ONLY in Zone 181+. ', 'boolean', false, null, 'genbtcadvancedSettings');
 
 //Manage importexport Settings - Create button.
 var importexportBtn = document.createElement("DIV");
