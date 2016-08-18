@@ -2653,7 +2653,7 @@ function useScryerStance() {
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var form = game.global.formation;
-    var oktoswitch = false;
+    var oktoswitch = true;
     if (form == 0 || form == 1)
         oktoswitch = newSquadRdy || (missingHealth < (baseHealth / 2));
     
