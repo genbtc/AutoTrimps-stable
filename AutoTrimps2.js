@@ -1689,6 +1689,9 @@ function autoStance() {
     //start analyzing autostance
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var dHealth = baseHealth/2;
+    var xHealth = baseHealth;
+    var bHealth = baseHealth/2;
     var enemy;
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         enemy = getCurrentEnemy();
@@ -1714,12 +1717,10 @@ function autoStance() {
         }
         var pierceMod = 0;
         if (game.global.challengeActive == "Lead") pierceMod += (game.challenges.Lead.stacks * 0.001);
-        var dDamage = enemyDamage - baseBlock / 2 > enemyDamage * (0.2 + pierceMod) ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod);
-        var dHealth = baseHealth/2;
+        var dDamage = enemyDamage - baseBlock / 2 > enemyDamage * (0.2 + pierceMod) ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod);        
         var xDamage = enemyDamage - baseBlock > enemyDamage * (0.2 + pierceMod) ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod);
-        var xHealth = baseHealth;
         var bDamage = enemyDamage - baseBlock * 4 > enemyDamage * (0.1 + pierceMod) ? enemyDamage - baseBlock * 4 : enemyDamage * (0.1 + pierceMod);
-        var bHealth = baseHealth/2;
+
     } else if (game.global.mapsActive && !game.global.preMapsActive) {
         enemy = getCurrentEnemy();
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
@@ -1744,12 +1745,9 @@ function autoStance() {
         }
         var dDamage = enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : 0;
         var dVoidCritDamage = enemyDamage*5 - baseBlock / 2 > 0 ? enemyDamage*5 - baseBlock / 2 : 0;
-        var dHealth = baseHealth/2;
         var xDamage = enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : 0;
         var xVoidCritDamage = enemyDamage*5 - baseBlock > 0 ? enemyDamage*5 - baseBlock : 0;
-        var xHealth = baseHealth;
         var bDamage = enemyDamage - baseBlock * 4 > 0 ? enemyDamage - baseBlock * 4 : 0;
-        var bHealth = baseHealth/2;
     }
     
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
@@ -2626,6 +2624,13 @@ function useScryerStance() {
     }
     
     calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
+    var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var form = game.global.formation;
+    var oktoswitch = false;
+    if (form == 0 || form == 1)
+        oktoswitch = newSquadRdy || (missingHealth < (baseHealth / 2));
+    
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
     if (useoverkill && game.portal.Overkill.level == 0)
         setPageSetting('ScryerUseWhenOverkill',false);
@@ -2637,7 +2642,8 @@ function useScryerStance() {
         //are we going to overkill in S?
         var ovklHDratio = getCurrentEnemy(1).maxHealth / ovkldmg;
         if (ovklHDratio < 8) {
-            setFormation(4);
+            if (oktoswitch)
+                setFormation(4);
             return;
         }
     }
@@ -2671,7 +2677,8 @@ function useScryerStance() {
     var valid_min = game.global.world > min_zone;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
     if (valid_min && valid_max) {
-        setFormation(4);
+        if (oktoswitch)
+            setFormation(4);
     } else {
         autoStance();
         return;
