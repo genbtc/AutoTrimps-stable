@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.3-genbtc-8-12-2016+ScryerStance
+// @version      2.1.2.3b-genbtc-8-18-2016+ScryerStance
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -11,7 +11,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.3-genbtc-8-12-2016+ScryerStance';
+var ATversion = '2.1.2.3b-genbtc-8-18-2016+ScryerStance';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2059,7 +2059,7 @@ function autoMap() {
                 selectedMap = theMap.id;
                 break;
             }
-            if(theMap.name == 'Trimple of Doom' && game.global.challengeActive == "Meditate") {
+            if(theMap.name == 'Trimple Of Doom' && game.global.challengeActive == "Meditate") {
                 selectedMap = theMap.id;
                 break;
             }

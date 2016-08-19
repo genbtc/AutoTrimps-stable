@@ -858,7 +858,7 @@ function setGraphData(graph) {
     if (oldData != JSON.stringify(graphData)) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
     }
-    if (graph == 'HeliumPerHourSlope') {
+    if (graph == 'HeliumPerHour Delta') {
         var plotLineoptions = {
                 value: 0,
                 width: 2,
