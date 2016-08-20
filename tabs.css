@@ -21,12 +21,11 @@ ul.tab li a {
     transition: 0.3s;
     font-size: 17px;
 }
+/* Create an active/current tablink class */
+ul.tab li a.active {background-color: #ccc;}
 
 /* Change background color of links on hover */
 ul.tab li a:hover {background-color: #ddd;}
-
-/* Create an active/current tablink class */
-ul.tab li a:focus, .active {background-color: #ccc;}
 
 /* Style the tab content */
 .tabcontent {

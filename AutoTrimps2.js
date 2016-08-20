@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.3b-genbtc-8-18-2016+ScryerStance
+// @version      2.1.2.4-genbtc-8-19-2016+NewUI2
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -11,7 +11,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.3b-genbtc-8-18-2016+ScryerStance';
+var ATversion = '2.1.2.4-genbtc-8-19-2016+NewUI2';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -955,7 +955,8 @@ function initializeAutoTrimps() {
     if (atscript !== null) {
         base = atscript.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
     }
-    document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
+    //document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
+    document.head.appendChild(document.createElement('script')).src = base + '/NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
     toggleSettingsMenu();
     toggleSettingsMenu();
