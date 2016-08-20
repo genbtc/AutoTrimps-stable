@@ -6,7 +6,9 @@ Essence graph
 Add notes to graph runs.
  it doesnt go into the map bonus mode soon enough because of the fact that its gauging the zone on non-corrupted enemies
   //we will get at least 85 toxstacks from the 1st voidmap UNLESS we have overkill, then we dont get enough.
+if a new fight group is available and anticipation stacks aren't 30, abandon and grab a new group
 
+  
 New Features To Add:
 ----------------
 Documentation (started)

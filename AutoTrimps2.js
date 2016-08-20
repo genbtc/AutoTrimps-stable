@@ -1131,9 +1131,21 @@ function buyBuildings() {
         (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
         (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false))) && !game.buildings.Nursery.locked) 
     {
+        var nwr = 0.05; //nursery to warpstation cost ratio (unrelated to the 20 below), has been this way since forever.  
+        var gemCostratio = 20;  //(1/20th)        
+        var nursCost = getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1);
+        var warpCost = getBuildingItemPrice(game.buildings.Warpstation, "gems", false, 1);
+        var collCost = getBuildingItemPrice(game.buildings.Collector, "gems", false, 1);
+        var resomod = Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);    //need to apply the resourceful mod when comparing anything other than building vs building. 
+        //buy nurseries irrelevant of warpstations (after we unlock them) - if we have enough extra gems that its not going to impact anything. note:(we will be limited by wood anyway - might use a lot of extra wood)
+        var buyWithExtraGems = (!game.buildings.Warpstation.locked && nursCost * resomod < game.resources.gems.owned/gemCostratio);
+        //refactored the old calc, and added new buyWithExtraGems tacked on the front
         if ((getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1) && 
-            (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Warpstation, "gems", false, 1) || game.buildings.Warpstation.locked) && 
-            (getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1) < 0.05 * getBuildingItemPrice(game.buildings.Collector, "gems", false, 1) || game.buildings.Collector.locked || !game.buildings.Warpstation.locked))
+            ( buyWithExtraGems || 
+            ((nursCost < nwr * warpCost || game.buildings.Warpstation.locked) &&
+             (nursCost < nwr * collCost || game.buildings.Collector.locked || !game.buildings.Warpstation.locked))
+            )
+           )
         {
             safeBuyBuilding('Nursery');
         }
@@ -1580,7 +1592,7 @@ function manualLabor() {
     }
     else if (game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') setGather('science');
         //if we have more than 2 buildings in queue, or (our modifier is real fast and trapstorm is off), build                      
-    else if (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 1000 && game.global.buildingsQueue[0] != 'Trap.1')) : false) {
+    else if (!game.talents.foreman2.purchased && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 1000 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) {
         // debug('Gathering buildings??');
         setGather('buildings');
     }
@@ -2527,7 +2539,18 @@ function manageGenes() {
 
     //reset breedFire once we have less than 2 seconds remaining
     if(getBreedTime(true) < 2) breedFire = false;
-
+    
+    //if a new fight group is available and anticipation stacks aren't 30, abandon and grab a new group
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    if (game.global.antiStacks < targetBreed && getBreedTime() >= targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
+        if (!game.global.preMapsActive) {
+            mapsClicked(); 
+            //force abandon army
+            if (game.global.switchToMaps)
+                mapsClicked();
+            console.log("Killed you! (to get to 30 anti stacks)");
+        }
+    }
 }
 
 //Change prestiges as we go (original idea thanks to Hider)
@@ -2778,7 +2801,8 @@ function mainLoop() {
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
     
-    //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
+    //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)   
+    if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
     if (game.portal.Overkill.level) OVKcellsWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length
     
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
