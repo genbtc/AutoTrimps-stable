@@ -2724,7 +2724,7 @@ function useScryerStance() {
     //Default.
     var min_zone = getPageSetting('ScryerMinZone');
     var max_zone = getPageSetting('ScryerMaxZone');
-    var valid_min = game.global.world > min_zone;
+    var valid_min = game.global.world >= min_zone;
     var valid_max = max_zone <= 0 || game.global.world < max_zone;
     if (valid_min && valid_max) {
         if (oktoswitch)
