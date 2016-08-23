@@ -157,7 +157,14 @@ createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps (not includin
 
 //genBTC advanced settings - option buttons.
 createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genBTC');
-createSetting('WarpstationWall', 'Warpstation Wall', 'Do not level Warpstations if it costs over 1/4th of the current metal we own. (Experimental) ', 'boolean', null, null, 'genBTC');
+//migrate old WW to new WW2 slider.
+if (autoTrimpSettings["WarpstationWall2"] === undefined) {
+    // 
+    createSetting('WarpstationWall2', 'Warpstation Wall %', 'Do not level Warpstations if it costs over X % of the current metal we own. (Experimental). Reccommended: 25%. (1 to 100%). Set to 0 to disable. (note: 100 is the same as off, Over 100 has no meaning, and smaller numbers means more extreme cap.) In other words, dont level warpstations until we can afford X many(at the current price). where X is 1/(percent/100) so 25% means buy 1 warpstation when you can afford 4 warpstations. 20% = 5 and so on.', 'value', 0, null, 'genBTC');
+    autoTrimpSettings["WarpstationWall2"].value = 25 * (1 * autoTrimpSettings["WarpstationWall"].enabled);
+} else {
+    createSetting('WarpstationWall2', 'Warpstation Wall %', 'Do not level Warpstations if it costs over X % of the current metal we own. (Experimental). Reccommended: 25%. (1 to 100%). Set to 0 to disable. (note: 100 is the same as off, Over 100 has no meaning, and smaller numbers means more extreme cap.) In other words, dont level warpstations until we can afford X many(at the current price). where X is 1/(percent/100) so 25% means buy 1 warpstation when you can afford 4 warpstations. 20% = 5 and so on.', 'value', 0, null, 'genBTC');
+}
 createSetting('CapEquip', 'Cap Equip to 10', 'Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.', 'boolean', null, null, 'genBTC');
 createSetting('AlwaysArmorLvl2', 'Always Buy Lvl 2 Armor', 'Always Buy the 2nd point of Armor even if we dont need the HP. Its the most cost effective level, and the need HP decision script isnt always adequate. FORCE on during Spire.', 'boolean', null, null, 'genBTC');
 createSetting('WaitTill60', 'Skip Gear Level 58&59', 'Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.', 'boolean', null, null, 'genBTC');
