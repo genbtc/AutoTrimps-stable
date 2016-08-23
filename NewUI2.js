@@ -158,7 +158,7 @@ createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps (not includin
 //genBTC advanced settings - option buttons.
 createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genBTC');
 //migrate old WW to new WW2 slider.
-if (autoTrimpSettings["WarpstationWall3"] === undefined) {
+if (autoTrimpSettings["WarpstationWall3"] === undefined && autoTrimpSettings["WarpstationWall"]) {
     createSetting('WarpstationWall3', 'Warpstation Wall', 'Cap. Only buys 1 Warpstation when you can afford <b>X</b> warpstations (at the current metal price, simple math). -1, 0, 1 = disable. In other words, only allows warps that cost 1/nth less then currently owned metal. (to save metal for prestiges)', 'value', 0, null, 'genBTC');
     autoTrimpSettings["WarpstationWall3"].value = 4 * (1 * autoTrimpSettings["WarpstationWall"].enabled);
 } else {
