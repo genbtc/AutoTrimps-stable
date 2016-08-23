@@ -1069,10 +1069,10 @@ function highlightHousing() {
                     if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
                         bestBuilding = null;
                 }
-                var wallpct = parseInt(getPageSetting('WarpstationWall2'));
-                if (wallpct >= 1 && bestBuilding == "Warpstation") {
+                var wallpct = getPageSetting('WarpstationWall3');
+                if (wallpct > 1 && bestBuilding == "Warpstation") {
                     //Warpstation Wall - allow only warps that cost 1/n'th less then current metal (try to save metal for next prestige) 
-                    if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.metal.owned * (wallpct/100)))
+                    if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.metal.owned / wallpct))
                         bestBuilding = null;
                 }
                 break;
