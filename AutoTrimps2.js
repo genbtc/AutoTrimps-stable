@@ -1021,6 +1021,17 @@ function safeBuyBuilding(building) {
         debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*rocket');
         return;
     }
+    else if(building == 'Nursery'){
+        if (game.buildings.Nursery.owned < 2) {
+            game.global.buyAmt = 'Max';
+            game.global.maxSplit = 1;
+        } else {
+            game.global.buyAmt = 1;
+        }
+        buyBuilding(building, true, true);
+        debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*aid-kit');
+        return;
+    }
     debug('Building ' + building, '*hammer2');
     buyBuilding(building, true, true);
     postBuy();
