@@ -2195,10 +2195,9 @@ function autoMap() {
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";
-                var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-                //FIX FOR FIREFOX.
+                //FIX for bad sort (not knowing right order of forest/mountain, during spire)
                 var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
-                if (isFirefox && selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == spiremaplvl && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
+                if (selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == spiremaplvl && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
                     var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
                     if (nextmap && nextmap.location == 'Mountain')
                         selectedMap = nextmap.id;
