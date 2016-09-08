@@ -311,10 +311,10 @@ AutoPerks.spendHelium = function(helium, perks) {
     //end dump perk code.
     
     //Repeat the process for spending round 2. This spends any extra helium we have that is less than the cost of the last point of the dump-perk.
-    var mostEff = effQueue.poll();
-    var price = AutoPerks.calculatePrice(mostEff, mostEff.level); // Price of *next* purchase.
-    var inc;
-    while(price <= helium) {
+    while (effQueue.size > 1) {
+        mostEff = effQueue.poll();
+        price = AutoPerks.calculatePrice(mostEff, mostEff.level);
+        if (price >= helium) continue;
         // Purchase the most efficient perk
         helium -= price;
         mostEff.level++;
@@ -326,8 +326,6 @@ AutoPerks.spendHelium = function(helium, perks) {
         // Add back into queue run again until out of helium
         if(mostEff.level < mostEff.max) // but first, check if the perk has reached its maximum value
             effQueue.add(mostEff);
-        mostEff = effQueue.poll();
-        price = AutoPerks.calculatePrice(mostEff, mostEff.level);
     }
 }
 
