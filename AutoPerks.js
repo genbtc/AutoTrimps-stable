@@ -36,8 +36,11 @@ buttonbar.appendChild(btnParent);
 AutoPerks.createInput = function(perkname,div) {
     var perk1input = document.createElement("Input");
     perk1input.id = perkname + 'Ratio';
-    perk1input.setAttribute('style', 'text-align: center; width: 60px; color: black;');
+    var oldstyle = 'text-align: center; width: 60px;';
+    if(game.options.menu.darkTheme.enabled != 2) perk1input.setAttribute("style", oldstyle + " color: black;");
+    else perk1input.setAttribute('style', oldstyle);
     perk1input.setAttribute('class', 'perkRatios');
+    
     var perk1label = document.createElement("Label");
     perk1label.id = perkname + 'Label';
     perk1label.innerHTML = perkname;
@@ -68,7 +71,9 @@ dumpperklabel.innerHTML = "Dump Perk:";
 dumpperklabel.setAttribute('style', 'margin-right: 1vw; color: white;');
 var dumpperk = document.createElement("select");
 dumpperk.id = 'dumpPerk';
-dumpperk.setAttribute('style', 'text-align: center; width: 120px; color: black;');
+var oldstyle = 'text-align: center; width: 120px;';
+if(game.options.menu.darkTheme.enabled != 2) dumpperk.setAttribute("style", oldstyle + " color: black;");
+else dumpperk.setAttribute('style', oldstyle);
 ratios2.appendChild(dumpperklabel);
 ratios2.appendChild(dumpperk);
 //List of the perk options are populated at the bottom of this file.
@@ -79,7 +84,9 @@ ratioPresetLabel.innerHTML = "Ratio Preset:";
 ratioPresetLabel.setAttribute('style', 'margin-right: 1vw; color: white;');
 var ratioPreset = document.createElement("select");
 ratioPreset.id = 'ratioPreset';
-ratioPreset.setAttribute('style', 'text-align: center; width: 110px; color: black;');
+var oldstyle = 'text-align: center; width: 110px;';
+if(game.options.menu.darkTheme.enabled != 2) ratioPreset.setAttribute("style", oldstyle + " color: black;");
+else ratioPreset.setAttribute('style', oldstyle);
 //List of the perk options are populated at the bottom of this file.
 //populate dump perk dropdown list 
 var html = "<option id='zxvPreset'>ZXV (default)</option>"
