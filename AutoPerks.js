@@ -279,7 +279,8 @@ AutoPerks.spendHelium = function(helium, perks) {
         price = AutoPerks.calculatePrice(mostEff, mostEff.level);
         mostEff.efficiency = inc/price;
         // Add back into queue run again until out of helium
-        effQueue.add(mostEff);
+        if(mostEff.level < mostEff.max) // but first, check if the perk has reached its maximum value
+            effQueue.add(mostEff);
         mostEff = effQueue.poll();
         price = AutoPerks.calculatePrice(mostEff, mostEff.level);
     }
@@ -396,25 +397,26 @@ AutoPerks.FixedPerk = function(name, base, level, max) {
     this.fixed = true;
     this.level = level || 0;
     this.spent = 0;
-    this.max = max || -1;
+    this.max = max || Number.MAX_VALUE;
 }
 
-AutoPerks.VariablePerk = function(name, base, compounding, value, baseIncrease, level) {
+AutoPerks.VariablePerk = function(name, base, compounding, value, baseIncrease, max, level) {
     this.id = -1;
     this.name = name;
     this.base = base;
     this.type  = "exponential";
     this.fixed = false;
     this.compounding = compounding;
-    this.value = value;
-    this.updatedValue = -1;
-    this.baseIncrease = baseIncrease;
-    this.efficiency = -1;
-    this.level = level || 0;
-    this.spent = 0;
+    this.value = value; // Sets how highly the base increase should be valued.
+    this.updatedValue = -1; // If a custom ratio is supplied, this will be modified to hold the new value.
+    this.baseIncrease = baseIncrease; // The raw stat increase that the perk gives.
+    this.efficiency = -1; // Efficiency is defined as % increase * value / He cost
+    this.max = max || Number.MAX_VALUE;
+    this.level = level || 0; // How many levels have been invested into a perk
+    this.spent = 0; // Total helium spent on each perk.
 }
 
-AutoPerks.ArithmeticPerk = function(name, base, increase, baseIncrease, parent, level) { // Calculate a way to obtain parent automatically.
+AutoPerks.ArithmeticPerk = function(name, base, increase, baseIncrease, parent, max, level) { // Calculate a way to obtain parent automatically.
     this.id = -1;
     this.name = name;
     this.base = base;
@@ -424,10 +426,11 @@ AutoPerks.ArithmeticPerk = function(name, base, increase, baseIncrease, parent, 
     this.compounding = false;
     this.baseIncrease = baseIncrease;
     this.parent = parent;
-    this.relativeIncrease = parent.baseIncrease / baseIncrease;
+    this.relativeIncrease = parent.baseIncrease / baseIncrease; // The ratio of base increase of tier II to tier I, e.g. for Toughness (5%) vs Toughness II (1%), this will be 5.
     this.value = parent.value.map(function(me) { return me * this.relativeIncrease; });
     this.updatedValue = -1;
     this.efficiency = -1;
+    this.max = max || Number.MAX_VALUE;
     this.level = level || 0;
     this.spent = 0;
 }
