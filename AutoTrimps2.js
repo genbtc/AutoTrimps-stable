@@ -2016,6 +2016,11 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
+    //Run a single map to get nurseries when blacksmithery is purchased
+    if (game.talents.blacksmith.purchased && game.global.world == 60 && game.global.mapBonus == 0) {
+        shouldDoMaps = true;
+        shouldDoWatchMaps = true;
+    }
 
     
     //Dynamic Siphonology section (when necessary)
