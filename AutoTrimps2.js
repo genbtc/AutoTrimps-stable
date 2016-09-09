@@ -2191,22 +2191,26 @@ function autoMap() {
                     selectedMap = "create";
             //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.    
             } else if (needFarmSpire) {
-                //decide whether to use plentiful or regular locations.
-                    var forestlocation = game.global.decayDone ? "Plentiful" : "Forest";
-                    var mountainlocation = game.global.decayDone ? "Plentiful" : "Mountain";
-                //                    
-                if (game.global.mapsOwnedArray[highestMap].location == mountainlocation)
-                    selectedMap = game.global.mapsOwnedArray[highestMap].id;
-                else
-                    selectedMap = "create";
-                //FIX for bad sort (not knowing right order of forest/mountain, during spire)
-                var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
-                if (selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == spiremaplvl && game.global.mapsOwnedArray[highestMap].location == forestlocation) {
-                    var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
-                    if (nextmap && nextmap.location == mountainlocation)
-                        selectedMap = nextmap.id;
+                if (game.global.decayDone) {
+                    if (game.global.mapsOwnedArray[highestMap].location == 'Plentiful')
+                        selectedMap = game.global.mapsOwnedArray[highestMap].id;
                     else
                         selectedMap = "create";                    
+                }
+                else {
+                    if (game.global.mapsOwnedArray[highestMap].location == 'Mountain')
+                        selectedMap = game.global.mapsOwnedArray[highestMap].id;
+                    else
+                        selectedMap = "create";
+                    //FIX for bad sort (not knowing right order of forest/mountain, during spire)
+                    var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
+                    if (selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == spiremaplvl && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
+                        var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
+                        if (nextmap && nextmap.location == 'Mountain')
+                            selectedMap = nextmap.id;
+                        else
+                            selectedMap = "create";                    
+                    }
                 }
             //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige                                
             } else if (siphonMap != -1)
