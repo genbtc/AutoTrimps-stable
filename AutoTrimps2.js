@@ -2787,7 +2787,7 @@ function mainLoop() {
     setScienceNeeded();  //determine how much science is needed
     updateValueFields(); //refresh the UI
     
-    if (getPageSetting('ExitSpireCell')) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
+    if (getPageSetting('ExitSpireCell') >= 1) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"
     if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"
     autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (genBTC settings area)

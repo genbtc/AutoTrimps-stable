@@ -184,7 +184,7 @@ AGULabel.setAttribute('style', 'margin-right: 0.4vw; font-size: 0.8vw;');
 document.getElementById("AutoGoldenUpgrades").parentNode.insertBefore(AGULabel,document.getElementById("AutoGoldenUpgrades"))
 createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buy the upgrade the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null,'genBTC');
 createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm level 200 maps for X minutes before continuing to beat spire (0 to disable)', 'value', '0', null, 'genBTC');
-createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Exits the Spire after completing cell X. example: 40 for Row 4. (0 to disable)', 'value', '0', null, 'genBTC');
+createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Exits the Spire after completing cell X. example: 40 for Row 4. (better use 0 to disable, not -1)', 'value', '0', null, 'genBTC');
 createSetting('CorruptionCalc', 'Corruption Farm Mode', 'Enabling this will cause the Automaps routine to take amount of corruption in a zone into account, to decide whether it should do maps first for map bonus. ONLY in Zone 181+. ', 'boolean', false, null, 'genBTC');
 
 // Export/Import/Default settings
