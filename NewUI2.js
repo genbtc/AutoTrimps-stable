@@ -133,21 +133,22 @@ createSetting('VoidCheck', 'Void Difficulty Check', 'How many hits to be able to
 createSetting('FarmerRatio', 'Farmer Ratio', '', 'value', '1',null,"Core2");
 createSetting('LumberjackRatio', 'Lumberjack Ratio', '', 'value', '1',null,"Core2");
 createSetting('MinerRatio', 'Miner Ratio', '', 'value', '1',null,"Core2");
-createSetting('MaxExplorers', 'Max Explorers', 'Map the planet!!', 'value', '150',null,"Core2");
-createSetting('MaxTrainers', 'Max Trainers', 'Fist bump me bro', 'value', '-1',null,"Core2");
-createSetting('MaxHut', 'Max Huts', '', 'value', '50',null,"Core2");
-createSetting('MaxHouse', 'Max Houses', '', 'value', '50',null,"Core2");
-createSetting('MaxMansion', 'Max Mansions', '', 'value', '50',null,"Core2");
-createSetting('MaxHotel', 'Max Hotels', '', 'value', '50',null,"Core2");
-createSetting('MaxResort', 'Max Resorts', '', 'value', '50',null,"Core2");
+createSetting('MaxScientists', 'Max Scientists', 'Advanced. Cap your scientists. recommend: -1 ("infinite" still controls itself and caps to around 250k under normal situations)', 'value', '-1',null,"Core2");
+createSetting('MaxExplorers', 'Max Explorers', 'Cap your explorers, most of fragments are gained by looting not gathering. recommend: 150', 'value', '150',null,"Core2");
+createSetting('MaxTrainers', 'Max Trainers', 'Advanced. Cap your trainers. recommend: -1', 'value', '-1',null,"Core2");
+createSetting('MaxHut', 'Max Huts', '', 'value', '100',null,"Core2");
+createSetting('MaxHouse', 'Max Houses', '', 'value', '100',null,"Core2");
+createSetting('MaxMansion', 'Max Mansions', '', 'value', '100',null,"Core2");
+createSetting('MaxHotel', 'Max Hotels', '', 'value', '100',null,"Core2");
+createSetting('MaxResort', 'Max Resorts', '', 'value', '100',null,"Core2");
 createSetting('MaxGateway', 'Max Gateways', 'WARNING: Not recommended to raise above 25', 'value', '25',null,"Core2");
 createSetting('MaxWormhole', 'Max Wormholes', 'WARNING: Wormholes cost helium! Values below 0 do nothing.', 'value', '0',null,"Core2");
-createSetting('MaxCollector', 'Max Collectors', '', 'value', '-1',null,"Core2");
+createSetting('MaxCollector', 'Max Collectors', 'recommend: -1', 'value', '-1',null,"Core2");
 createSetting('FirstGigastation', 'First Gigastation', 'How many warpstations to buy before your first gigastation', 'value', '20',null,"Core2");
-createSetting('DeltaGigastation', 'Delta Gigastation', 'How many extra warpstations to buy for each gigastation. Supports fractional values. For example 2.5 will buy +2/+3/+2/+3...', 'value', '2',null,"Core2");
-createSetting('MaxGym', 'Max Gyms', '', 'value', '-1',null,"Core2");
-createSetting('MaxTribute', 'Max Tributes', '', 'value', '-1',null,"Core2");
-createSetting('MaxNursery', 'Max Nurseries', '', 'value', '-1',null,"Core2");
+createSetting('DeltaGigastation', 'Delta Gigastation', 'How many extra warpstations to buy for each gigastation. Supports decimal values. For example 2.5 will buy +2/+3/+2/+3...', 'value', '2',null,"Core2");
+createSetting('MaxGym', 'Max Gyms', 'Advanced. recommend: -1', 'value', '-1',null,"Core2");
+createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1',null,"Core2");
+createSetting('MaxNursery', 'Max Nurseries', 'Advanced. recommend: -1', 'value', '-1',null,"Core2");
 
 //advanced settings
 createSetting('LimitEquipment', 'Limit Equipment', 'Limit levels of equipment bought to:(level 11 - the prestige level). At or Above Prestige X (10), your equipment will remain at level 1. In other words, do not level equipment after ~level ~51, and only buy Prestiges. CAUTION: may reduce He/hr performance in many cases.', 'boolean', null, null, 'Core2');

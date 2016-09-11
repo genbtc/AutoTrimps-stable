@@ -344,7 +344,7 @@ function setScienceNeeded() {
     for (var upgrade in upgradeList) {
         upgrade = upgradeList[upgrade];
         if (game.upgrades[upgrade].allowed > game.upgrades[upgrade].done) { //If the upgrade is available
-            if (game.global.world == 1 && game.global.totalHeliumEarned<=100 && upgrade.startsWith("Speed")) continue;  //skip speed upgrades on fresh game until level 2
+            if (game.global.world == 1 && game.global.totalHeliumEarned<=300 && upgrade.startsWith("Speed")) continue;  //skip speed upgrades on fresh game until level 2
             scienceNeeded += getScienceCostToUpgrade(upgrade);
         }
     }
@@ -1306,7 +1306,7 @@ function buyJobs() {
     }
     
     //FRESH GAME LEVEL 1 CODE
-    if (game.global.world == 1 && game.global.totalHeliumEarned<=100){
+    if (game.global.world == 1 && game.global.totalHeliumEarned<=300){
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9){
             if (game.resources.food.owned > 5 && freeWorkers > 0){
                 if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned)
@@ -1331,7 +1331,7 @@ function buyJobs() {
             if (game.jobs.Scientist.owned < buyScientists && game.resources.trimps.owned > game.resources.trimps.realMax() * 0.1){
                 var toBuy = buyScientists-game.jobs.Scientist.owned;
                 var canBuy = Math.floor(trimps.owned - trimps.employed);
-                if(buyScientists > 0 && freeWorkers > 0)
+                if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
                     safeBuyJob('Scientist',toBuy <= canBuy ? toBuy : canBuy);
             }
             else
@@ -1383,12 +1383,9 @@ function buyJobs() {
         //if earlier in the game, buy a small amount of scientists
         if (game.jobs.Farmer.owned < stopScientistsatFarmers && !breedFire) {
             var buyScientists = Math.floor((scientistRatio / totalRatio * totalDistributableWorkers) - game.jobs.Scientist.owned);
-            //bandaid to prevent situation where 1 scientist is bought, causing floor calculation to drop by 1, making next calculation -1 and entering hiring/firing loop
-            //proper fix is including scientists in totalDistributableWorkers and the scientist ratio in the total ratio, but then it waits for 4 jobs
-            if(buyScientists > 0 && freeWorkers > 0) safeBuyJob('Scientist', buyScientists);
+            if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
+                safeBuyJob('Scientist',buyScientists);
         }
-        //once over 250k farmers, fire our scientists and rely on manual gathering of science
-        //else if (game.jobs.Scientist.owned > 0) safeBuyJob('Scientist', game.jobs.Scientist.owned * -1);
     }
     //Buy Farmers:
     if(!game.jobs.Farmer.locked && !breedFire) {
@@ -1576,7 +1573,7 @@ function manualLabor() {
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;    
 
     //FRESH GAME NO HELIUM CODE.
-    if (game.global.world <=3 && game.global.totalHeliumEarned<=100) {
+    if (game.global.world <=3 && game.global.totalHeliumEarned<=300) {
         var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned))
