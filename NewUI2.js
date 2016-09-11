@@ -124,6 +124,7 @@ if (autoTrimpSettings["PrestigeBackup"] === undefined) {
 createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-portal if you have a challenge active, the challenge setting dictates which challenge it will select for the next run. All challenge settings will portal right after the challenge ends, regardless. Helium Per Hour portals at cell 1 of the first level where your He/Hr went down even slightly compared to the current runs Best He/Hr. Take note, there is a Buffer option in the genBTC settings, which is like a grace percentage of how low it can dip without triggering.  CAUTION: Selecting He/hr may immediately portal you if its lower.', 'dropdown', 'Off', ['Off', 'Helium Per Hour', 'Balance', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted', 'Custom'],"Core");
 createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead','Corrupted'],"Core");
 createSetting('CustomAutoPortal', 'Custom Portal', 'Automatically portal AFTER clearing this level.(ie: setting to 200 would portal when you first reach level 201)', 'value', '200',null, "Core");
+createSetting('HeHrDontPortalBefore', 'He/Hr Dont Portal Before', 'Do NOT allow Helium per Hour AutoPortal setting to portal BEFORE this level is reached. It is an additional check that prevents drops in helium/hr from triggering autoportal. Set to 0 or -1 to completely disable this check.', 'value', '200',null, "Core");
 createSetting('VoidMaps', 'Void Maps', 'The zone at which you want all your void maps to be cleared (Cell 96).  0 is off', 'value', '0',null,"Core");
 createSetting('RunNewVoids', 'Run New Voids', 'Run new void maps acquired after the set void map zone. Runs them at Cell 95 by default, unless you set a decimal value indicating the cell, like: 187.75  CAUTION: May severely slow you down by trying to do too-high level voidmaps. Use the adjacent RunNewVoidsUntil setting to limit this.', 'boolean', null, null, 'Core');
 createSetting('RunNewVoidsUntil', 'Run New Voids Until', 'Put a cap on what zone new voids will run at, until this zone, inclusive. ', 'value', '-1', null, 'Core');
@@ -615,17 +616,14 @@ function updateCustomButtons() {
     if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour" || autoTrimpSettings.AutoPortal.selected == "Custom") document.getElementById("HeliumHourChallenge").style.display = '';
     else document.getElementById("HeliumHourChallenge").style.display = 'none';
     
+    //do not portal before during He/hr auto portal value
+    if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") document.getElementById("HeHrDontPortalBefore").style.display = '';
+    else document.getElementById("HeHrDontPortalBefore").style.display = 'none';
+        
     //update dropdown selections:
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
-    document.getElementById('CustomAutoPortal').value = autoTrimpSettings.CustomAutoPortal.selected;
     document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
-    
-    //eliminate any prestige toggling due to function prestigeChanging() being called & modifying the internal setting and the line below making the UI setting reflect it .
-    //we want there to be a mismatch between the prestige settings in this case, but i have not figured out all the ramifications of skipping this check.
-    //hopefully nothing breaks.
-    //The check was manually inserted into the function delayStartAgain() in the main script, so it can grab the value at startup, and nothing more. From then on out its allowed to be mismatched, but only the Dynamic Prestige would allow it to be mismatched so thats fine. Sinec reloading the script will load the dynamic value instead of the user's set value, this alone was not ideal, and a way to "back up" the user setting was needed, and as such is now the method being used, as you can see from lines 56-61 in this file and instead, the BACKUP is loaded during the script's initial load.
-    
     //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
 }
 

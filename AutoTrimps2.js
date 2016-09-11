@@ -2017,7 +2017,7 @@ function autoMap() {
         shouldDoSpireMaps = true;
     }
     //Run a single map to get nurseries when blacksmithery is purchased
-    if (game.talents.blacksmith.purchased && game.global.world == 60 && game.global.mapBonus == 0) {
+    if (game.talents.blacksmith.purchased && game.buildings.Nursery.locked && game.global.world == 60 && game.global.mapBonus == 0) {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }
@@ -2404,7 +2404,7 @@ function autoPortal() {
             game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
             if(game.global.world > lastHeliumZone) {
                 lastHeliumZone = game.global.world;
-                if(game.global.world > game.stats.bestHeliumHourThisRun.atZone) {
+                if(game.global.world > game.stats.bestHeliumHourThisRun.atZone && game.global.world >= getPageSetting('HeHrDontPortalBefore')) {
                     var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
                     var myHeliumHr = game.stats.heliumHour.value();
                     var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
