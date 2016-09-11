@@ -287,7 +287,7 @@ function safeBuyJob(jobTitle, amount) {
             game.global.buyAmt = 'Max'; //if we can't afford it, just use 'Max'. -it will always succeed-
             game.global.maxSplit = 1;
         }
-    }   
+    }
     //debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', "*users");
     buyJob(jobTitle, null, true);
     postBuy();
@@ -1570,7 +1570,7 @@ function autoLevelEquipment() {
 //"Auto Gather/Build"
 function manualLabor() {
     var ManualGather = 'metal';
-    var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;    
+    var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=300) {
@@ -2424,7 +2424,7 @@ function autoPortal() {
                 else
                     doPortal();
             }
-            break; 
+            break;
         case "Balance":
         case "Electricity":
         case "Crushed":
@@ -2557,6 +2557,8 @@ function manageGenes() {
     //if a new fight group is available and anticipation stacks aren't 30, abandon and grab a new group
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     if (game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime() >= targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
+        if (game.global.mapsActive && getCurrentMapObject().location == "Void")
+            return;
         if (!game.global.preMapsActive) {
             mapsClicked(); 
             //force abandon army
