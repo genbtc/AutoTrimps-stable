@@ -913,7 +913,7 @@ function() {
 				amt = scaleToCurrentMap(amt);
 				addResCheckMax(item, amt);
 				filterLoot(item, amt, true);
-				message("That Jestimp gave you " + prettify(amt) + " " + item + "!", "Loot", "*dice", "exotic");
+				message("That Jestimp gave you " + prettify(amt) + " " + item + "!", "Loot", "*dice", "exotic", "exotic");
 				game.unlocks.impCount.Jestimp++;
 };
 
@@ -934,7 +934,7 @@ function () {
 					else if (x == (elligible.length - 2)) cMessage += ", and ";
 					else cMessage += ", ";
 				}
-				message(cMessage, "Loot", "hourglass", "exotic");
+				message(cMessage, "Loot", "hourglass", "exotic", "exotic");
 				game.unlocks.impCount.Chronoimp++;
 };
 
