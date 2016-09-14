@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.4-genbtc-8-19-2016+NewUI2
+// @version      2.1.2.5-genbtc-9-9-2016+NewUI2
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -11,7 +11,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.4-genbtc-8-19-2016+NewUI2';
+var ATversion = '2.1.2.5-genbtc-9-9-2016+NewUI2';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -1001,6 +1001,9 @@ function safeBuyBuilding(building) {
     for (var b in game.global.buildingsQueue) {
         if (game.global.buildingsQueue[b].includes(building)) return false;
     }
+    //check if building is locked, or else it can buy 'phantom' buildings and is not exactly safe.
+    if (game.buildings[building].locked)
+        return false;    
     preBuy();
     game.global.buyAmt = 1;
     if (!canAffordBuilding(building)) {
@@ -1008,8 +1011,8 @@ function safeBuyBuilding(building) {
         return false;
     }
     game.global.firing = false;
-    //avoid slow building from clamping
-    //buy as many warpstations as we can afford
+    //buy max warpstations when we own <2 (ie: after a new giga)
+    //thereafter, buy only 1 warpstation
     if(building == 'Warpstation'){
         if (game.buildings.Warpstation.owned < 2) {
             game.global.buyAmt = 'Max';
@@ -1111,7 +1114,6 @@ function buyBuildings() {
 
     //if housing is highlighted
     if (bestBuilding !== null) {
-        //insert gigastation logic here ###############
         if (!safeBuyBuilding(bestBuilding)) {
             buyFoodEfficientHousing();
         }
