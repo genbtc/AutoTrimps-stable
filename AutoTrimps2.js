@@ -2011,7 +2011,7 @@ function autoMap() {
     } */
     //Farm X Minutes Before Spire:
     var needFarmSpire = (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire'));
-    if (game.global.world == 200 && game.global.spireActive && needFarmSpire) {
+    if (game.global.world == 200 && needFarmSpire) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
