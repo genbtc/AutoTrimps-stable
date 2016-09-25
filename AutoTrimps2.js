@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.5a-genbtc-9-24-2016+NewUI2
+// @version      2.1.2.5-genbtc-9-9-2016+NewUI2
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -11,7 +11,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.5a-genbtc-9-24-2016+NewUI2';
+var ATversion = '2.1.2.5-genbtc-9-9-2016+NewUI2';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2005,13 +2005,13 @@ function autoMap() {
     }
     var shouldDoSpireMaps = false;
     //Get 200% map bonus before attempting Spire
-/*     if(game.global.world == 200 && game.global.mapBonus < 9 ) {
+    if(game.global.world == 200 && game.global.mapBonus < 9 ) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
-    } */
+    }
     //Farm X Minutes Before Spire:
-    var needFarmSpire = (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire'));
-    if (game.global.world == 200 && needFarmSpire) {
+    var needFarmSpire = (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire')) && game.global.mapBonus == 10;
+    if (game.global.world == 200 && game.global.spireActive && needFarmSpire) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
