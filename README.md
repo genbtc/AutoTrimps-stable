@@ -6,18 +6,23 @@ Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestio
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
+**Click here to install: https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js **
 
 Option 1: Install Tampermonkey (Chrome) or Greasemonkey (Firefox)
 
 Chrome/TamperMonkey Instructions:
-- Open the Tampermonkey dashboard and go to utilities – in the URL box paste https://raw.githubusercontent.com/genbtc/AutoTrimps/gh-pages/user.js and import
-- Alternatively, paste the contents of `user.js` into a user script (pay attention, it says user.js - this redirects to AutoTrimps2.js)
+- Open the Tampermonkey dashboard and go to utilities – in the URL box paste https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js and click IMPORT
+- Alternatively, paste the contents of `.user.js` into a user script (pay attention, it says .user.js - this redirects to AutoTrimps2.js)
 - The script should automatically load everytime you go to https://trimps.github.io or the game on Kongregate
 - You will know you have the script loaded if you see the Automation and Graphs buttons in the game menu at the bottom
 - DO NOT PASTE THE FULL 2000+ line contents of the script into tampermonkey! It will not work properly!
-FireFox/GreaseMonkey instructions not available, please write some for us.
+- The .user.js file is a "stub" or "loader" that references the AutoTrimps2.js file which is where the actual script is located.
+- The purpose of .user.js is so that you don't have to rely on tampermonkey's update functionality - instead it will automaticaly download the updated copy from the URL provided everytime its loaded.
+FireFox/GreaseMonkey instructions: 
+- Greasemonkey identifies userscripts by visiting a URL that ends with ".user.js" in them:
+- Visit this URL, and Agree to install the userscript:  https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js
 
-Option 2: Via a Bookmark (does not work with Kongregate)
+Option 2: Via a Bookmark (does not work with Kongregate - maybe it does now that I added an include kongregate line to the file)
 - Create new bookmark and set its target to:
 ```js
 javascript:with(document)(head.appendChild(createElement('script')).src='https://genbtc.github.io/AutoTrimps/AutoTrimps2.js')._

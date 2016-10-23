@@ -5,6 +5,7 @@
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
+// @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
 
