@@ -6,11 +6,12 @@ Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestio
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
-**Click here to install: https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js **
 
-Option 1: Install Tampermonkey (Chrome) or Greasemonkey (Firefox)
+***Option 1***: Install Tampermonkey (Chrome) or Greasemonkey (Firefox)
 
-Chrome/TamperMonkey Instructions:
+**EASY INSTALL click here: https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js**
+
+Overly detailed Chrome/TamperMonkey Instructions:
 - Open the Tampermonkey dashboard and go to utilities – in the URL box paste https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js and click IMPORT
 - Alternatively, paste the contents of `.user.js` into a user script (pay attention, it says .user.js - this redirects to AutoTrimps2.js)
 - The script should automatically load everytime you go to https://trimps.github.io or the game on Kongregate
@@ -22,14 +23,14 @@ FireFox/GreaseMonkey instructions:
 - Greasemonkey identifies userscripts by visiting a URL that ends with ".user.js" in them:
 - Visit this URL, and Agree to install the userscript:  https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js
 
-Option 2: Via a Bookmark (does not work with Kongregate - maybe it does now that I added an include kongregate line to the file)
+***Option 2***: Via a Bookmark (does not work with Kongregate - maybe it does now that I added an include kongregate line to the file)
 - Create new bookmark and set its target to:
 ```js
 javascript:with(document)(head.appendChild(createElement('script')).src='https://genbtc.github.io/AutoTrimps/AutoTrimps2.js')._
 ```
 - This bookmark button has to be clicked manually after you go to https://trimps.github.io
 
-Option 3: Paste into console
+***Option 3***: Paste into console (last resort for debugging, dont do this)
 
 Chrome Instructions
 - You can copy and paste the entire contents of AutoTrimps2.js into the Dev Console (F12 in chrome) of the page. (make sure the dropdown box to the left of "Preserve Log" is set to "top" - or "mainFrame (indexKong.html)" for kongregate.
