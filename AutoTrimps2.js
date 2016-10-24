@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.5-genbtc-9-9-2016+NewUI2
+// @version      2.1.2.6-genbtc-10-24-2016
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.5-genbtc-9-9-2016+NewUI2';
+var ATversion = '2.1.2.6-genbtc-10-24-2016';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2683,8 +2683,13 @@ function betterAutoFight() {
         fightManual();
     }
     //Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time
-    if (!game.global.fighting && getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value && game.global.soldierHealth == 0)
-        fightManual();
+    if (!game.global.fighting) {
+        if (getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value && game.global.soldierHealth == 0)
+            fightManual();
+        //AutoFight will now send Trimps to fight if it takes less than 0.1 seconds to breed a new group of soldiers, even if the population limit hasn't been reached yet
+        else if (game.resources.trimps.owned >= game.resources.trimps.realMax() || getBreedTime() <= 0.1)
+            fightManual();
+    }
 }
 
 //Exits the Spire after completing the specified cell.
