@@ -365,6 +365,14 @@ function setColor(tmp) {
     return tmp;
 }
 
+function getTotalDarkEssenceCount() {
+	var result = game.global.essence;
+	for (var i=0; i < countPurchasedTalents(); i++) {
+		result += Math.floor(10 * Math.pow(3, i));
+	}
+	return result;
+}
+
 function pushData() {
     console.log('Starting Zone ' + game.global.world);
     allSaveData.push({
@@ -382,7 +390,7 @@ function pushData() {
         trimps: game.resources.trimps.realMax(),
         coord: game.upgrades.Coordination.done,
         lastwarp: game.global.lastWarp,
-        essence: game.global.essence + Math.floor(10 * Math.pow(3, (countPurchasedTalents()-1)))
+        essence: getTotalDarkEssenceCount()
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
