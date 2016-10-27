@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 600px"><div id="graph" style="margin-bottom: 15px;margin-top: 10px; height: 540px;"></div><div id="graphFooter" style="height: 50px;"></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour','HeliumPerHour Delta', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained'];
+var graphList = ['HeliumPerHour','HeliumPerHour Delta', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -365,6 +365,14 @@ function setColor(tmp) {
     return tmp;
 }
 
+function getTotalDarkEssenceCount() {
+	var result = game.global.essence;
+	for (var i=0; i < countPurchasedTalents(); i++) {
+		result += Math.floor(10 * Math.pow(3, i));
+	}
+	return result;
+}
+
 function pushData() {
     console.log('Starting Zone ' + game.global.world);
     allSaveData.push({
@@ -381,7 +389,8 @@ function pushData() {
         gigasleft: game.upgrades.Gigastation.allowed - game.upgrades.Gigastation.done,
         trimps: game.resources.trimps.realMax(),
         coord: game.upgrades.Coordination.done,
-        lastwarp: game.global.lastWarp
+        lastwarp: game.global.lastWarp,
+        essence: getTotalDarkEssenceCount()
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
@@ -852,7 +861,65 @@ function setGraphData(graph) {
             xTitle = 'Zone';
             yTitle = 'Cumulative Number of Trimps';
             yType = 'Linear';
-            break;                        
+            break;                       
+        case 'DarkEssence':
+            var currentPortal = -1;
+            var startEssence = 0;
+            graphData = [];
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    if(allSaveData[i].world == 1)
+                        startEssence = allSaveData[i].essence;
+                }
+                graphData[graphData.length - 1].data.push(allSaveData[i].essence - startEssence);
+            }
+            title = 'Dark Essence';
+            xTitle = 'Zone';
+            yTitle = 'Dark Essence';
+            yType = 'Linear';
+            break;
+            
+        case 'DarkEssencePerHour':
+            var currentPortal = -1;
+            var currentZone = -1;
+            var startEssence = 0;
+            graphData = [];
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    if(allSaveData[i].world == 1 && currentZone != -1 )
+                        graphData[graphData.length -1].data.push(0);
+                        startEssence = allSaveData[i].essence;
+                    
+                    if(currentZone == -1 || allSaveData[i].world != 1) {
+                        var loop = allSaveData[i].world;
+                        while (loop > 0) {
+                            graphData[graphData.length -1].data.push(0);
+                            loop--;
+                        }
+                    }
+                }
+                if(currentZone < allSaveData[i].world && currentZone != -1) {
+                    graphData[graphData.length - 1].data.push(Math.floor((allSaveData[i].essence - startEssence) / ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000)));
+                }
+            
+                currentZone = allSaveData[i].world;
+                
+            }
+            title = 'Dark Essence/Hour (Cumulative)';
+            xTitle = 'Zone';
+            yTitle = 'Dark Essence/Hour';
+            yType = 'Linear';
+            break; 
             
     }
     if (oldData != JSON.stringify(graphData)) {
