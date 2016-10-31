@@ -28,10 +28,10 @@ var baseDamage = 0;
 var baseBlock = 0;
 var baseHealth = 0;
 
-var preBuyAmt = game.global.buyAmt;
-var preBuyFiring = game.global.firing;
-var preBuyTooltip = game.global.lockTooltip;
-var preBuymaxSplit = game.global.maxSplit;
+var preBuyAmt;
+var preBuyFiring;
+var preBuyTooltip;
+var preBuymaxSplit;
 
 ////////////////////////////////////////
 //Magic Numbers/////////////////////////
@@ -300,7 +300,7 @@ function safeBuyJob(jobTitle, amount) {
         }
     }
     //debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', "*users");
-    buyJob(jobTitle, null, true);
+    buyJob(jobTitle, true, true);
     postBuy();
     return true;
 }
@@ -1368,7 +1368,7 @@ function buyJobs() {
             game.global.buyAmt = 1;
             if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-                if (freeWorkers <= 0) safeBuyJob('Farmer', -1);
+                if (freeWorkers <= 0) safeBuyJob('Farmer', -2);
                 safeBuyJob('Trainer');
             }
         }
@@ -1378,7 +1378,7 @@ function buyJobs() {
         game.global.buyAmt = 1;
         if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers <= 0) safeBuyJob('Farmer', -1);
+            if (freeWorkers <= 0) safeBuyJob('Farmer', -2);
             safeBuyJob('Trainer');
         }
     }
@@ -1386,7 +1386,7 @@ function buyJobs() {
         game.global.buyAmt = 1;
         if (canAffordJob('Explorer', false) && !game.jobs.Explorer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers <= 0) safeBuyJob('Farmer', -1);
+            if (freeWorkers <= 0) safeBuyJob('Farmer', -2);
             safeBuyJob('Explorer');
         }
     }
@@ -2542,10 +2542,10 @@ function manageGenes() {
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
         if (fWorkers < 1 && canAffordJob('Geneticist', false)) {
-            safeBuyJob('Farmer', -1);
+            safeBuyJob('Farmer', -2);
         }
         //hire a geneticist
-        safeBuyJob('Geneticist');
+        safeBuyJob('Geneticist',1);
     }
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
