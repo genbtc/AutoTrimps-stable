@@ -1316,7 +1316,7 @@ function safeFireFarmers() {
     if (!Number.isSafeInteger(oldFarmers)){
         while (oldFarmers == game.jobs.Farmer.owned) {
             safeBuyJob('Farmer', -1*x);    //fire increasingly more workers until it does something to invalidate the while loop
-            x+=1;
+            x*=2;
         }
     }
     else
