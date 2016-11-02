@@ -1298,7 +1298,7 @@ function buyStorage() {
             // debug('Buying ' + B + '(' + Bs[B] + ') at ' + Math.floor(game.resources[Bs[B]].owned / (game.resources[Bs[B]].max * packMod * 0.99) * 100) + '%');
             if (canAffordBuilding(B) && game.triggers[B].done) {
                 safeBuyBuilding(B);
-                if (getPageSetting('ManualGather')) setGather('buildings');
+                if (getPageSetting('ManualGather2')) setGather('buildings');
             }
         }
     }
@@ -1616,24 +1616,24 @@ function manualLabor() {
     else if (breedingTrimps < 5 && game.buildings.Trap.owned > 0) {
         setGather('trimps');
     }
-    else if (game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') setGather('science');
-        //if we have more than 2 buildings in queue, or (our modifier is real fast and trapstorm is off), build                      
+    else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') 
+        setGather('science');
+    //if we have more than 2 buildings in queue, or (our modifier is real fast and trapstorm is off), build                      
     else if (!game.talents.foreman2.purchased && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 1000 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) {
-        // debug('Gathering buildings??');
         setGather('buildings');
     }
-        //if trapstorm is off (likely we havent gotten it yet, the game is still early, buildings take a while to build ), then Prioritize Storage buildings when they hit the front of the queue (should really be happening anyway since the queue should be >2(fits the clause above this), but in case they are the only object in the queue.)
-    else if (!game.global.trapBuildToggled && (game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Forge.1')){
+    //if trapstorm is off (likely we havent gotten it yet, the game is still early, buildings take a while to build ), then Prioritize Storage buildings when they hit the front of the queue (should really be happening anyway since the queue should be >2(fits the clause above this), but in case they are the only object in the queue.)
+    else if (!game.global.trapBuildToggled && (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1')){
         setGather('buildings');
     }
-        //if we have some upgrades sitting around which we don't have enough science for, gather science
+    //if we have some upgrades sitting around which we don't have enough science for, gather science
     else if (game.resources.science.owned < scienceNeeded && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
         // debug('Science needed ' + scienceNeeded);
-        if (getPlayerModifier() < getPerSecBeforeManual('Scientist') && game.global.turkimpTimer > 0){
-            //if manual is less than half of science production switch on turkimp
+        if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && game.global.turkimpTimer > 0)||getPageSetting('ManualGather2') == 2){
+            //if manual is less than science production, switch on turkimp
             setGather('metal');
         }
-        else {
+        else if (getPageSetting('ManualGather2') != 2){
             setGather('science');
         }
     }
@@ -1646,7 +1646,6 @@ function manualLabor() {
         else if (game.buildings.Trap.owned > 0)
             setGather('trimps');
     }
-
     else {
         var manualResourceList = {
             'food': 'Farmer',
@@ -1687,14 +1686,13 @@ function manualLabor() {
         } else if (game.global.turkimpTimer > 0) {
             //debug('Set gather ManualGather');
             setGather('metal');
-        } else  if (game.resources.science.owned < getPsString('science', true) * 60 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden' && game.global.turkimpTimer < 1 && haveWorkers) {
+        } else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < getPsString('science', true) * 60 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden' && game.global.turkimpTimer < 1 && haveWorkers) {
             setGather('science');
         }
         else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < 10000)
             setGather('buildings');
-        else if (document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
-            setGather('science');
-        
+        else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
+            setGather('science');        
     }
 }
 
@@ -2834,7 +2832,7 @@ function mainLoop() {
     if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"    
-    if (getPageSetting('ManualGather')) manualLabor();  //"Auto Gather/Build"
+    if (getPageSetting('ManualGather2')) manualLabor();  //"Auto Gather/Build"
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"    
     if (getPageSetting('GeneticistTimer') >= 0) manageGenes(); //"Geneticist Timer" / "Manage Breed Timer"
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 60)

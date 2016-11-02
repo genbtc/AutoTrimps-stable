@@ -94,7 +94,7 @@ document.getElementsByClassName("tablinks")[0].className += " active";
 
 //START MAKING BUTTONS IN THE TABS:
 //CORE:
-createSetting('ManualGather', 'Auto Gather/Build', 'Automatically gathers resources (and uses Turkimp on metal). Auto speed-builds your build queue and auto-researches science on demand.', 'boolean',true,null,"Core");
+createSetting('ManualGather2', ['Gather/Build OFF','Auto Gather/Build','Science Research OFF'], 'Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research', 'multitoggle',1,null,"Core");
 createSetting('AutoFight', 'Better Auto Fight', 'Will automatically handle fighting. It gives you autofight before you get the Battle upgrade in Zone 1.. .CAUTION: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'boolean',true,null,"Core");
 createSetting('AutoStance', 'Auto Stance', 'Automatically swap stances to avoid death.', 'boolean',true,null,"Core");
 createSetting('TrapTrimps', 'Trap Trimps', 'Automatically trap trimps when needed, including building traps.', 'boolean',true,null,"Core");
