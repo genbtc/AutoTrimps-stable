@@ -136,11 +136,11 @@ createSetting('MinerRatio', 'Miner Ratio', '', 'value', '1',null,"Core2");
 createSetting('MaxScientists', 'Max Scientists', 'Advanced. Cap your scientists. recommend: -1 ("infinite" still controls itself and caps to around 250k under normal situations)', 'value', '-1',null,"Core2");
 createSetting('MaxExplorers', 'Max Explorers', 'Cap your explorers, most of fragments are gained by looting not gathering. recommend: 150', 'value', '150',null,"Core2");
 createSetting('MaxTrainers', 'Max Trainers', 'Advanced. Cap your trainers. recommend: -1', 'value', '-1',null,"Core2");
-createSetting('MaxHut', 'Max Huts', '', 'value', '100',null,"Core2");
-createSetting('MaxHouse', 'Max Houses', '', 'value', '100',null,"Core2");
-createSetting('MaxMansion', 'Max Mansions', '', 'value', '100',null,"Core2");
-createSetting('MaxHotel', 'Max Hotels', '', 'value', '100',null,"Core2");
-createSetting('MaxResort', 'Max Resorts', '', 'value', '100',null,"Core2");
+createSetting('MaxHut', 'Max Huts', 'Huts', 'value', '100',null,"Core2");
+createSetting('MaxHouse', 'Max Houses', 'Houses', 'value', '100',null,"Core2");
+createSetting('MaxMansion', 'Max Mansions', 'Mansions', 'value', '100',null,"Core2");
+createSetting('MaxHotel', 'Max Hotels', 'Hotels', 'value', '100',null,"Core2");
+createSetting('MaxResort', 'Max Resorts', 'Resorts', 'value', '100',null,"Core2");
 createSetting('MaxGateway', 'Max Gateways', 'WARNING: Not recommended to raise above 25', 'value', '25',null,"Core2");
 createSetting('MaxWormhole', 'Max Wormholes', 'WARNING: Wormholes cost helium! Values below 0 do nothing.', 'value', '0',null,"Core2");
 createSetting('MaxCollector', 'Max Collectors', 'recommend: -1', 'value', '-1',null,"Core2");
@@ -152,10 +152,10 @@ createSetting('MaxNursery', 'Max Nurseries', 'Advanced. recommend: -1', 'value',
 
 //advanced settings
 createSetting('LimitEquipment', 'Limit Equipment', 'Limit levels of equipment bought to:(level 11 - the prestige level). At or Above Prestige X (10), your equipment will remain at level 1. In other words, do not level equipment after ~level ~51, and only buy Prestiges. CAUTION: may reduce He/hr performance in many cases.', 'boolean', null, null, 'Core2');
-createSetting('BreedFire', 'Breed Fire', 'Fire Lumberjacks and Miners to speed up breeding when needed. (Not geneticists).', 'boolean', null, null, 'Core2');
+createSetting('BreedFire', 'Breed Fire', 'OPTIONAL. Fire Lumberjacks and Miners to speed up breeding when needed. Basically trades wood/metal to cut the wait between deaths down. Disclaimer: May heavily negatively impact wood-gathering. ', 'boolean', null, null, 'Core2');
 createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'Core2');
 createSetting('DisableFarm', 'Disable Farming', 'Disables the farming section of the automaps algorithm. This will cause it to always return to the zone upon reaching 10 map stacks. TROUBLESHOOTING: Save and Refresh when you toggle this, if necessary. INFO: The new Trimps 3.22 map-buttons greatly eliminate the usefulness of this. ALSO: NO LONGER DISABLES SIPHONOLOGY. ', 'boolean', null, null, 'Core2');
-createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps (not including the graphs module)', 'boolean', null, null, 'pause');
+createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps Script (not including the graphs module)', 'boolean', null, null, 'Core2');
 
 //genBTC advanced settings - option buttons.
 createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genBTC');
@@ -392,15 +392,6 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
         btn.textContent = name;
-        //special case for Pause button.
-        if (container == 'pause'){
-            btn.setAttribute('style', 'inline-block');
-            btnParent.style.float = 'right';
-            btnParent.style.marginBottom = '';
-            btnParent.style.marginRight = '2vw';
-            btnParent.appendChild(btn);
-            container = "Core2";
-        }
         btnParent.appendChild(btn);
         if(container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);        
@@ -626,6 +617,10 @@ function updateCustomButtons() {
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
     //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
+    
+    //stop disable farming from needing a refresh
+    if(getPageSetting('DisableFarm'))
+        shouldFarm = false;
 }
 
 
