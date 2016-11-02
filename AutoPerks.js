@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoPerks
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1-beta-10-31-2016+hider
+// @version      1.0.2-beta-10-31-2016+hiders
 // @description  Trimps Automatic Perk Calculator
 // @author       zxv, genBTC
 // @include      *trimps.github.io*
@@ -27,7 +27,7 @@ btnParent.setAttribute('style', 'display: inline-block; margin-left: 1vw; margin
 var allocatorBtn1 = document.createElement("DIV");
 allocatorBtn1.id = 'allocatorBTN1';
 allocatorBtn1.setAttribute('class', 'settingsBtn settingBtntrue');
-allocatorBtn1.setAttribute('onclick', 'AutoPerks.parseData()');
+allocatorBtn1.setAttribute('onclick', 'AutoPerks.clickAllocate()');
 allocatorBtn1.textContent = 'Allocate Perks';
 btnParent.appendChild(allocatorBtn1);
 buttonbar.appendChild(btnParent);
@@ -94,11 +94,9 @@ html += "<option id='zxvNEWPreset'>ZXV (new)</option>"
 html += "<option id='TruthPreset'>Truth</option>"
 html += "<option id='nSheetzPreset'>nSheetz</option>"
 html += "<option id='nSheetzNEWPreset'>nSheetz(new)</option>"
-
 html += "<option id='HiderHe/hr'>Hider (He/hr)</option>"
 html += "<option id='HiderBalance'>Hider (Balance)</option>"
 html += "<option id='HiderMore'>Hider More (More Zones)</option>"
-
 html += "<option id='customPreset'>Custom</option></select>"
 ratioPreset.innerHTML = html;
 ratioPreset.selectedIndex = 0; // First element is zxv (default) ratio.
@@ -112,55 +110,55 @@ buttonbar.appendChild(customRatios);
 //BEGIN AUTOPERKS SCRIPT CODE:>
 
 AutoPerks.saveCustomRatios = function() {
-    var perks = document.getElementsByClassName('perkRatios');
+    var perkRatioBoxes = document.getElementsByClassName('perkRatios');
     var customRatios = [];
-    for(var i = 0; i < perks.length; i++) {
-        customRatios.push({'id':perks[i].id,'value':parseFloat(perks[i].value)});
+    for(var i = 0; i < perkRatioBoxes.length; i++) {
+        customRatios.push({'id':perkRatioBoxes[i].id,'value':parseFloat(perkRatioBoxes[i].value)});
     }
     localStorage.setItem('AutoPerksCustomRatios', JSON.stringify(customRatios));
 }
 
-//sets the ratioboxes with the default ratios embedded in the script when perks are instanciated. hardcoded @ lines 333-360 (ish)
-//executed manually at the very last line of this file.
+//sets the ratioboxes with the default ratios embedded in the script when perks are instanciated. hardcoded @ lines 461-488 (ish)
+//executed manually at the very last line of this file. (and everytime the ratio-preset dropdown-selector is changed)
 //loads custom ratio selections from localstorage if applicable
 AutoPerks.setDefaultRatios = function() {
-    var perks = document.getElementsByClassName("perkRatios");
+    var perkRatioBoxes = document.getElementsByClassName("perkRatios");
     var ratioSet = document.getElementById("ratioPreset").selectedIndex;
     var currentPerk;
-    for(var i = 0; i < perks.length; i++) {
-        currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
-        perks[i].value = currentPerk.value[ratioSet];
+    for(var i = 0; i < perkRatioBoxes.length; i++) {
+        currentPerk = AutoPerks.getPerkByName(perkRatioBoxes[i].id.substring(0, perkRatioBoxes[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+        perkRatioBoxes[i].value = currentPerk.value[ratioSet];
     }
     //grab custom ratios if saved.
     if (ratioSet == document.getElementById("ratioPreset").length-1) {
-        var tmp = JSON.parse(localStorage.getItem('AutoPerksCustomRatios'));
+        var tmp = JSON.parse(localStorage.getItem('AutoperkRatioBoxesCustomRatios'));
         if (tmp !== null) 
             customRatios = tmp;
         else {
-            // If "custom" is manually selected, and no file was found, start by setting all perks to 0.
-            for(var i = 0; i < perks.length; i++) {
-                perks[i].value = 0;     //initialize to 0.
+            // If "custom" is manually selected, and no file was found, start by setting all perkRatioBoxes to 0.
+            for(var i = 0; i < perkRatioBoxes.length; i++) {
+                perkRatioBoxes[i].value = 0;     //initialize to 0.
             }
             return; //then exit.
         }
         //if we have ratios in the storage file, load them
-        for(var i = 0; i < perks.length; i++) {
+        for(var i = 0; i < perkRatioBoxes.length; i++) {
             //do a quick sanity check (order)
-            if (customRatios[i].id != perks[i].id) continue;
-            currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
-            perks[i].value = customRatios[i].value;
+            if (customRatios[i].id != perkRatioBoxes[i].id) continue;
+            currentPerk = AutoPerks.getPerkByName(perkRatioBoxes[i].id.substring(0, perkRatioBoxes[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+            perkRatioBoxes[i].value = customRatios[i].value;
         }        
     }
-    localStorage.setItem('AutoPerksSelectedRatioPresetID', ratioSet);
+    localStorage.setItem('AutoperkRatioBoxesSelectedRatioPresetID', ratioSet);
 }
 
 //updates the internal perk variables with values grabbed from the custom ratio input boxes that the user may have changed.
 AutoPerks.setNewRatios = function() {
-    var perks = document.getElementsByClassName('perkRatios');
+    var perkRatioBoxes = document.getElementsByClassName('perkRatios');
     var currentPerk;
-    for(var i = 0; i < perks.length; i++) {
-        currentPerk = AutoPerks.getPerkByName(perks[i].id.substring(0, perks[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
-        currentPerk.updatedValue = parseFloat(perks[i].value);
+    for(var i = 0; i < perkRatioBoxes.length; i++) {
+        currentPerk = AutoPerks.getPerkByName(perkRatioBoxes[i].id.substring(0, perkRatioBoxes[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
+        currentPerk.updatedValue = parseFloat(perkRatioBoxes[i].value);
     }
 
     toughness.updatedValue = resilience.updatedValue / 2;
@@ -169,23 +167,26 @@ AutoPerks.setNewRatios = function() {
     for(var i in tierIIPerks) tierIIPerks[i].updatedValue = tierIIPerks[i].parent.updatedValue / tierIIPerks[i].relativeIncrease;
 }
 
-//get ready
+//get ready / initialize
 AutoPerks.initialise = function() {
     AutoPerks.setperksByName();
+    /* did nothing oddly enough
     var perks = AutoPerks.getOwnedPerks();  
     for(var i in perks) {
         perks[i].level = 0;
         perks[i].spent = 0;
         perks[i].updatedValue = perks[i].value;
     }
+    */
     //grab new ratios if any
     AutoPerks.setNewRatios();
-    //save custom ratios if set.
+    //save custom ratios if "custom" is selected
     if (document.getElementById("ratioPreset").selectedIndex == document.getElementById("ratioPreset").length-1)
         AutoPerks.saveCustomRatios();
 }
 
-AutoPerks.parseData = function() {
+//Main function (green "Allocate Perks" button):
+AutoPerks.clickAllocate = function() {
     AutoPerks.initialise(); // Reset all fixed perks to 0 and grab new ratios if any
 
     var preSpentHe = 0;
@@ -212,7 +213,7 @@ AutoPerks.parseData = function() {
     AutoPerks.applyCalculations(perks);        
 }
 
-//NEW way: Get accurate count of helium (not able to be wrong)
+//NEW way: Get accurate count of helium (calcs it like the game does)
 AutoPerks.getHelium = function() {
     //determines if we are in the portal screen or the perk screen.
     var respecMax = (game.global.viewingUpgrades) ? game.global.heliumLeftover : game.global.heliumLeftover + game.resources.helium.owned;
@@ -488,36 +489,58 @@ AutoPerks.perkHolder = [siphonology, anticipation, meditation, relentlessness, r
 
 AutoPerks.getTierIIPerks = function() {
     var perks = [];
-    for(var i in AutoPerks.perkHolder)
-        if(AutoPerks.perkHolder[i].type == "linear") perks.push(AutoPerks.perkHolder[i]);
+    for(var i in AutoPerks.perkHolder) {
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var perk = game.portal[name];
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;        
+        if(AutoPerks.perkHolder[i].type == "linear") {
+            perks.push(AutoPerks.perkHolder[i]);
+        }
+    }
     return perks;
 }
 
 AutoPerks.getAllPerks = function() {
     var perks = [];
-    for(var i in AutoPerks.perkHolder) perks.push(AutoPerks.perkHolder[i]);
+    for(var i in AutoPerks.perkHolder) {
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var perk = game.portal[name];
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;        
+        perks.push(AutoPerks.perkHolder[i]);
+    }
     return perks;
 }
 
 AutoPerks.getFixedPerks = function() {
     var perks = [];
-    for(var i in AutoPerks.perkHolder) 
-        if(AutoPerks.perkHolder[i].fixed) perks.push(AutoPerks.perkHolder[i]);
+    for(var i in AutoPerks.perkHolder) {
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var perk = game.portal[name];
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;        
+        if(AutoPerks.perkHolder[i].fixed) {
+            perks.push(AutoPerks.perkHolder[i]);
+        }
+    }
     return perks;
 }
 
 AutoPerks.getVariablePerks = function() {
     var perks = [];
-    for(var i in AutoPerks.perkHolder) 
-        if(!AutoPerks.perkHolder[i].fixed) perks.push(AutoPerks.perkHolder[i]);
+    for(var i in AutoPerks.perkHolder) {
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var perk = game.portal[name];
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;
+        if(!AutoPerks.perkHolder[i].fixed) {
+            perks.push(AutoPerks.perkHolder[i]);
+        }
+    }
     return perks;
 }
 
 //create a 2nd array (perksByName) of the contents of perkHolder, indexed by name (easy access w/ getPerkByName)
 AutoPerks.perksByName = {};
 AutoPerks.getPerkByName = function(name) {
-    name = AutoPerks.lowercaseFirst(name);
-    return AutoPerks.perksByName[name];
+    return AutoPerks.perksByName[AutoPerks.lowercaseFirst(name)];
 }
 AutoPerks.setperksByName = function() {
     for(var i in AutoPerks.perkHolder)
@@ -530,7 +553,7 @@ AutoPerks.getOwnedPerks = function() {
     var perks = [];
     for (var name in game.portal){
         perk = game.portal[name];
-        if(perk.locked) continue;
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;
         perks.push(AutoPerks.getPerkByName(name));
     }
     return perks;
