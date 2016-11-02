@@ -19,7 +19,7 @@ var ul_0 = document.createElement('ul');
     ul_0.className = "tab";
 addtabs.appendChild( ul_0 );
 //functions
-function createTabs(name,description){ 
+function createTabs(name,description){
    var li_0 = document.createElement('li');
 
       var a_0 = document.createElement('a');
@@ -32,7 +32,7 @@ function createTabs(name,description){
    ul_0.appendChild( li_0 );
    createTabContents(name,description);
 }
-function createTabContents(name,description){ 
+function createTabContents(name,description){
     var div_0 = document.createElement('div');
         div_0.className = "tabcontent";
         div_0.id = name;
@@ -42,7 +42,7 @@ function createTabContents(name,description){
        var h4_0 = document.createElement('h4');
            h4_0.appendChild( document.createTextNode(description) );
        div_1.appendChild( h4_0 );
-       
+
        div_0.appendChild( div_1 );
 
     addtabs.appendChild( div_0 );
@@ -73,11 +73,11 @@ function toggleTab(evt, tabName) {
     //Toggle.
     if (evt.currentTarget.className.indexOf(" active") > -1) {
         document.getElementById(tabName).style.display = "none";
-        evt.currentTarget.className = evt.currentTarget.className.replace(" active", "");        
+        evt.currentTarget.className = evt.currentTarget.className.replace(" active", "");
     }
     else {
         document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";        
+        evt.currentTarget.className += " active";
     }
 }
 //Make Tabs.
@@ -227,7 +227,7 @@ function loadAutoTrimps() {
 }
 
 function AutoTrimpsTooltip(what, isItIn, event) {
-    if (game.global.lockTooltip) 
+    if (game.global.lockTooltip)
         return;
     var elem = document.getElementById("tooltipDiv");
     swapClass("tooltipExtra", "tooltipExtraNone", elem);
@@ -310,7 +310,7 @@ function automationMenuInit() {
     var fightButtonCol = document.getElementById("battleBtnsColumn");
     newContainer.appendChild(abutton);
     fightButtonCol.appendChild(newContainer);
-    
+
     //create automaps status
     newContainer = document.createElement("DIV");
     newContainer.setAttribute("style", "display: block; font-size: 1.1vw; text-align: center; background-color: rgba(0,0,0,0.3);");
@@ -335,7 +335,7 @@ function automationMenuInit() {
 
 
 //toggles the display of the settings menu.
-function autoToggle(what){ 
+function autoToggle(what){
     if(what) {
         whatobj = document.getElementById(what);
         if(whatobj.style.display === 'block'){
@@ -355,7 +355,7 @@ function autoToggle(what){
         var item = document.getElementById('autoSettings');
         if(item.style.display === 'block')
             item.style.display='none';
-        else item.style.display = 'block'; 
+        else item.style.display = 'block';
     }
 }
 
@@ -369,8 +369,8 @@ function autoPlusSettingsMenu() {
         item.style.display='none';
     toggleSettingsMenu();
 }
-    
-  
+
+
 function createSetting(id, name, description, type, defaultValue, list, container) {
     var btnParent = document.createElement("DIV");
    // btnParent.setAttribute('class', 'optionContainer');
@@ -394,7 +394,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btn.textContent = name;
         btnParent.appendChild(btn);
         if(container) document.getElementById(container).appendChild(btnParent);
-        else document.getElementById("autoSettings").appendChild(btnParent);        
+        else document.getElementById("autoSettings").appendChild(btnParent);
     } else if (type == 'value') {
         if (autoTrimpSettings[id] === undefined) {
             autoTrimpSettings[id] = {
@@ -441,7 +441,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         }
         btn.value = autoTrimpSettings[id].selected;
         btnParent.appendChild(btn);
-        
+
         if(container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
     } else if (type == 'infoclick') {
@@ -472,13 +472,13 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btn.textContent = autoTrimpSettings[id].name[autoTrimpSettings[id].value];
         btnParent.appendChild(btn);
         if(container) document.getElementById(container).appendChild(btnParent);
-        else document.getElementById("autoSettings").appendChild(btnParent);      
+        else document.getElementById("autoSettings").appendChild(btnParent);
     }
     //make sure names/descriptions match what we have stored.
     if (autoTrimpSettings[id].name != name)
         autoTrimpSettings[id].name = name;
     if (autoTrimpSettings[id].description != description)
-        autoTrimpSettings[id].description = description;    
+        autoTrimpSettings[id].description = description;
 }
 
 function settingChanged(id) {
@@ -495,7 +495,7 @@ function settingChanged(id) {
         document.getElementById(id).setAttribute('class', 'noselect settingsBtn settingBtn' + btn.value);
         document.getElementById(id).textContent = btn.name[btn.value];
         updateCustomButtons();
-    }    
+    }
     if (btn.type == 'dropdown') {
         btn.selected = document.getElementById(id).value;
         //part of the prestige dropdown's "backup" system to prevent internal tampering via the dynamic prestige algorithm. everytime we see a user initiated change, make a backup.
@@ -589,13 +589,13 @@ function updateValueFields() {
     else if(stackingTox) status.innerHTML = 'Getting Tox Stacks';
     else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
     else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
-    else if (!enoughHealth) status.innerHTML = 'Want more health';   
+    else if (!enoughHealth) status.innerHTML = 'Want more health';
     else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
 }
 
 function updateCustomButtons() {
     //automaps button
-    
+
     if (autoTrimpSettings.AutoMaps.enabled) document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-success");
     else document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-danger");
     //auto portal setting, hide until player has cleared zone 59
@@ -607,22 +607,18 @@ function updateCustomButtons() {
     //challenge for he/hr setting
     if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour" || autoTrimpSettings.AutoPortal.selected == "Custom") document.getElementById("HeliumHourChallenge").style.display = '';
     else document.getElementById("HeliumHourChallenge").style.display = 'none';
-    
+
     //do not portal before during He/hr auto portal value
     if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") document.getElementById("HeHrDontPortalBefore").style.display = '';
     else document.getElementById("HeHrDontPortalBefore").style.display = 'none';
-        
+
     //update dropdown selections:
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
     //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
-    
+
     //stop disable farming from needing a refresh
     if(getPageSetting('DisableFarm'))
         shouldFarm = false;
 }
-
-
-
-
