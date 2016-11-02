@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.6-genbtc-10-24-2016
+// @version      2.1.2.6-genbtc-10-31-2016
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.6-genbtc-10-24-2016';
+var ATversion = '2.1.2.6-genbtc-10-31-2016';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -1268,12 +1268,17 @@ function buyUpgrades() {
         if (upgrade == 'Coordination' && !canAffordCoordinationTrimps()) continue;
         if (upgrade == 'Shieldblock' && !getPageSetting('BuyShieldblock')) continue;
         if (upgrade == 'Gigastation' && (game.global.lastWarp ? game.buildings.Warpstation.owned < (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')) : game.buildings.Warpstation.owned < getPageSetting('FirstGigastation'))) continue;
-        if ((!game.upgrades.Scientists.done && upgrade != 'Battle') ? (available && upgrade == 'Scientists' && game.upgrades.Scientists.allowed) : (available)) {
-            buyUpgrade(upgrade, true, true);
-            debug('Upgraded ' + upgrade,"*upload2");
-        }
         //skip bloodlust during scientist challenges and while we have autofight enabled.
-        if (upgrade == 'Bloodlust' && game.global.challengeActive == 'Scientist' && getPageSetting('AutoFight'))    continue;
+        if (upgrade == 'Bloodlust' && game.global.challengeActive == 'Scientist' && getPageSetting('AutoFight')) continue;
+        //skip potency when autoBreedTimer is disabled
+        if (upgrade == 'Potency' && getPageSetting('GeneticistTimer') >= 0) continue;
+
+        //Main logics:
+        if (!available) continue;        
+        if (game.upgrades.Scientists.done < game.upgrades.Scientists.allowed && upgrade != 'Scientists') continue;
+        buyUpgrade(upgrade, true, true);
+        debug('Upgraded ' + upgrade,"*upload2");
+        //loop again.
     }
 }
 
@@ -2528,6 +2533,7 @@ function doPortal(challenge) {
 
 //Controls "Manage Breed Timer" and "Geneticist Timer" - adjust geneticists to reach desired breed timer
 function manageGenes() {
+function autoBreedTimer() {
     var fWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     if(getPageSetting('ManageBreedtimer')) {
         if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");
@@ -2807,6 +2813,7 @@ function delayStartAgain(){
 
 var OVKcellsWorld = 0;
 function mainLoop() {
+    if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //just better.
     stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
     game.global.addonUser = true;
     game.global.autotrimps = {
@@ -2835,6 +2842,7 @@ function mainLoop() {
     if (getPageSetting('ManualGather2')) manualLabor();  //"Auto Gather/Build"
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"    
     if (getPageSetting('GeneticistTimer') >= 0) manageGenes(); //"Geneticist Timer" / "Manage Breed Timer"
+    if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Manage Breed Timer"
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 60)
     if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (genBTC settings area)
     else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"
