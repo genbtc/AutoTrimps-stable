@@ -171,6 +171,7 @@ AutoPerks.setNewRatios = function() {
 
 //get ready
 AutoPerks.initialise = function() {
+    AutoPerks.setperksByName();
     var perks = AutoPerks.getOwnedPerks();  
     for(var i in perks) {
         perks[i].level = 0;
@@ -209,16 +210,6 @@ AutoPerks.parseData = function() {
 
     //re-arrange perk points
     AutoPerks.applyCalculations(perks);        
-}
-
-AutoPerks.getOwnedPerks = function() {
-    var perks = [];
-    for (var name in game.portal){
-        perk = game.portal[name];
-        if(perk.locked === undefined || perk.locked) continue;
-        perks.push(AutoPerks.getPerkByName(name));
-    }
-    return perks;
 }
 
 //NEW way: Get accurate count of helium (not able to be wrong)
@@ -492,7 +483,8 @@ var power_II = new AutoPerks.ArithmeticPerk("power_II", 20000, 500, 0.01, power)
 var motivation_II = new AutoPerks.ArithmeticPerk("motivation_II", 50000, 1000, 0.01, motivation);
 var carpentry_II = new AutoPerks.ArithmeticPerk("carpentry_II", 100000, 10000, 0.0025, carpentry);
 var looting_II = new AutoPerks.ArithmeticPerk("looting_II", 100000, 10000, 0.0025, looting);
-
+//gather these into an array of objects
+AutoPerks.perkHolder = [siphonology, anticipation, meditation, relentlessness, range, agility, bait, trumps, packrat, looting, toughness, power, motivation, pheromones, artisanistry, carpentry, resilience, coordinated, resourceful, overkill, toughness_II, power_II, motivation_II, carpentry_II, looting_II];
 
 AutoPerks.getTierIIPerks = function() {
     var perks = [];
@@ -521,23 +513,30 @@ AutoPerks.getVariablePerks = function() {
     return perks;
 }
 
-AutoPerks.getPerk = {};
-
-AutoPerks.setPerks = function() {
-    var perks = {};
-    for(var i in AutoPerks.perkHolder)
-        AutoPerks.getPerk[AutoPerks.perkHolder[i].name] = AutoPerks.perkHolder[i];
-}
-
-AutoPerks.perkHolder = [siphonology, anticipation, meditation, relentlessness, range, agility, bait, trumps, packrat, looting, toughness, power, motivation, pheromones, artisanistry, carpentry, resilience, coordinated, resourceful, overkill, 
-    toughness_II, power_II, motivation_II, carpentry_II, looting_II];
-AutoPerks.setPerks();
-
+//create a 2nd array (perksByName) of the contents of perkHolder, indexed by name (easy access w/ getPerkByName)
+AutoPerks.perksByName = {};
 AutoPerks.getPerkByName = function(name) {
     name = AutoPerks.lowercaseFirst(name);
-    return AutoPerks.getPerk[name];
+    return AutoPerks.perksByName[name];
+}
+AutoPerks.setperksByName = function() {
+    for(var i in AutoPerks.perkHolder)
+        AutoPerks.perksByName[AutoPerks.perkHolder[i].name] = AutoPerks.perkHolder[i];
+}
+AutoPerks.setperksByName();//fill it.
+
+// Get owned perks (from save-game)
+AutoPerks.getOwnedPerks = function() {
+    var perks = [];
+    for (var name in game.portal){
+        perk = game.portal[name];
+        if(perk.locked) continue;
+        perks.push(AutoPerks.getPerkByName(name));
+    }
+    return perks;
 }
 
+// Populate ratio textboxes
 AutoPerks.setDefaultRatios();
 
 //populate dump perk dropdown list 
@@ -548,4 +547,4 @@ for(var i = 0; i < dumpperks.length; i++)
     html += "<option id='"+dumpperks[i].name+"Dump'>"+AutoPerks.capitaliseFirstLetter(dumpperks[i].name)+"</option>"
 html += "<option id='none'>None</option></select>";
 dumpDropdown.innerHTML = html;
-dumpDropdown.selectedIndex = dumpDropdown.length - 2; // Second to last element is looting_II
+dumpDropdown.selectedIndex = dumpDropdown.length - 2; // Second to last element is looting_II (or other)
