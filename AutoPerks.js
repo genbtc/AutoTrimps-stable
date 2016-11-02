@@ -96,7 +96,7 @@ html += "<option id='nSheetzPreset'>nSheetz</option>"
 html += "<option id='nSheetzNEWPreset'>nSheetz(new)</option>"
 
 html += "<option id='HiderHe/hr'>Hider (He/hr)</option>"
-html += "<option id='HiderLowHeBalance'>Hider Balance (More HP)</option>"
+html += "<option id='HiderBalance'>Hider (Balance)</option>"
 html += "<option id='HiderMore'>Hider More (More Zones)</option>"
 
 html += "<option id='customPreset'>Custom</option></select>"
@@ -474,7 +474,7 @@ var agility = new AutoPerks.FixedPerk("agility", 4, 20, 20);
 var bait = new AutoPerks.FixedPerk("bait", 4, 30);
 var trumps = new AutoPerks.FixedPerk("trumps", 3, 30);
 var packrat = new AutoPerks.FixedPerk("packrat", 3, 30);
-//the ratios are hardcoded into the following lines: example: looting:    [20, 50, 120, 42, 160] as [zxv, zxv(new), truth, nsheetz, nsheetz(new)]
+//the ratios are hardcoded into the following lines: example: looting:    [20, 50, 120, 42, 160, 90,75,20] as [zxv, zxv(new), truth, nsheetz, nsheetz(new),HiderHe/hr,HiderBalance,HiderMore]
 var looting = new AutoPerks.VariablePerk("looting", 1, false,             [20, 50, 120, 42, 160, 90,75,20], 0.05);
 var toughness = new AutoPerks.VariablePerk("toughness", 1, false,         [0.5, 0.75, 4, 1.75, 1.5,4,4,4], 0.05);
 var power = new AutoPerks.VariablePerk("power", 1, false,                 [1, 1, 4, 5, 5,12,8,10], 0.05);

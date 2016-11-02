@@ -1304,6 +1304,21 @@ function buyStorage() {
     }
 }
 
+function safeFireFarmers() {
+    //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
+    var oldFarmers = game.jobs.Farmer.owned;
+    var x = 1;
+    if (!Number.isSafeInteger(oldFarmers)){                                
+        while (oldFarmers == game.jobs.Farmer.owned) {            
+            safeBuyJob('Farmer', -1*x);    //fire increasingly more workers until it does something to invalidate the while loop
+            x+=1;                
+        }
+    }
+    else
+        safeBuyJob('Farmer', -1);
+}            
+    
+
 //Hires and Fires all workers (farmers/lumberjacks/miners/scientists/trainers/explorers)
 function buyJobs() {
     var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
@@ -1318,7 +1333,7 @@ function buyJobs() {
         scientistRatio = totalRatio / 10;
     }
     
-    //FRESH GAME LEVEL 1 CODE
+    //FRESH GAME LOWLEVEL CODE
     if (game.global.world == 1 && game.global.totalHeliumEarned<=300){
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9){
             if (game.resources.food.owned > 5 && freeWorkers > 0){
@@ -1358,36 +1373,33 @@ function buyJobs() {
     
 
     var oldBuy = game.global.buyAmt;
-    
+    game.global.buyAmt = 1;
     //Trainers capped to tributes percentage.
     var trainerpercent = getPageSetting('TrainerCaptoTributes');
     if (trainerpercent > 0){
         var curtrainercost = game.jobs.Trainer.cost.food[0]*Math.pow(game.jobs.Trainer.cost.food[1],game.jobs.Trainer.owned);
         var curtributecost = getBuildingItemPrice(game.buildings.Tribute, "food", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);
         if (curtrainercost < curtributecost * (trainerpercent / 100) && (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1)) {
-            game.global.buyAmt = 1;
             if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-                if (freeWorkers <= 0) safeBuyJob('Farmer', -2);
-                safeBuyJob('Trainer');
+                if (freeWorkers < 1) safeFireFarmers();
+                safeBuyJob('Trainer',1);
             }
         }
     }
     //regular old way of hard capping trainers to a certain number. (sorry about lazy duplicate coding)
     else if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
-        game.global.buyAmt = 1;
         if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers <= 0) safeBuyJob('Farmer', -2);
-            safeBuyJob('Trainer');
+            if (freeWorkers < 1) safeFireFarmers();
+            safeBuyJob('Trainer',1);
         }
     }
     if (game.jobs.Explorer.owned < getPageSetting('MaxExplorers') || getPageSetting('MaxExplorers') == -1) {
-        game.global.buyAmt = 1;
         if (canAffordJob('Explorer', false) && !game.jobs.Explorer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers <= 0) safeBuyJob('Farmer', -2);
-            safeBuyJob('Explorer');
+            if (freeWorkers < 1) safeFireFarmers();
+            safeBuyJob('Explorer',1);
         }
     }
     game.global.buyAmt = oldBuy;
@@ -1948,17 +1960,22 @@ function autoMap() {
         enemyHealth *= 2;
     }
     var pierceMod = 0;
+    //Lead specific farming calcuation section:
     if(game.global.challengeActive == 'Lead') {
+        baseDamage /= mapbonusmulti;
+        pierceMod += (game.challenges.Lead.stacks * 0.001);               
         enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
-        if (game.global.world % 2 == 1){
+        //if the zone is odd:   (skip the +2 calc for the last level.
+        if (game.global.world % 2 == 1 && game.global.world != 179){
             enemyDamage = getEnemyMaxAttack(game.global.world + 2, 30, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
             enemyHealth = getEnemyMaxHealth(game.global.world + 2);
             baseDamage /= 1.5; //subtract the odd-zone bonus.
         }
-        pierceMod += (game.challenges.Lead.stacks * 0.001);
-        baseDamage /= mapbonusmulti;
-        shouldFarm = enemyHealth / baseDamage > 5;
+        //let people disable this if they want.
+        if(!getPageSetting('DisableFarm')) {
+            shouldFarm = enemyHealth / baseDamage > 5;
+        }
     }
     enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod))
                     || 
@@ -2542,7 +2559,8 @@ function manageGenes() {
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
         if (fWorkers < 1 && canAffordJob('Geneticist', false)) {
-            safeBuyJob('Farmer', -2);
+            //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
+            safeFireFarmers();
         }
         //hire a geneticist
         safeBuyJob('Geneticist',1);
@@ -2555,7 +2573,7 @@ function manageGenes() {
         //otherwise, if we have some geneticists, start firing them
     else if ((targetBreed*1.02 < getBreedTime() || targetBreed*1.02 < getBreedTime(true)) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > 10) {
         safeBuyJob('Geneticist', -10);
-        //debug('fired a geneticist');
+        //debug('fired 10 geneticist');
         
     }
         //if our time remaining to full trimps is still too high, fire some jobs to get-er-done
