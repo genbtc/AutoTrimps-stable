@@ -170,14 +170,14 @@ AutoPerks.setNewRatios = function() {
 //get ready / initialize
 AutoPerks.initialise = function() {
     AutoPerks.setperksByName();
-    /* did nothing oddly enough
+    //This does something important but oddly enough but i cant figure out how the local var carries over to mean something later.
     var perks = AutoPerks.getOwnedPerks();  
     for(var i in perks) {
         perks[i].level = 0;
         perks[i].spent = 0;
         perks[i].updatedValue = perks[i].value;
     }
-    */
+    
     //grab new ratios if any
     AutoPerks.setNewRatios();
     //save custom ratios if "custom" is selected
