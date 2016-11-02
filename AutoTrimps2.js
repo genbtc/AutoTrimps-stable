@@ -1309,18 +1309,23 @@ function buyStorage() {
     }
 }
 
-function safeFireFarmers() {
+function safeFireJob(job) {
     //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
-    var oldFarmers = game.jobs.Farmer.owned;
+    var oldjob = game.jobs[job].owned;
+    var test = oldjob;
     var x = 1;
-    if (!Number.isSafeInteger(oldFarmers)){
-        while (oldFarmers == game.jobs.Farmer.owned) {
-            safeBuyJob('Farmer', -1*x);    //fire increasingly more workers until it does something to invalidate the while loop
+    if (!Number.isSafeInteger(oldjob)){
+        while (oldjob == test) {
+            test-=1*x;
             x*=2;
         }
     }
-    else
-        safeBuyJob('Farmer', -1);
+    preBuy();
+    game.global.firing = true;
+    game.global.buyAmt = 1*x;    
+    buyJob(job, true, true);
+    postBuy();
+    return true;
 }
 
 
@@ -1387,7 +1392,7 @@ function buyJobs() {
         if (curtrainercost < curtributecost * (trainerpercent / 100) && (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1)) {
             if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-                if (freeWorkers < 1) safeFireFarmers();
+                if (freeWorkers < 1) safeFireJob('Farmer');
                 safeBuyJob('Trainer',1);
             }
         }
@@ -1396,14 +1401,14 @@ function buyJobs() {
     else if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
         if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers < 1) safeFireFarmers();
+            if (freeWorkers < 1) safeFireJob('Farmer');
             safeBuyJob('Trainer',1);
         }
     }
     if (game.jobs.Explorer.owned < getPageSetting('MaxExplorers') || getPageSetting('MaxExplorers') == -1) {
         if (canAffordJob('Explorer', false) && !game.jobs.Explorer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers < 1) safeFireFarmers();
+            if (freeWorkers < 1) safeFireJob('Farmer');
             safeBuyJob('Explorer',1);
         }
     }
@@ -2563,7 +2568,7 @@ function autoBreedTimer() {
         //if there's no free worker spots, fire a farmer
         if (fWorkers < 1 && canAffordJob('Geneticist', false)) {
             //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
-            safeFireFarmers();
+            safeFireJob('Farmer');
         }
         //hire a geneticist
         safeBuyJob('Geneticist',1);
