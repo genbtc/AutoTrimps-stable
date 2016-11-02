@@ -1316,16 +1316,16 @@ function safeFireJob(job) {
     var x = 1;
     if (!Number.isSafeInteger(oldjob)){
         while (oldjob == test) {
-            test-=1*x;
+            test-=x;
             x*=2;
         }
     }
     preBuy();
     game.global.firing = true;
-    game.global.buyAmt = 1*x;    
+    game.global.buyAmt = x;    
     buyJob(job, true, true);
     postBuy();
-    return true;
+    return x;
 }
 
 
@@ -1380,10 +1380,7 @@ function buyJobs() {
     {   //exit if we are havent bred to at least 90% breedtimer yet...
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) return;
     }
-
-
-    var oldBuy = game.global.buyAmt;
-    game.global.buyAmt = 1;
+    var subtract = 0;
     //Trainers capped to tributes percentage.
     var trainerpercent = getPageSetting('TrainerCaptoTributes');
     if (trainerpercent > 0){
@@ -1392,7 +1389,7 @@ function buyJobs() {
         if (curtrainercost < curtributecost * (trainerpercent / 100) && (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1)) {
             if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-                if (freeWorkers < 1) safeFireJob('Farmer');
+                if (freeWorkers < 1) subtract = safeFireJob('Farmer');
                 safeBuyJob('Trainer',1);
             }
         }
@@ -1401,18 +1398,18 @@ function buyJobs() {
     else if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
         if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers < 1) safeFireJob('Farmer');
+            if (freeWorkers < 1) subtract = safeFireJob('Farmer');
             safeBuyJob('Trainer',1);
         }
     }
     if (game.jobs.Explorer.owned < getPageSetting('MaxExplorers') || getPageSetting('MaxExplorers') == -1) {
         if (canAffordJob('Explorer', false) && !game.jobs.Explorer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers < 1) safeFireJob('Farmer');
+            if (freeWorkers < 1) subtract = safeFireJob('Farmer');
             safeBuyJob('Explorer',1);
         }
     }
-    game.global.buyAmt = oldBuy;
+
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     if (getPageSetting('HireScientists') && !game.jobs.Scientist.locked) {
         //if earlier in the game, buy a small amount of scientists
@@ -1422,19 +1419,18 @@ function buyJobs() {
                 safeBuyJob('Scientist',buyScientists);
         }
     }
+
     //Buy Farmers:
     if(!game.jobs.Farmer.locked && !breedFire) {
         var toBuy = Math.floor((farmerRatio / totalRatio * totalDistributableWorkers) - game.jobs.Farmer.owned);
         var canBuy = Math.floor(trimps.owned - trimps.employed);
-        safeBuyJob('Farmer',toBuy <= canBuy ? toBuy : canBuy);
+        safeBuyJob('Farmer',toBuy <= canBuy ? toBuy-subtract: canBuy);
     }
-    // else if(breedFire)
-    // safeBuyJob('Farmer', game.jobs.Farmer.owned * -1);
     //Buy/Fire Miners:
     if(!game.jobs.Miner.locked && !breedFire) {
         var toBuy = Math.floor((minerRatio / totalRatio * totalDistributableWorkers) - game.jobs.Miner.owned);
         var canBuy = Math.floor(trimps.owned - trimps.employed);
-        safeBuyJob('Miner',toBuy <= canBuy ? toBuy : canBuy);
+        safeBuyJob('Miner',toBuy <= canBuy ? toBuy-subtract : canBuy);
     }
     else if(breedFire && game.global.turkimpTimer === 0)
         safeBuyJob('Miner', game.jobs.Miner.owned * -1);
@@ -1442,11 +1438,10 @@ function buyJobs() {
     if(!game.jobs.Lumberjack.locked && !breedFire) {
         var toBuy = Math.floor((lumberjackRatio / totalRatio * totalDistributableWorkers) - game.jobs.Lumberjack.owned);
         var canBuy = Math.floor(trimps.owned - trimps.employed);
-        safeBuyJob('Lumberjack',toBuy <= canBuy ? toBuy : canBuy);
+        safeBuyJob('Lumberjack',toBuy <= canBuy ? toBuy-subtract : canBuy);
     }
     else if(breedFire)
         safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
-
 }
 
 //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
