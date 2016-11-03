@@ -1146,7 +1146,7 @@ function buyBuildings() {
     //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
     if ((targetBreed < getBreedTime() || targetBreed == 0 || !getPageSetting('ManageBreedtimer') ||
         (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
-        (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false))) && !game.buildings.Nursery.locked)
+        (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false,1))) && !game.buildings.Nursery.locked)
     {
         var nwr = 0.05; //nursery to warpstation cost ratio (unrelated to the 20 below), has been this way since forever.
         var gemCostratio = 20;  //(1/20th)
@@ -1388,7 +1388,7 @@ function buyJobs() {
         var curtrainercost = game.jobs.Trainer.cost.food[0]*Math.pow(game.jobs.Trainer.cost.food[1],game.jobs.Trainer.owned);
         var curtributecost = getBuildingItemPrice(game.buildings.Tribute, "food", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);
         if (curtrainercost < curtributecost * (trainerpercent / 100) && (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1)) {
-            if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
+            if (canAffordJob('Trainer', false,1) && !game.jobs.Trainer.locked) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
                 if (freeWorkers < 1) subtract = safeFireJob('Farmer');
                 safeBuyJob('Trainer',1);
@@ -1397,14 +1397,14 @@ function buyJobs() {
     }
     //regular old way of hard capping trainers to a certain number. (sorry about lazy duplicate coding)
     else if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
-        if (canAffordJob('Trainer', false) && !game.jobs.Trainer.locked) {
+        if (canAffordJob('Trainer', false,1) && !game.jobs.Trainer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
             if (freeWorkers < 1) subtract = safeFireJob('Farmer');
             safeBuyJob('Trainer',1);
         }
     }
     if (game.jobs.Explorer.owned < getPageSetting('MaxExplorers') || getPageSetting('MaxExplorers') == -1) {
-        if (canAffordJob('Explorer', false) && !game.jobs.Explorer.locked) {
+        if (canAffordJob('Explorer', false,1) && !game.jobs.Explorer.locked) {
             freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
             if (freeWorkers < 1) subtract = safeFireJob('Farmer');
             safeBuyJob('Explorer',1);
@@ -2568,7 +2568,7 @@ function autoBreedTimer() {
     if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && (inDamageStance||inScryerStance) && !breedFire) {
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
-        if (fWorkers < 1 && canAffordJob('Geneticist', false)) {
+        if (fWorkers < 1 && canAffordJob('Geneticist', false,1)) {
             //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
             safeFireJob('Farmer');
         }
