@@ -304,10 +304,12 @@ AutoPerks.spendHelium = function(helium, perks) {
     if(selector.value != "None") {
         var dumpPerk = AutoPerks.getPerkByName(selector[index].innerHTML);
         console.log(AutoPerks.capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level);
-        for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
-            helium -= price;
-            dumpPerk.spent += price;
-            dumpPerk.level++;
+        if(dumpPerk.level < dumpPerk.max) {
+            for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
+                helium -= price;
+                dumpPerk.spent += price;
+                dumpPerk.level++;
+            }
         }
     }
     //end dump perk code.
@@ -356,7 +358,7 @@ AutoPerks.applyCalculationsRespec = function(perks){
         }
         game.global.buyAmt = preBuyAmt;
         //game.global.lastCustomAmt = lastcustom;
-        numTab(1,true);
+        numTab(1,true);     //selects the 1st number of the buy-amount tab-bar (Always 1)
         cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
         //activateClicked();    //click OK for them (disappears the window).
     }
@@ -399,7 +401,7 @@ AutoPerks.applyCalculations = function(perks){
     }
     game.global.buyAmt = preBuyAmt;
     //game.global.lastCustomAmt = lastcustom;
-    numTab(1,true);
+    numTab(1,true);     //selects the 1st number of the buy-amount tab-bar (Always 1)
     cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
     if (needsRespec == true){
         //get the variable, in this order, then switch screens (or else the sequence is messed up)
