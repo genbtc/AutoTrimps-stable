@@ -27,10 +27,15 @@ btnParent.setAttribute('style', 'display: inline-block; margin-left: 1vw; margin
 var allocatorBtn1 = document.createElement("DIV");
 allocatorBtn1.id = 'allocatorBTN1';
 allocatorBtn1.setAttribute('class', 'settingsBtn settingBtntrue');
+//allocatorBtn1.setAttribute('onmouseover', 'AutoPerks.refreshButtonStatus()');
 allocatorBtn1.setAttribute('onclick', 'AutoPerks.clickAllocate()');
 allocatorBtn1.textContent = 'Allocate Perks';
 btnParent.appendChild(allocatorBtn1);
 buttonbar.appendChild(btnParent);
+
+// AutoPerks.refreshButtonStatus = function() {
+    // allocatorBtn1.setAttribute('class', 'settingsBtn settingBtn' + game.global.canRespecPerks);
+// }
 
 //Create all perk customRatio boxes in Trimps perk window.
 AutoPerks.createInput = function(perkname,div) {
@@ -335,41 +340,48 @@ AutoPerks.applyCalculationsRespec = function(perks){
     if (game.global.respecActive) {
         clearPerks();
         var preBuyAmt = game.global.buyAmt;
+        //var lastcustom = game.global.lastCustomAmt;
         for(var i in perks) {
+            var capitalized = AutoPerks.capitaliseFirstLetter(perks[i].name);
             game.global.buyAmt = perks[i].level;
             //console.log(perks[i].name + " " + perks[i].level);
-            buyPortalUpgrade(AutoPerks.capitaliseFirstLetter(perks[i].name));
+            buyPortalUpgrade(capitalized);
         }
         var FixedPerks = AutoPerks.getFixedPerks();
         for(var i in FixedPerks) {
+            var capitalized = AutoPerks.capitaliseFirstLetter(FixedPerks[i].name);
             game.global.buyAmt = FixedPerks[i].level;
             //console.log(FixedPerks[i].name + " " + FixedPerks[i].level);
-            buyPortalUpgrade(AutoPerks.capitaliseFirstLetter(FixedPerks[i].name));
+            buyPortalUpgrade(capitalized);
         }
         game.global.buyAmt = preBuyAmt;
+        //game.global.lastCustomAmt = lastcustom;
         numTab(1,true);
         cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
         //activateClicked();    //click OK for them (disappears the window).
     }
     else {
-        console.log("Respec is not available. You used it already, try again next portal.");
+        console.log("A Respec would be required and is not available. You used it already, try again next portal.");
         allocatorBtn1.setAttribute('class', 'settingsBtn settingBtnfalse');
-        tooltip("Automatic Perk Allocation Error", "customText", event, "Respec is not available. You used it already, try again next portal. Press esc to close this tooltip." );
+        tooltip("Automatic Perk Allocation Error", "customText", event, "A Respec would be required and is NOT available. You used it already, try again next portal. Press <b>esc</b> to close this tooltip." );
     }
 }
 
 //Assigns perk points without respeccing if nothing is needed to be negative.
 AutoPerks.applyCalculations = function(perks){ 
-    // *Apply calculations WITOUT respec
+    // *Apply calculations WITHOUT respec
 
     var preBuyAmt = game.global.buyAmt;
+    //var lastcustom = game.global.lastCustomAmt;
     var needsRespec = false;
     for(var i in perks) {        
         var capitalized = AutoPerks.capitaliseFirstLetter(perks[i].name);
         game.global.buyAmt = perks[i].level - game.portal[capitalized].level;
         //console.log(perks[i].name + " " + perks[i].level);
-        if (perks[i].level < game.portal[capitalized].level)
+        if (game.global.buyAmt < 0) {
             needsRespec = true;
+            break;
+        }
         else
             buyPortalUpgrade(capitalized);
     }
@@ -378,15 +390,19 @@ AutoPerks.applyCalculations = function(perks){
         var capitalized = AutoPerks.capitaliseFirstLetter(FixedPerks[i].name);
         game.global.buyAmt = FixedPerks[i].level - game.portal[capitalized].level;
         //console.log(FixedPerks[i].name + " " + FixedPerks[i].level);
-        if (perks[i].level < game.portal[capitalized].level)
+        if (game.global.buyAmt < 0) {
             needsRespec = true;
+            break;
+        }
         else
             buyPortalUpgrade(capitalized);
     }
     game.global.buyAmt = preBuyAmt;
+    //game.global.lastCustomAmt = lastcustom;
     numTab(1,true);
     cancelTooltip();    //displays the last perk we bought's tooltip without this. idk why.
     if (needsRespec == true){
+        //get the variable, in this order, then switch screens (or else the sequence is messed up)
         var whichscreen = game.global.viewingUpgrades;
         cancelPortal();
         if (whichscreen)
