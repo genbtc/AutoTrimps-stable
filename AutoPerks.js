@@ -76,6 +76,7 @@ dumpperklabel.innerHTML = "Dump Perk:";
 dumpperklabel.setAttribute('style', 'margin-right: 1vw; color: white;');
 var dumpperk = document.createElement("select");
 dumpperk.id = 'dumpPerk';
+dumpperk.setAttribute('onchange', 'AutoPerks.saveDumpPerk()');
 var oldstyle = 'text-align: center; width: 120px;';
 if(game.options.menu.darkTheme.enabled != 2) dumpperk.setAttribute("style", oldstyle + " color: black;");
 else dumpperk.setAttribute('style', oldstyle);
@@ -104,7 +105,12 @@ html += "<option id='HiderBalance'>Hider (Balance)</option>"
 html += "<option id='HiderMore'>Hider More (More Zones)</option>"
 html += "<option id='customPreset'>Custom</option></select>"
 ratioPreset.innerHTML = html;
-ratioPreset.selectedIndex = 0; // First element is zxv (default) ratio.
+//load the last ratio used
+var loadLastPreset = localStorage.getItem('AutoperkSelectedRatioPresetID');
+if (loadLastPreset != null)
+    ratioPreset.selectedIndex = loadLastPreset; // First element is zxv (default) ratio.
+else
+    ratioPreset.selectedIndex = 0;
 ratioPreset.setAttribute('onchange', 'AutoPerks.setDefaultRatios()');
 ratios1.appendChild(ratioPresetLabel);
 ratios1.appendChild(ratioPreset);
@@ -112,8 +118,12 @@ ratios1.appendChild(ratioPreset);
 customRatios.appendChild(ratios2);
 buttonbar.appendChild(customRatios);
 
-//BEGIN AUTOPERKS SCRIPT CODE:>
+//BEGIN AUTOPERKS SCRIPT CODE:>>>>>>>>>>>>>>
 
+AutoPerks.saveDumpPerk = function() { 
+    var dumpIndex = document.getElementById("dumpPerk").selectedIndex;
+    localStorage.setItem('AutoperkSelectedDumpPresetID', dumpIndex);
+}
 AutoPerks.saveCustomRatios = function() {
     var perkRatioBoxes = document.getElementsByClassName('perkRatios');
     var customRatios = [];
@@ -136,7 +146,7 @@ AutoPerks.setDefaultRatios = function() {
     }
     //grab custom ratios if saved.
     if (ratioSet == document.getElementById("ratioPreset").length-1) {
-        var tmp = JSON.parse(localStorage.getItem('AutoperkRatioBoxesCustomRatios'));
+        var tmp = JSON.parse(localStorage.getItem('AutoPerksCustomRatios'));
         if (tmp !== null) 
             customRatios = tmp;
         else {
@@ -152,9 +162,10 @@ AutoPerks.setDefaultRatios = function() {
             if (customRatios[i].id != perkRatioBoxes[i].id) continue;
             currentPerk = AutoPerks.getPerkByName(perkRatioBoxes[i].id.substring(0, perkRatioBoxes[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
             perkRatioBoxes[i].value = customRatios[i].value;
-        }        
+        }
     }
-    localStorage.setItem('AutoperkRatioBoxesSelectedRatioPresetID', ratioSet);
+    //save the last ratio used
+    localStorage.setItem('AutoperkSelectedRatioPresetID', ratioSet);
 }
 
 //updates the internal perk variables with values grabbed from the custom ratio input boxes that the user may have changed.
@@ -176,7 +187,7 @@ AutoPerks.setNewRatios = function() {
 AutoPerks.initialise = function() {
     AutoPerks.setperksByName();
     //This does something important but oddly enough but i cant figure out how the local var carries over to mean something later.
-    var perks = AutoPerks.getOwnedPerks();  
+    var perks = AutoPerks.getOwnedPerks();
     for(var i in perks) {
         perks[i].level = 0;
         perks[i].spent = 0;
@@ -588,4 +599,9 @@ for(var i = 0; i < dumpperks.length; i++)
     html += "<option id='"+dumpperks[i].name+"Dump'>"+AutoPerks.capitaliseFirstLetter(dumpperks[i].name)+"</option>"
 html += "<option id='none'>None</option></select>";
 dumpDropdown.innerHTML = html;
-dumpDropdown.selectedIndex = dumpDropdown.length - 2; // Second to last element is looting_II (or other)
+//load the last dump preset used
+var loadLastDump = localStorage.getItem('AutoperkSelectedDumpPresetID');
+if (loadLastDump != null)
+    dumpDropdown.selectedIndex = loadLastDump;
+else
+    dumpDropdown.selectedIndex = dumpDropdown.length - 2; // Second to last element is looting_II (or other)
