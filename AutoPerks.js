@@ -45,7 +45,7 @@ AutoPerks.createInput = function(perkname,div) {
     if(game.options.menu.darkTheme.enabled != 2) perk1input.setAttribute("style", oldstyle + " color: black;");
     else perk1input.setAttribute('style', oldstyle);
     perk1input.setAttribute('class', 'perkRatios');
-    
+
     var perk1label = document.createElement("Label");
     perk1label.id = perkname + 'Label';
     perk1label.innerHTML = perkname;
@@ -94,7 +94,7 @@ var oldstyle = 'text-align: center; width: 110px;';
 if(game.options.menu.darkTheme.enabled != 2) ratioPreset.setAttribute("style", oldstyle + " color: black;");
 else ratioPreset.setAttribute('style', oldstyle);
 //List of the perk options are populated at the bottom of this file.
-//populate dump perk dropdown list 
+//populate dump perk dropdown list
 var html = "<option id='zxvPreset'>ZXV (default)</option>"
 html += "<option id='zxvNEWPreset'>ZXV (new)</option>"
 html += "<option id='TruthPreset'>Truth</option>"
@@ -120,7 +120,7 @@ buttonbar.appendChild(customRatios);
 
 //BEGIN AUTOPERKS SCRIPT CODE:>>>>>>>>>>>>>>
 
-AutoPerks.saveDumpPerk = function() { 
+AutoPerks.saveDumpPerk = function() {
     var dumpIndex = document.getElementById("dumpPerk").selectedIndex;
     localStorage.setItem('AutoperkSelectedDumpPresetID', dumpIndex);
 }
@@ -147,7 +147,7 @@ AutoPerks.setDefaultRatios = function() {
     //grab custom ratios if saved.
     if (ratioSet == document.getElementById("ratioPreset").length-1) {
         var tmp = JSON.parse(localStorage.getItem('AutoPerksCustomRatios'));
-        if (tmp !== null) 
+        if (tmp !== null)
             customRatios = tmp;
         else {
             // If "custom" is manually selected, and no file was found, start by setting all perkRatioBoxes to 0.
@@ -193,7 +193,7 @@ AutoPerks.initialise = function() {
         perks[i].spent = 0;
         perks[i].updatedValue = perks[i].value;
     }
-    
+
     //grab new ratios if any
     AutoPerks.setNewRatios();
     //save custom ratios if "custom" is selected
@@ -226,7 +226,7 @@ AutoPerks.clickAllocate = function() {
     AutoPerks.spendHelium(remainingHelium, perks);
 
     //re-arrange perk points
-    AutoPerks.applyCalculations(perks);        
+    AutoPerks.applyCalculations(perks);
 }
 
 //NEW way: Get accurate count of helium (calcs it like the game does)
@@ -243,7 +243,7 @@ AutoPerks.getHelium = function() {
     return respecMax;
 }
 
-AutoPerks.calculatePrice = function(perk, level) { // Calculate price of buying *next* level 
+AutoPerks.calculatePrice = function(perk, level) { // Calculate price of buying *next* level
     if(perk.type == 'exponential') return Math.ceil(level/2 + perk.base * Math.pow(1.3, level));
     else if(perk.type == 'linear') return Math.ceil(perk.base + perk.increase * level);
 }
@@ -274,7 +274,7 @@ AutoPerks.spendHelium = function(helium, perks) {
         //document.getElementById("nextCoordinated").innerHTML = "Not enough helium to buy fixed perks.";
         return;
     }
-    
+
     var perks = AutoPerks.getVariablePerks();
 
     var effQueue = new FastPriorityQueue(function(a,b) { return a.efficiency > b.efficiency } ) // Queue that keeps most efficient purchase at the top
@@ -297,7 +297,7 @@ AutoPerks.spendHelium = function(helium, perks) {
         // Purchase the most efficient perk
         helium -= price;
         mostEff.level++;
-        mostEff.spent += price; 
+        mostEff.spent += price;
         // Reduce its efficiency
         inc = AutoPerks.calculateIncrease(mostEff, mostEff.level);
         price = AutoPerks.calculatePrice(mostEff, mostEff.level);
@@ -308,8 +308,8 @@ AutoPerks.spendHelium = function(helium, perks) {
         mostEff = effQueue.poll();
         price = AutoPerks.calculatePrice(mostEff, mostEff.level);
     }
-    
-    //Begin selectable dump perk code   
+
+    //Begin selectable dump perk code
     var selector = document.getElementById('dumpPerk');
     var index = selector.selectedIndex;
     if(selector.value != "None") {
@@ -324,7 +324,7 @@ AutoPerks.spendHelium = function(helium, perks) {
         }
     }
     //end dump perk code.
-    
+
     //Repeat the process for spending round 2. This spends any extra helium we have that is less than the cost of the last point of the dump-perk.
     while (effQueue.size > 1) {
         mostEff = effQueue.poll();
@@ -333,7 +333,7 @@ AutoPerks.spendHelium = function(helium, perks) {
         // Purchase the most efficient perk
         helium -= price;
         mostEff.level++;
-        mostEff.spent += price; 
+        mostEff.spent += price;
         // Reduce its efficiency
         inc = AutoPerks.calculateIncrease(mostEff, mostEff.level);
         price = AutoPerks.calculatePrice(mostEff, mostEff.level);
@@ -345,7 +345,7 @@ AutoPerks.spendHelium = function(helium, perks) {
 }
 
 //Pushes the respec button, then the Clear All button, then assigns perk points based on what was calculated.
-AutoPerks.applyCalculationsRespec = function(perks){ 
+AutoPerks.applyCalculationsRespec = function(perks){
     // *Apply calculations with respec
     if (game.global.canRespecPerks) {
         respecPerks();
@@ -381,13 +381,13 @@ AutoPerks.applyCalculationsRespec = function(perks){
 }
 
 //Assigns perk points without respeccing if nothing is needed to be negative.
-AutoPerks.applyCalculations = function(perks){ 
+AutoPerks.applyCalculations = function(perks){
     // *Apply calculations WITHOUT respec
 
     var preBuyAmt = game.global.buyAmt;
     //var lastcustom = game.global.lastCustomAmt;
     var needsRespec = false;
-    for(var i in perks) {        
+    for(var i in perks) {
         var capitalized = AutoPerks.capitaliseFirstLetter(perks[i].name);
         game.global.buyAmt = perks[i].level - game.portal[capitalized].level;
         //console.log(perks[i].name + " " + perks[i].level);
@@ -439,7 +439,7 @@ AutoPerks.getPercent = function(spentHelium, totalHelium) {
 AutoPerks.lowercaseFirst = function(str) {
     return str.substr(0, 1).toLowerCase() + str.substr(1);
 }
- 
+
 AutoPerks.FixedPerk = function(name, base, level, max) {
     this.id = -1;
     this.name = name;
@@ -519,9 +519,9 @@ AutoPerks.perkHolder = [siphonology, anticipation, meditation, relentlessness, r
 AutoPerks.getTierIIPerks = function() {
     var perks = [];
     for(var i in AutoPerks.perkHolder) {
-        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);
         var perk = game.portal[name];
-        if(perk.locked || (typeof perk.level === 'undefined')) continue;        
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;
         if(AutoPerks.perkHolder[i].type == "linear") {
             perks.push(AutoPerks.perkHolder[i]);
         }
@@ -532,9 +532,9 @@ AutoPerks.getTierIIPerks = function() {
 AutoPerks.getAllPerks = function() {
     var perks = [];
     for(var i in AutoPerks.perkHolder) {
-        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);
         var perk = game.portal[name];
-        if(perk.locked || (typeof perk.level === 'undefined')) continue;        
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;
         perks.push(AutoPerks.perkHolder[i]);
     }
     return perks;
@@ -543,9 +543,9 @@ AutoPerks.getAllPerks = function() {
 AutoPerks.getFixedPerks = function() {
     var perks = [];
     for(var i in AutoPerks.perkHolder) {
-        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);
         var perk = game.portal[name];
-        if(perk.locked || (typeof perk.level === 'undefined')) continue;        
+        if(perk.locked || (typeof perk.level === 'undefined')) continue;
         if(AutoPerks.perkHolder[i].fixed) {
             perks.push(AutoPerks.perkHolder[i]);
         }
@@ -556,7 +556,7 @@ AutoPerks.getFixedPerks = function() {
 AutoPerks.getVariablePerks = function() {
     var perks = [];
     for(var i in AutoPerks.perkHolder) {
-        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);        
+        var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);
         var perk = game.portal[name];
         if(perk.locked || (typeof perk.level === 'undefined')) continue;
         if(!AutoPerks.perkHolder[i].fixed) {
@@ -591,7 +591,7 @@ AutoPerks.getOwnedPerks = function() {
 // Populate ratio textboxes
 AutoPerks.setDefaultRatios();
 
-//populate dump perk dropdown list 
+//populate dump perk dropdown list
 var dumpDropdown = document.getElementById('dumpPerk');
 var html = "";
 var dumpperks = AutoPerks.getVariablePerks();
