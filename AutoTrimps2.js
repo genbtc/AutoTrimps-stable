@@ -195,7 +195,7 @@ function getPageSetting(setting) {
 }
 
 //programmatically sets the underlying variable of the UI Setting and the appropriate Button CSS style&color
-function setPageSetting(setting,value) {
+function setPageSetting(setting, value) {
     if (autoTrimpSettings.hasOwnProperty(setting) == false) {
         return false;
     }
@@ -458,7 +458,7 @@ function getCorruptedCellsNum() {
 }
 
 
-function getBreedTime(remaining,round) {
+function getBreedTime(remaining, round) {
     var trimps = game.resources.trimps;
     var breeding = trimps.owned - trimps.employed;
     var trimpsMax = trimps.realMax();
@@ -703,7 +703,7 @@ function autoSwapHeirlooms(loomtype="Shield" || "Staff", loomlocation="heirlooms
         var theLoom = game.global[loomlocation][eachloom];
         if (theLoom.type != loomtype)
             continue;
-        var effRating = evaluateHeirloomMods(eachloom,loomlocation);
+        var effRating = evaluateHeirloomMods(eachloom, loomlocation);
     }
     if(loomlocation.includes('Equipped'))
         loom = game.global[loomlocation];
@@ -1117,7 +1117,7 @@ function buyFoodEfficientHousing() {
     }
 }
 
-//Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym,Tribute,Nursery)s
+//Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym, Tribute, Nursery)s
 function buyBuildings() {
     if(game.global.world!=1 && ((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist")))
         return;
@@ -1146,7 +1146,7 @@ function buyBuildings() {
     //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
     if ((targetBreed < getBreedTime() || targetBreed == 0 || !getPageSetting('ManageBreedtimer') ||
         (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
-        (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false,1))) && !game.buildings.Nursery.locked)
+        (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false, 1))) && !game.buildings.Nursery.locked)
     {
         var nwr = 0.05; //nursery to warpstation cost ratio (unrelated to the 20 below), has been this way since forever.
         var gemCostratio = 20;  //(1/20th)
@@ -1277,7 +1277,7 @@ function buyUpgrades() {
         if (!available) continue;
         if (game.upgrades.Scientists.done < game.upgrades.Scientists.allowed && upgrade != 'Scientists') continue;
         buyUpgrade(upgrade, true, true);
-        debug('Upgraded ' + upgrade,"*upload2");
+        debug('Upgraded ' + upgrade, "*upload2");
         //loop again.
     }
 }
@@ -1332,7 +1332,6 @@ function safeFireJob(job) {
 //Hires and Fires all workers (farmers/lumberjacks/miners/scientists/trainers/explorers)
 function buyJobs() {
     var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-    var trimps = game.resources.trimps;
     var totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     var farmerRatio = parseInt(getPageSetting('FarmerRatio'));
     var lumberjackRatio = parseInt(getPageSetting('LumberjackRatio'));
@@ -1369,9 +1368,9 @@ function buyJobs() {
             var buyScientists = Math.floor((scientistRatio / totalRatio * totalDistributableWorkers) - game.jobs.Scientist.owned);
             if (game.jobs.Scientist.owned < buyScientists && game.resources.trimps.owned > game.resources.trimps.realMax() * 0.1){
                 var toBuy = buyScientists-game.jobs.Scientist.owned;
-                var canBuy = Math.floor(trimps.owned - trimps.employed);
+                var canBuy = Math.floor(game.resources.trimps.owned - game.resources.trimps.employed);
                 if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
-                    safeBuyJob('Scientist',toBuy <= canBuy ? toBuy : canBuy);
+                    safeBuyJob('Scientist', toBuy <= canBuy ? toBuy : canBuy);
             }
             else
                 return;
@@ -1379,36 +1378,33 @@ function buyJobs() {
     }
     else
     {   //exit if we are havent bred to at least 90% breedtimer yet...
-        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) return;
+        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) 
+            return;
     }
     var subtract = 0;
+    //used multiple times below: (good job javascript for allowing functions in functions)
+    function checkFireandHire(job) {
+        if (canAffordJob(job, false, 1) && !game.jobs[job].locked) {
+            freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+            if (freeWorkers < 1) subtract = safeFireJob('Farmer');
+            safeBuyJob(job, 1);
+        }        
+    }    
     //Trainers capped to tributes percentage.
     var trainerpercent = getPageSetting('TrainerCaptoTributes');
     if (trainerpercent > 0){
-        var curtrainercost = game.jobs.Trainer.cost.food[0]*Math.pow(game.jobs.Trainer.cost.food[1],game.jobs.Trainer.owned);
+        var curtrainercost = game.jobs.Trainer.cost.food[0]*Math.pow(game.jobs.Trainer.cost.food[1], game.jobs.Trainer.owned);
         var curtributecost = getBuildingItemPrice(game.buildings.Tribute, "food", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);
         if (curtrainercost < curtributecost * (trainerpercent / 100) && (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1)) {
-            if (canAffordJob('Trainer', false,1) && !game.jobs.Trainer.locked) {
-                freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-                if (freeWorkers < 1) subtract = safeFireJob('Farmer');
-                safeBuyJob('Trainer',1);
-            }
+            checkFireandHire('Trainer');
         }
     }
     //regular old way of hard capping trainers to a certain number. (sorry about lazy duplicate coding)
     else if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
-        if (canAffordJob('Trainer', false,1) && !game.jobs.Trainer.locked) {
-            freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers < 1) subtract = safeFireJob('Farmer');
-            safeBuyJob('Trainer',1);
-        }
+        checkFireandHire('Trainer');
     }
     if (game.jobs.Explorer.owned < getPageSetting('MaxExplorers') || getPageSetting('MaxExplorers') == -1) {
-        if (canAffordJob('Explorer', false,1) && !game.jobs.Explorer.locked) {
-            freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers < 1) subtract = safeFireJob('Farmer');
-            safeBuyJob('Explorer',1);
-        }
+        checkFireandHire('Explorer');
     }
 
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
@@ -1418,40 +1414,32 @@ function buyJobs() {
         if (game.jobs.Farmer.owned < stopScientistsatFarmers && !breedFire) {
             var buyScientists = Math.floor((scientistRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Scientist.owned - subtract;
             if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
-                safeBuyJob('Scientist',buyScientists);
+                safeBuyJob('Scientist', buyScientists);
         }
     }
     //Buy Farmers:
-    if(!game.jobs.Farmer.locked && !breedFire) {
-        freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-        totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
-        var toBuy = Math.floor((farmerRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Farmer.owned - subtract;
-        var canBuy = Math.floor(trimps.owned - trimps.employed);
-        safeBuyJob('Farmer',toBuy <= canBuy ? toBuy : canBuy);
-    }
     //Buy/Fire Miners:
-    if(!game.jobs.Miner.locked && !breedFire) {
-        freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-        totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
-        var toBuy = Math.floor((minerRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Miner.owned - subtract;
-        var canBuy = Math.floor(trimps.owned - trimps.employed);
-        safeBuyJob('Miner',toBuy <= canBuy ? toBuy : canBuy);
-    }
-    else if(breedFire && game.global.turkimpTimer === 0)
-        safeBuyJob('Miner', game.jobs.Miner.owned * -1);
     //Buy/Fire Lumberjacks:
-    if(!game.jobs.Lumberjack.locked && !breedFire) {
-        freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-        totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
-        var toBuy = Math.floor((lumberjackRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Lumberjack.owned - subtract;
-        var canBuy = Math.floor(trimps.owned - trimps.employed);
-        safeBuyJob('Lumberjack',toBuy <= canBuy ? toBuy : canBuy);
+    function ratiobuy(job, jobratio) {
+        if(!game.jobs[job].locked && !breedFire) {
+            freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+            totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
+            var toBuy = Math.floor((jobratio / totalRatio) * totalDistributableWorkers) - game.jobs[job].owned - subtract;
+            var canBuy = Math.floor(game.resources.trimps.owned - game.resources.trimps.employed);
+            safeBuyJob(job, toBuy <= canBuy ? toBuy : canBuy);
+            return true;
+        }
+        else
+            return false;
     }
-    else if(breedFire)
+    ratiobuy('Farmer', farmerRatio);
+    if (!ratiobuy('Miner', minerRatio) && breedFire && game.global.turkimpTimer === 0)
+        safeBuyJob('Miner', game.jobs.Miner.owned * -1);
+    if (!ratiobuy('Lumberjack', lumberjackRatio) && breedFire)
         safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
 }
 
-//"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
+//"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
 function autoLevelEquipment() {
     //if((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
         //return;
@@ -1487,8 +1475,8 @@ function autoLevelEquipment() {
     var spirecheck = (game.global.world == 200 && game.global.spireActive);
     if (spirecheck) {
         var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 40;
-        enemyDamage = getSpireStats(cell,"Snimp","attack");
-        enemyHealth = getSpireStats(cell,"Snimp","health");
+        enemyDamage = getSpireStats(cell, "Snimp", "attack");
+        enemyHealth = getSpireStats(cell, "Snimp", "health");
     }
 
     //below challenge multiplier not necessarily accurate, just fudge factors
@@ -2035,7 +2023,7 @@ function autoMap() {
     else stackingTox = false;
 
     //during 'watch' challenge, run maps on these levels:
-    var watchmaps = [15,25,35,50];
+    var watchmaps = [15, 25, 35, 50];
     var shouldDoWatchMaps = false;
     if (game.global.challengeActive == 'Watch' && watchmaps.indexOf(game.global.world) > -1 && game.global.mapBonus < 1){
         shouldDoMaps = true;
@@ -2552,7 +2540,7 @@ function autoBreedTimer() {
                 //if Improbability already has 5 nomstacks, do 30 antistacks.
                 autoTrimpSettings.GeneticistTimer.value = '30';
                 //actually buy them here because we can't wait.
-                safeBuyJob('Geneticist',1+(autoTrimpSettings.GeneticistTimer.value - getBreedTime())*2);
+                safeBuyJob('Geneticist', 1+(autoTrimpSettings.GeneticistTimer.value - getBreedTime())*2);
             }
             else
                 autoTrimpSettings.GeneticistTimer.value = '10';
@@ -2568,12 +2556,12 @@ function autoBreedTimer() {
     if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && (inDamageStance||inScryerStance) && !breedFire) {
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
-        if (fWorkers < 1 && canAffordJob('Geneticist', false,1)) {
+        if (fWorkers < 1 && canAffordJob('Geneticist', false, 1)) {
             //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
             safeFireJob('Farmer');
         }
         //hire a geneticist
-        safeBuyJob('Geneticist',1);
+        safeBuyJob('Geneticist', 1);
     }
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
@@ -2745,7 +2733,7 @@ function useScryerStance() {
 
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
     if (useoverkill && game.portal.Overkill.level == 0)
-        setPageSetting('ScryerUseWhenOverkill',false);
+        setPageSetting('ScryerUseWhenOverkill', false);
     //Overkill button being on and being able to overkill in S will override any other setting, regardless.
     if (useoverkill && game.portal.Overkill.level > 0) {
         var avgDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
@@ -2853,7 +2841,7 @@ function mainLoop() {
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
     if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (genBTC settings area)
     if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (genBTC settings area)
-    autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
+    autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
 
     if (getPageSetting('UseScryerStance'))
         useScryerStance();                                  //"Use Scryer Stance"
@@ -2912,7 +2900,7 @@ function message2(messageString, type, lootIcon, extraClass) {
         //search string backwards for the occurrence of " x" (meaning x21 etc)
         var foundXat = msgToChange.lastIndexOf(" x");
         if (foundXat != -1){
-            toChange[toChange.length-1].innerHTML = msgToChange.slice(0,foundXat);  //and slice it out.
+            toChange[toChange.length-1].innerHTML = msgToChange.slice(0, foundXat);  //and slice it out.
         }
         //so we can add a new number in.
         toChange[toChange.length-1].innerHTML += " x" + lastmessagecount;
@@ -2961,17 +2949,17 @@ function filterMessage2(what){
 
 var hrlmProtBtn1 = document.createElement("DIV");
 hrlmProtBtn1.setAttribute('class', 'noselect heirloomBtnActive heirBtn');
-hrlmProtBtn1.setAttribute('onclick', 'protectHeirloom(this,true)');
+hrlmProtBtn1.setAttribute('onclick', 'protectHeirloom(this, true)');
 hrlmProtBtn1.innerHTML = 'Protect/Unprotect';  //since we cannot detect the selected heirloom on load, ambiguous name
 hrlmProtBtn1.id='protectHeirloomBTN1';
 var hrlmProtBtn2 = document.createElement("DIV");
 hrlmProtBtn2.setAttribute('class', 'noselect heirloomBtnActive heirBtn');
-hrlmProtBtn2.setAttribute('onclick', 'protectHeirloom(this,true)');
+hrlmProtBtn2.setAttribute('onclick', 'protectHeirloom(this, true)');
 hrlmProtBtn2.innerHTML = 'Protect/Unprotect';
 hrlmProtBtn2.id='protectHeirloomBTN2';
 var hrlmProtBtn3 = document.createElement("DIV");
 hrlmProtBtn3.setAttribute('class', 'noselect heirloomBtnActive heirBtn');
-hrlmProtBtn3.setAttribute('onclick', 'protectHeirloom(this,true)');
+hrlmProtBtn3.setAttribute('onclick', 'protectHeirloom(this, true)');
 hrlmProtBtn3.innerHTML = 'Protect/Unprotect';
 hrlmProtBtn3.id='protectHeirloomBTN3';
 document.getElementById('equippedHeirloomsBtnGroup').appendChild(hrlmProtBtn1);
@@ -2979,8 +2967,8 @@ document.getElementById('carriedHeirloomsBtnGroup').appendChild(hrlmProtBtn2);
 document.getElementById('extraHeirloomsBtnGroup').appendChild(hrlmProtBtn3);
 
 
-function protectHeirloom(element,modify){
-    var selheirloom = game.global.selectedHeirloom;  //[number,location]
+function protectHeirloom(element, modify){
+    var selheirloom = game.global.selectedHeirloom;  //[number, location]
     var heirloomlocation = selheirloom[1];
     var heirloom = game.global[heirloomlocation];
     if (selheirloom[0] != -1)
