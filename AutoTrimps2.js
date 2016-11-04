@@ -472,6 +472,15 @@ function getBreedTime(remaining, round) {
     if (game.jobs.Geneticist.owned > 0) potencyMod *= Math.pow(.98, game.jobs.Geneticist.owned);
     //Quick Trimps
     if (game.unlocks.quickTrimps) potencyMod *= 2;
+    //Daily mods
+	if (game.global.challengeActive == "Daily"){
+		if (typeof game.global.dailyChallenge.dysfunctional !== 'undefined'){
+			potencyMod *= dailyModifiers.dysfunctional.getMult(game.global.dailyChallenge.dysfunctional.strength);
+		}
+		if (typeof game.global.dailyChallenge.toxic !== 'undefined'){
+			potencyMod *= dailyModifiers.toxic.getMult(game.global.dailyChallenge.toxic.strength, game.global.dailyChallenge.toxic.stacks);
+		}
+	}    
     if (game.global.challengeActive == "Toxicity" && game.challenges.Toxicity.stacks > 0){
         potencyMod *= Math.pow(game.challenges.Toxicity.stackMult, game.challenges.Toxicity.stacks);
     }
@@ -1278,7 +1287,7 @@ function buyUpgrades() {
         if (game.upgrades.Scientists.done < game.upgrades.Scientists.allowed && upgrade != 'Scientists') continue;
         buyUpgrade(upgrade, true, true);
         debug('Upgraded ' + upgrade, "*upload2");
-        //loop again.
+    //loop again.
     }
 }
 
@@ -1383,14 +1392,16 @@ function buyJobs() {
     }
     var subtract = 0;
     //used multiple times below: (good job javascript for allowing functions in functions)
-    function checkFireandHire(job) {
-        if (canAffordJob(job, false, 1) && !game.jobs[job].locked) {
-            freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-            if (freeWorkers < 1) subtract = safeFireJob('Farmer');
-            safeBuyJob(job, 1);
-        }        
+    function checkFireandHire(job,amount) {
+        freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+        if (amount === null)
+            amount = 1;
+        if (freeWorkers < amount) 
+            subtract = safeFireJob('Farmer');
+        if (canAffordJob(job, false, amount) && !game.jobs[job].locked)
+            safeBuyJob(job, amount);
     }    
-    //Trainers capped to tributes percentage.
+    //Trainers: capped to tributes percentage.
     var trainerpercent = getPageSetting('TrainerCaptoTributes');
     if (trainerpercent > 0){
         var curtrainercost = game.jobs.Trainer.cost.food[0]*Math.pow(game.jobs.Trainer.cost.food[1], game.jobs.Trainer.owned);
@@ -1399,14 +1410,15 @@ function buyJobs() {
             checkFireandHire('Trainer');
         }
     }
-    //regular old way of hard capping trainers to a certain number. (sorry about lazy duplicate coding)
+    //Trainers: regular old way of hard capping trainers to a certain number. (sorry about lazy duplicate coding)
     else if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
         checkFireandHire('Trainer');
     }
-    if (game.jobs.Explorer.owned < getPageSetting('MaxExplorers') || getPageSetting('MaxExplorers') == -1) {
+    //Explorers:
+    if (getPageSetting('MaxExplorers') > game.jobs.Explorer.owned || getPageSetting('MaxExplorers') == -1) {
         checkFireandHire('Explorer');
     }
-
+    //Scientists:
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     if (getPageSetting('HireScientists') && !game.jobs.Scientist.locked) {
@@ -2556,12 +2568,13 @@ function autoBreedTimer() {
     if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && (inDamageStance||inScryerStance) && !breedFire) {
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
-        if (fWorkers < 1 && canAffordJob('Geneticist', false, 1)) {
+        if (fWorkers < 1)
             //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
             safeFireJob('Farmer');
         }
-        //hire a geneticist
-        safeBuyJob('Geneticist', 1);
+        if (canAffordJob('Geneticist', false, 1)) {
+            //hire a geneticist
+            safeBuyJob('Geneticist', 1);
     }
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
