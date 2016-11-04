@@ -1318,7 +1318,7 @@ function buyStorage() {
     }
 }
 
-function safeFireJob(job) {
+function safeFireJob(job,amount) {
     //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
     var oldjob = game.jobs[job].owned;
     var test = oldjob;
@@ -1331,8 +1331,12 @@ function safeFireJob(job) {
     }
     preBuy();
     game.global.firing = true;
-    game.global.buyAmt = x;    
-    buyJob(job, true, true);
+    freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+    while (freeWorkers == Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed) {
+        game.global.buyAmt = x;    
+        buyJob(job, true, true);
+        x*=2;
+    }
     postBuy();
     return x;
 }
@@ -1444,7 +1448,7 @@ function buyJobs() {
         else
             return false;
     }
-    ratiobuy('Farmer', farmerRatio);
+    ratiobuy('Farmer', farmerRatio);    
     if (!ratiobuy('Miner', minerRatio) && breedFire && game.global.turkimpTimer === 0)
         safeBuyJob('Miner', game.jobs.Miner.owned * -1);
     if (!ratiobuy('Lumberjack', lumberjackRatio) && breedFire)
@@ -2571,10 +2575,10 @@ function autoBreedTimer() {
         if (fWorkers < 1)
             //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
             safeFireJob('Farmer');
-        }
         if (canAffordJob('Geneticist', false, 1)) {
             //hire a geneticist
             safeBuyJob('Geneticist', 1);
+        }
     }
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
