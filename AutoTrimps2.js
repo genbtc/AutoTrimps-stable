@@ -1321,6 +1321,8 @@ function buyStorage() {
 function safeFireJob(job,amount) {
     //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
     var oldjob = game.jobs[job].owned;
+    if (oldjob == 0)
+        return 0;
     var test = oldjob;
     var x = 1;
     if (!Number.isSafeInteger(oldjob)){
@@ -2021,7 +2023,7 @@ function autoMap() {
         }
     }
 
-    //stack tox stacks if heliumGrowing has been set to true, or if we need to clear our void maps
+    //stack tox stacks if we are doing max tox, or if we need to clear our void maps
     if(game.global.challengeActive == 'Toxicity' && game.global.lastClearedCell > 93 && game.challenges.Toxicity.stacks < 1500 && ((getPageSetting('MaxTox') && game.global.world > 59) || needToVoid)) {
         shouldDoMaps = true;
         //we willl get at least 85 toxstacks from the 1st voidmap (unless we have overkill)
