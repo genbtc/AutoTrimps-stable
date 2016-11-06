@@ -1366,12 +1366,16 @@ function buyJobs() {
                 else if (game.jobs.Farmer.owned > game.jobs.Lumberjack.owned && !game.jobs.Lumberjack.locked)
                     safeBuyJob('Lumberjack', 1);
             }
+            freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
             if (game.resources.food.owned > 20 && freeWorkers > 0){
                 if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned && !game.jobs.Miner.locked)
                     safeBuyJob('Miner', 1);
             }
         }
         return;
+    //make sure the game always buys at least 1 farmer, so we can unlock lumberjacks.
+    } else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) {
+        safeBuyJob('Farmer', 1);
     }
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
@@ -1612,7 +1616,6 @@ function autoLevelEquipment() {
 
 //"Auto Gather/Build"
 function manualLabor() {
-    var ManualGather = 'metal';
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 
     //FRESH GAME NO HELIUM CODE.
@@ -1678,7 +1681,7 @@ function manualLabor() {
             var currentRate = game.jobs[job].owned * game.jobs[job].modifier;
             // debug('Current rate for ' + resource + ' is ' + currentRate + ' is hidden? ' + (document.getElementById(resource).style.visibility == 'hidden'));
             if (document.getElementById(resource).style.visibility != 'hidden') {
-                // debug('INNERLOOP for resource ' +resource);
+                //find the lowest resource rate
                 if (currentRate === 0) {
                     currentRate = game.resources[resource].owned;
                     // debug('Current rate for ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate);
