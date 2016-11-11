@@ -1702,18 +1702,23 @@ function manualLabor() {
         }
 
         if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
-            // debug('Set gather lowestResource');
-            setGather(lowestResource);
-        } else if (game.global.turkimpTimer > 0) {
-            //debug('Set gather ManualGather');
-            setGather('metal');
-        } else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < getPsString('science', true) * 60 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden' && game.global.turkimpTimer < 1 && haveWorkers) {
-            setGather('science');
+            if (game.global.turkimpTimer > 0)
+                setGather('metal');
+            else
+                setGather(lowestResource);//gather the lowest resource
+        //This stuff seems to be repeated from above. Should be refactored and fixed so this is not confusing.
+        } else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
+            if (game.resources.science.owned < getPsString('science', true) * 60 && game.global.turkimpTimer < 1 && haveWorkers)
+                setGather('science');
+            else
+                setGather('science');   //idk why. but this was happening all along, likely because the trapping process was happening in between them (moved it to last)
         }
-        else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < 10000)
-            setGather('buildings');
-        else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
-            setGather('science');
+        //refactored into the if else block above:
+        //else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
+        //    setGather('science');
+        //Build more traps if we have TrapTrimps on, and we own less than 1000 traps.
+        else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < 1000)
+            setGather('buildings'); //confusing (was always like this, see commits @ 2/23/16). 
     }
 }
 
@@ -1912,7 +1917,8 @@ function autoMap() {
     //allow script to handle abandoning
     if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
     //if we are prestige mapping, force equip first mode
-    if(autoTrimpSettings.Prestige.selected != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
+    var prestige = autoTrimpSettings.Prestige.selected;
+    if(prestige != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
     //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
     if(document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
         document.getElementById('Prestige').selectedIndex = 11;
@@ -1944,7 +1950,11 @@ function autoMap() {
     if(game.global.totalVoidMaps == 0 || !needToVoid)
         doVoids = false;
     //calculate if we are behind on prestiges
-    needPrestige = autoTrimpSettings.Prestige.selected != "Off" && game.mapUnlocks[autoTrimpSettings.Prestige.selected].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
+    needPrestige = prestige != "Off" && game.mapUnlocks[prestige].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
+   //dont need prestige if we are caught up, and have unbought prestiges:
+     /*if (needPrestige && game.upgrades[prestige].allowed == Math.floor(game.mapUnlocks[prestige].last) && game.upgrades[prestige].done < game.upgrades[prestige].allowed)
+        needPrestige = false;
+    */
 
 //START CALCULATING DAMAGES
     //PREPARE SOME VARIABLES
@@ -2150,7 +2160,7 @@ function autoMap() {
                 var prestigeitemsleft = addSpecials(true, true, theMap);
                 //Always run Bionic Wonderland VI (if there are still prestige items available)
                 //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI)
-                if ((prestigeitemsleft > 0 && (theMap.name == 'Bionic Wonderland VI' || theMap.name == 'Bionic Wonderland VII'))){
+                if ((needFarmSpire && theMap.name == 'Bionic Wonderland VI')){
                     selectedMap = theMap.id;
                     break;
                 }
