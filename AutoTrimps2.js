@@ -2408,7 +2408,7 @@ function autoMap() {
             //recalculate cost.
             updateMapCost();
             //if we are "Farming" for resources, make sure it's Plentiful OR metal (and always aim for lowest difficulty)
-            if(shouldFarm || !enoughDamage || !enoughHealth || needFarmSpire) {
+            if(shouldFarm || !enoughDamage || !enoughHealth || needFarmSpire || game.global.challengeActive == 'Metal') {
                 biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";
                 updateMapCost();
             } else {
