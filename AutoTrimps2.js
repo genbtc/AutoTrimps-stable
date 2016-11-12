@@ -1710,8 +1710,10 @@ function manualLabor() {
         } else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
             if (game.resources.science.owned < getPsString('science', true) * 60 && game.global.turkimpTimer < 1 && haveWorkers)
                 setGather('science');
+            else if (game.global.turkimpTimer > 0)
+                setGather('metal');
             else
-                setGather('science');   //idk why. but this was happening all along, likely because the trapping process was happening in between them (moved it to last)
+                setGather(lowestResource);
         }
         //refactored into the if else block above:
         //else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
@@ -1719,6 +1721,8 @@ function manualLabor() {
         //Build more traps if we have TrapTrimps on, and we own less than 1000 traps.
         else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < 1000)
             setGather('buildings'); //confusing (was always like this, see commits @ 2/23/16). 
+        else
+            setGather(lowestResource); 
     }
 }
 
