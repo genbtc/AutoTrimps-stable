@@ -266,6 +266,30 @@ function getPerSecBeforeManual(job) {
     return perSec;
 }
 
+function checkJobPercentageCost(what, toBuy) {
+    var costItem = "food";
+    var job = game.jobs[what];
+    var cost = job.cost[costItem];
+    var price = 0;
+	if (!toBuy) toBuy = game.global.buyAmt;
+	if (typeof cost[1] !== 'undefined')
+		price =  Math.floor((cost[0] * Math.pow(cost[1], job.owned)) * ((Math.pow(cost[1], toBuy) - 1) / (cost[1] - 1)));
+	else
+		price = cost * toBuy;
+    var percent;
+    if (game.resources[costItem].owned < price){
+        var thisPs = getPsString(costItem, true);
+        if (thisPs > 0)
+            percent = calculateTimeToMax(null, thisPs, (price - game.resources[costItem].owned));
+            //console.log("time");
+        return [false,percent];
+    }
+    else
+        percent = (game.resources[costItem].owned > 0) ? ((price / game.resources[costItem].owned) * 100).toFixed(1) : 0;
+        //console.log("percent");
+    return [true,percent];
+}
+
 //Called before buying things that can be purchased in bulk
 function preBuy() {
     preBuyAmt = game.global.buyAmt;
