@@ -325,7 +325,7 @@ function automationMenuInit() {
 
 
     //create container for settings buttons
-    document.getElementById("settingsRow").innerHTML += '<div id="autoSettings" style="display: none; max-height: 96vh;"></div>';
+    document.getElementById("settingsRow").innerHTML += '<div id="autoSettings" style="display: none; max-height: 96vh;overflow: auto;"></div>';
    //shrink padding for fight buttons to help fit automaps button/status
     var btns = document.getElementsByClassName("fightBtn");
     for (var x = 0; x < btns.length; x++){
