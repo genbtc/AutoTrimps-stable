@@ -1417,6 +1417,17 @@ function buyJobs() {
             subtract = safeFireJob('Farmer');
         if (canAffordJob(job, false, amount) && !game.jobs[job].locked)
             safeBuyJob(job, amount);
+    }
+    //Scientists:
+    freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+    totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
+    if (getPageSetting('HireScientists') && !game.jobs.Scientist.locked) {
+        //if earlier in the game, buy a small amount of scientists
+        if (game.jobs.Farmer.owned < stopScientistsatFarmers && !breedFire) {
+            var buyScientists = Math.floor((scientistRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Scientist.owned - subtract;
+            if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
+                safeBuyJob('Scientist', buyScientists);
+        }
     }    
     //Trainers: capped to tributes percentage.
     var trainerpercent = getPageSetting('TrainerCaptoTributes');
@@ -1435,17 +1446,7 @@ function buyJobs() {
     if (getPageSetting('MaxExplorers') > game.jobs.Explorer.owned || getPageSetting('MaxExplorers') == -1) {
         checkFireandHire('Explorer');
     }
-    //Scientists:
-    freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-    totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
-    if (getPageSetting('HireScientists') && !game.jobs.Scientist.locked) {
-        //if earlier in the game, buy a small amount of scientists
-        if (game.jobs.Farmer.owned < stopScientistsatFarmers && !breedFire) {
-            var buyScientists = Math.floor((scientistRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Scientist.owned - subtract;
-            if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
-                safeBuyJob('Scientist', buyScientists);
-        }
-    }
+
     //Buy Farmers:
     //Buy/Fire Miners:
     //Buy/Fire Lumberjacks:
