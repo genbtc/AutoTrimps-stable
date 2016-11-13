@@ -2,6 +2,9 @@
 #logBtnGroup div {
     width: 19%!important;
 }
+#logBtnGroup div .logConfigHolder {
+    width: 5%!important;
+}
 #logConfigBtn {
     padding: 6px 0px!important;
 }
