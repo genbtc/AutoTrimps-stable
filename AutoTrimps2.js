@@ -1653,12 +1653,12 @@ function manualLabor() {
         }
     }
 
-    if(breedingTrimps < 5 && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
+    if(getPageSetting('TrapTrimps') && breedingTrimps < 5 && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
     }
-    else if (breedingTrimps < 5 && game.buildings.Trap.owned > 0) {
+    else if (getPageSetting('TrapTrimps') && breedingTrimps < 5 && game.buildings.Trap.owned > 0) {
         setGather('trimps');
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
@@ -2178,17 +2178,17 @@ function autoMap() {
             //run Bionics before spire to farm.
             if (getPageSetting('RunBionicBeforeSpire') && (game.global.world == 200) && theMap.name.includes('Bionic Wonderland')){
                 //this is how to check if a bionic is green or not.
-                var bionicnumber = ((theMap.level - 125) / 15).toFixed(2);
+                var bionicnumber = 1 + ((theMap.level - 125) / 15);
                 //if numbers match, map is green, so run it. (do the pre-requisite bionics one at a time in order)
-                if (bionicnumber == game.global.bionicOwned && bionicnumber < 5){
+                if (bionicnumber == game.global.bionicOwned && bionicnumber < 6){
                     selectedMap = theMap.id;
                     break;
                 }
-                //Count number of prestige items left,
-                var prestigeitemsleft = addSpecials(true, true, theMap);
-                //Always run Bionic Wonderland VI (if there are still prestige items available)
-                //Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI)
-                if ((needFarmSpire && theMap.name == 'Bionic Wonderland VI')){
+                //NO->Count number of prestige items left,
+                //NO->var prestigeitemsleft = addSpecials(true, true, theMap);
+                //NO->Always run Bionic Wonderland VI (if there are still prestige items available)
+                //NO->Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI)
+                if ((shouldDoSpireMaps && theMap.name == 'Bionic Wonderland VI')){
                     selectedMap = theMap.id;
                     break;
                 }
@@ -2321,10 +2321,10 @@ function autoMap() {
     //Repeat Button Management (inside a map):
     if (!game.global.preMapsActive && game.global.mapsActive) {
         //Set the repeatBionics flag (farm bionics before spire), for the repeat button management code.
-        var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 5;
+        var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 6;
         //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
         //or repeatbionics is true and there are still prestige items available to get
-        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps)) || (repeatBionics && addSpecials(true, true, getCurrentMapObject()) > 0)) {
+        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps) || repeatBionics)) {
             var targetPrestige = autoTrimpSettings.Prestige.selected;
             //make sure repeat map is on
             if (!game.global.repeatMap) {
@@ -3068,4 +3068,22 @@ function generateHeirloomIcon(heirloom, location, number){
     html += '" onmouseover="tooltip(\'Heirloom\', null, event, null, ' + locText + ')" onmouseout="tooltip(\'hide\')" onclick="newSelectHeirloom(';
     html += locText + ', this)"> <span class="' + icon + '"></span></span>';
     return html;
+}
+
+ //Replacement function for Zone tooltip to show current amount in seconds (Just adds the seconds)
+function formatMinutesForDescriptions(number){
+	var text;
+    var seconds = Math.round((number*60) % 60);
+	var minutes = Math.round(number % 60);
+	var hours = Math.floor(number / 60);
+	if (hours == 0) text = minutes + " minutes " + seconds + " seconds";
+	else if (minutes > 0) {
+		if (minutes < 10) minutes = "0" + minutes;
+		text = hours + ":" + minutes + ":" + seconds;
+	}
+	else {
+		var s = (hours > 1) ? "s" : "";
+		text = hours + " hour" + s + " " + minutes + " minutes";
+	}
+	return text;
 }
