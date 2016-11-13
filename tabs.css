@@ -2,8 +2,8 @@
 #logBtnGroup div {
     width: 19%!important;
 }
-#logBtnGroup div .logConfigHolder {
-    width: 5%!important;
+div#logConfigHolder.btn-group {
+    width: 5%!important;    /* overriding like 3 previous things :/ */
 }
 #logConfigBtn {
     padding: 6px 0px!important;
