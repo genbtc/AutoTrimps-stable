@@ -989,23 +989,6 @@ function evaluateHeirloomMods(loom, location, upgrade) {
 //Main Functions////////////////////////
 ////////////////////////////////////////
 
-function initializeAutoTrimps() {
-    debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
-    loadPageVariables();
-
-    var atscript = document.getElementById('AutoTrimps-script')
-      , base = 'https://genbtc.github.io/AutoTrimps'
-      ;
-    if (atscript !== null) {
-        base = atscript.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
-    }
-    //document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/NewUI2.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
-    toggleSettingsMenu();
-    toggleSettingsMenu();
-}
-
 function workerRatios() {
     if (game.global.world == 200 && game.global.spireActive) {
         autoTrimpSettings.FarmerRatio.value = '1';
@@ -2846,6 +2829,27 @@ function useScryerStance() {
         autoStance();
         return;
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//Main Loader Initialize Function (loads first)/////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+function initializeAutoTrimps() {
+    debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
+    loadPageVariables();
+
+    var atscript = document.getElementById('AutoTrimps-script')
+      , base = 'https://genbtc.github.io/AutoTrimps'
+      ;
+    if (atscript !== null) {
+        base = atscript.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
+    }
+    //document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
+    document.head.appendChild(document.createElement('script')).src = base + '/NewUI2.js';
+    document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
+    toggleSettingsMenu();
+    toggleSettingsMenu();
 }
 
 ////////////////////////////////////////
