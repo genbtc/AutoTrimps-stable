@@ -1,3 +1,12 @@
+/*For the autotrimps Top right Story/Loot/Unlocks/Combat/Settings/AutoTrimps Tabs, so they dont overlap*/
+#logBtnGroup div {
+    width: 19%!important;
+}
+#logConfigBtn {
+    padding: 6px 0px!important;
+}
+/*For the NEWUI2.js settings window*/
+
 /* Style the list */
 ul.tab {
     list-style-type: none;
