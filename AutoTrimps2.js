@@ -1161,7 +1161,7 @@ function buyBuildings() {
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     //only buy nurseries if enabled,   and we need to lower our breed time, or our target breed time is 0, or we aren't trying to manage our breed time before geneticists, and they aren't locked
     //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
-    if ((targetBreed < getBreedTime() || targetBreed == 0 || !getPageSetting('ManageBreedtimer') ||
+    if ((targetBreed < getBreedTime() || targetBreed <= 0 ||
         (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
         (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false, 1))) && !game.buildings.Nursery.locked)
     {
