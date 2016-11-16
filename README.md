@@ -1,9 +1,11 @@
 # AutoTrimps + genBTC
+![Donate](https://blockchain.info/Resources/buttons/donate_64.png)
+<a href="bitcoin://1genbtcPLjAEk6RnfC66chYniFKfP7vAS">1genbtcPLjAEk6RnfC66chYniFKfP7vAS</a><br />
+Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)<br />
 
 [![Join the chat at https://gitter.im/AutoTrimps/Lobby](https://badges.gitter.im/AutoTrimps/Lobby.svg)](https://gitter.im/AutoTrimps/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)
-
-## Discussion / Discord Channel
+## Discussion / Discord Channel 
+<a href="https://discord.gg/0VbWe0dxB9kIfV2C"><img src="https://pbs.twimg.com/profile_images/568588143226413056/9Lwrixxj.png" width=48></a>
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
 ## Script Installation
