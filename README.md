@@ -1,4 +1,6 @@
 # AutoTrimps + genBTC
+
+[![Join the chat at https://gitter.im/AutoTrimps/Lobby](https://badges.gitter.im/AutoTrimps/Lobby.svg)](https://gitter.im/AutoTrimps/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)
 
 ## Discussion / Discord Channel
