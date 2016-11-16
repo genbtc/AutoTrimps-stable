@@ -1049,6 +1049,7 @@ function safeBuyBuilding(building) {
         }
         buyBuilding(building, true, true);
         debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*rocket');
+        postBuy();
         return;
     }
     debug('Building ' + building, '*hammer2');
