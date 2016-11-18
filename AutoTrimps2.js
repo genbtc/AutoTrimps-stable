@@ -3082,7 +3082,7 @@ function generateHeirloomIcon(heirloom, location, number){
  //Replacement function for Zone tooltip to show current amount in seconds (Just adds the seconds)
 function formatMinutesForDescriptions(number){
 	var text;
-    var seconds = Math.round((number*60) % 60);
+    var seconds = Math.floor((number*60) % 60);
 	var minutes = Math.floor(number % 60);
 	var hours = Math.floor(number / 60);
 	if (hours == 0) text = minutes + " minutes " + seconds + " seconds";
