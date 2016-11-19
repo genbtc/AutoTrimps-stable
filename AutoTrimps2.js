@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.8-genbtc-11-13-2016
+// @version      2.1.2.9-genbtc-11-18-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.8-genbtc-11-13-2016';
+var ATversion = '2.1.2.9-genbtc-11-18-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2850,6 +2850,10 @@ function initializeAutoTrimps() {
     //document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
     document.head.appendChild(document.createElement('script')).src = base + '/NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
+    if (typeof(AutoPerks) === 'undefined')
+        document.head.appendChild(document.createElement('script')).src = base + '/AutoPerks.js';
+    else
+        debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
     toggleSettingsMenu();
     toggleSettingsMenu();
 }

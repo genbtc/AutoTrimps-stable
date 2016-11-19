@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoPerks
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2-beta-10-31-2016+hiders
+// @version      1.0.2-10-31-2016+hiders
 // @description  Trimps Automatic Perk Calculator
 // @author       zxv, genBTC
 // @include      *trimps.github.io*
@@ -10,7 +10,12 @@
 // ==/UserScript==
 
 //Create blank AutoPerks object
-AutoPerks = {};
+if (typeof(AutoPerks) === 'undefined')
+    var AutoPerks = {};
+else {
+    console.log('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!');  
+}
+    
 
 //Import the Library
 var head = document.getElementsByTagName('head')[0];
