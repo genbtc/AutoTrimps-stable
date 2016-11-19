@@ -2498,6 +2498,7 @@ function autoPortal() {
             }
             break;
         case "Balance":
+        case "Decay":
         case "Electricity":
         case "Crushed":
         case "Nom":
@@ -2528,6 +2529,9 @@ function checkSettings() {
             break;
         case "Balance":
             portalLevel = 41;
+            break;
+        case "Decay":
+            portalLevel = 56;
             break;
         case "Electricity":
             portalLevel = 82;
