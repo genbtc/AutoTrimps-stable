@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         AutoPerks
+// @name         AutoTrimps-genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
 // @version      2.2
 // @description  Automate all the trimps!
@@ -9,7 +9,7 @@
 // @grant        none
 // ==/UserScript==
 
-var apscript = document.createElement('script');
-apscript.id = 'ZXV-Perk-Calculator';
-apscript.src = 'https://genbtc.github.io/AutoTrimps/AutoPerks.js';
-document.head.appendChild(apscript);
+var script = document.createElement('script');
+script.id = 'AutoTrimps-script';
+script.src = 'https://genbtc.github.io/AutoTrimps/AutoTrimps2.js';
+document.head.appendChild(script);
