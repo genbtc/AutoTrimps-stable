@@ -2617,7 +2617,7 @@ function autoBreedTimer() {
     //if a new fight group is available and anticipation stacks aren't 30, abandon and grab a new group
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     //dont do this if automaps is off
-    if (getPageSetting('AutoMaps') && game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime() >= targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
+    if (getPageSetting('AutoMaps') && game.global.mapsUnlocked && game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
         if (game.global.mapsActive && getCurrentMapObject().location == "Void")
             return;
         if (!game.global.preMapsActive) {
@@ -2625,7 +2625,7 @@ function autoBreedTimer() {
             //force abandon army
             if (game.global.switchToMaps)
                 mapsClicked();
-            console.log("Killed you! (to get to 30 anti stacks). Autohomicide successful.");
+            debug("Killed you! (to get to 30 anti stacks). Autohomicide successful.");
         }
     }
 }
