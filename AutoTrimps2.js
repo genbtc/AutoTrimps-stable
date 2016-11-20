@@ -2857,7 +2857,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br><b>Re-arranged all the categories in the settings window</b>', 'cancelTooltip()', 'Script Update Notice');    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br><b>Re-arranged all the categories in the settings window and updated tooltips</b><br>Kill your trimps (AutoHomicide) for 30 Anti-Stacks more aggressively<br>', 'cancelTooltip()', 'Script Update Notice');    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
