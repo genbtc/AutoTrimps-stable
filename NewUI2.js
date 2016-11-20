@@ -82,8 +82,10 @@ function toggleTab(evt, tabName) {
 }
 //Make Tabs.
 createTabs("Core","Main Controls for the script");
-createTabs("Core2","Sub Controls for the script + Advanced");
+createTabs("Maps","AutoMaps + VoidMaps related Settings");
+createTabs("Settings","Sub Controls for the script");
 createTabs("genBTC","GenBTC Advanced");
+
 createTabs("Scryer","Scryer Stance");
 createTabs("Import Export","Import Export Settings");
 //Insert tabs into the game area
@@ -94,10 +96,9 @@ document.getElementsByClassName("tablinks")[0].className += " active";
 
 //START MAKING BUTTONS IN THE TABS:
 //CORE:
-createSetting('ManualGather2', ['Gather/Build OFF','Auto Gather/Build','Science Research OFF'], 'Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research', 'multitoggle',1,null,"Core");
+createSetting('ManualGather2', ['Gather/Build OFF','Auto Gather/Build','Science Research OFF'], '3-Way Button. Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research', 'multitoggle',1,null,"Core");
 createSetting('AutoFight', 'Better Auto Fight', 'Will automatically handle fighting. It gives you autofight before you get the Battle upgrade in Zone 1.. .CAUTION: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'boolean',true,null,"Core");
 createSetting('AutoStance', 'Auto Stance', 'Automatically swap stances to avoid death.', 'boolean',true,null,"Core");
-createSetting('TrapTrimps', 'Trap Trimps', 'Automatically trap trimps when needed, including building traps.', 'boolean',true,null,"Core");
 createSetting('BuyStorage', 'Buy Storage', 'Will buy storage when resource is almost full. (like AutoStorage, even anticipates Jestimp)', 'boolean',true,null,"Core");
 createSetting('BuyJobs', 'Buy Jobs', 'Buys jobs based on ratios configured below. CAUTION: you cannot manually assign jobs with this. Toggle if you need to.', 'boolean',true,null,"Core");
 createSetting('BuyBuildings', 'Buy Buildings', 'Will buy non storage buildings as soon as they are available', 'boolean',true,null,"Core");
@@ -106,9 +107,9 @@ createSetting('BuyArmor', 'Buy Armor', 'Auto-Buy/Level-Up the most cost efficien
 createSetting('BuyArmorUpgrades', 'Buy Armor Upgrades', '(Prestiges) & Gymystic. Will buy the most efficient armor upgrade available. ', 'boolean',true,null,"Core");
 createSetting('BuyWeapons', 'Buy Weapons', 'Auto-Buy/Level-Up the most cost efficient weapon available. ', 'boolean',true,null,"Core");
 createSetting('BuyWeaponUpgrades', 'Buy Weapon Upgrades', '(Prestiges) Will buy the most efficient weapon upgrade available. ', 'boolean',true,null,"Core");
+createSetting('TrapTrimps', 'Trap Trimps', 'Automatically trap trimps when needed, including building traps. (when you turn off, make sure you also turn off the ingame AutoTraps button)', 'boolean',true,null,"Core");
 createSetting('BuyShieldblock', 'Buy Shield Block', 'Will buy the shield block upgrade. CAUTION: If you are progressing past zone 60, you probably don\'t want this :)', 'boolean',false,null,"Core");
-createSetting('AutoMaps', 'Auto Maps', 'Automatically run maps to progress. Very Important.', 'boolean',true,null,"Core");
-createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps to choose to run Unique maps. Required for AutoPortal. Also needed for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc). Needed to auto-run The Wall and Dimension of Anger. ', 'boolean',true,null,"Core");
+
 createSetting('AutoHeirlooms', 'Auto Heirlooms', 'Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.', 'boolean',true,null,"Core");
 createSetting('HireScientists', 'Hire Scientists', 'Enable or disable hiring of scientists. Math: ScientistRatio=(FarmerRatio+LumberjackRatio+MinerRatio)/25 and stops hiring scientists after 250k Farmers.', 'boolean',true,null,"Core");
 createSetting('WorkerRatios', 'Auto Worker Ratios', 'Automatically changes worker ratios based on current progress. WARNING: overrides worker ratio settings. Settings: 1/1/1 up to 300k trimps, 3/3/5 up to 3mil trimps, then 3/1/4 above 3 mil trimps, then 1/1/10 above 1000 tributes, then 1/2/22 above 1500 tributes. Uses 1/40/8 in Spire since we get plenty of metal from that.', 'boolean',true,null,"Core");
@@ -125,37 +126,48 @@ createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-
 createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead','Corrupted'],"Core");
 createSetting('CustomAutoPortal', 'Custom Portal', 'Automatically portal AFTER clearing this level.(ie: setting to 200 would portal when you first reach level 201)', 'value', '200',null, "Core");
 createSetting('HeHrDontPortalBefore', 'He/Hr Dont Portal Before', 'Do NOT allow Helium per Hour AutoPortal setting to portal BEFORE this level is reached. It is an additional check that prevents drops in helium/hr from triggering autoportal. Set to 0 or -1 to completely disable this check.', 'value', '200',null, "Core");
-createSetting('VoidMaps', 'Void Maps', 'The zone at which you want all your void maps to be cleared (Cell 96).  0 is off', 'value', '0',null,"Core");
-createSetting('RunNewVoids', 'Run New Voids', 'Run new void maps acquired after the set void map zone. Runs them at Cell 95 by default, unless you set a decimal value indicating the cell, like: 187.75  CAUTION: May severely slow you down by trying to do too-high level voidmaps. Use the adjacent RunNewVoidsUntil setting to limit this.', 'boolean', null, null, 'Core');
-createSetting('RunNewVoidsUntil', 'Run New Voids Until', 'Put a cap on what zone new voids will run at, until this zone, inclusive. ', 'value', '-1', null, 'Core');
-createSetting('VoidCheck', 'Void Difficulty Check', 'How many hits to be able to take from a void map boss in dominance stance before we attempt the map. Higher values will get you stronger (by farming for health) before attempting. 2 should be fine.', 'value', '2', null, 'Core');
-//CORE2:
-createSetting('FarmerRatio', 'Farmer Ratio', '', 'value', '1',null,"Core2");
-createSetting('LumberjackRatio', 'Lumberjack Ratio', '', 'value', '1',null,"Core2");
-createSetting('MinerRatio', 'Miner Ratio', '', 'value', '1',null,"Core2");
-createSetting('MaxScientists', 'Max Scientists', 'Advanced. Cap your scientists. recommend: -1 ("infinite" still controls itself and caps to around 250k under normal situations)', 'value', '-1',null,"Core2");
-createSetting('MaxExplorers', 'Max Explorers', 'Cap your explorers, most of fragments are gained by looting not gathering. recommend: 150', 'value', '150',null,"Core2");
-createSetting('MaxTrainers', 'Max Trainers', 'Advanced. Cap your trainers. recommend: -1', 'value', '-1',null,"Core2");
-createSetting('MaxHut', 'Max Huts', 'Huts', 'value', '100',null,"Core2");
-createSetting('MaxHouse', 'Max Houses', 'Houses', 'value', '100',null,"Core2");
-createSetting('MaxMansion', 'Max Mansions', 'Mansions', 'value', '100',null,"Core2");
-createSetting('MaxHotel', 'Max Hotels', 'Hotels', 'value', '100',null,"Core2");
-createSetting('MaxResort', 'Max Resorts', 'Resorts', 'value', '100',null,"Core2");
-createSetting('MaxGateway', 'Max Gateways', 'WARNING: Not recommended to raise above 25', 'value', '25',null,"Core2");
-createSetting('MaxWormhole', 'Max Wormholes', 'WARNING: Wormholes cost helium! Values below 0 do nothing.', 'value', '0',null,"Core2");
-createSetting('MaxCollector', 'Max Collectors', 'recommend: -1', 'value', '-1',null,"Core2");
-createSetting('FirstGigastation', 'First Gigastation', 'How many warpstations to buy before your first gigastation', 'value', '20',null,"Core2");
-createSetting('DeltaGigastation', 'Delta Gigastation', 'How many extra warpstations to buy for each gigastation. Supports decimal values. For example 2.5 will buy +2/+3/+2/+3...', 'value', '2',null,"Core2");
-createSetting('MaxGym', 'Max Gyms', 'Advanced. recommend: -1', 'value', '-1',null,"Core2");
-createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1',null,"Core2");
-createSetting('MaxNursery', 'Max Nurseries', 'Advanced. recommend: -1', 'value', '-1',null,"Core2");
+createSetting('HeliumHrBuffer', 'He/Hr Portal Buffer %', 'IMPORTANT SETTING. When using the He/Hr Autoportal, it will portal if your He/Hr drops by this amount of % lower than your best for current run, default is 0% (ie: set to 5 to portal at 95% of your best)', 'value', '0', null, 'Core');
+createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps Script (not including the graphs module)', 'boolean', null, null, 'Core');
 
-//advanced settings
-createSetting('LimitEquipment', 'Limit Equipment', 'Limit levels of equipment bought to:(level 11 - the prestige level). At or Above Prestige X (10), your equipment will remain at level 1. In other words, do not level equipment after ~level ~51, and only buy Prestiges. CAUTION: may reduce He/hr performance in many cases.', 'boolean', null, null, 'Core2');
-createSetting('BreedFire', 'Breed Fire', 'OPTIONAL. Fire Lumberjacks and Miners to speed up breeding when needed. Basically trades wood/metal to cut the wait between deaths down. Disclaimer: May heavily negatively impact wood-gathering. ', 'boolean', null, null, 'Core2');
-createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'Core2');
-createSetting('DisableFarm', 'Disable Farming', 'Disables the extended farming algorithm of the AutoMaps part of the script. Always returns to the world after reaching 10 map stacks. (Does not disable siphonology.) ', 'boolean', null, null, 'Core2');
-createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps Script (not including the graphs module)', 'boolean', null, null, 'Core2');
+//AutoMaps + VoidMaps settings:
+createSetting('AutoMaps', 'Auto Maps', 'Automatically run maps to progress. Very Important.', 'boolean',true,null,"Maps");
+createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps to choose to run Unique maps. Required for AutoPortal. Also needed for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc). Needed to auto-run The Wall and Dimension of Anger. ', 'boolean',true,null,"Maps");
+createSetting('DynamicSiphonology', 'Dynamic Siphonology', 'IMPORTANT SETTING. Use the right level of siphonology based on your damage output.', 'boolean', true, null, 'Maps');
+createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm b4 Spire', 'Farm level 200(or BW) maps for X minutes before continuing to beat spire - No Longer runs 10 maps prior to this countdown, so your timer will likely need to increase. (0 to disable)', 'value', '0', null, 'Maps');
+createSetting('RunBionicBeforeSpire', 'Run Bionic Before Spire', 'CAUTION:  Runs Bionic Wonderlands I through VI and then repeatedly farms VI(level 200) before attempting Spire, for the purpose of farming. Then attempts the spire. The Minutes-Before-Spire timer runs concurrently to this, and if not set, will exit without doing Bionic VI. You can un-toggle it as desired. WARNING: DO NOT USE WITH HE/HR PORTAL (it will portal due to He/Hr suffers).' , 'boolean', null, null, 'Maps');
+createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Exits the Spire early, after completing cell X. example: 40 for Row 4. (better use 0 to disable, not -1)', 'value', '0', null, 'Maps');
+createSetting('CorruptionCalc', 'Corruption Farm Mode', 'IMPORTANT SETTING. Enabling this will cause the Automaps routine to take amount of corruption in a zone into account, to decide whether it should do maps first for map bonus. ONLY in Zone 181+. ', 'boolean', false, null, 'Maps');
+createSetting('FarmWhenNomStacks7', 'Farm on >7 NomStacks', 'On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On! (exits when we get under 20x)', 'boolean', null, null, 'Maps');
+createSetting('VoidMaps', 'Void Maps', 'The zone at which you want all your void maps to be cleared (Cell 96).  0 is off', 'value', '0',null,"Maps");
+createSetting('RunNewVoids', 'Run New Voids', 'Run new void maps acquired after the set void map zone. Runs them at Cell 95 by default, unless you set a decimal value indicating the cell, like: 187.75  CAUTION: May severely slow you down by trying to do too-high level voidmaps. Use the adjacent RunNewVoidsUntil setting to limit this.', 'boolean', null, null, 'Maps');
+createSetting('RunNewVoidsUntil', 'Run New Voids Until', 'Put a cap on what zone new voids will run at, until this zone, inclusive. ', 'value', '-1', null, 'Maps');
+createSetting('VoidCheck', 'Void Difficulty Check', 'How many hits to be able to take from a void map boss in dominance stance before we attempt the map. Higher values will get you stronger (by farming for health) before attempting. 2 should be fine.', 'value', '2', null, 'Maps');
+createSetting('DisableFarm', 'Disable Farming', 'Disables the extended farming algorithm of the AutoMaps part of the script. Always returns to the world after reaching 10 map stacks. (Does not disable siphonology.) ', 'boolean', null, null, 'Maps');
+
+//Settings:
+createSetting('FarmerRatio', 'Farmer Ratio', '', 'value', '1',null,"Settings");
+createSetting('LumberjackRatio', 'Lumberjack Ratio', '', 'value', '1',null,"Settings");
+createSetting('MinerRatio', 'Miner Ratio', '', 'value', '1',null,"Settings");
+createSetting('MaxScientists', 'Max Scientists', 'Advanced. Cap your scientists. recommend: -1 ("infinite" still controls itself and caps to around 250k under normal situations)', 'value', '-1',null,"Settings");
+createSetting('MaxExplorers', 'Max Explorers', 'Cap your explorers, most of fragments are gained by looting not gathering. recommend: 150', 'value', '150',null,"Settings");
+createSetting('MaxTrainers', 'Max Trainers', 'Advanced. Cap your trainers. recommend: -1', 'value', '-1',null,"Settings");
+createSetting('MaxHut', 'Max Huts', 'Huts', 'value', '100',null,"Settings");
+createSetting('MaxHouse', 'Max Houses', 'Houses', 'value', '100',null,"Settings");
+createSetting('MaxMansion', 'Max Mansions', 'Mansions', 'value', '100',null,"Settings");
+createSetting('MaxHotel', 'Max Hotels', 'Hotels', 'value', '100',null,"Settings");
+createSetting('MaxResort', 'Max Resorts', 'Resorts', 'value', '100',null,"Settings");
+createSetting('MaxGateway', 'Max Gateways', 'WARNING: Not recommended to raise above 25', 'value', '25',null,"Settings");
+createSetting('MaxWormhole', 'Max Wormholes', 'WARNING: Wormholes cost helium! Values below 0 do nothing.', 'value', '0',null,"Settings");
+createSetting('MaxCollector', 'Max Collectors', 'recommend: -1', 'value', '-1',null,"Settings");
+createSetting('FirstGigastation', 'First Gigastation', 'How many warpstations to buy before your first gigastation', 'value', '20',null,"Settings");
+createSetting('DeltaGigastation', 'Delta Gigastation', 'How many extra warpstations to buy for each gigastation. Supports decimal values. For example 2.5 will buy +2/+3/+2/+3...', 'value', '2',null,"Settings");
+createSetting('MaxGym', 'Max Gyms', 'Advanced. recommend: -1', 'value', '-1',null,"Settings");
+createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1',null,"Settings");
+createSetting('MaxNursery', 'Max Nurseries', 'Advanced. recommend: -1', 'value', '-1',null,"Settings");
+//Settings advanced settings
+createSetting('LimitEquipment', 'Limit Equipment', 'Limit levels of equipment bought to:(level 11 - the prestige level). At or Above Prestige X (10), your equipment will remain at level 1. In other words, do not level equipment after ~level ~51, and only buy Prestiges. CAUTION: may reduce He/hr performance in many cases.', 'boolean', null, null, 'Settings');
+createSetting('BreedFire', 'Breed Fire', 'OPTIONAL. Fire Lumberjacks and Miners to speed up breeding when needed. Basically trades wood/metal to cut the wait between deaths down. Disclaimer: May heavily negatively impact wood-gathering. ', 'boolean', null, null, 'Settings');
+createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'Settings');
 
 //genBTC advanced settings - option buttons.
 createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genBTC');
@@ -164,29 +176,17 @@ createSetting('CapEquip', 'Cap Equip to 10', 'Do not level equipment past 10. Si
 createSetting('AlwaysArmorLvl2', 'Always Buy Lvl 2 Armor', 'Always Buy the 2nd point of Armor even if we dont need the HP. Its the most cost effective level, and the need HP decision script isnt always adequate. FORCE on during Spire.', 'boolean', null, null, 'genBTC');
 createSetting('WaitTill60', 'Skip Gear Level 58&59', 'Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.', 'boolean', null, null, 'genBTC');
 createSetting('DelayArmorWhenNeeded', 'Delay Armor', 'Delay buying armor prestige upgrades during Want More Damage or Farming automap-modes.', 'boolean', null, null, 'genBTC');
-createSetting('DynamicSiphonology', 'Dynamic Siphonology', 'IMPORTANT SETTING. Use the right level of siphonology based on your damage output.', 'boolean', true, null, 'genBTC');
-createSetting('FarmWhenNomStacks7', 'Farm on >7 NomStacks', 'On Improbability(cell 100). Meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NomStacks, stack 30 Anticipation. If the Improbability has >7 NomStacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On! (exits when we get under 20x)', 'boolean', null, null, 'genBTC');
 createSetting('AutoRoboTrimp', 'AutoRoboTrimp', 'Use RoboTrimps ability starting at this level, and every 5 levels thereafter. (set to 0 to disable. default 60.) 60 is a good choice for mostly everybody.', 'value', '60', null, 'genBTC');
-createSetting('HeliumHrBuffer', 'He/Hr Portal Buffer %', 'IMPORTANT SETTING. When using the He/Hr Autoportal, it will portal if your He/Hr drops by this amount of % lower than your best for current run, default is 0% (ie: set to 5 to portal at 95% of your best)', 'value', '0', null, 'genBTC');
 createSetting('DynamicPrestige', 'Dynamic Prestige', 'EXPERIMENTAL: Skip getting prestiges at first, and Gradually work up to the desired Prestige setting you have set. Runs with Dagger to save a significant amount of time until we need better gear, then starts increasing the prestige setting near the end of the run. ---NEW ALGORITHM 7/23/2016--- Examines which prestiges you have, how many missing ones youd need to achieve the desired target and starts running 5 maps or 2 maps every zone, Until the target prestige is reached. Example: For mace, starts getting the prerequisite prestiges 10 zones away from max, then more and more, finally reaching the desired prestige by the last final zone (also goes for 9 mapbonus on the last zone). IMPORTANT NOTE PLEASE READ: Final Zone Number is inherently tied to the AutoPortal setting. When using the Helium per Hour setting, it uses the zone we portaled at last run (game.global.lastPortal). If the AutoPortal is set to a challenge, it will use the last zone of the challenge. CAUTION: EXPERIMENTAL, please come to Discord chat if you have problems.', 'boolean', null, null, 'genBTC');
-createSetting('RunBionicBeforeSpire', 'Run Bionic Before Spire', 'CAUTION:  Runs Bionic Wonderlands I through VI and then repeatedly farms VI(level 200) before attempting Spire, for the purpose of farming. Then attempts the spire. The Minutes-Before-Spire timer runs concurrently to this, and if not set, will exit without doing Bionic VI. You can un-toggle it as desired. WARNING: DO NOT USE WITH HE/HR PORTAL (it will portal due to He/Hr suffers).' , 'boolean', null, null, 'genBTC');
-createSetting('TrainerCaptoTributes', 'Cap Trainers to a % of Tributes', 'Only Buy a Trainer when its cost is LESS than X% of cost of a tribute. This setting can work in combination with the other one, or set the other one to -1 and this will take full control. Default: -1 (Disabled). 50% is close to the point where the cap does nothing. You can go as low as you want but recommended is 10% to 1%. (example: Trainer cost of 5001, Tribute cost of 100000, @ 5%, it would NOT buy the trainer.)', 'value', '-1', null, 'genBTC');
-createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'IMPORTANT SETTING. New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'genBTC');
 createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available.', 'dropdown', 'Off', ["Off","Helium", "Battle", "Void"], 'genBTC');
 var AGULabel = document.createElement("Label");
 AGULabel.id = 'AutoGoldenUpgradesLabel';
 AGULabel.innerHTML = "Golden Upgrades:";
 AGULabel.setAttribute('style', 'margin-right: 0.4vw; font-size: 0.8vw;');
-document.getElementById("AutoGoldenUpgrades").parentNode.insertBefore(AGULabel,document.getElementById("AutoGoldenUpgrades"))
+document.getElementById("AutoGoldenUpgrades").parentNode.insertBefore(AGULabel,document.getElementById("AutoGoldenUpgrades"));
+createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'IMPORTANT SETTING. New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'genBTC');
 createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buys the upgrades the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null,'genBTC');
-createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm level 200 maps for X minutes before continuing to beat spire (0 to disable)', 'value', '0', null, 'genBTC');
-createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Exits the Spire early, after completing cell X. example: 40 for Row 4. (better use 0 to disable, not -1)', 'value', '0', null, 'genBTC');
-createSetting('CorruptionCalc', 'Corruption Farm Mode', 'IMPORTANT SETTING. Enabling this will cause the Automaps routine to take amount of corruption in a zone into account, to decide whether it should do maps first for map bonus. ONLY in Zone 181+. ', 'boolean', false, null, 'genBTC');
-
-// Export/Import/Default settings
-createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
-createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
-createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
+createSetting('TrainerCaptoTributes', 'Cap Trainers to a % of Tributes', 'Only Buy a Trainer when its cost is LESS than X% of cost of a tribute. This setting can work in combination with the other one, or set the other one to -1 and this will take full control. Default: -1 (Disabled). 50% is close to the point where the cap does nothing. You can go as low as you want but recommended is 10% to 1%. (example: Trainer cost of 5001, Tribute cost of 100000, @ 5%, it would NOT buy the trainer.)', 'value', '-1', null, 'genBTC');
 
 // Scryer settings
 createSetting('UseScryerStance', 'Use Scryer Stance', 'Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Current point is to get Dark Essence. EXPERIMENTAL. This is the Master button. All other buttons have no effect if this one is off.', 'boolean',true,null,'Scryer');
@@ -198,9 +198,11 @@ createSetting('ScryerUseinVoidMaps2', ['Maybe Use in VoidMaps','Force Use in Voi
 createSetting('ScryerUseinSpire2', ['Maybe Use in Spire','Force Use in Spire','Never Use in Spire'],'Maybe/Force/Never Use in Spire. Choosing Never will override the Overkill setting, and never use S in Spire. Maybe means it will check your ability to overkill, and use it if possible. Force = Force.', 'multitoggle', 0,null, 'Scryer');
 createSetting('ScryerSkipBoss2', ['Use on Cell 100 (Default)','Never Use on Cell 100 above VoidLevel','Never Use on Cell 100 (ALL Levels)'], 'Use=Default, Never Use: Above VoidLevel, or Never Use: ALL Levels(cell 100). Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at. (or all levels, if set.)', 'multitoggle', 0,null, 'Scryer');
 createSetting('ScryerSkipCorrupteds2', ['Default behavior on Corrupteds','Dont Use S on Corrupteds'], 'UNLESS you can overkill them. (Turning this on doesnt use S stance for corrupted cells UNLESS you can overkill them.) Off just means default (corrupteds are treated like normal cells), SO something else has to be ON to trigger Scryer to be used on normal as well as any corrupted cells.', 'multitoggle', 0,null, 'Scryer');
-//createSetting('ScryerUseinSpireSafes', 'Use in Spire(Safes)', 'Use on Spire cells marked with the safe icons - high loot *50 metal reward.', 'boolean', false,null, 'Scryer');
-//createSetting('TEMPvarMultiToggle', ['TEMPvarMultiToggle0','TEMPvarMultiToggle1','TEMPvarMultiToggle2'], 'Master description for all 3 settings', 'multitoggle', 0, null, 'Scryer');
 
+// Export/Import/Default settings
+createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
+createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
+createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
 
 function loadAutoTrimps() {
     var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r|\s)/gm,"");
@@ -588,23 +590,32 @@ function updateValueFields() {
 }
 
 function updateCustomButtons() {
+    function toggleElem(elem,showHide) {
+        var state = showHide ? '' : 'none';
+        var stateParent = showHide ? 'inline-block' : 'none';
+        var item = document.getElementById(elem);
+        item.style.display = state;
+        item.parentNode.style.display = stateParent;        
+    }
+    function turnOff(elem) {
+        toggleElem(elem,false);
+    }
+    function turnOn(elem) {
+        toggleElem(elem,true);
+    }
     //automaps button
-
-    if (autoTrimpSettings.AutoMaps.enabled) document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-success");
-    else document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-danger");
+    if (autoTrimpSettings.AutoMaps.enabled)
+        document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-success");
+    else
+        document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-danger");
     //auto portal setting, hide until player has cleared zone 59
-    if (game.global.highestLevelCleared >= 59 ) document.getElementById("AutoPortal").style.display = '';
-    else document.getElementById("AutoPortal").style.display = 'none';
+    (game.global.highestLevelCleared >= 59) ? turnOn("AutoPortal") : turnOff("AutoPortal");
     //custom auto portal value
-    if (autoTrimpSettings.AutoPortal.selected == "Custom") document.getElementById("CustomAutoPortal").style.display = '';
-    else document.getElementById("CustomAutoPortal").style.display = 'none';
+    (autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("CustomAutoPortal") : turnOff("CustomAutoPortal");
     //challenge for he/hr setting
-    if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour" || autoTrimpSettings.AutoPortal.selected == "Custom") document.getElementById("HeliumHourChallenge").style.display = '';
-    else document.getElementById("HeliumHourChallenge").style.display = 'none';
-
+    (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour" || autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("HeliumHourChallenge") : turnOff("HeliumHourChallenge");
     //do not portal before during He/hr auto portal value
-    if (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") document.getElementById("HeHrDontPortalBefore").style.display = '';
-    else document.getElementById("HeHrDontPortalBefore").style.display = 'none';
+    (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeHrDontPortalBefore") : turnOff("HeHrDontPortalBefore");
 
     //update dropdown selections:
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;

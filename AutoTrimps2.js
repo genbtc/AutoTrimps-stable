@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.9-genbtc-11-18-2016+AutoPerks
+// @version      2.1.2.10-genbtc-11-20-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.9-genbtc-11-18-2016+AutoPerks';
+var ATversion = '2.1.2.10-genbtc-11-20-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2073,15 +2073,10 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }
-    var shouldDoSpireMaps = false;
-    //Get 200% map bonus before attempting Spire
-    if(game.global.world == 200 && game.global.mapBonus < 9 ) {
-        shouldDoMaps = true;
-        shouldDoSpireMaps = true;
-    }
     //Farm X Minutes Before Spire:
-    var needFarmSpire = (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire')) && game.global.mapBonus == 10;
-    if (game.global.world == 200 && game.global.spireActive && needFarmSpire) {
+    var shouldDoSpireMaps = false;    
+    var needFarmSpire = game.global.world == 200 && game.global.spireActive && (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire'));
+    if (needFarmSpire) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
@@ -2169,11 +2164,7 @@ function autoMap() {
                     selectedMap = theMap.id;
                     break;
                 }
-                //NO->Count number of prestige items left,
-                //NO->var prestigeitemsleft = addSpecials(true, true, theMap);
-                //NO->Always run Bionic Wonderland VI (if there are still prestige items available)
-                //NO->Run Bionic Wonderland VII (if we have exhausted all the prestiges from VI)
-                if ((shouldDoSpireMaps && theMap.name == 'Bionic Wonderland VI')){
+                if (shouldDoSpireMaps && theMap.name == 'Bionic Wonderland VI'){
                     selectedMap = theMap.id;
                     break;
                 }
@@ -2265,26 +2256,18 @@ function autoMap() {
                     selectedMap = "create";
             //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.
             } else if (needFarmSpire) {
-                if (game.global.decayDone) {
-                    if (game.global.mapsOwnedArray[highestMap].location == 'Plentiful')
-                        selectedMap = game.global.mapsOwnedArray[highestMap].id;
+                if (game.global.mapsOwnedArray[highestMap].location == (game.global.decayDone ? 'Plentiful' : 'Mountain'))
+                    selectedMap = game.global.mapsOwnedArray[highestMap].id;
+                else
+                    selectedMap = "create";
+                //FIX for bad sort (not knowing right order of forest/mountain, during spire)
+                var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
+                if (!game.global.decayDone && selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == spiremaplvl && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
+                    var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
+                    if (nextmap && nextmap.location == 'Mountain')
+                        selectedMap = nextmap.id;
                     else
                         selectedMap = "create";
-                }
-                else {
-                    if (game.global.mapsOwnedArray[highestMap].location == 'Mountain')
-                        selectedMap = game.global.mapsOwnedArray[highestMap].id;
-                    else
-                        selectedMap = "create";
-                    //FIX for bad sort (not knowing right order of forest/mountain, during spire)
-                    var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
-                    if (selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == spiremaplvl && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
-                        var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
-                        if (nextmap && nextmap.location == 'Mountain')
-                            selectedMap = nextmap.id;
-                        else
-                            selectedMap = "create";
-                    }
                 }
             //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige
             } else if (siphonMap != -1)
@@ -2874,6 +2857,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br><b>Re-arranged all the categories in the settings window</b>', 'cancelTooltip()', 'Script Update Notice');    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
