@@ -2259,19 +2259,11 @@ function autoMap() {
                     selectedMap = "create";
             //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.
             } else if (needFarmSpire) {
-                if (game.global.mapsOwnedArray[highestMap].location == (game.global.decayDone ? 'Plentiful' : 'Mountain'))
+                var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
+                if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == (game.global.decayDone ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";
-                //FIX for bad sort (not knowing right order of forest/mountain, during spire)
-                var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
-                if (!game.global.decayDone && selectedMap == "create" && game.global.mapsOwnedArray[highestMap].level == spiremaplvl && game.global.mapsOwnedArray[highestMap].location == 'Forest') {
-                    var nextmap = game.global.mapsOwnedArray[parseInt(highestMap)+1];
-                    if (nextmap && nextmap.location == 'Mountain')
-                        selectedMap = nextmap.id;
-                    else
-                        selectedMap = "create";
-                }
             //if shouldFarm is true, use a siphonology adjusted map, as long as we aren't trying to prestige
             } else if (siphonMap != -1)
                 selectedMap = game.global.mapsOwnedArray[siphonMap].id;
@@ -2357,7 +2349,7 @@ function autoMap() {
 
             //instead of normal map locations, use Plentiful (Gardens) if the Decay challenge has been completed. (for +25% better loot)
 
-            if (game.global.world == 200 && game.global.spireActive) {
+            if (needFarmSpire) {
                 //Spire (9/9/9 Wood):
                 sizeAdvMapsRange.value = 9;
                 adjustMap('size', 9);
@@ -2365,7 +2357,8 @@ function autoMap() {
                 adjustMap('difficulty', 9);
                 lootAdvMapsRange.value = 9;
                 adjustMap('loot', 9);
-                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Forest";    //wood
+                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";    //metal
+                document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
             } else if (game.global.world >= 70) {
                 //Zone 70+ (9/9/9 Metal):
                 sizeAdvMapsRange.value = 9;
@@ -2403,7 +2396,7 @@ function autoMap() {
             //recalculate cost.
             updateMapCost();
             //if we are "Farming" for resources, make sure it's Plentiful OR metal (and always aim for lowest difficulty)
-            if(shouldFarm || !enoughDamage || !enoughHealth || needFarmSpire || game.global.challengeActive == 'Metal') {
+            if(shouldFarm || !enoughDamage || !enoughHealth || game.global.challengeActive == 'Metal') {
                 biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";
                 updateMapCost();
             } else {
