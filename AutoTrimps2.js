@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.11-genbtc-11-20-2016+AutoPerks
+// @version      2.1.2.12-genbtc-11-21-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.11-genbtc-11-20-2016+AutoPerks';
+var ATversion = '2.1.2.12-genbtc-11-21-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -1813,13 +1813,14 @@ function autoStance() {
     var xHealth = baseHealth;
     var bHealth = baseHealth/2;
     var enemy;
+    var corrupt = game.global.world >= mutations.Corruption.start(true);
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         enemy = getCurrentEnemy();
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate"));
         var enemyHealth = enemy.health;
-        var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
+        var enemyDamage = enemy.attack * 1.2;
         //check for world Corruption
-        if (enemy.corrupted){
+        if (enemy && enemy.corrupted){
             enemyHealth *= getCorruptScale("health");
             enemyDamage *= getCorruptScale("attack");
         }
@@ -1845,10 +1846,20 @@ function autoStance() {
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;
-        //check for voidmap Corruption                                  //check for z230 magma map corruption
-        if ((getCurrentMapObject().location == "Void" && enemy.corrupted) || game.global.world >= 230){
-            enemyHealth *= (getCorruptScale("health") / 2).toFixed(1);
-            enemyDamage *= (getCorruptScale("attack") / 2).toFixed(1);
+        //check for voidmap Corruption        
+        if (getCurrentMapObject().location == "Void" && corrupt) {
+            enemyDamage *= getCorruptScale("attack");
+            enemyHealth *= getCorruptScale("health");
+            //halve if magma is not active (like it was before)
+            if (!mutations.Magma.active()) {
+                enemyDamage /= 2;
+                enemyHealth /= 2;
+            }
+        }
+        //check for z230 magma map corruption
+        else if (getCurrentMapObject().location != "Void" && mutations.Magma.active()) {
+            enemyHealth *= (getCorruptScale("health") / 2);
+            enemyDamage *= (getCorruptScale("attack") / 2);
         }
         if (enemy && enemy.corrupted == 'corruptStrong') {
             enemyDamage *= 2;
@@ -2880,7 +2891,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now</b><br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>Patch 4.0 fixes are happening.<br></b>Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now<br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
