@@ -1835,11 +1835,10 @@ function autoStance() {
         if (game.global.challengeActive == 'Watch') {
             enemyDamage *= 1.25;
         }
-        var pierceMod = 0;
-        if (game.global.challengeActive == "Lead") pierceMod += (game.challenges.Lead.stacks * 0.001);
-        var dDamage = enemyDamage - baseBlock / 2 > enemyDamage * (0.2 + pierceMod) ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod);
-        var xDamage = enemyDamage - baseBlock > enemyDamage * (0.2 + pierceMod) ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod);
-        var bDamage = enemyDamage - baseBlock * 4 > enemyDamage * (0.1 + pierceMod) ? enemyDamage - baseBlock * 4 : enemyDamage * (0.1 + pierceMod);
+        var pierceMod = getPierceAmt();
+        var dDamage = enemyDamage - baseBlock / 2 > enemyDamage * pierceMod ? enemyDamage - baseBlock / 2 : enemyDamage * pierceMod;
+        var xDamage = enemyDamage - baseBlock > enemyDamage * pierceMod ? enemyDamage - baseBlock : enemyDamage * pierceMod;
+        var bDamage = enemyDamage - baseBlock * 4 > enemyDamage * pierceMod ? enemyDamage - baseBlock * 4 : enemyDamage * pierceMod;
 
     } else if (game.global.mapsActive && !game.global.preMapsActive) {
         enemy = getCurrentEnemy();
@@ -2033,11 +2032,10 @@ function autoMap() {
         //enemyDamage *= 2; //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
         enemyHealth *= 2;
     }
-    var pierceMod = 0;
+    var pierceMod = getPierceAmt();
     //Lead specific farming calcuation section:
     if(game.global.challengeActive == 'Lead') {
         baseDamage /= mapbonusmulti;
-        pierceMod += (game.challenges.Lead.stacks * 0.001);
         enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
         //if the zone is odd:   (skip the +2 calc for the last level.
@@ -2051,9 +2049,9 @@ function autoMap() {
             shouldFarm = enemyHealth / baseDamage > 5;
         }
     }
-    enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * (0.2 + pierceMod))
+    enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * pierceMod)
                     ||
-                    baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * (0.2 + pierceMod)));
+                    baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
     enoughDamage = baseDamage * 4 > enemyHealth;
     HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
