@@ -1457,7 +1457,10 @@ function buyJobs() {
             totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
             var toBuy = Math.floor((jobratio / totalRatio) * totalDistributableWorkers) - game.jobs[job].owned - subtract;
             var canBuy = Math.floor(game.resources.trimps.owned - game.resources.trimps.employed);
-            safeBuyJob(job, toBuy <= canBuy ? toBuy : canBuy);
+            var amount = toBuy <= canBuy ? toBuy : canBuy;
+            safeBuyJob(job, amount);
+/*             if (amount > 0)
+                debug("Jobbing: " + job + " " + amount); */
             return true;
         }
         else
@@ -2625,7 +2628,7 @@ function autoBreedTimer() {
             //force abandon army
             if (game.global.switchToMaps)
                 mapsClicked();
-            debug("Killed you! (to get to 30 anti stacks). Autohomicide successful.");
+            debug("Killed you! (to get Anti-stacks). Autohomicide successful.");
         }
     }
 }
@@ -2734,8 +2737,8 @@ function betterAutoFight() {
     if (!game.global.fighting) {
         if (getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value && game.global.soldierHealth == 0)
             fightManual();
-        //AutoFight will now send Trimps to fight if it takes less than 0.1 seconds to breed a new group of soldiers, even if the population limit hasn't been reached yet
-        else if (game.resources.trimps.owned >= game.resources.trimps.realMax() || getBreedTime() <= 0.1)
+        //AutoFight will now send Trimps to fight if it takes less than 0.5 seconds to create a new group of soldiers, if we havent bred fully yet
+        else if (game.resources.trimps.owned >= game.resources.trimps.realMax() || getBreedTime() <= 0.5)
             fightManual();
     }
 }
