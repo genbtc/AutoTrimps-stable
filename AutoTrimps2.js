@@ -271,11 +271,11 @@ function checkJobPercentageCost(what, toBuy) {
     var job = game.jobs[what];
     var cost = job.cost[costItem];
     var price = 0;
-	if (!toBuy) toBuy = game.global.buyAmt;
-	if (typeof cost[1] !== 'undefined')
-		price =  Math.floor((cost[0] * Math.pow(cost[1], job.owned)) * ((Math.pow(cost[1], toBuy) - 1) / (cost[1] - 1)));
-	else
-		price = cost * toBuy;
+    if (!toBuy) toBuy = game.global.buyAmt;
+    if (typeof cost[1] !== 'undefined')
+        price =  Math.floor((cost[0] * Math.pow(cost[1], job.owned)) * ((Math.pow(cost[1], toBuy) - 1) / (cost[1] - 1)));
+    else
+        price = cost * toBuy;
     var percent;
     if (game.resources[costItem].owned < price){
         var thisPs = getPsString(costItem, true);
@@ -482,12 +482,17 @@ function getCorruptedCellsNum() {
 }
 
 
-function getBreedTime(remaining, round) {
+function getBreedTime(remaining) {
     var trimps = game.resources.trimps;
-    var breeding = trimps.owned - trimps.employed;
     var trimpsMax = trimps.realMax();
 
     var potencyMod = trimps.potency;
+    //Add potency (book)
+    if (game.upgrades.Potency.done > 0) potencyMod *= Math.pow(1.1, game.upgrades.Potency.done);
+    //Add Nurseries
+    if (game.buildings.Nursery.owned > 0) potencyMod *= Math.pow(1.01, game.buildings.Nursery.owned);
+    //Add Venimp
+    if (game.unlocks.impCount.Venimp > 0) potencyMod *= Math.pow(1.003, game.unlocks.impCount.Venimp);
     //Broken Planet
     if (game.global.brokenPlanet) potencyMod /= 10;
     //Pheromones
@@ -497,34 +502,29 @@ function getBreedTime(remaining, round) {
     //Quick Trimps
     if (game.unlocks.quickTrimps) potencyMod *= 2;
     //Daily mods
-	if (game.global.challengeActive == "Daily"){
-		if (typeof game.global.dailyChallenge.dysfunctional !== 'undefined'){
-			potencyMod *= dailyModifiers.dysfunctional.getMult(game.global.dailyChallenge.dysfunctional.strength);
-		}
-		if (typeof game.global.dailyChallenge.toxic !== 'undefined'){
-			potencyMod *= dailyModifiers.toxic.getMult(game.global.dailyChallenge.toxic.strength, game.global.dailyChallenge.toxic.stacks);
-		}
-	}    
+    if (game.global.challengeActive == "Daily"){
+        if (typeof game.global.dailyChallenge.dysfunctional !== 'undefined'){
+            potencyMod *= dailyModifiers.dysfunctional.getMult(game.global.dailyChallenge.dysfunctional.strength);
+        }
+        if (typeof game.global.dailyChallenge.toxic !== 'undefined'){
+            potencyMod *= dailyModifiers.toxic.getMult(game.global.dailyChallenge.toxic.strength, game.global.dailyChallenge.toxic.stacks);
+        }
+    }
     if (game.global.challengeActive == "Toxicity" && game.challenges.Toxicity.stacks > 0){
         potencyMod *= Math.pow(game.challenges.Toxicity.stackMult, game.challenges.Toxicity.stacks);
     }
     if (game.global.voidBuff == "slowBreed"){
         potencyMod *= 0.2;
     }
-
     potencyMod = calcHeirloomBonus("Shield", "breedSpeed", potencyMod);
-    breeding = breeding * potencyMod;
-    updatePs(breeding, true);
     potencyMod = (1 + (potencyMod / 10));
     var timeRemaining = log10((trimpsMax - trimps.employed) / (trimps.owned - trimps.employed)) / log10(potencyMod);
     timeRemaining /= 10;
     if (remaining)
         return parseFloat(timeRemaining.toFixed(1));
 
-    var fullBreed = 0;
     var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
     var totalTime = log10((trimpsMax - trimps.employed) / (trimpsMax - adjustedMax - trimps.employed)) / log10(potencyMod);
-
     totalTime /= 10;
 
     return parseFloat(totalTime.toFixed(1));
@@ -1060,8 +1060,6 @@ function safeBuyBuilding(building) {
 
 //Outlines the most efficient housing based on gems (credits to Belaith)
 function highlightHousing() {
-    var oldBuy = game.global.buyAmt;
-    game.global.buyAmt = 1;
     var allHousing = ["Mansion", "Hotel", "Resort", "Gateway", "Collector", "Warpstation"];
     var unlockedHousing = [];
     for (var house in allHousing) {
@@ -1116,7 +1114,6 @@ function highlightHousing() {
     } else {
         bestBuilding = null;
     }
-    game.global.buyAmt = oldBuy;
 }
 
 //Helper function to buy best "Food" Buildings
@@ -1631,8 +1628,7 @@ function manualLabor() {
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 
     //FRESH GAME NO HELIUM CODE.
-    if (game.global.world <=3 && game.global.totalHeliumEarned<=300) {
-        var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
+    if (game.global.world <=3 && game.global.totalHeliumEarned<=500) {
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned))
                 setGather('food');
@@ -2610,7 +2606,7 @@ function autoBreedTimer() {
     //reset breedFire once we have less than 2 seconds remaining
     if(getBreedTime(true) < 2) breedFire = false;
 
-    //if a new fight group is available and anticipation stacks aren't 30, abandon and grab a new group
+    //if a new fight group is available and anticipation stacks aren't maxed, abandon and grab a new group
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     //dont do this if automaps is off
     if (getPageSetting('AutoMaps') && game.global.mapsUnlocked && game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
@@ -3069,18 +3065,22 @@ function generateHeirloomIcon(heirloom, location, number){
 
  //Replacement function for Zone tooltip to show current amount in seconds (Just adds the seconds)
 function formatMinutesForDescriptions(number){
-	var text;
+    var text;
     var seconds = Math.floor((number*60) % 60);
-	var minutes = Math.floor(number % 60);
-	var hours = Math.floor(number / 60);
-	if (hours == 0) text = minutes + " minutes " + seconds + " seconds";
-	else if (minutes > 0) {
-		if (minutes < 10) minutes = "0" + minutes;
-		text = hours + ":" + minutes + ":" + seconds;
-	}
-	else {
-		var s = (hours > 1) ? "s" : "";
-		text = hours + " hour" + s + " " + minutes + " minutes";
-	}
-	return text;
+    var minutes = Math.floor(number % 60);
+    var hours = Math.floor(number / 60);
+    if (hours == 0) 
+        text = minutes + " minutes " + seconds + " seconds";
+    else if (minutes > 0) {
+        if (minutes < 10) minutes = "0" + minutes;
+        if (seconds < 10) seconds = "0" + seconds;
+        text = hours + ":" + minutes + ":" + seconds;
+    }
+    else {
+        var hs = (hours > 1) ? "s" : "";
+        var ms = (minutes > 1) ? "s" : "";
+        var ss = (seconds > 1) ? "s" : "";
+        text = hours + " hour" + hs + " " + minutes + " minute" + ms + " " + seconds + " second" + ss;
+    }
+    return text;
 }
