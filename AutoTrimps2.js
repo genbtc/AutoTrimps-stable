@@ -129,7 +129,7 @@ var equipmentList = {
     }
 };
 
-var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedlumber', 'Speedfarming', 'Speedscience', 'Megaminer', 'Megalumber', 'Megafarming', 'Megascience', 'Efficiency', 'TrainTacular', 'Trainers', 'Explorers', 'Blockmaster', 'Battle', 'Bloodlust', 'Bounty', 'Egg', 'Anger', 'Formations', 'Dominance', 'Barrier', 'UberHut', 'UberHouse', 'UberMansion', 'UberHotel', 'UberResort', 'Trapstorm', 'Gigastation', 'Shieldblock', 'Potency'];
+var upgradeList = ['Miners', 'Scientists', 'Coordination', 'Speedminer', 'Speedlumber', 'Speedfarming', 'Speedscience', 'Megaminer', 'Megalumber', 'Megafarming', 'Megascience', 'Efficiency', 'TrainTacular', 'Trainers', 'Explorers', 'Blockmaster', 'Battle', 'Bloodlust', 'Bounty', 'Egg', 'Anger', 'Formations', 'Dominance', 'Barrier', 'UberHut', 'UberHouse', 'UberMansion', 'UberHotel', 'UberResort', 'Trapstorm', 'Gigastation', 'Shieldblock', 'Potency', 'Magmamancers'];
 var housingList = ['Hut', 'House', 'Mansion', 'Hotel', 'Resort', 'Gateway', 'Collector', 'Warpstation'];
 
 
@@ -220,8 +220,41 @@ function setPageSetting(setting, value) {
 }
 
 //Global debug message
-function debug(message, lootIcon) {
-    if (enableDebug) {
+function debug(message, type, lootIcon) {
+    var buildings = getPageSetting('SpamBuilding');
+    var jobs = getPageSetting('SpamJobs');
+    var upgrades = getPageSetting('SpamUpgrades');
+    var equips = getPageSetting('SpamEquipment');
+    var maps = getPageSetting('SpamMaps');
+    var other = getPageSetting('SpamOther');
+    var general = getPageSetting('SpamGeneral');
+    var output = true;
+    switch (type) {
+        case null:
+            break;
+        case "buildings":
+            output = buildings;
+            break;
+        case "jobs":
+            output = jobs;
+            break;
+        case "upgrades":
+            output = upgrades;
+            break;
+        case "equips":
+            output = equips;
+            break;
+        case "maps":
+            output = maps;
+            break;
+        case "other":
+            output = other;
+            break;
+        case "general":
+            output = general;
+            break;            
+    }
+    if (enableDebug && output) {
         console.log(timeStamp() + ' ' + message);
         message2(message, "AutoTrimps", lootIcon);
     }
@@ -323,7 +356,7 @@ function safeBuyJob(jobTitle, amount) {
             game.global.maxSplit = 1;
         }
     }
-    //debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', "*users");
+    debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', "jobs", "*users");
     buyJob(jobTitle, true, true);
     postBuy();
     return true;
@@ -1048,11 +1081,11 @@ function safeBuyBuilding(building) {
             game.global.buyAmt = 1;
         }
         buyBuilding(building, true, true);
-        debug('Building ' + game.global.buyAmt + ' ' + building + 's', '*rocket');
+        debug('Building ' + game.global.buyAmt + ' ' + building + 's', "buildings", '*rocket');
         postBuy();
         return;
     }
-    debug('Building ' + building, '*hammer2');
+    debug('Building ' + building, "buildings", '*hammer2');
     buyBuilding(building, true, true);
     postBuy();
     return true;
@@ -1291,7 +1324,7 @@ function buyUpgrades() {
         if (!available) continue;
         if (game.upgrades.Scientists.done < game.upgrades.Scientists.allowed && upgrade != 'Scientists') continue;
         buyUpgrade(upgrade, true, true);
-        debug('Upgraded ' + upgrade, "*upload2");
+        debug('Upgraded ' + upgrade, "upgrades", "*upload2");
     //loop again.
     }
 }
@@ -1583,9 +1616,9 @@ function autoLevelEquipment() {
             {
                 var upgrade = equipmentList[equipName].Upgrade;
                 if (upgrade != "Gymystic")
-                    debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, '*upload');
+                    debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, "equips", '*upload');
                 else
-                    debug('Upgrading ' + upgrade + " # " + game.upgrades[upgrade].allowed, '*upload');
+                    debug('Upgrading ' + upgrade + " # " + game.upgrades[upgrade].allowed, "equips", '*upload');
                 buyUpgrade(upgrade, true, true);
             }
         }
@@ -1600,21 +1633,21 @@ function autoLevelEquipment() {
             //If we're considering an attack item, we want to buy weapons if we don't have enough damage, or if we don't need health (so we default to buying some damage)
             if (getPageSetting('BuyWeapons') && DaThing.Stat == 'attack' && (!enoughDamageE || enoughHealthE)) {
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
-                    debug('Leveling equipment ' + eqName, '*upload3');
+                    debug('Leveling equipment ' + eqName, "equips", '*upload3');
                     buyEquipment(eqName, null, true);
                 }
             }
             //If we're considering a health item, buy it if we don't have enough health, otherwise we default to buying damage
             if (getPageSetting('BuyArmor') && (DaThing.Stat == 'health' || DaThing.Stat == 'block') && !enoughHealthE) {
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
-                    debug('Leveling equipment ' + eqName, '*upload3');
+                    debug('Leveling equipment ' + eqName, "equips", '*upload3');
                     buyEquipment(eqName, null, true);
                 }
             }
             var aalvl2 = getPageSetting('AlwaysArmorLvl2') || (game.global.world == 200 && game.global.spireActive);
             if (getPageSetting('BuyArmor') && (DaThing.Stat == 'health') && aalvl2 && game.equipment[eqName].level < 2){
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
-                    debug('Leveling equipment ' + eqName + " (AlwaysArmorLvl2)", '*upload3');
+                    debug('Leveling equipment ' + eqName + " (AlwaysArmorLvl2)", "equips", '*upload3');
                     buyEquipment(eqName, null, true);
                 } // ??idk??    && (getPageSetting('DelayArmorWhenNeeded') && enoughDamage)
             }
@@ -1812,9 +1845,9 @@ function autoStance() {
         enemy = getCurrentEnemy();
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
-        var enemyDamage = enemy.attack * 1.2;   //changed by genBTC from 1.19 (there is no fluctuation)
-        //check for voidmap Corruption
-        if (getCurrentMapObject().location == "Void" && enemy.corrupted){
+        var enemyDamage = enemy.attack * 1.2;
+        //check for voidmap Corruption                                  //check for z230 magma map corruption
+        if ((getCurrentMapObject().location == "Void" && enemy.corrupted) || game.global.world >= 230){
             enemyHealth *= (getCorruptScale("health") / 2).toFixed(1);
             enemyDamage *= (getCorruptScale("attack") / 2).toFixed(1);
         }
@@ -2415,16 +2448,16 @@ function autoMap() {
             //if we can't afford the map we designed, pick our highest existing map
             if (updateMapCost(true) > game.resources.fragments.owned) {
                 selectMap(game.global.mapsOwnedArray[highestMap].id);
-                debug("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value, '*crying2');
-                debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, '*happy2');
+                debug("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value, "maps", '*crying2');
+                debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, "maps", '*happy2');
                 runMap();
             } else {
-                debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, 'th-large');
+                debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, "maps", 'th-large');
                 var result = buyMap();
                 if(result == -2){
-                    debug("Too many maps, recycling now: ", 'th-large');
+                    debug("Too many maps, recycling now: ", "maps", 'th-large');
                     recycleBelow(true);
-                    debug("Retrying BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, 'th-large');
+                    debug("Retrying BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, "maps", 'th-large');
                     buyMap();
                 }
             }
@@ -2433,7 +2466,7 @@ function autoMap() {
             selectMap(selectedMap);
             debug("Already have a map picked: Running map: " + selectedMap +
                 " Level: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].level +
-                " Name: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].name, 'th-large');
+                " Name: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].name, "maps", 'th-large');
             runMap();
         }
     }
@@ -2453,7 +2486,7 @@ function autoPortal() {
                     var myHeliumHr = game.stats.heliumHour.value();
                     var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
                     if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
-                        debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone);
+                        debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
                         pushData();
                         if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
                             doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
@@ -2617,7 +2650,7 @@ function autoBreedTimer() {
             //force abandon army
             if (game.global.switchToMaps)
                 mapsClicked();
-            debug("Killed you! (to get Anti-stacks). Autohomicide successful.");
+            debug("Killed you! (to get Anti-stacks). Autohomicide successful.","general");
         }
     }
 }
@@ -2695,7 +2728,7 @@ function autoRoboTrimp() {
     //activate the button when we are above the cutoff zone, and we are out of cooldown (and the button is inactive)
     if (game.global.world >= robotrimpzone && !game.global.useShriek){
         magnetoShriek();
-        debug("Activated Robotrimp Ability", '*podcast');
+        debug("Activated Robotrimp Ability", "general", '*podcast');
     }
 }
 

@@ -374,7 +374,7 @@ function getTotalDarkEssenceCount() {
 }
 
 function pushData() {
-    console.log('Starting Zone ' + game.global.world);
+    debug('Starting Zone ' + game.global.world,"general");
     allSaveData.push({
         totalPortals: game.global.totalPortals,
         heliumOwned: game.resources.helium.owned,

@@ -85,8 +85,8 @@ createTabs("Core","Main Controls for the script");
 createTabs("Maps","AutoMaps + VoidMaps related Settings");
 createTabs("Settings","Sub Controls for the script");
 createTabs("genBTC","GenBTC Advanced");
-
 createTabs("Scryer","Scryer Stance");
+createTabs("Spam","Controls AutoTrimps message Spam");
 createTabs("Import Export","Import Export Settings");
 //Insert tabs into the game area
 document.getElementById("autoSettings").appendChild(addtabs);
@@ -198,6 +198,14 @@ createSetting('ScryerUseinVoidMaps2', ['Maybe Use in VoidMaps','Force Use in Voi
 createSetting('ScryerUseinSpire2', ['Maybe Use in Spire','Force Use in Spire','Never Use in Spire'],'Maybe/Force/Never Use in Spire. Choosing Never will override the Overkill setting, and never use S in Spire. Maybe means it will check your ability to overkill, and use it if possible. Force = Force.', 'multitoggle', 0,null, 'Scryer');
 createSetting('ScryerSkipBoss2', ['Use on Cell 100 (Default)','Never Use on Cell 100 above VoidLevel','Never Use on Cell 100 (ALL Levels)'], 'Use=Default, Never Use: Above VoidLevel, or Never Use: ALL Levels(cell 100). Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at. (or all levels, if set.)', 'multitoggle', 0,null, 'Scryer');
 createSetting('ScryerSkipCorrupteds2', ['Default behavior on Corrupteds','Dont Use S on Corrupteds'], 'UNLESS you can overkill them. (Turning this on doesnt use S stance for corrupted cells UNLESS you can overkill them.) Off just means default (corrupteds are treated like normal cells), SO something else has to be ON to trigger Scryer to be used on normal as well as any corrupted cells.', 'multitoggle', 0,null, 'Scryer');
+//Spam settings:
+createSetting('SpamGeneral', 'General Spam', 'General Spam', 'boolean', true, null, 'Spam');
+createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Spam');
+createSetting('SpamEquipment', 'Equipment Spam', 'Equipment Spam', 'boolean', true, null, 'Spam');
+createSetting('SpamMaps', 'Maps Spam', 'Maps Spam', 'boolean', true, null, 'Spam');
+createSetting('SpamOther', 'Other Spam', 'Other Spam', 'boolean', true, null, 'Spam');
+createSetting('SpamBuilding', 'Building Spam', 'Building Spam', 'boolean', false, null, 'Spam');
+createSetting('SpamJobs', 'Job Spam', 'Job Spam', 'boolean', false, null, 'Spam');
 
 // Export/Import/Default settings
 createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
