@@ -1189,6 +1189,10 @@ function buyBuildings() {
         safeBuyBuilding('Tribute');
     }
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
+    //NoNurseriesUntil', 'No Nurseries Until z', 'For Magma z230+ purposes. Nurseries get shut down, and wasting nurseries early on is probably a bad idea. Might want to set this to 230+ as well.'
+    var nursminlvl = getPageSetting('NoNurseriesUntil');
+    if (game.global.world < nursminlvl)
+        return;    
     //only buy nurseries if enabled,   and we need to lower our breed time, or our target breed time is 0, or we aren't trying to manage our breed time before geneticists, and they aren't locked
     //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
     if ((targetBreed < getBreedTime() || targetBreed <= 0 ||
@@ -1414,7 +1418,8 @@ function buyJobs() {
     //make sure the game always buys at least 1 farmer, so we can unlock lumberjacks.
     } else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) {
         safeBuyJob('Farmer', 1);
-    }
+    } else if (game.jobs.Scientist.owned < 10 && scienceNeeded > 100)
+        safeBuyJob('Scientist', 10);
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     if (game.global.challengeActive == 'Watch'){
@@ -2891,7 +2896,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>Patch 4.0 fixes are happening.<br></b>Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now<br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening.<br>Added No Nurseries Until setting in genBTC page</b><br>11/20 Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now<br>11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
