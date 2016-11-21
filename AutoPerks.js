@@ -25,22 +25,15 @@ queuescript.src = 'https://genbtc.github.io/AutoTrimps/FastPriorityQueue.js';
 head.appendChild(queuescript);
 
 //Create button and Add to Trimps Perk Window(and Portal)
-var buttonbar = document.getElementById("portalWrapper");
-var btnParent = document.createElement("DIV");
-btnParent.id = 'allocatorBtnContainer';
-btnParent.setAttribute('style', 'display: inline-block; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; margin-top: 1vw; width: 10vw;');
+var buttonbar = document.getElementById("portalBtnContainer");
 var allocatorBtn1 = document.createElement("DIV");
 allocatorBtn1.id = 'allocatorBTN1';
-allocatorBtn1.setAttribute('class', 'settingsBtn settingBtntrue');
-//allocatorBtn1.setAttribute('onmouseover', 'AutoPerks.refreshButtonStatus()');
+allocatorBtn1.setAttribute('class', 'btn inPortalBtn settingsBtn settingBtntrue');
 allocatorBtn1.setAttribute('onclick', 'AutoPerks.clickAllocate()');
 allocatorBtn1.textContent = 'Allocate Perks';
-btnParent.appendChild(allocatorBtn1);
-buttonbar.appendChild(btnParent);
+buttonbar.appendChild(allocatorBtn1);
+buttonbar.setAttribute('style', 'margin-bottom: 0.8vw;');
 
-// AutoPerks.refreshButtonStatus = function() {
-    // allocatorBtn1.setAttribute('class', 'settingsBtn settingBtn' + game.global.canRespecPerks);
-// }
 
 //Create all perk customRatio boxes in Trimps perk window.
 AutoPerks.createInput = function(perkname,div) {
@@ -121,7 +114,7 @@ ratios1.appendChild(ratioPresetLabel);
 ratios1.appendChild(ratioPreset);
 //
 customRatios.appendChild(ratios2);
-buttonbar.appendChild(customRatios);
+document.getElementById("portalWrapper").appendChild(customRatios);
 
 //BEGIN AUTOPERKS SCRIPT CODE:>>>>>>>>>>>>>>
 
@@ -463,13 +456,22 @@ AutoPerks.VariablePerk = function(name, base, compounding, value, baseIncrease, 
     this.type  = "exponential";
     this.fixed = false;
     this.compounding = compounding;
-    this.value = value; // Sets how highly the base increase should be valued.
+    //this.value = value; // Sets how highly the base increase should be valued.
     this.updatedValue = -1; // If a custom ratio is supplied, this will be modified to hold the new value.
     this.baseIncrease = baseIncrease; // The raw stat increase that the perk gives.
     this.efficiency = -1; // Efficiency is defined as % increase * value / He cost
     this.max = max || Number.MAX_VALUE;
     this.level = level || 0; // How many levels have been invested into a perk
     this.spent = 0; // Total helium spent on each perk.
+    function getValuesFromPresets() { 
+        //var count = 10;
+        //var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore];
+        //var perkOrder = [looting,toughness,power,motivation,pheromones,artisanistry,carpentry,resilience,coordinated,resourceful,overkill];
+        //var valueArray = [];
+        //for (var i=0;i<count;i++) {
+        return [preset_ZXV[value],preset_ZXVnew[value],preset_ZXV3[value],preset_TruthEarly[value],preset_TruthLate[value],preset_nsheetz[value],preset_nsheetzNew[value],preset_HiderHehr[value],preset_HiderBalance[value],preset_HiderMore[value]];
+    }
+    this.value = getValuesFromPresets();    
 }
 
 AutoPerks.ArithmeticPerk = function(name, base, increase, baseIncrease, parent, max, level) { // Calculate a way to obtain parent automatically.
@@ -500,18 +502,30 @@ var agility = new AutoPerks.FixedPerk("agility", 4, 20, 20);
 var bait = new AutoPerks.FixedPerk("bait", 4, 30);
 var trumps = new AutoPerks.FixedPerk("trumps", 3, 30);
 var packrat = new AutoPerks.FixedPerk("packrat", 3, 30);
-//the ratios are hardcoded into the following lines: example: looting:    [20, 50, 120, 42, 160, 90,75,20] as [zxv, zxv(new), truth, nsheetz, nsheetz(new),HiderHe/hr,HiderBalance,HiderMore]
-var looting = new AutoPerks.VariablePerk("looting", 1, false,             [20, 50, 120, 42, 160, 90,75,20], 0.05);
-var toughness = new AutoPerks.VariablePerk("toughness", 1, false,         [0.5, 0.75, 4, 1.75, 1.5,4,4,4], 0.05);
-var power = new AutoPerks.VariablePerk("power", 1, false,                 [1, 1, 4, 5, 5,12,8,10], 0.05);
-var motivation = new AutoPerks.VariablePerk("motivation", 2, false,       [1.5, 3, 4, 4, 2.5,10,4,12], 0.05);
-var pheromones = new AutoPerks.VariablePerk("pheromones", 3, false,       [0.5, 0.75, 4, 1.5, 1.5,0.005,1,0.005], 0.1);
-var artisanistry = new AutoPerks.VariablePerk("artisanistry", 15, true,   [1.5, 3, 2, 5, 3.5,8,4,8], 0.1);
-var carpentry = new AutoPerks.VariablePerk("carpentry", 25, true,         [8, 10, 24, 29, 18,8,24,8], 0.1);
-var resilience = new AutoPerks.VariablePerk("resilience", 100, true,      [1, 1.5, 8, 3.5, 3,0.005,1,0.005], 0.1);
-var coordinated = new AutoPerks.VariablePerk("coordinated", 150000, true, [25, 60, 60, 100, 100,20,75,40], 0.1);
-var resourceful = new AutoPerks.VariablePerk("resourceful", 50000, true,  [2, 2, 2, 1, 1,0.1,0.5,0.1], 0.05);
-var overkill = new AutoPerks.VariablePerk("overkill", 1000000, true,      [3, 5, 3, 5, 10,3,3,0.5], 0.005, 30);
+//Ratio Presets:
+//      (perk order): [looting,toughness,power,motivation,pheromones,artisanistry,carpentry,resilience,coordinated,resourceful,overkill];
+var preset_ZXV = [20, 0.5, 1, 1.5, 0.5, 1.5, 8, 1, 25, 2, 3];
+var preset_ZXVnew = [50, 0.75, 1, 3, 0.75, 3, 10, 1.5, 60, 2, 5];
+var preset_ZXV3 = [100, 1, 3, 3, 1, 3, 40, 2, 100, 1, 3];
+var preset_TruthEarly = [30, 4, 4, 4, 4, 2, 24, 8, 60, 2, 3];
+var preset_TruthLate = [120, 4, 4, 4, 4, 2, 24, 8, 60, 2, 3];
+var preset_nsheetz = [42, 1.75, 5, 4, 1.5, 5, 29, 3.5, 100, 1, 5];
+var preset_nsheetzNew= [160, 1.5, 5, 2.5, 1.5, 3.5, 18, 3, 100, 1, 10];
+var preset_HiderHehr = [90, 4, 12, 10, 0.005, 8, 8, 0.005, 20, 0.1, 3];
+var preset_HiderBalance = [75, 4, 8, 4, 1, 4, 24, 1, 75, 0.5, 3];
+var preset_HiderMore = [20, 4, 10, 12, 0.005, 8, 8, 0.005, 40, 0.1, 0.5];
+//ratio was replaced by position, value will be pulled from ratios above later.
+var looting = new AutoPerks.VariablePerk("looting", 1, false,             0, 0.05);
+var toughness = new AutoPerks.VariablePerk("toughness", 1, false,         1, 0.05);
+var power = new AutoPerks.VariablePerk("power", 1, false,                 2, 0.05);
+var motivation = new AutoPerks.VariablePerk("motivation", 2, false,       3, 0.05);
+var pheromones = new AutoPerks.VariablePerk("pheromones", 3, false,       4, 0.1);
+var artisanistry = new AutoPerks.VariablePerk("artisanistry", 15, true,   5, 0.1);
+var carpentry = new AutoPerks.VariablePerk("carpentry", 25, true,         6, 0.1);
+var resilience = new AutoPerks.VariablePerk("resilience", 100, true,      7, 0.1);
+var coordinated = new AutoPerks.VariablePerk("coordinated", 150000, true, 8, 0.1);
+var resourceful = new AutoPerks.VariablePerk("resourceful", 50000, true,  9, 0.05);
+var overkill = new AutoPerks.VariablePerk("overkill", 1000000, true,      10, 0.005, 30);
 //tier2 perks
 var toughness_II = new AutoPerks.ArithmeticPerk("toughness_II", 20000, 500, 0.01, toughness);
 var power_II = new AutoPerks.ArithmeticPerk("power_II", 20000, 500, 0.01, power);
