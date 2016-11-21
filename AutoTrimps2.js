@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.10-genbtc-11-20-2016+AutoPerks
+// @version      2.1.2.11-genbtc-11-20-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.10-genbtc-11-20-2016+AutoPerks';
+var ATversion = '2.1.2.11-genbtc-11-20-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2853,7 +2853,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br><b>Re-arranged all the categories in the settings window and updated tooltips</b><br>Kill your trimps (AutoHomicide) for 30 Anti-Stacks more aggressively<br>', 'cancelTooltip()', 'Script Update Notice');    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now</b><br> Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 

@@ -93,14 +93,17 @@ if(game.options.menu.darkTheme.enabled != 2) ratioPreset.setAttribute("style", o
 else ratioPreset.setAttribute('style', oldstyle);
 //List of the perk options are populated at the bottom of this file.
 //populate dump perk dropdown list
-var html = "<option id='zxvPreset'>ZXV (default)</option>"
-html += "<option id='zxvNEWPreset'>ZXV (new)</option>"
-html += "<option id='TruthPreset'>Truth</option>"
-html += "<option id='nSheetzPreset'>nSheetz</option>"
-html += "<option id='nSheetzNEWPreset'>nSheetz(new)</option>"
-html += "<option id='HiderHe/hr'>Hider (He/hr)</option>"
-html += "<option id='HiderBalance'>Hider (Balance)</option>"
-html += "<option id='HiderMore'>Hider More (More Zones)</option>"
+//        var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore];
+var html = "<option id='preset_ZXV'>ZXV</option>"
+html += "<option id='preset_ZXVnew'>ZXV (new)</option>"
+html += "<option id='preset_ZXV3'>ZXV 3</option>"
+html += "<option id='preset_TruthEarly'>Truth (early)</option>"
+html += "<option id='preset_TruthLate'>Truth (late)</option>"
+html += "<option id='preset_nsheetz'>nSheetz</option>"
+html += "<option id='preset_nsheetzNew'>nSheetz(new)</option>"
+html += "<option id='preset_HiderHehr'>Hider (He/hr)</option>"
+html += "<option id='preset_HiderBalance'>Hider (Balance)</option>"
+html += "<option id='preset_HiderMore'>Hider (More Zones)</option>"
 html += "<option id='customPreset'>Custom</option></select>"
 ratioPreset.innerHTML = html;
 //load the last ratio used
@@ -456,22 +459,23 @@ AutoPerks.VariablePerk = function(name, base, compounding, value, baseIncrease, 
     this.type  = "exponential";
     this.fixed = false;
     this.compounding = compounding;
-    //this.value = value; // Sets how highly the base increase should be valued.
+    //this.value = value; // sets ratios (now done below)
     this.updatedValue = -1; // If a custom ratio is supplied, this will be modified to hold the new value.
     this.baseIncrease = baseIncrease; // The raw stat increase that the perk gives.
     this.efficiency = -1; // Efficiency is defined as % increase * value / He cost
     this.max = max || Number.MAX_VALUE;
     this.level = level || 0; // How many levels have been invested into a perk
     this.spent = 0; // Total helium spent on each perk.
-    function getValuesFromPresets() { 
-        //var count = 10;
-        //var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore];
+    function getRatiosFromPresets() { 
         //var perkOrder = [looting,toughness,power,motivation,pheromones,artisanistry,carpentry,resilience,coordinated,resourceful,overkill];
-        //var valueArray = [];
-        //for (var i=0;i<count;i++) {
-        return [preset_ZXV[value],preset_ZXVnew[value],preset_ZXV3[value],preset_TruthEarly[value],preset_TruthLate[value],preset_nsheetz[value],preset_nsheetzNew[value],preset_HiderHehr[value],preset_HiderBalance[value],preset_HiderMore[value]];
+        var valueArray = [];
+        for (var i=0; i<presetList.length; i++) {
+            valueArray.push(presetList[i][value]);
+        }
+        return valueArray;
+        //return [preset_ZXV[value],preset_ZXVnew[value],preset_ZXV3[value],preset_TruthEarly[value],preset_TruthLate[value],preset_nsheetz[value],preset_nsheetzNew[value],preset_HiderHehr[value],preset_HiderBalance[value],preset_HiderMore[value]];
     }
-    this.value = getValuesFromPresets();    
+    this.value = getRatiosFromPresets();    
 }
 
 AutoPerks.ArithmeticPerk = function(name, base, increase, baseIncrease, parent, max, level) { // Calculate a way to obtain parent automatically.
@@ -514,6 +518,7 @@ var preset_nsheetzNew= [160, 1.5, 5, 2.5, 1.5, 3.5, 18, 3, 100, 1, 10];
 var preset_HiderHehr = [90, 4, 12, 10, 0.005, 8, 8, 0.005, 20, 0.1, 3];
 var preset_HiderBalance = [75, 4, 8, 4, 1, 4, 24, 1, 75, 0.5, 3];
 var preset_HiderMore = [20, 4, 10, 12, 0.005, 8, 8, 0.005, 40, 0.1, 0.5];
+var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore];
 //ratio was replaced by position, value will be pulled from ratios above later.
 var looting = new AutoPerks.VariablePerk("looting", 1, false,             0, 0.05);
 var toughness = new AutoPerks.VariablePerk("toughness", 1, false,         1, 0.05);
