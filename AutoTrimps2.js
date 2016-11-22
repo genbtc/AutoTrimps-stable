@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2.12-genbtc-11-21-2016+AutoPerks
+// @version      2.1.3.0-genbtc-11-22-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.2.12-genbtc-11-21-2016+AutoPerks';
+var ATversion = '2.1.3.0-genbtc-11-22-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -1065,20 +1065,33 @@ function safeBuyBuilding(building) {
     if (game.buildings[building].locked)
         return false;
     preBuy();
-    game.global.buyAmt = 1;
-    if (!canAffordBuilding(building)) {
-        postBuy();
-        return false;
+    //build 2 at a time if we have the mastery for it.
+    if (game.talents.doubleBuild.purchased) {
+        game.global.buyAmt = 2;
+        if (!canAffordBuilding(building)) {
+            game.global.buyAmt = 1;
+            if (!canAffordBuilding(building)) {            
+                postBuy();
+                return false;
+            }
+        }
+    }
+    else {
+        game.global.buyAmt = 1;
+        if (!canAffordBuilding(building)) {
+            postBuy();
+            return false;
+        }
     }
     game.global.firing = false;
     //buy max warpstations when we own <2 (ie: after a new giga)
     //thereafter, buy only 1 warpstation
     if(building == 'Warpstation'){
-        if (game.buildings.Warpstation.owned < 2) {
+        if (game.buildings.Warpstation.owned < 3) {
             game.global.buyAmt = 'Max';
             game.global.maxSplit = 1;
         } else {
-            game.global.buyAmt = 1;
+            game.global.buyAmt = game.talents.doubleBuild.purchased ? 2 : 1;
         }
         buyBuilding(building, true, true);
         debug('Building ' + game.global.buyAmt + ' ' + building + 's', "buildings", '*rocket');
@@ -2599,11 +2612,13 @@ function checkSettings() {
 //Actually Portal.
 function doPortal(challenge) {
     if(!game.global.portalActive) return;
+    if (getPageSetting('AutoMagmiteSpender'))
+        autoMagmiteSpender();
     portalClicked();
     if(challenge) selectChallenge(challenge);
     activateClicked();
     activatePortal();
-    lastHeliumZone = 0;
+    lastHeliumZone = 0; zonePostpone = 0;
 }
 
 //Controls "Manage Breed Timer" and "Geneticist Timer" - adjust geneticists to reach desired breed timer
@@ -2869,6 +2884,47 @@ function useScryerStance() {
     }
 }
 
+//Auto Magmite spender before portal
+function autoMagmiteSpender() {
+    var repeat = true;
+    while (repeat) {
+        try {
+            //list of available upgrades (doesnt handle one-time upgrades)
+            var names = ["Efficiency","Capacity","Supply"];
+            var lowest = [null,null];   //keep track of cheapest one
+            //cycle through:
+            for (var i=0; i < names.length; i++) {
+                var item = names[i];
+                var upgrade = game.generatorUpgrades[item];
+                if (typeof upgrade === 'undefined')
+                    return; //error-resistant
+                var cost = upgrade.cost();
+                //store the first upgrade once
+                if (lowest[1] == null)
+                    lowest = [item,cost];
+                //always load cheapest one in.
+                else if (cost < lowest[1])
+                    lowest = [item,cost];
+            }
+            //if we can afford anything, buy it:
+            if (game.global.magmite > lowest[1]) {
+                buyGeneratorUpgrade(lowest[0]);
+                debug("Auto Spending " + lowest[1] + " Magmite on: " + lowest[0] + " #" + game.generatorUpgrades[lowest[0]].upgrades, "general");                
+            }
+            //if we can't. exit the loop
+            else
+                repeat = false;
+        }
+        //dont get trapped in a while loop cause something stupid happened.
+        catch (err) {
+            debug("Error encountered: " + err.message,"general");
+            repeat = false;
+        }
+    }
+    //print the result
+    debug("Leftover magmite: " + game.global.magmite,"general");
+    return;
+}
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first)/////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -2906,7 +2962,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening!<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page</b><br>11/20 Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now<br>11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening!<br>-Auto Spend Magmite before portaling - setting in genBTC page - (buys cheapest non-permanent upgrade)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page</b>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 

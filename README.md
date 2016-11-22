@@ -47,7 +47,24 @@ Notes:
 If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
 Feel free to submit any bugs/suggestions as issues here on github.
 
-## Most recent feature changes by genBTC (up to date as of 8/5/2016): 
+## Current feature changes by genBTC (up to date as of 11/22/2016): 
+-11/21 Patch 4.0 fixes are happening!
+-Auto Spend Magmite before portaling - setting in genBTC page - (buys cheapest non-permanent upgrade)
+-Buy 2 buildings instead of 1 if we have the mastery 
+-Entirely remove high lumberjack ratio during Spire.
+-During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.
+-Add a 10 second timeout Popup window that can postpone Autoportal when clicked.
+-Added a No Nurseries Until setting, in genBTC page
+-11/20 Fixed spire map bug
+-Added new ratios to AutoPerks (ZXV3,truth_late)
+-AutoFight if timer is <0.5 not <0.1 now
+-11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). 
+-Re-arranged all the categories in the settings window and updated tooltips
+-Kill your trimps (AutoHomicide) for Anti-Stacks more often
+
+## Gap in Changelog exists here.
+
+## Prior feature changes by genBTC (up to date as of 8/5/2016): 
 - Minutes to Farm Before Spire - force some time to be spent so you can for sure complete Spire (recommended: 3-10 minutes)
 - Auto Upgrade Heirlooms - spends ALL your nullifium on the recommended upgrades
 - Auto Golden Upgrades = Buys all the Golden Helium, Battle, or Voids when available.
@@ -58,6 +75,8 @@ Feel free to submit any bugs/suggestions as issues here on github.
 - Dynamic Prestige: Skip prestiges at the beginning of the run which saves time, and delay them until the end when you need them most and can provide resources from farming too)
 - Helium per Hour Portal "Buffer" - now you can customize how much He/Hr is allowed to drop before portaling
 - Auto Robo Trimp - activate the MagnetoShriek ability on the bosses every 5 levels starting from the level you specify. (recommended set to 60)
+
+## Gap in Changelog exists here.
 
 ## Feature changes added by genBTC since before 4/27/2016 and Trimps version 3.22:
 - Change Genetecist Timer to 10 sec instead of 11sec. (was commonly showing 11.4s because it rounds. that is too much)
@@ -101,8 +120,8 @@ many warpstations as it can afford. In this way it can buy over the cap. I think
 - Regular Tox-Run:  Avoid another non-unique map cycle due to having the amount of tox stacks we need.
 - Max-Tox Run: During a Toxicity + Max Tox run AutoPortal, unset the MaxTox setting from the settings page, so we dont' run 2 Max-Tox's in a row (will go back to normal Tox run).
 
-## Original Version's Previous Recent changes
-See changelog at the original version's github page: https://github.com/zininzinin/AutoTrimps
+## Original zininzinin version's historical changes
+See changelog at the original version's github page: https://github.com/zininzinin/AutoTrimps/blob/c8eac4c80d0a1a5ebe36bc44c7655c335a2dea7b/README.md#recent-changes
 
 
 ## Colors for upgrades highlights
