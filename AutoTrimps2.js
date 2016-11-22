@@ -2122,12 +2122,7 @@ function autoMap() {
 
         stackingTox = !(needToVoid && game.challenges.Toxicity.stacks > 1415);
 
-        //force abandon army
-        if(!game.global.mapsActive && !game.global.preMapsActive) {
-            mapsClicked();
-            mapsClicked();
-        }
-
+        forceAbandonTrimps();
     }
     else stackingTox = false;
 
@@ -2159,6 +2154,9 @@ function autoMap() {
         for (siphlvl; siphlvl < maxlvl; siphlvl++) {
             //check HP vs damage and find how many siphonology levels we need.
             var maphp = getEnemyMaxHealth(siphlvl);
+            var cpthlth = getCorruptScale("health")/2; //get corrupted health mod
+            if (mutations.Magma.active())
+                maphp *= cpthlth;
             if (baseDamage * 2 < maphp){
                 break;
             }
@@ -2375,13 +2373,9 @@ function autoMap() {
     //clicks the maps button, once or twice (inside the world):
     } else if (!game.global.preMapsActive && !game.global.mapsActive) {
         if (selectedMap != "world") {
-            //if we should not be in the world, and the button is not already clicked, click map button once (and wait patiently until death)
-            if (!game.global.switchToMaps){
-                mapsClicked();
-            }
-            //Get Impatient/Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone)
-            if (game.global.switchToMaps &&
-                (needPrestige || doVoids ||
+            //if we should not be in the world
+            //Get Impatient/Force Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone)
+            if ((needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
                 (!enoughDamage && game.global.lastClearedCell < 5) ||
                 (shouldFarm && game.global.lastClearedCell >= 59))
@@ -2392,7 +2386,7 @@ function autoMap() {
                     || (doVoids && game.global.lastClearedCell > 93)
                     )
                 ){
-                mapsClicked();
+                forceAbandonTrimps()
             }
         }
         //forcibly run watch maps
@@ -2411,17 +2405,7 @@ function autoMap() {
 
             //instead of normal map locations, use Plentiful (Gardens) if the Decay challenge has been completed. (for +25% better loot)
 
-            if (needFarmSpire) {
-                //Spire (9/9/9 Wood):
-                sizeAdvMapsRange.value = 9;
-                adjustMap('size', 9);
-                difficultyAdvMapsRange.value = 9;
-                adjustMap('difficulty', 9);
-                lootAdvMapsRange.value = 9;
-                adjustMap('loot', 9);
-                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";    //metal
-                document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
-            } else if (game.global.world >= 70) {
+            if (game.global.world >= 70) {
                 //Zone 70+ (9/9/9 Metal):
                 sizeAdvMapsRange.value = 9;
                 adjustMap('size', 9);
@@ -2455,6 +2439,8 @@ function autoMap() {
                 adjustMap('loot', 0);
                 biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Random";
             }
+            if (needFarmSpire)
+                document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;            
             //recalculate cost.
             updateMapCost();
             //if we are "Farming" for resources, make sure it's Plentiful OR metal (and always aim for lowest difficulty)
@@ -2503,131 +2489,6 @@ function autoMap() {
             runMap();
         }
     }
-}
-
-var lastHeliumZone = 0;
-//Decide When to Portal
-var zonePostpone = 0;
-function autoPortal() {
-    switch (autoTrimpSettings.AutoPortal.selected) {
-        //portal if we have lower He/hr than the previous zone (or buffer)
-        case "Helium Per Hour":
-            game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
-            if(game.global.world > lastHeliumZone) {
-                lastHeliumZone = game.global.world;
-                if(game.global.world > (game.stats.bestHeliumHourThisRun.atZone + zonePostpone) && game.global.world >= getPageSetting('HeHrDontPortalBefore')) {
-                    zonePostpone = 0;
-                    var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
-                    var myHeliumHr = game.stats.heliumHour.value();
-                    var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
-                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
-                        debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
-                        pushData();
-                        tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
-                        setTimeout(cancelTooltip,10000);
-                        setTimeout(function(){ 
-                            if (zonePostpone > 0)
-                                 return; 
-                            if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
-                                doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
-                            else
-                                doPortal();
-                            zonePostpone = 0;
-                        },10100);
-                    }
-                }
-            }
-            break;
-        case "Custom":
-            if(game.global.world > getPageSetting('CustomAutoPortal') && !game.global.challengeActive) {
-                pushData();
-                if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
-                    doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
-                else
-                    doPortal();
-            }
-            break;
-        case "Balance":
-        case "Decay":
-        case "Electricity":
-        case "Crushed":
-        case "Nom":
-        case "Toxicity":
-        case "Watch":
-        case "Lead":
-        case "Corrupted":
-            if(!game.global.challengeActive) {
-                pushData();
-                doPortal(autoTrimpSettings.AutoPortal.selected);
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-//Checks portal related UI settings (TODO: split into two, and move the validation check to NewUI)
-function checkSettings() {
-    var portalLevel = -1;
-    var leadCheck = false;
-    switch(autoTrimpSettings.AutoPortal.selected) {
-        case "Off":
-            break;
-        case "Custom":
-            portalLevel = autoTrimpSettings.CustomAutoPortal.value + 1;
-            leadCheck = autoTrimpSettings.HeliumHourChallenge.selected == "Lead" ? true:false;
-            break;
-        case "Balance":
-            portalLevel = 41;
-            break;
-        case "Decay":
-            portalLevel = 56;
-            break;
-        case "Electricity":
-            portalLevel = 82;
-            break;
-        case "Crushed":
-            portalLevel = 126;
-            break;
-        case "Nom":
-            portalLevel = 146;
-            break;
-        case "Toxicity":
-            portalLevel = 166;
-            break;
-        case "Lead":
-            portalLevel = 181;
-            break;
-        case "Watch":
-            portalLevel = 181;
-            break;
-        case "Corrupted":
-            portalLevel = 191;
-            break;
-    }
-    if(portalLevel == -1)
-        return portalLevel;
-    if(autoTrimpSettings.VoidMaps.value >= portalLevel)
-        tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please Change Your Settings Now. This Box Will Not Go away Until You do. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
-    if((leadCheck || game.global.challengeActive == 'Lead') && (autoTrimpSettings.VoidMaps.value % 2 == 0 && portalLevel < 182))
-        tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
-    return portalLevel;
-}
-
-//Actually Portal.
-function doPortal(challenge) {
-    if(!game.global.portalActive) return;
-    try {
-        if (getPageSetting('AutoMagmiteSpender'))
-            autoMagmiteSpender();
-    } catch (err) {
-        debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
-    }
-    portalClicked();
-    if(challenge) selectChallenge(challenge);
-    activateClicked();
-    activatePortal();
-    lastHeliumZone = 0; zonePostpone = 0;
 }
 
 //Controls "Manage Breed Timer" and "Geneticist Timer" - adjust geneticists to reach desired breed timer
@@ -2687,19 +2548,41 @@ function autoBreedTimer() {
     //reset breedFire once we have less than 2 seconds remaining
     if(getBreedTime(true) < 2) breedFire = false;
 
-    //if a new fight group is available and anticipation stacks aren't maxed, abandon and grab a new group
+    //if a new fight group is available and anticipation stacks aren't maxed, force abandon and grab a new group
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-    //dont do this if automaps is off
-    if (getPageSetting('AutoMaps') && game.global.mapsUnlocked && game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
-        if (game.global.mapsActive && getCurrentMapObject().location == "Void")
-            return;
-        if (!game.global.preMapsActive) {
+    if (game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
+        forceAbandonTrimps();
+    }
+}
+
+//Abandon trimps function that should handle all special cases.
+function forceAbandonTrimps() {
+    //dont if <z6 (no button)
+    if (!game.global.mapsUnlocked) return;
+    //dont if were in a voidmap
+    if (game.global.mapsActive && getCurrentMapObject().location == "Void") return;
+    //dont if were on map-selection screen.
+    if (game.global.preMapsActive) return;
+    if (getPageSetting('AutoMaps')) {
+        mapsClicked();
+        //force abandon army
+        if (game.global.switchToMaps || game.global.switchToWorld)
             mapsClicked();
-            //force abandon army
-            if (game.global.switchToMaps)
-                mapsClicked();
-            debug("Killed you! (to get Anti-stacks). Autohomicide successful.","general");
-        }
+        debug("Killed your army! (to get Anti-stacks). Trimpicide successful.","general");
+    }
+    //in map without automaps
+    else if (game.global.mapsActive) {
+        mapsClicked();
+        if (game.global.switchToMaps)
+            mapsClicked();        
+        runMap();
+    }
+    //in world without automaps
+    else  {
+        mapsClicked();
+        if (game.global.switchToMaps)
+            mapsClicked();        
+        mapsClicked();
     }
 }
 
@@ -2793,6 +2676,7 @@ function autoGoldenUpgrades() {
 
 //old: Handles manual fighting automatically, in a different way.
 function betterAutoFight() {
+    if (game.global.gridArray.length === 0) return;
     //Manually fight instead of using builtin auto-fight
     if (game.global.autoBattle) {
         if (!game.global.pauseFight) {
@@ -2812,8 +2696,8 @@ function betterAutoFight() {
         else if (game.resources.trimps.owned >= game.resources.trimps.realMax() || getBreedTime() <= 0.5)
             fightManual();
     }
-    addbreedTimerInsideText.innerHTML = prettify(game.global.lastBreedTime/1000) + 's';
 }
+
 function getArmyTime() {
     var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
@@ -2824,7 +2708,24 @@ function getArmyTime() {
     return addTime;
 }
 
-
+//NEW:: 2nd algorithm for better auto fight
+function betterAutoFight2() {
+    if (game.global.gridArray.length === 0) return;
+    //Manually fight instead of using builtin auto-fight
+    if (game.global.autoBattle) {
+        if (!game.global.pauseFight) {
+            pauseFight(); //Disable autofight
+        }
+    }
+    var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
+    var potencyMod = getPotencyMod();
+    var tps = breeding * potencyMod;
+    var addTime = adjustedMax / tps;
+    debug("To Fight now would add: " + addTime + " seconds");
+    addbreedTimerInsideText.innerHTML = prettify(game.global.lastBreedTime/1000) + 's';
+}
 
 //Exits the Spire after completing the specified cell.
 function exitSpireCell() {
@@ -2967,6 +2868,135 @@ function autoMagmiteSpender() {
     debug("Leftover magmite: " + game.global.magmite,"general");
     return;
 }
+
+/////////////////////////////////////////////////////
+//Portal Related Code)///////////////////////////////
+/////////////////////////////////////////////////////
+var lastHeliumZone = 0;
+var zonePostpone = 0;
+//Decide When to Portal
+function autoPortal() {
+    switch (autoTrimpSettings.AutoPortal.selected) {
+        //portal if we have lower He/hr than the previous zone (or buffer)
+        case "Helium Per Hour":
+            game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
+            if(game.global.world > lastHeliumZone) {
+                lastHeliumZone = game.global.world;
+                if(game.global.world > (game.stats.bestHeliumHourThisRun.atZone + zonePostpone) && game.global.world >= getPageSetting('HeHrDontPortalBefore')) {
+                    zonePostpone = 0;
+                    var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
+                    var myHeliumHr = game.stats.heliumHour.value();
+                    var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
+                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
+                        debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
+                        pushData();
+                        tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
+                        setTimeout(cancelTooltip,10000);
+                        setTimeout(function(){ 
+                            if (zonePostpone > 0)
+                                 return; 
+                            if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
+                                doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
+                            else
+                                doPortal();
+                            zonePostpone = 0;
+                        },10100);
+                    }
+                }
+            }
+            break;
+        case "Custom":
+            if(game.global.world > getPageSetting('CustomAutoPortal') && !game.global.challengeActive) {
+                pushData();
+                if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
+                    doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
+                else
+                    doPortal();
+            }
+            break;
+        case "Balance":
+        case "Decay":
+        case "Electricity":
+        case "Crushed":
+        case "Nom":
+        case "Toxicity":
+        case "Watch":
+        case "Lead":
+        case "Corrupted":
+            if(!game.global.challengeActive) {
+                pushData();
+                doPortal(autoTrimpSettings.AutoPortal.selected);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+//Checks portal related UI settings (TODO: split into two, and move the validation check to NewUI)
+function checkSettings() {
+    var portalLevel = -1;
+    var leadCheck = false;
+    switch(autoTrimpSettings.AutoPortal.selected) {
+        case "Off":
+            break;
+        case "Custom":
+            portalLevel = autoTrimpSettings.CustomAutoPortal.value + 1;
+            leadCheck = autoTrimpSettings.HeliumHourChallenge.selected == "Lead" ? true:false;
+            break;
+        case "Balance":
+            portalLevel = 41;
+            break;
+        case "Decay":
+            portalLevel = 56;
+            break;
+        case "Electricity":
+            portalLevel = 82;
+            break;
+        case "Crushed":
+            portalLevel = 126;
+            break;
+        case "Nom":
+            portalLevel = 146;
+            break;
+        case "Toxicity":
+            portalLevel = 166;
+            break;
+        case "Lead":
+            portalLevel = 181;
+            break;
+        case "Watch":
+            portalLevel = 181;
+            break;
+        case "Corrupted":
+            portalLevel = 191;
+            break;
+    }
+    if(portalLevel == -1)
+        return portalLevel;
+    if(autoTrimpSettings.VoidMaps.value >= portalLevel)
+        tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please Change Your Settings Now. This Box Will Not Go away Until You do. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
+    if((leadCheck || game.global.challengeActive == 'Lead') && (autoTrimpSettings.VoidMaps.value % 2 == 0 && portalLevel < 182))
+        tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
+    return portalLevel;
+}
+
+//Actually Portal.
+function doPortal(challenge) {
+    if(!game.global.portalActive) return;
+    try {
+        if (getPageSetting('AutoMagmiteSpender'))
+            autoMagmiteSpender();
+    } catch (err) {
+        debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
+    }
+    portalClicked();
+    if(challenge) selectChallenge(challenge);
+    activateClicked();
+    activatePortal();
+    lastHeliumZone = 0; zonePostpone = 0;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first)/////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -3004,7 +3034,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/22 Patch 4.0 fixes are still happening!</b><br><a href="https://puu.sh/sr80Q/89fd366f06.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/22 Patch 4.0 fixes are still happening!</b><br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
@@ -3015,6 +3045,7 @@ function delayStartAgain(){
 var OVKcellsWorld = 0;
 function mainLoop() {
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //just better.
+    addbreedTimerInsideText.innerHTML = prettify(game.global.lastBreedTime/1000) + 's'; //add hidden next group breed timer;
     stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
     game.global.addonUser = true;
     game.global.autotrimps = {
