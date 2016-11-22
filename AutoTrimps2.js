@@ -2887,10 +2887,30 @@ function useScryerStance() {
 
 //Auto Magmite spender before portal
 function autoMagmiteSpender() {
+    //Part #1:
+    //list of available permanent one-and-done upgrades
+    var permanames = ["Slowburn","Shielding","Storage","Hybridization"];
+    //cycle through:
+    for (var i=0; i < permanames.length; i++) {
+        var item = permanames[i];
+        var upgrade = game.permanentGeneratorUpgrades[item];
+        if (typeof upgrade === 'undefined')
+            return; //error-resistant
+        //skip owned perma-upgrades
+        if (upgrade.owned)
+            continue;
+        var cost = upgrade.cost();
+        //if we can afford anything, buy it:
+        if (game.global.magmite >= cost) {
+            buyPermanentGeneratorUpgrade(item);
+            debug("Auto Spending " + cost + " Magmite on: " + item, "general");                
+        }
+    }
+    //Part #2
     var repeat = true;
     while (repeat) {
         try {
-            //list of available upgrades (doesnt handle one-time upgrades)
+            //list of available multi upgrades
             var names = ["Efficiency","Capacity","Supply"];
             var lowest = [null,null];   //keep track of cheapest one
             //cycle through:
@@ -2908,11 +2928,11 @@ function autoMagmiteSpender() {
                     lowest = [item,cost];
             }
             //if we can afford anything, buy it:
-            if (game.global.magmite > lowest[1]) {
+            if (game.global.magmite >= lowest[1]) {
                 buyGeneratorUpgrade(lowest[0]);
                 debug("Auto Spending " + lowest[1] + " Magmite on: " + lowest[0] + " #" + game.generatorUpgrades[lowest[0]].upgrades, "general");                
             }
-            //if we can't. exit the loop
+            //if we can't, exit the loop
             else
                 repeat = false;
         }
@@ -2963,7 +2983,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening!<br>-Auto Spend Magmite before portaling - setting in genBTC page - (buys cheapest non-permanent upgrade)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page</b>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening!<br>-Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page</b>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 

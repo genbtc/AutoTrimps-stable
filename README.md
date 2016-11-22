@@ -49,7 +49,7 @@ Feel free to submit any bugs/suggestions as issues here on github.
 
 ## Current feature changes by genBTC (up to date as of 11/22/2016): 
 - 11/21 Patch 4.0 fixes are happening!
-- Auto Spend Magmite before portaling - setting in genBTC page - (buys cheapest non-permanent upgrade)
+- Auto Spend Magmite before portaling - (setting in genBTC page)- Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore.
 - Buy 2 buildings instead of 1 if we have the mastery 
 - Entirely remove high lumberjack ratio during Spire.
 - During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.
