@@ -76,7 +76,26 @@ Feel free to submit any bugs/suggestions as issues here on github.
 - Helium per Hour Portal "Buffer" - now you can customize how much He/Hr is allowed to drop before portaling
 - Auto Robo Trimp - activate the MagnetoShriek ability on the bosses every 5 levels starting from the level you specify. (recommended set to 60)
 
-## Gap in Changelog exists here.
+## Individual changes (from pinned messages on the Discord channel)
+- 7/30 Patch heirlooms2 not carrying all protected heirlooms due to some indexing bug
+- 7/28 Add 3 new graphs. Update Graphs, fix He/hr shifted by 1 bug.
+- 7/27 Works on level 1 fresh new games a lot better, and added a new function Auto Upgrade Heirlooms which spends ALL your nullifium on the advised upgrade automatically
+Also bugfix Adjust storage buying so that the script cannot buy a storage building before it is unlocked at level 1 and 70%
+- 7/23 Important Fix for Heirloom2 and fix tooltips.
+Reason: It was trying too hard to maintain equal shield/staff amounts, now it will not leave any better heirlooms (rarity/mods) in the temporary "extras" pile.
+- 7/23 ~~Automatically gets 10 map stacks During Spire.~~
+- 7/22 Add new feature: Auto Golden Upgrades (in genBTC advanced settings)
+- 7/22 Brand new AutoHeirlooms2 algorithm & Dynamic Prestige Algorithm (by Hyppy)
+There is a new setting in the genBTC settings called "AutoHeirlooms2" and this will override the original.
+I have not immediately switched over because Heirlooms are sensitive and I dont want to be responsible for anyone's heirlooms losses
+So when you enable this new setting for the new algorithm, Take notice of what is going on, and manually "Protect" button any heirlooms you need to before portal-recycling
+This image is a quick documentation of the heirloom carry bug, and the fix: https://puu.sh/qb6zj/903364c3d2.png
+- 7/21 Fix helium per hour portal bug.
+- 7/20 Dynamic Prestige now works with Helium Per Hour Autoportal setting! It uses the Last Run's portal zone in this situation.
+- 7/17 Add Corruption handling for 2 of the corruption types (Strong and Tough).
+- 7/16 Dynamic Prestige has been altered, if you are having a bug, reload, toggle your prestige dropdown setting to something else, and back, and portal to start a fresh run.
+- 7/16 Added a new "Protect Heirloom" button in the Heirlooms dialog: Mark certain heirlooms from being auto-recycled on portal if/when a better one is found by the AutoHeirloom script.
+- 7/6  New EasyMode Worker Ratios, >1000 tributes = 1/1/10 and >1500 tributes = 1/2/22
 
 ## Feature changes added by genBTC since before 4/27/2016 and Trimps version 3.22:
 - Change Genetecist Timer to 10 sec instead of 11sec. (was commonly showing 11.4s because it rounds. that is too much)
