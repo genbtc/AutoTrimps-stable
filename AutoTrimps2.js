@@ -2824,7 +2824,7 @@ function getArmyTime() {
     return addTime;
 }
 
-}
+
 
 //Exits the Spire after completing the specified cell.
 function exitSpireCell() {
