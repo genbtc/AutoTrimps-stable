@@ -1025,8 +1025,8 @@ function evaluateHeirloomMods(loom, location, upgrade) {
 function workerRatios() {
     if (game.buildings.Tribute.owned > 3000 && mutations.Magma.active()) {
         autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '2';
-        autoTrimpSettings.MinerRatio.value = '2';
+        autoTrimpSettings.LumberjackRatio.value = '12';
+        autoTrimpSettings.MinerRatio.value = '12';
     } else if (game.buildings.Tribute.owned > 1500) {
         autoTrimpSettings.FarmerRatio.value = '1';
         autoTrimpSettings.LumberjackRatio.value = '2';
@@ -2613,8 +2613,12 @@ function checkSettings() {
 //Actually Portal.
 function doPortal(challenge) {
     if(!game.global.portalActive) return;
-    if (getPageSetting('AutoMagmiteSpender'))
-        autoMagmiteSpender();
+    try {
+        if (getPageSetting('AutoMagmiteSpender'))
+            autoMagmiteSpender();
+    } catch (err) {
+        debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
+    }
     portalClicked();
     if(challenge) selectChallenge(challenge);
     activateClicked();
@@ -2899,7 +2903,7 @@ function autoMagmiteSpender() {
         //skip owned perma-upgrades
         if (upgrade.owned)
             continue;
-        var cost = upgrade.cost();
+        var cost = upgrade.cost;
         //if we can afford anything, buy it:
         if (game.global.magmite >= cost) {
             buyPermanentGeneratorUpgrade(item);
