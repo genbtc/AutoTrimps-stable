@@ -48,19 +48,19 @@ If you would like to use only the graphs module, replace `AutoTrimps2.js` with `
 Feel free to submit any bugs/suggestions as issues here on github.
 
 ## Current feature changes by genBTC (up to date as of 11/22/2016): 
--11/21 Patch 4.0 fixes are happening!
--Auto Spend Magmite before portaling - setting in genBTC page - (buys cheapest non-permanent upgrade)
--Buy 2 buildings instead of 1 if we have the mastery 
--Entirely remove high lumberjack ratio during Spire.
--During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.
--Add a 10 second timeout Popup window that can postpone Autoportal when clicked.
--Added a No Nurseries Until setting, in genBTC page
--11/20 Fixed spire map bug
--Added new ratios to AutoPerks (ZXV3,truth_late)
--AutoFight if timer is <0.5 not <0.1 now
--11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). 
--Re-arranged all the categories in the settings window and updated tooltips
--Kill your trimps (AutoHomicide) for Anti-Stacks more often
+- 11/21 Patch 4.0 fixes are happening!
+- Auto Spend Magmite before portaling - setting in genBTC page - (buys cheapest non-permanent upgrade)
+- Buy 2 buildings instead of 1 if we have the mastery 
+- Entirely remove high lumberjack ratio during Spire.
+- During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.
+- Add a 10 second timeout Popup window that can postpone Autoportal when clicked.
+- Added a No Nurseries Until setting, in genBTC page
+- 11/20 Fixed spire map bug
+- Added new ratios to AutoPerks (ZXV3,truth_late)
+- AutoFight if timer is <0.5 not <0.1 now
+- 11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). 
+- Re-arranged all the categories in the settings window and updated tooltips
+- Kill your trimps (AutoHomicide) for Anti-Stacks more often
 
 ## Gap in Changelog exists here.
 
