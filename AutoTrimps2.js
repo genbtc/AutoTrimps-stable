@@ -1023,10 +1023,10 @@ function evaluateHeirloomMods(loom, location, upgrade) {
 ////////////////////////////////////////
 
 function workerRatios() {
-    if (game.global.world == 200 && game.global.spireActive) {
+    if (game.buildings.Tribute.owned > 3000 && mutations.Magma.active()) {
         autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '40';
-        autoTrimpSettings.MinerRatio.value = '8';
+        autoTrimpSettings.LumberjackRatio.value = '2';
+        autoTrimpSettings.MinerRatio.value = '2';
     } else if (game.buildings.Tribute.owned > 1500) {
         autoTrimpSettings.FarmerRatio.value = '1';
         autoTrimpSettings.LumberjackRatio.value = '2';
@@ -2027,7 +2027,8 @@ function autoMap() {
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Corruption Zone Proportionality Farming Calculator:
-    if (getPageSetting('CorruptionCalc') && game.global.world >= 181){
+    var corrupt = game.global.world >= mutations.Corruption.start(true);
+    if (getPageSetting('CorruptionCalc') && corrupt) {
         var cptnum = getCorruptedCellsNum();     //count corrupted cells
         var cpthlth = getCorruptScale("health"); //get corrupted health mod
         var cptpct = cptnum / 100;               //percentage of zone which is corrupted.
@@ -2488,6 +2489,7 @@ function autoMap() {
 
 var lastHeliumZone = 0;
 //Decide When to Portal
+var zonePostpone = 0;
 function autoPortal() {
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone (or buffer)
@@ -2495,17 +2497,25 @@ function autoPortal() {
             game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
             if(game.global.world > lastHeliumZone) {
                 lastHeliumZone = game.global.world;
-                if(game.global.world > game.stats.bestHeliumHourThisRun.atZone && game.global.world >= getPageSetting('HeHrDontPortalBefore')) {
+                if(game.global.world > (game.stats.bestHeliumHourThisRun.atZone + zonePostpone) && game.global.world >= getPageSetting('HeHrDontPortalBefore')) {
+                    zonePostpone = 0;
                     var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
                     var myHeliumHr = game.stats.heliumHour.value();
                     var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
                     if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
                         debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
                         pushData();
-                        if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
-                            doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
-                        else
-                            doPortal();
+                        tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
+                        setTimeout(cancelTooltip,10000);
+                        setTimeout(function(){ 
+                            if (zonePostpone > 0)
+                                 return; 
+                            if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
+                                doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
+                            else
+                                doPortal();
+                            zonePostpone = 0;
+                        },10100);
                     }
                 }
             }
@@ -2896,7 +2906,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening.<br>Added No Nurseries Until setting in genBTC page</b><br>11/20 Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now<br>11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening!<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page</b><br>11/20 Fixed spire map bug<br>Added new ratios to AutoPerks<br>AutoFight if timer is <0.5 not <0.1 now<br>11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). <br>Re-arranged all the categories in the settings window and updated tooltips<br>Kill your trimps (AutoHomicide) for Anti-Stacks more aggressively', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
