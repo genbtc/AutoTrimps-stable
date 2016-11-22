@@ -513,13 +513,8 @@ function getCorruptedCellsNum() {
     }
     return corrupteds;
 }
-
-
-function getBreedTime(remaining) {
-    var trimps = game.resources.trimps;
-    var trimpsMax = trimps.realMax();
-
-    var potencyMod = trimps.potency;
+function getPotencyMod() {
+    var potencyMod = game.resources.trimps.potency;
     //Add potency (book)
     if (game.upgrades.Potency.done > 0) potencyMod *= Math.pow(1.1, game.upgrades.Potency.done);
     //Add Nurseries
@@ -550,6 +545,15 @@ function getBreedTime(remaining) {
         potencyMod *= 0.2;
     }
     potencyMod = calcHeirloomBonus("Shield", "breedSpeed", potencyMod);
+    return potencyMod;
+}    
+
+function getBreedTime(remaining) {
+    var trimps = game.resources.trimps;
+    var trimpsMax = trimps.realMax();
+
+    var potencyMod = getPotencyMod();
+    // <breeding per second> would be calced here without the following line in potencymod
     potencyMod = (1 + (potencyMod / 10));
     var timeRemaining = log10((trimpsMax - trimps.employed) / (trimps.owned - trimps.employed)) / log10(potencyMod);
     timeRemaining /= 10;
@@ -2787,7 +2791,7 @@ function autoGoldenUpgrades() {
     buyGoldenUpgrade(setting);
 }
 
-//Handles manual fighting automatically, in a different way.
+//old: Handles manual fighting automatically, in a different way.
 function betterAutoFight() {
     //Manually fight instead of using builtin auto-fight
     if (game.global.autoBattle) {
@@ -2795,7 +2799,8 @@ function betterAutoFight() {
             pauseFight(); //Disable autofight
         }
     }
-    lowLevelFight = game.resources.trimps.maxSoldiers < (game.resources.trimps.owned - game.resources.trimps.employed) * 0.5 && (game.resources.trimps.owned - game.resources.trimps.employed) > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
+    var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
+    lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
     if (game.upgrades.Battle.done && !game.global.fighting && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
         fightManual();
     }
@@ -2807,6 +2812,18 @@ function betterAutoFight() {
         else if (game.resources.trimps.owned >= game.resources.trimps.realMax() || getBreedTime() <= 0.5)
             fightManual();
     }
+    addbreedTimerInsideText.innerHTML = prettify(game.global.lastBreedTime/1000) + 's';
+}
+function getArmyTime() {
+    var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
+    var potencyMod = getPotencyMod();
+    var tps = breeding * potencyMod;
+    var addTime = adjustedMax / tps;
+    return addTime;
+}
+
 }
 
 //Exits the Spire after completing the specified cell.
@@ -2987,7 +3004,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/21 Patch 4.0 fixes are happening!<br>-Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/2/2 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page</b>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/22 Patch 4.0 fixes are still happening!</b><br><a href="https://puu.sh/sr80Q/89fd366f06.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
@@ -3025,8 +3042,8 @@ function mainLoop() {
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"
     if (getPageSetting('ManualGather2')) manualLabor();  //"Auto Gather/Build"
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"
-    if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Manage Breed Timer"
-    if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 60)
+    if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"
+    if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40)
     if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (genBTC settings area)
     else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
@@ -3222,3 +3239,26 @@ function formatMinutesForDescriptions(number){
     }
     return text;
 }
+
+//Add breeding box:
+var breedbarContainer = document.querySelector('#trimps > div.row');
+var addbreedTimerContainer = document.createElement("DIV");
+addbreedTimerContainer.setAttribute('class', "col-xs-3");
+addbreedTimerContainer.setAttribute('style','padding-left: 0;');
+addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now (capped at 30 obv.)\")');
+addbreedTimerContainer.setAttribute("onmouseout", 'tooltip("hide")');
+var addbreedTimerInside = document.createElement("DIV");
+addbreedTimerInside.id='turkimpBuff';
+addbreedTimerInside.setAttribute('style','display: block;');
+var addbreedTimerInsideIcon = document.createElement("SPAN");
+addbreedTimerInsideIcon.setAttribute('class',"icomoon icon-clock");
+var addbreedTimerInsideText = document.createElement("SPAN");
+addbreedTimerInsideText.id='hiddenBreedTimer';
+addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
+addbreedTimerInside.appendChild(addbreedTimerInsideText);
+addbreedTimerContainer.appendChild(addbreedTimerInside);
+breedbarContainer.appendChild(addbreedTimerContainer);
+//Add tooltip to current army count
+var armycount = document.getElementById('trimpsFighting');
+armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
+armycount.setAttribute("onmouseout", 'tooltip("hide")');

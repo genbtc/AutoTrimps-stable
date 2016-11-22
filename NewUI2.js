@@ -187,7 +187,7 @@ document.getElementById("AutoGoldenUpgrades").parentNode.insertBefore(AGULabel,d
 createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'IMPORTANT SETTING. New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'genBTC');
 createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buys the upgrades the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null,'genBTC');
 createSetting('TrainerCaptoTributes', 'Cap Trainers to a % of Tributes', 'Only Buy a Trainer when its cost is LESS than X% of cost of a tribute. This setting can work in combination with the other one, or set the other one to -1 and this will take full control. Default: -1 (Disabled). 50% is close to the point where the cap does nothing. You can go as low as you want but recommended is 10% to 1%. (example: Trainer cost of 5001, Tribute cost of 100000, @ 5%, it would NOT buy the trainer.)', 'value', '-1', null, 'genBTC');
-createSetting('NoNurseriesUntil', 'No Nurseries Until z', 'For Magma z230+ purposes. Nurseries get shut down, and wasting nurseries early on is probably a bad idea. Might want to set this to 230+ for now. Can use combined with the old Max Nurseries cap setting. Reload to view Cumulative Total of Nurseries Bought this run: ' + game.buildings.Nursery.purchased, 'value', 0, null, 'genBTC');
+createSetting('NoNurseriesUntil', 'No Nurseries Until z', 'For Magma z230+ purposes. Nurseries get shut down, and wasting nurseries early on is probably a bad idea. Might want to set this to 230+ for now. Can use combined with the old Max Nurseries cap setting.', 'value', 0, null, 'genBTC');
 createSetting('AutoMagmiteSpender', 'Auto Spend Magmite', 'Auto Spends any unspent Magmite immediately before portaling. Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore. For Magma z230+ purposes. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');
 
 // Scryer settings
@@ -325,7 +325,17 @@ function automationMenuInit() {
     newContainer.appendChild(abutton);
     fightButtonCol.appendChild(newContainer);
 
-     //make timer click toggle paused mode
+    //create hiderStatus - He/hr percent
+    newContainer = document.createElement("DIV");
+    newContainer.setAttribute("style", "display: block; font-size: 1vw; text-align: center; margin-top: 2px; background-color: rgba(0,0,0,0.3);");
+    newContainer.setAttribute("onmouseover", 'tooltip(\"Helium/Hr Info\", \"customText\", event, \"1st is Current He/hr % out of Lifetime He(not including current+unspent).<br> 0.5% is an ideal peak target. This can tell you when to portal... <br>2nd is Current run Total He earned / Lifetime He(not including current) \")');
+    newContainer.setAttribute("onmouseout", 'tooltip("hide")');
+    abutton = document.createElement("SPAN");
+    abutton.id = 'hiderStatus';    
+    newContainer.appendChild(abutton);
+    fightButtonCol.appendChild(newContainer);
+
+    //make timer click toggle paused mode
     document.getElementById('portalTimer').setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
     document.getElementById('portalTimer').setAttribute('style', 'cursor: default');
 
@@ -587,16 +597,22 @@ function updateValueFields() {
     //automaps status
     var status = document.getElementById('autoMapStatus');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
-    else if(needPrestige && !doVoids) status.innerHTML = 'Prestige';
-    else if(doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
-    else if(needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
-    else if(doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
-    else if(shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
-    else if(stackingTox) status.innerHTML = 'Getting Tox Stacks';
+    else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
+    else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
+    else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
+    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
+    else if (doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
+    else if (shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
+    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
     else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
     else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
     else if (!enoughHealth) status.innerHTML = 'Want more health';
     else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
+    
+    var area51 = document.getElementById('hiderStatus');
+    var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
+    var lifetime = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
+    area51.innerHTML = 'He/hr: ' + getPercent.toFixed(3) + '%<br>&nbsp;&nbsp;&nbsp;He: ' + lifetime.toFixed(3) +'%';
 }
 
 function updateCustomButtons() {
@@ -618,8 +634,8 @@ function updateCustomButtons() {
         document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-success");
     else
         document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-danger");
-    //auto portal setting, hide until player has cleared zone 59
-    (game.global.highestLevelCleared >= 59) ? turnOn("AutoPortal") : turnOff("AutoPortal");
+    //auto portal setting, hide until player has unlocked the balance challenge
+    (game.challenges.Balance.filter()) ? turnOn("AutoPortal") : turnOff("AutoPortal");
     //custom auto portal value
     (autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("CustomAutoPortal") : turnOff("CustomAutoPortal");
     //challenge for he/hr setting
