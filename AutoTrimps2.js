@@ -1525,38 +1525,16 @@ function evaluateEquipmentEfficiency(equipName) {
 function autoLevelEquipment() {
     //if((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
         //return;
-    var init = {
+    var Best = {};
+    var keys = ['healthwood', 'healthmetal', 'attackmetal', 'blockwood'];
+    for (var i = 0; i < keys.length; i++) {
+        Best[keys[i]] = {
             Factor: 0,
             Name: '',
             Wall: false,
             StatusBorder: 'white'
-            };
-    var Best = {
-        'healthwood': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        },
-        'healthmetal': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        },
-        'attackmetal': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        },
-        'blockwood': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        }
-    };
+        };
+    }
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
