@@ -2105,8 +2105,11 @@ function autoMap() {
 //            if (!game.portal.Overkill.locked && game.stats.cellsOverkilled.value)
 
         stackingTox = !(needToVoid && game.challenges.Toxicity.stacks > 1415);
-
-        forceAbandonTrimps();
+        //force abandon army
+        if(!game.global.mapsActive && !game.global.preMapsActive) {
+            mapsClicked();
+            mapsClicked();
+        }
     }
     else stackingTox = false;
 
