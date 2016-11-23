@@ -2359,9 +2359,13 @@ function autoMap() {
     //clicks the maps button, once or twice (inside the world):
     } else if (!game.global.preMapsActive && !game.global.mapsActive) {
         if (selectedMap != "world") {
-            //if we should not be in the world
-            //Get Impatient/Force Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone)
-            if ((needPrestige || doVoids ||
+            //if we should not be in the world, and the button is not already clicked, click map button once (and wait patiently until death)
+            if (!game.global.switchToMaps){
+                mapsClicked();
+            }
+            //Get Impatient/Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone)
+            if (game.global.switchToMaps &&
+                (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
                 (!enoughDamage && game.global.lastClearedCell < 5) ||
                 (shouldFarm && game.global.lastClearedCell >= 59))
@@ -2372,7 +2376,7 @@ function autoMap() {
                     || (doVoids && game.global.lastClearedCell > 93)
                     )
                 ){
-                forceAbandonTrimps()
+                mapsClicked();
             }
         }
         //forcibly run watch maps
