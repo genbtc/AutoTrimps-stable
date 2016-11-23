@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.0-genbtc-11-22-2016+AutoPerks
+// @version      2.1.3.1-genbtc-11-23-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.0-genbtc-11-22-2016+AutoPerks';
+var ATversion = '2.1.3.1-genbtc-11-23-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -724,7 +724,12 @@ function heirloomUpgradeHighlighting() {
 
 //Automatically upgrades the best mod on the equipped shield and equipped staff. Runs until you run out of nullifium.
 //Do not tamper with this.
-function autoNull(){for(var e,d=[game.global.ShieldEquipped,game.global.StaffEquipped],o=0;2>o;o++){var l=d[o];if(e=evaluateHeirloomMods(0,l.type+"Equipped",!0),e.index){selectedMod=e.index;var a=getModUpgradeCost(l,selectedMod);if(game.global.nullifium<a)continue;game.global.nullifium-=a;var i=getModUpgradeValue(l,selectedMod),t=l.mods[selectedMod];t[1]=i,"undefined"!=typeof t[3]?t[3]++:(t[2]=0,t[3]=1),game.heirlooms[l.type][l.mods[selectedMod][0]].currentBonus=i}}}
+function autoNull(){try {
+    for(var e,d=[game.global.ShieldEquipped,game.global.StaffEquipped],o=0;2>o;o++){var l=d[o];if(e=evaluateHeirloomMods(0,l.type+"Equipped",!0),e.index){selectedMod=e.index;var a=getModUpgradeCost(l,selectedMod);if(game.global.nullifium<a)continue;game.global.nullifium-=a;var i=getModUpgradeValue(l,selectedMod),t=l.mods[selectedMod];t[1]=i,"undefined"!=typeof t[3]?t[3]++:(t[2]=0,t[3]=1),game.heirlooms[l.type][l.mods[selectedMod][0]].currentBonus=i}}
+    } catch (err) {
+        debug("AutoSpendNull Error encountered, no Heirloom detected?: " + err.message,"general");
+    }
+}
 
 //commented out because it was never finished.
 /*
@@ -2826,10 +2831,10 @@ function betterAutoFight2() {
             battle(true);
             debug("AutoFight: BAF1 #2, breed &lt;= 0.5s", "other");
         }
-        //Click fight anyway if we are stuck in a loop due to Dimensional Generator and we can get away with it.
-        else if (game.global.soldierHealth == 0 &&(getBreedTime() + getBreedTime(true) + addTime <= autoTrimpSettings.GeneticistTimer.value)&&(breeding>=adjustedMax)){
+        //Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.
+        else if (game.global.soldierHealth == 0 && (getBreedTime(true)+addTime <= autoTrimpSettings.GeneticistTimer.value) && (breeding>=adjustedMax)){
             battle(true);
-            debug("AutoFight: NEW: BAF2 #3, both Timers + addTime &lt; GeneTimer", "other");
+            debug("AutoFight: NEW: BAF2 #3, RemainingTime + ArmyAdd.Time &lt; GeneTimer", "other");
         }
     }
 }
@@ -3102,7 +3107,7 @@ function checkSettings() {
 function doPortal(challenge) {
     if(!game.global.portalActive) return;
     try {
-        if (getPageSetting('AutoMagmiteSpender'))
+        if (getPageSetting('AutoMagmiteSpender2')==1)
             autoMagmiteSpender();
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
@@ -3151,7 +3156,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/23 Patch 4.0 fixes are still happening!<br>AutoTrimpicide/Force-Abandon is now toggleable<br>Fix Bugs I created<br>NEW: Better AutoFight 2</b><br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/23 Patch 4.0 fixes are still happening!<br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>Fix Bugs I created<br>NEW: Better AutoFight 2</b><br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
@@ -3160,10 +3165,20 @@ function delayStartAgain(){
 ////////////////////////////////////////
 
 var OVKcellsWorld = 0;
+//reset stuff that may not have gotten cleaned up on portal
+function mainCleanup() {
+    //runs at zone 1 only.
+    if (game.global.world == 1) {
+        stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
+        lastHeliumZone = 0;
+        zonePostpone = 0;
+        OVKcellsWorld = 0;
+    }
+}    
 function mainLoop() {
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //just better.
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
-    stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
+    mainCleanup();
     game.global.addonUser = true;
     game.global.autotrimps = {
         firstgiga: getPageSetting('FirstGigastation'),
@@ -3214,6 +3229,13 @@ function mainLoop() {
 
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     userscripts();
+    
+    try {
+        if (getPageSetting('AutoMagmiteSpender2')==2)
+            autoMagmiteSpender();
+    } catch (err) {
+        debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
+    }    
 }
 
 //left blank intentionally. the user will provide this. blank global vars are included as an example
