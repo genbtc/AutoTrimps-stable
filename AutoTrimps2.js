@@ -2931,6 +2931,7 @@ function useScryerStance() {
 
 //Auto Magmite spender before portal
 function autoMagmiteSpender() {
+    var didSpend = false;
     //Part #1:
     //list of available permanent one-and-done upgrades
     var permanames = ["Slowburn","Shielding","Storage","Hybridization"];
@@ -2947,7 +2948,8 @@ function autoMagmiteSpender() {
         //if we can afford anything, buy it:
         if (game.global.magmite >= cost) {
             buyPermanentGeneratorUpgrade(item);
-            debug("Auto Spending " + cost + " Magmite on: " + item, "general");                
+            debug("Auto Spending " + cost + " Magmite on: " + item, "general");
+            didSpend = true;
         }
     }
     //Part #2
@@ -2974,7 +2976,8 @@ function autoMagmiteSpender() {
             //if we can afford anything, buy it:
             if (game.global.magmite >= lowest[1]) {
                 buyGeneratorUpgrade(lowest[0]);
-                debug("Auto Spending " + lowest[1] + " Magmite on: " + lowest[0] + " #" + game.generatorUpgrades[lowest[0]].upgrades, "general");                
+                debug("Auto Spending " + lowest[1] + " Magmite on: " + lowest[0] + " #" + game.generatorUpgrades[lowest[0]].upgrades, "general");
+                didSpend = true;
             }
             //if we can't, exit the loop
             else
@@ -2987,7 +2990,8 @@ function autoMagmiteSpender() {
         }
     }
     //print the result
-    debug("Leftover magmite: " + game.global.magmite,"general");
+    if (didSpend)
+        debug("Leftover magmite: " + game.global.magmite,"general");
     return;
 }
 
