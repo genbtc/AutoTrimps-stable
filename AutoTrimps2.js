@@ -1532,11 +1532,31 @@ function autoLevelEquipment() {
             StatusBorder: 'white'
             };
     var Best = {
-            'healthwood': init,
-            'healthmetal': init,
-            'attackmetal': init,
-            'blockwood': init
-            };
+        'healthwood': {
+            Factor: 0,
+            Name: '',
+            Wall: false,
+            Status: 'white'
+        },
+        'healthmetal': {
+            Factor: 0,
+            Name: '',
+            Wall: false,
+            Status: 'white'
+        },
+        'attackmetal': {
+            Factor: 0,
+            Name: '',
+            Wall: false,
+            Status: 'white'
+        },
+        'blockwood': {
+            Factor: 0,
+            Name: '',
+            Wall: false,
+            Status: 'white'
+        }
+    };
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
