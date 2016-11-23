@@ -1025,12 +1025,15 @@ function workerRatios() {
     }
 }
 
-//An error-resilient function that will actually purchase buildings and return a success status
-function safeBuyBuilding(building) {
+function isBuildingInQueue(building) {
     //limit to 1 building per queue
     for (var b in game.global.buildingsQueue) {
-        if (game.global.buildingsQueue[b].includes(building)) return false;
+        if (game.global.buildingsQueue[b].includes(building)) return true;
     }
+}    
+//An error-resilient function that will actually purchase buildings and return a success status
+function safeBuyBuilding(building) {
+    if (isBuildingInQueue(building)) return false;
     //check if building is locked, or else it can buy 'phantom' buildings and is not exactly safe.
     if (game.buildings[building].locked)
         return false;
@@ -1293,8 +1296,8 @@ function buyJobs() {
         scientistRatio = totalRatio / 10;
     }
 
-    //FRESH GAME LOWLEVEL CODE
-    if (game.global.world == 1 && game.global.totalHeliumEarned<=300){
+    //FRESH GAME LOWLEVEL NOHELIUM CODE.
+    if (game.global.world == 1 && game.global.totalHeliumEarned<=1000){
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9){
             if (game.resources.food.owned > 5 && freeWorkers > 0){
                 if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned)
@@ -1312,6 +1315,7 @@ function buyJobs() {
     //make sure the game always buys at least 1 farmer, so we can unlock lumberjacks.
     } else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) {
         safeBuyJob('Farmer', 1);
+    //make sure the game always buys 10 scientists.
     } else if (game.jobs.Scientist.owned < 10 && scienceNeeded > 100)
         safeBuyJob('Scientist', 10);
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
@@ -1665,7 +1669,7 @@ function autoLevelEquipment() {
     postBuy();
 }
 
-//"Auto Gather/Build"
+//OLD: "Auto Gather/Build"
 function manualLabor() {
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 
@@ -1774,6 +1778,111 @@ function manualLabor() {
         else
             setGather(lowestResource); 
     }
+}
+
+//NEW: #2 "Auto Gather/Build"
+function manualLabor2() {
+    //vars
+    var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
+    var trapTrimpsOK = getPageSetting('TrapTrimps');
+    var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
+    
+    //FRESH GAME LOWLEVEL NOHELIUM CODE.
+    if (game.global.world <=3 && game.global.totalHeliumEarned<=1000) {
+        if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
+            if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned)) {
+                setGather('food');
+                return;
+            }
+            else {
+                setGather('wood');
+                return;
+            }
+        }
+    }
+    //Traps and Trimps
+    if (trapTrimpsOK && (breedingTrimps < 5 || targetBreed < getBreedTime(true))) {
+        if (game.buildings.Trap.owned > 0) { 
+            setGather('trimps');//gatherTrimps = true;
+            return;
+        }
+        if (game.buildings.Trap.owned == 0 && canAffordBuilding('Trap'))
+            safeBuyBuilding('Trap');//buyTraps = true;
+    }
+    //Buildings:
+    //if we have more than 2 buildings in queue, or (our modifier is real fast and trapstorm is off), build
+    if ((!game.talents.foreman.purchased && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 1000 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) || 
+    //if trapstorm is off (likely we havent gotten it yet, the game is still early, buildings take a while to build ), then Prioritize Storage buildings when they hit the front of the queue (should really be happening anyway since the queue should be >2(fits the clause above this), but in case they are the only object in the queue.)
+    (!game.global.trapBuildToggled && (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1')) || 
+    //Build more traps if we have TrapTrimps on, and we own less than 1000 traps.
+    (trapTrimpsOK && game.global.trapBuildToggled && game.buildings.Trap.owned < 1000)) {
+        setGather('buildings');//buildBuildings = true;
+        return;
+    }
+    //Sciencey:    
+    //if we have some upgrades sitting around which we don't have enough science for, gather science
+    if (document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
+        //if we have less than a minute of science
+        if (game.resources.science.owned < 100 || (game.resources.science.owned < getPsString('science', true) * 60 && game.global.turkimpTimer < 1))
+            if (getPageSetting('ManualGather2') != 2) {
+                setGather('science');
+                return;
+            }
+        if (game.resources.science.owned < scienceNeeded) {
+            //if manual is less than science production and turkimp, metal. (or science is set as disallowed)
+            if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && game.global.turkimpTimer > 0) || getPageSetting('ManualGather2') == 2)
+                setGather('metal');
+            else if (getPageSetting('ManualGather2') != 2) {
+                setGather('science');
+                return;
+            }
+        }
+    }
+    //If we got here, without exiting, gather Normal Resources:
+    var manualResourceList = {
+        'food': 'Farmer',
+        'wood': 'Lumberjack',
+        'metal': 'Miner',
+    };
+    var lowestResource = 'food';
+    var lowestResourceRate = -1;
+    var haveWorkers = true;
+    for (var resource in manualResourceList) {
+        var job = manualResourceList[resource];
+        var currentRate = game.jobs[job].owned * game.jobs[job].modifier;
+        // debug('Current rate for ' + resource + ' is ' + currentRate + ' is hidden? ' + (document.getElementById(resource).style.visibility == 'hidden'));
+        if (document.getElementById(resource).style.visibility != 'hidden') {
+            //find the lowest resource rate
+            if (currentRate === 0) {
+                currentRate = game.resources[resource].owned;
+                // debug('Current rate for ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate);
+                if ((haveWorkers) || (currentRate < lowestResourceRate)) {
+                    // debug('New Lowest1 ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate+ ' haveworkers ' +haveWorkers);
+                    haveWorkers = false;
+                    lowestResource = resource;
+                    lowestResourceRate = currentRate;
+                }
+            }
+            if ((currentRate < lowestResourceRate || lowestResourceRate == -1) && haveWorkers) {
+                // debug('New Lowest2 ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate);
+                lowestResource = resource;
+                lowestResourceRate = currentRate;
+            }
+        }
+        // debug('Current Stats ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate+ ' haveworkers ' +haveWorkers);
+    }
+
+    if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
+        if (game.global.turkimpTimer > 0)
+            setGather('metal');
+        else
+            setGather(lowestResource);//gather the lowest resource
+    } else if (game.global.turkimpTimer > 0)
+        setGather('metal');
+    else
+        setGather(lowestResource);
+    //ok
+    return true;
 }
 
 function calcBaseDamageinX() {
@@ -2544,7 +2653,6 @@ function autoBreedTimer() {
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     if (getPageSetting('ForceAbandon') && game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
         forceAbandonTrimps();
-        debug("Killed your army! (to get " + targetBreed + " Anti-stacks). Trimpicide successful.","other");
     }
 }
 
@@ -2576,6 +2684,7 @@ function forceAbandonTrimps() {
             mapsClicked();        
         mapsClicked();
     }
+    debug("Killed your army! (to get " + parseInt(getPageSetting('GeneticistTimer')) + " Anti-stacks). Trimpicide successful.","other");    
 }
 
 //Change prestiges as we go (original idea thanks to Hider)
@@ -2703,7 +2812,7 @@ function betterAutoFight2() {
     var lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
     //Manually fight if:
     if (!game.global.fighting) {
-        if (newSquadRdy || lowLevelFight || game.global.challengeActive == 'Watch') {
+        if (newSquadRdy || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch') {
             battle(true);
             debug("AutoFight: Default, because NewSquad was ready, etc", "other");
         }
@@ -3053,7 +3162,7 @@ function delayStartAgain(){
 var OVKcellsWorld = 0;
 function mainLoop() {
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //just better.
-    addbreedTimerInsideText.innerHTML = prettify(game.global.lastBreedTime/1000) + 's'; //add hidden next group breed timer;
+    addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
     stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
     game.global.addonUser = true;
     game.global.autotrimps = {
