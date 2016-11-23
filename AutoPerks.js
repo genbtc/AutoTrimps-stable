@@ -13,7 +13,7 @@
 if (typeof(AutoPerks) === 'undefined')
     var AutoPerks = {};
 else {
-    console.log('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!');  
+    debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!');  
 }
     
 
@@ -271,7 +271,7 @@ AutoPerks.calculateIncrease = function(perk, level) {
 
 AutoPerks.spendHelium = function(helium, perks) {
     if(helium < 0) {
-        console.log("Not enough helium to buy fixed perks.");
+        debug("AutoPerks: Not enough helium to buy fixed perks.","general");
         //document.getElementById("nextCoordinated").innerHTML = "Not enough helium to buy fixed perks.";
         return;
     }
@@ -285,7 +285,7 @@ AutoPerks.spendHelium = function(helium, perks) {
         var inc = AutoPerks.calculateIncrease(perks[i], 0);
         perks[i].efficiency = inc/price;
         if(perks[i].efficiency <= 0) {
-            console.log("Perk ratios must be positive values.");
+            debug("Perk ratios must be positive values.","general");
             return;
         }
         effQueue.add(perks[i]);
@@ -315,7 +315,7 @@ AutoPerks.spendHelium = function(helium, perks) {
     var index = selector.selectedIndex;
     if(selector.value != "None") {
         var dumpPerk = AutoPerks.getPerkByName(selector[index].innerHTML);
-        console.log(AutoPerks.capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level);
+        debug(AutoPerks.capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level,"general");
         if(dumpPerk.level < dumpPerk.max) {
             for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
                 helium -= price;
@@ -375,8 +375,8 @@ AutoPerks.applyCalculationsRespec = function(perks){
         //activateClicked();    //click OK for them (disappears the window).
     }
     else {
-        console.log("A Respec would be required and is not available. You used it already, try again next portal.");
-        allocatorBtn1.setAttribute('class', 'settingsBtn settingBtnfalse');
+        debug("A Respec would be required and is not available. You used it already, try again next portal.","other");
+        allocatorBtn1.setAttribute('class', 'btn inPortalBtn settingsBtn settingBtnfalse');
         tooltip("Automatic Perk Allocation Error", "customText", event, "A Respec would be required and is NOT available. You used it already, try again next portal. Press <b>esc</b> to close this tooltip." );
     }
 }
