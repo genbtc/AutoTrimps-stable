@@ -362,40 +362,6 @@ function safeBuyJob(jobTitle, amount) {
     return true;
 }
 
-//Returns the amount of stats that the equipment (or gym) will give when bought.
-function Effect(gameResource, equip) {
-    if (equip.Equip) {
-        return gameResource[equip.Stat + 'Calculated'];
-    } else {
-        //That be Gym
-        var oldBlock = gameResource.increase.by * gameResource.owned;
-        var Mod = game.upgrades.Gymystic.done ? (game.upgrades.Gymystic.modifier + (0.01 * (game.upgrades.Gymystic.done - 1))) : 1;
-        var newBlock = gameResource.increase.by * (gameResource.owned + 1) * Mod;
-        return newBlock - oldBlock;
-    }
-}
-
-//Returns the cost after Artisanistry of a piece of equipment.
-function Cost(gameResource, equip) {
-    preBuy();
-    game.global.buyAmt = 1;
-    var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
-    if (equip.Equip) price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
-    postBuy();
-    return price;
-}
-
-//Returns the amount of stats that the prestige will give when bought.
-function PrestigeValue(what) {
-    var name = game.upgrades[what].prestiges;
-    var equipment = game.equipment[name];
-    var stat;
-    if (equipment.blockNow) stat = "block";
-    else stat = (typeof equipment.health !== 'undefined') ? "health" : "attack";
-    var toReturn = Math.round(equipment[stat] * Math.pow(1.19, ((equipment.prestige) * game.global.prestige[stat]) + 1));
-    return toReturn;
-}
-
 function getScienceCostToUpgrade(upgrade) {
     var upgradeObj = game.upgrades[upgrade];
     if (upgradeObj.cost.resources.science !== undefined ? upgradeObj.cost.resources.science[0] !== undefined : false) {
@@ -1238,96 +1204,6 @@ function buyBuildings() {
     }
 }
 
-//Back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
-var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
-function evaluateEquipmentEfficiency(equipName) {
-    var equip = equipmentList[equipName];
-    var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
-    if (equipName == 'Shield') {
-        if (gameResource.blockNow) {
-            equip.Stat = 'block';
-        } else {
-            equip.Stat = 'health';
-        }
-    }
-    var Eff = Effect(gameResource, equip);
-    var Cos = Cost(gameResource, equip);
-    var Res = Eff / Cos;
-    var Status = 'white';
-    var Wall = false;
-
-    //white - Upgrade is not available
-    //yellow - Upgrade is not affordable
-    //orange - Upgrade is affordable, but will lower stats
-    //red - Yes, do it now!
-    if (!game.upgrades[equip.Upgrade].locked) {
-        //Evaluating upgrade!
-        var CanAfford = canAffordTwoLevel(game.upgrades[equip.Upgrade]);
-        if (equip.Equip) {
-            var NextEff = PrestigeValue(equip.Upgrade);
-            //Scientist 3 and 4 challenge: set metalcost to Infinity so it can buy equipment levels without waiting for prestige. (fake the impossible science cost)
-            //also Fake set the next cost to infinity so it doesn't wait for prestiges if you have both options disabled.
-            if ((game.global.challengeActive == "Scientist" && getScientistLevel() > 2) || ((!getPageSetting('BuyArmorUpgrades') && !getPageSetting('BuyWeaponUpgrades'))))
-                var NextCost = Infinity;
-            else
-                var NextCost = Math.ceil(getNextPrestigeCost(equip.Upgrade) * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level));
-            Wall = (NextEff / NextCost > Res);
-        }
-
-        if (!CanAfford) {
-            Status = 'yellow';
-        } else {
-            if (!equip.Equip) {
-                //Gymystic is always cool, fuck shield - lol
-                Status = 'red';
-            } else {
-                var CurrEff = gameResource.level * Eff;
-
-                var NeedLevel = Math.ceil(CurrEff / NextEff);
-                var Ratio = gameResource.cost[equip.Resource][1];
-
-                var NeedResource = NextCost * (Math.pow(Ratio, NeedLevel) - 1) / (Ratio - 1);
-
-                if (game.resources[equip.Resource].owned > NeedResource) {
-                    Status = 'red';
-                } else {
-                    Status = 'orange';
-                }
-            }
-        }
-    }
-    //what this means:
-    //wall (don't buy any more equipment, buy prestige first) is true if the limit equipment option is on and we are past our limit
-    //res = 0 sets the efficiency to 0 so that it will be disregarded. if not, efficiency will still be somenumber that is cheaper,
-    //      and the algorithm will get stuck on whatever equipment we have capped, and not buy other equipment.
-    if (game.jobs[mapresourcetojob[equip.Resource]].locked){
-        //cap any equips that we haven't unlocked metal for (new/fresh game/level1/no helium code)
-        Res = 0;
-        Wall = true;
-    }
-    if (gameResource.level > 10 - gameResource.prestige && getPageSetting('LimitEquipment')) {
-        Res = 0;
-        Wall = true;
-    }
-    if (gameResource.level >= 10 && getPageSetting('CapEquip')) {
-        Res = 0;
-        Wall = true;
-    }
-    if (game.global.world >= 58 && game.global.world < 60 && getPageSetting('WaitTill60')){
-        Wall = true;
-    }
-    if (gameResource.level < 2 && equip.Stat == 'health' && getPageSetting('AlwaysArmorLvl2')){
-        Res = 9999 - gameResource.prestige;
-    }
-
-    return {
-        Stat: equip.Stat,
-        Factor: Res,
-        Status: Status,
-        Wall: Wall
-    };
-}
-
 //Buys all available non-equip upgrades listed in var upgradeList
 function buyUpgrades() {
     for (var upgrade in upgradeList) {
@@ -1526,36 +1402,141 @@ function buyJobs() {
         safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
 }
 
-//"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
+
+//evaluateEquipmentEfficiency: Back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
+function evaluateEquipmentEfficiency(equipName) {
+    var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
+    
+    //Returns the amount of stats that the equipment (or gym) will give when bought.
+    function equipEffect(gameResource, equip) {
+        if (equip.Equip) {
+            return gameResource[equip.Stat + 'Calculated'];
+        } else {
+            //That be Gym
+            var oldBlock = gameResource.increase.by * gameResource.owned;
+            var Mod = game.upgrades.Gymystic.done ? (game.upgrades.Gymystic.modifier + (0.01 * (game.upgrades.Gymystic.done - 1))) : 1;
+            var newBlock = gameResource.increase.by * (gameResource.owned + 1) * Mod;
+            return newBlock - oldBlock;
+        }
+    }
+    //Returns the cost after Artisanistry of a piece of equipment.
+    function equipCost(gameResource, equip) {
+        var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
+        if (equip.Equip) price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
+        return price;
+    }
+    //Returns the amount of stats that the prestige will give when bought.
+    function PrestigeValue(what) {
+        var name = game.upgrades[what].prestiges;
+        var equipment = game.equipment[name];
+        var stat;
+        if (equipment.blockNow) stat = "block";
+        else stat = (typeof equipment.health !== 'undefined') ? "health" : "attack";
+        var toReturn = Math.round(equipment[stat] * Math.pow(1.19, ((equipment.prestige) * game.global.prestige[stat]) + 1));
+        return toReturn;
+    }
+
+    var equip = equipmentList[equipName];
+    var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
+    if (equipName == 'Shield') {
+        if (gameResource.blockNow) {
+            equip.Stat = 'block';
+        } else {
+            equip.Stat = 'health';
+        }
+    }
+    var Effect = equipEffect(gameResource, equip);
+    var Cost = equipCost(gameResource, equip);
+    var Factor = Effect / Cost;
+    var StatusBorder = 'white';
+    var Wall = false;
+
+    if (!game.upgrades[equip.Upgrade].locked) {
+        //Evaluating upgrade!
+        var CanAfford = canAffordTwoLevel(game.upgrades[equip.Upgrade]);
+        if (equip.Equip) {
+            var NextEffect = PrestigeValue(equip.Upgrade);
+            //Scientist 3 and 4 challenge: set metalcost to Infinity so it can buy equipment levels without waiting for prestige. (fake the impossible science cost)
+            //also Fake set the next cost to infinity so it doesn't wait for prestiges if you have both options disabled.
+            if ((game.global.challengeActive == "Scientist" && getScientistLevel() > 2) || ((!getPageSetting('BuyArmorUpgrades') && !getPageSetting('BuyWeaponUpgrades'))))
+                var NextCost = Infinity;
+            else
+                var NextCost = Math.ceil(getNextPrestigeCost(equip.Upgrade) * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level));
+            Wall = (NextEffect / NextCost > Factor);
+        }
+    
+        //white - Upgrade is not available
+        //yellow - Upgrade is not affordable
+        //orange - Upgrade is affordable, but will lower stats
+        //red - Yes, do it now!
+    
+        if (!CanAfford) {
+            StatusBorder = 'yellow';
+        } else {
+            if (!equip.Equip) {
+                //Gymystic is always cool, f*** shield - lol
+                StatusBorder = 'red';
+            } else {
+                var CurrEffect = gameResource.level * Effect;
+                var NeedLevel = Math.ceil(CurrEffect / NextEffect);
+                var Ratio = gameResource.cost[equip.Resource][1];
+                var NeedResource = NextCost * (Math.pow(Ratio, NeedLevel) - 1) / (Ratio - 1);
+                if (game.resources[equip.Resource].owned > NeedResource) {
+                    StatusBorder = 'red';
+                } else {
+                    StatusBorder = 'orange';
+                }
+            }
+        }
+    }
+    //what this means:
+    //wall (don't buy any more equipment, buy prestige first) is true if the limit equipment option is on and we are past our limit
+    //Factor = 0 sets the efficiency to 0 so that it will be disregarded. if not, efficiency will still be somenumber that is cheaper,
+    //      and the algorithm will get stuck on whatever equipment we have capped, and not buy other equipment.
+    if (game.jobs[mapresourcetojob[equip.Resource]].locked){
+        //cap any equips that we haven't unlocked metal for (new/fresh game/level1/no helium code)
+        Factor = 0;
+        Wall = true;
+    }
+    if (gameResource.level > 10 - gameResource.prestige && getPageSetting('LimitEquipment')) {
+        Factor = 0;
+        Wall = true;
+    }
+    if (gameResource.level >= 10 && getPageSetting('CapEquip')) {
+        Factor = 0;
+        Wall = true;
+    }
+    if (game.global.world >= 58 && game.global.world < 60 && getPageSetting('WaitTill60')){
+        Wall = true;
+    }
+    if (gameResource.level < 2 && equip.Stat == 'health' && getPageSetting('AlwaysArmorLvl2')){
+        Factor = 9999 - gameResource.prestige;
+    }
+
+    return {
+        Stat: equip.Stat,
+        Factor: Factor,
+        StatusBorder: StatusBorder,
+        Wall: Wall
+    };
+}
+
+//autoLevelEquipment = "Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
 function autoLevelEquipment() {
     //if((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
         //return;
+    var init = {
+            Factor: 0,
+            Name: '',
+            Wall: false,
+            StatusBorder: 'white'
+            };
     var Best = {
-        'healthwood': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        },
-        'healthmetal': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        },
-        'attackmetal': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        },
-        'blockwood': {
-            Factor: 0,
-            Name: '',
-            Wall: false,
-            Status: 'white'
-        }
-    };
+            'healthwood': init,
+            'healthmetal': init,
+            'attackmetal': init,
+            'blockwood': init
+            };
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
@@ -1577,8 +1558,11 @@ function autoLevelEquipment() {
         enemyDamage *= 2.5;
         enemyHealth *= 7;
     }
+    var pierceMod = getPierceAmt();
     //change name to make sure these are local to the function
-    var enoughHealthE = !(doVoids && voidCheckPercent > 0) && (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * 0.2) || baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * 0.2));
+    var enoughHealthE = !(doVoids && voidCheckPercent > 0) && 
+        (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * pierceMod)  || 
+            baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
     var enoughDamageE = (baseDamage * 4 > enemyHealth);
 
     for (var equipName in equipmentList) {
@@ -1587,9 +1571,9 @@ function autoLevelEquipment() {
         var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
         // debug('Game Resource: ' + gameResource);
         if (!gameResource.locked) {
-            document.getElementById(equipName).style.color = 'white';
+            document.getElementById(equipName).style.color = 'white';   //reset
             var evaluation = evaluateEquipmentEfficiency(equipName);
-            // debug(equipName + ' evaluation ' + evaluation.Status);
+            // debug(equipName + ' evaluation ' + evaluation.StatusBorder);
             var BKey = equip.Stat + equip.Resource;
             // debug(equipName + ' bkey ' + BKey);
 
@@ -1597,14 +1581,19 @@ function autoLevelEquipment() {
                 Best[BKey].Factor = evaluation.Factor;
                 Best[BKey].Name = equipName;
                 Best[BKey].Wall = evaluation.Wall;
-                Best[BKey].Status = evaluation.Status;
+                Best[BKey].StatusBorder = evaluation.StatusBorder;
             }
+            //Apply colors from before:        
+            //white - Upgrade is not available
+            //yellow - Upgrade is not affordable
+            //orange - Upgrade is affordable, but will lower stats
+            //red - Yes, do it now!
 
-            document.getElementById(equipName).style.borderColor = evaluation.Status;
-            if (evaluation.Status != 'white' && evaluation.Status != 'yellow') {
-                document.getElementById(equip.Upgrade).style.color = evaluation.Status;
+            document.getElementById(equipName).style.borderColor = evaluation.StatusBorder;
+            if (evaluation.StatusBorder != 'white' && evaluation.StatusBorder != 'yellow') {
+                document.getElementById(equip.Upgrade).style.color = evaluation.StatusBorder;
             }
-            if (evaluation.Status == 'yellow') {
+            if (evaluation.StatusBorder == 'yellow') {
                 document.getElementById(equip.Upgrade).style.color = 'white';
             }
             if (evaluation.Wall) {
@@ -1612,8 +1601,7 @@ function autoLevelEquipment() {
             }
 
             //Code is Spaced This Way So You Can Read It:
-            if (
-                evaluation.Status == 'red' &&
+            if (evaluation.StatusBorder == 'red' &&
                 (
                     ( getPageSetting('BuyWeaponUpgrades') && equipmentList[equipName].Stat == 'attack' )
                     ||
@@ -1647,7 +1635,7 @@ function autoLevelEquipment() {
         }
     }
     preBuy();
-    game.global.buyAmt = 1;
+    game.global.buyAmt = 1; //needed for buyEquipment()
     for (var stat in Best) {
         if (Best[stat].Name !== '') {
             var eqName = Best[stat].Name;
@@ -1672,7 +1660,7 @@ function autoLevelEquipment() {
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
                     debug('Leveling equipment ' + eqName + " (AlwaysArmorLvl2)", "equips", '*upload3');
                     buyEquipment(eqName, null, true);
-                } // ??idk??    && (getPageSetting('DelayArmorWhenNeeded') && enoughDamage)
+                }
             }
         }
     }
@@ -1794,29 +1782,27 @@ function calcBaseDamageinX() {
     //baseDamage
     baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
     //D stance
-    if (game.global.formation == 2) {
+    if (game.global.formation == 2) 
         baseDamage /= 4;
-    } else if (game.global.formation != "0") {
+    else if (game.global.formation != "0") 
         baseDamage *= 2;
-    }
 
     //baseBlock
     baseBlock = game.global.soldierCurrentBlock;
     //B stance
-    if (game.global.formation == 3) {
+    if (game.global.formation == 3) 
         baseBlock /= 4;
-    } else if (game.global.formation != "0") {
+    else if (game.global.formation != "0") 
         baseBlock *= 2;
-    }
 
     //baseHealth
     baseHealth = game.global.soldierHealthMax;
     //H stance
-    if (game.global.formation == 1) {
+    if (game.global.formation == 1) 
         baseHealth /= 4;
-    } else if (game.global.formation != "0") {
+    else if (game.global.formation != "0") 
         baseHealth *= 2;
-    }
+    
     //S stance is accounted for (combination of all the above's else clauses)
 }
 
@@ -2717,14 +2703,15 @@ function betterAutoFight2() {
             pauseFight(); //Disable autofight
         }
     }
+    if (game.global.fighting || game.global.soldierHealth > 0)
+        return;    
     var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
     var potencyMod = getPotencyMod();
     var tps = breeding * potencyMod;
     var addTime = adjustedMax / tps;
-    debug("To Fight now would add: " + addTime + " seconds");
-    addbreedTimerInsideText.innerHTML = prettify(game.global.lastBreedTime/1000) + 's';
+
 }
 
 //Exits the Spire after completing the specified cell.
