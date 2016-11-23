@@ -256,7 +256,7 @@ function debug(message, type, lootIcon) {
     }
     if (enableDebug && output) {
         console.log(timeStamp() + ' ' + message);
-        message2(message, "AutoTrimps", lootIcon);
+        message2(message, "AutoTrimps", lootIcon, type);
     }
 }
 
@@ -356,7 +356,7 @@ function safeBuyJob(jobTitle, amount) {
             game.global.maxSplit = 1;
         }
     }
-    debug((game.global.firing ? 'Firing ' : 'Hiring ') + game.global.buyAmt + ' ' + jobTitle + 's', "jobs", "*users");
+    debug((game.global.firing ? 'Firing ' : 'Hiring ') + prettify(game.global.buyAmt) + ' ' + jobTitle + 's', "jobs", "*users");
     buyJob(jobTitle, true, true);
     postBuy();
     return true;
@@ -2500,11 +2500,12 @@ function autoBreedTimer() {
     }
     var inDamageStance = game.upgrades.Dominance.done ? game.global.formation == 2 : game.global.formation == 0;
     var inScryerStance = (game.global.world >= 60 && game.global.highestLevelCleared >= 180) && game.global.formation == 4;
+    //(inDamageStance||inScryerStance);
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     //if we need to hire geneticists
     //Don't hire geneticists if total breed time remaining is greater than our target breed time
     //Don't hire geneticists if we have already reached 30 anti stacks (put off further delay to next trimp group)
-    if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && (inDamageStance||inScryerStance) && !breedFire) {
+    if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && !breedFire) {
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
         if (fWorkers < 1)
@@ -2538,6 +2539,7 @@ function autoBreedTimer() {
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     if (game.portal.Anticipation.level && game.global.antiStacks < targetBreed && getBreedTime(true) == 0 && (game.global.lastBreedTime/1000) >= targetBreed && newSquadRdy && game.resources.trimps.soldiers > 0) {
         forceAbandonTrimps();
+        debug("Killed your army! (to get " + targetBreed + " Anti-stacks). Trimpicide successful.","other");
     }
 }
 
@@ -2554,7 +2556,6 @@ function forceAbandonTrimps() {
         //force abandon army
         if (game.global.switchToMaps || game.global.switchToWorld)
             mapsClicked();
-        debug("Killed your army! (to get Anti-stacks). Trimpicide successful.","general");
     }
     //in map without automaps
     else if (game.global.mapsActive) {
@@ -2645,7 +2646,7 @@ function autoRoboTrimp() {
     //activate the button when we are above the cutoff zone, and we are out of cooldown (and the button is inactive)
     if (game.global.world >= robotrimpzone && !game.global.useShriek){
         magnetoShriek();
-        debug("Activated Robotrimp Ability", "general", '*podcast');
+        debug("Activated Robotrimp MagnetoShriek Ability", "other", '*podcast');
     }
 }
 
@@ -2662,25 +2663,60 @@ function autoGoldenUpgrades() {
 
 //old: Handles manual fighting automatically, in a different way.
 function betterAutoFight() {
-    if (game.global.gridArray.length === 0) return;
-    //Manually fight instead of using builtin auto-fight
-    if (game.global.autoBattle) {
-        if (!game.global.pauseFight) {
-            pauseFight(); //Disable autofight
-        }
-    }
+    if (game.global.autoBattle && !game.global.pauseFight)
+        pauseFight(); //Disable built-in autofight
+    if (game.global.gridArray.length === 0) return;  //sanity check. stops error message on z1 right after portal
     var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
-    lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
-    if (game.upgrades.Battle.done && !game.global.fighting && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1 || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
-        fightManual();
-    }
-    //Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
+    //Manually fight instead of using builtin auto-fight
     if (!game.global.fighting) {
-        if (getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value && game.global.soldierHealth == 0)
+        if (game.upgrades.Battle.done && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (newSquadRdy || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
+            fightManual();
+        }
+        //Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time
+        else if (getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value && game.global.soldierHealth == 0)
             fightManual();
         //AutoFight will now send Trimps to fight if it takes less than 0.5 seconds to create a new group of soldiers, if we havent bred fully yet
         else if (game.resources.trimps.owned >= game.resources.trimps.realMax() || getBreedTime() <= 0.5)
             fightManual();
+    }
+}
+
+//NEW:: 2nd algorithm for Better Auto Fight
+function betterAutoFight2() {
+    if (game.global.autoBattle && !game.global.pauseFight)
+        pauseFight(); //Disable built-in autofight
+    if (game.global.gridArray.length === 0 || game.global.preMapsActive || !game.upgrades.Battle.done || game.global.fighting)
+        return;
+    var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
+    var potencyMod = getPotencyMod();
+    var tps = breeding * potencyMod;
+    var addTime = adjustedMax / tps;
+    var lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
+    //Manually fight if:
+    if (!game.global.fighting) {
+        if (newSquadRdy || lowLevelFight || game.global.challengeActive == 'Watch') {
+            battle(true);
+            debug("AutoFight: Default, because NewSquad was ready, etc", "other");
+        }
+        //Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time
+        else if (getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value) {
+            battle(true);
+            debug("AutoFight: BAF1 #1, breed &lt; 2 &amp;&amp; HiddenNextGroup &gt; GeneTimer", "other");
+        }
+        //AutoFight will now send Trimps to fight if it takes less than 0.5 seconds to create a new group of soldiers, if we havent bred fully yet
+        else if (getBreedTime() <= 0.5) {
+            battle(true);
+            debug("AutoFight: BAF1 #2, breed &lt;= 0.5s", "other");
+        }
+        //Click fight anyway if we are stuck in a loop due to Dimensional Generator and we can get away with it.
+        else if (game.global.soldierHealth == 0 &&(getBreedTime() + getBreedTime(true) + addTime <= autoTrimpSettings.GeneticistTimer.value)&&(breeding>=adjustedMax)){
+            battle(true);
+            debug("AutoFight: NEW: BAF2 #3, both Timers + addTime &lt; GeneTimer", "other");
+        }
     }
 }
 
@@ -2692,26 +2728,6 @@ function getArmyTime() {
     var tps = breeding * potencyMod;
     var addTime = adjustedMax / tps;
     return addTime;
-}
-
-//NEW:: 2nd algorithm for better auto fight
-function betterAutoFight2() {
-    if (game.global.gridArray.length === 0) return;
-    //Manually fight instead of using builtin auto-fight
-    if (game.global.autoBattle) {
-        if (!game.global.pauseFight) {
-            pauseFight(); //Disable autofight
-        }
-    }
-    if (game.global.fighting || game.global.soldierHealth > 0)
-        return;    
-    var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
-    var potencyMod = getPotencyMod();
-    var tps = breeding * potencyMod;
-    var addTime = adjustedMax / tps;
-
 }
 
 //Exits the Spire after completing the specified cell.
@@ -2847,7 +2863,7 @@ function autoMagmiteSpender() {
         }
         //dont get trapped in a while loop cause something stupid happened.
         catch (err) {
-            debug("Error encountered: " + err.message,"general");
+            debug("AutoSpendMagmite Error encountered: " + err.message,"general");
             repeat = false;
         }
     }
@@ -2875,7 +2891,7 @@ function autoPortal() {
                     var myHeliumHr = game.stats.heliumHour.value();
                     var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
                     if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
-                        debug("My Helium was: " + myHeliumHr + " & the Best Helium was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
+                        debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
                         pushData();
                         tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
                         setTimeout(cancelTooltip,10000);
@@ -3021,7 +3037,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/22 Patch 4.0 fixes are still happening!</b><br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/22 Patch 4.0 fixes are still happening!<br>NEW: Better AutoFight 2</b><br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
@@ -3073,7 +3089,8 @@ function mainLoop() {
         useScryerStance();                                  //"Use Scryer Stance"
     else
         autoStance();                                           //"Auto Stance"
-    if (getPageSetting('AutoFight')) betterAutoFight();     //"Better Auto Fight"
+    if (getPageSetting('BetterAutoFight')==1) betterAutoFight();     //"Better Auto Fight"
+    else if (getPageSetting('BetterAutoFight')==2) betterAutoFight2();     //"Better Auto Fight2"
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 
@@ -3118,7 +3135,7 @@ function message2(messageString, type, lootIcon, extraClass) {
     messageString = "<span class=\"glyphicon glyphicon-superscript\"></span> " + messageString;
     messageString = "<span class=\"icomoon icon-text-color\"></span>" + messageString;
 
-    var add = "<span class='" + type + "Message message" +  " " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
+    var add = "<span class='" + type + "Message message " + extraClass + "' style='display: " + displayType + "'>" + messageString + "</span>";
     var toChange = document.getElementsByClassName(type + "Message");
     if (toChange.length > 1 && toChange[toChange.length-1].innerHTML.indexOf(messageString) > -1){
         var msgToChange = toChange[toChange.length-1].innerHTML;

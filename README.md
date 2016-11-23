@@ -143,11 +143,16 @@ many warpstations as it can afford. In this way it can buy over the cap. I think
 See changelog at the original version's github page: https://github.com/zininzinin/AutoTrimps/blob/c8eac4c80d0a1a5ebe36bc44c7655c335a2dea7b/README.md#recent-changes
 
 
-## Colors for upgrades highlights
+## Easy explanation of Colors for EquipUpgrades / prestiges highlights
+- white - Upgrade is not available
+- yellow - Upgrade is not affordable
+- orange - Upgrade is affordable, but will lower stats
+- red - Yes, do it now!
 
+## Confusing original explanation of colors, (gl trying to understand this!)
 - Red text on Equip - it's best in its category in terms of stat per resource. This also compares Gyms with Shields.
-- Orange text - Upgrade is avaliable and improving this will make the upgrade actually reduce stat in question and it's best in its category in terms of stat per resource.
-- Yellow text - Upgrade is avaliable and improving this will make the upgrade actually reduce stat in question
+- Orange text - Upgrade is available and improving this will make the upgrade actually reduce stat in question and it's best in its category in terms of stat per resource.
+- Yellow text - Upgrade is available and improving this will make the upgrade actually reduce stat in question
 - White border - upgrade is not yet available
 - Yellow border - upgrade is available, but not affordable
 - Orange border - upgrade is available, affordable, but will actually reduce stat in question
