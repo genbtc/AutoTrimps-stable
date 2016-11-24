@@ -2023,7 +2023,7 @@ function autoStance() {
         bDamage += game.global.soldierHealth * 0.2;
     }
     baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
-    //double attack is OK if the buff isn't double attack, or we will survive a double attack, or we are going to one-shot them (so they won't be able to double attack)
+    //double attack is OK if the buff isn't double attack, or we will survive a double attack. see main.js @ 7197-7217 https://puu.sh/ssVNP/95f699a879.png (cant prevent the 2nd hit)
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy && enemy.corrupted == 'corruptDbl');
     var doubleAttackOK = !isDoubleAttack || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2);
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
@@ -2589,8 +2589,10 @@ function autoMap() {
             //if we already have a map picked, run it
         } else {
             selectMap(selectedMap);
+            var levelText = " Level: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].level;
+            var voidorLevelText = game.global.mapsOwnedArray[getMapIndex(selectedMap)] == "Void" ? " Void: " : levelText;
             debug("Already have a map picked: Running map: " + selectedMap +
-                " Level: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].level +
+                voidorLevelText +
                 " Name: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].name, "maps", 'th-large');
             runMap();
         }
@@ -2773,25 +2775,27 @@ function autoRoboTrimp() {
 //Version 3.6 Golden Upgrades
 function autoGoldenUpgrades() {
     //get the numerical value of the selected index of the dropdown box
-    var setting = document.getElementById('AutoGoldenUpgrades').value;
-    if (setting == "Off") return;   //if disabled, exit.
-    var num = getAvailableGoldenUpgrades();
-    if (num == 0) return;       //if we have nothing to buy, exit.
-    //buy one upgrade per loop.
-    buyGoldenUpgrade(setting);
+    try {
+        var setting = document.getElementById('AutoGoldenUpgrades').value;
+        if (setting == "Off") return;   //if disabled, exit.
+        var num = getAvailableGoldenUpgrades();
+        if (num == 0) return;       //if we have nothing to buy, exit.
+        //buy one upgrade per loop.
+        buyGoldenUpgrade(setting);
+    } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message); }
 }
 
 //old: Handles manual fighting automatically, in a different way.
 function betterAutoFight() {
     if (game.global.autoBattle && !game.global.pauseFight)
         pauseFight(); //Disable built-in autofight
-    if (game.global.gridArray.length === 0) return;  //sanity check. stops error message on z1 right after portal
+    if (game.global.gridArray.length === 0 || game.global.preMapsActive || !game.upgrades.Battle.done) return;  //sanity check. stops error message on z1 right after portal
     var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-    var lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
+    var lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5;
     //Manually fight instead of using builtin auto-fight
     if (!game.global.fighting) {
-        if (game.upgrades.Battle.done && game.global.gridArray.length !== 0 && !game.global.preMapsActive && (newSquadRdy || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch')) {
+        if (newSquadRdy || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch') {
             fightManual();
         }
         //Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time
@@ -2806,9 +2810,9 @@ function betterAutoFight() {
 //NEW:: 2nd algorithm for Better Auto Fight
 function betterAutoFight2() {
     if (game.global.autoBattle && !game.global.pauseFight)
-        pauseFight(); //Disable built-in autofight
+        pauseFight();   //Disable built-in autofight
     if (game.global.gridArray.length === 0 || game.global.preMapsActive || !game.upgrades.Battle.done || game.global.fighting)
-        return;
+        return;         //sanity check.
     var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
@@ -2816,11 +2820,11 @@ function betterAutoFight2() {
     var tps = breeding * potencyMod;
     var addTime = adjustedMax / tps;
     var lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
-    //Manually fight if:
+    //Manually fight if:     //game.global.soldierHealth > 0 //just fight if we're alive,or if == 0; we're dead, and also fight :P
     if (!game.global.fighting) {
         if (newSquadRdy || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch') {
             battle(true);
-            debug("AutoFight: Default, because NewSquad was ready, etc", "other");
+            debug("AutoFight: Default = New Squad Ready", "other");
         }
         //Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time
         else if (getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value) {
@@ -2833,7 +2837,7 @@ function betterAutoFight2() {
             debug("AutoFight: BAF1 #2, breed &lt;= 0.5s", "other");
         }
         //Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.
-        else if (game.global.soldierHealth == 0 && (getBreedTime(true)+addTime <= autoTrimpSettings.GeneticistTimer.value) && (breeding>=adjustedMax)){
+        else if (getBreedTime(true)+addTime <= autoTrimpSettings.GeneticistTimer.value && breeding>=adjustedMax) {
             battle(true);
             debug("AutoFight: NEW: BAF2 #3, RemainingTime + ArmyAdd.Time &lt; GeneTimer", "other");
         }
@@ -3181,18 +3185,19 @@ function mainCleanup() {
         zonePostpone = 0;
         OVKcellsWorld = 0;
     }
-}    
+}
+var ATrunning = false;
 function mainLoop() {
+    ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //just better.
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
     mainCleanup();
+    if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades || ATrunning == false) return;
     game.global.addonUser = true;
     game.global.autotrimps = {
         firstgiga: getPageSetting('FirstGigastation'),
         deltagiga: getPageSetting('DeltaGigastation')
     }
-    if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled) return;
-    if(game.global.viewingUpgrades) return;
     //auto-close breaking the world textbox
     if(document.getElementById('tipTitle').innerHTML == 'The Improbability') cancelTooltip();
     //auto-close the corruption at zone 181 textbox
@@ -3210,7 +3215,7 @@ function mainLoop() {
     if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"
-    if (getPageSetting('ManualGather2')) manualLabor();  //"Auto Gather/Build"
+    if (getPageSetting('ManualGather2')) manualLabor2();  //"Auto Gather/Build"
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40)
@@ -3235,18 +3240,21 @@ function mainLoop() {
     if (game.portal.Overkill.level) OVKcellsWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length
 
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
-    userscripts();
+    if (userscriptOn) userscripts();
     
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2)
             autoMagmiteSpender();
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
-    }    
+    }
+    ATrunning = false;
 }
 
-//left blank intentionally. the user will provide this. blank global vars are included as an example
+
+var userscriptOn = true;    //controls the looping of userscripts and can be self-disabled 
 var globalvar0,globalvar1,globalvar2,globalvar3,globalvar4,globalvar5,globalvar6,globalvar7,globalvar8,globalvar9;
+//left blank intentionally. the user will provide this. blank global vars are included as an example
 function userscripts()
 {
     //insert code here:

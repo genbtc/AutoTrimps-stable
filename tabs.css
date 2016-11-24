@@ -28,10 +28,10 @@ ul.tab li a {
     display: inline-block;
     color: black;
     text-align: center;
-    padding: 14px 16px;
+    padding: 0.5vh 1vw;
     text-decoration: none;
     transition: 0.3s;
-    font-size: 17px;
+    font-size: 2vh;
 }
 /* Create an active/current tablink class */
 ul.tab li a.active {background-color: #ccc;}
