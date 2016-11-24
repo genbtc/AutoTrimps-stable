@@ -3215,7 +3215,7 @@ function mainLoop() {
     if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"
-    if (getPageSetting('ManualGather2')) manualLabor2();  //"Auto Gather/Build"
+    if (getPageSetting('ManualGather2')) manualLabor();  //"Auto Gather/Build"
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40)
