@@ -1934,7 +1934,7 @@ function autoStance() {
     var xHealth = baseHealth;
     var bHealth = baseHealth/2;
     var enemy;
-    var corrupt = game.global.world >= mutations.Corruption.start(true);
+    var corrupt = game.global.world >= mutations.Corruption.start();
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         enemy = getCurrentEnemy();
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate"));
@@ -2024,7 +2024,8 @@ function autoStance() {
     }
     baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
     //double attack is OK if the buff isn't double attack, or we will survive a double attack, or we are going to one-shot them (so they won't be able to double attack)
-    var doubleAttackOK = (game.global.voidBuff != 'doubleAttack' || (enemy && enemy.corrupted != 'corruptDbl')) || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2) || enemyHealth < baseDamage;
+    var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy && enemy.corrupted == 'corruptDbl');
+    var doubleAttackOK = !isDoubleAttack || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2);
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
     var leadDamage = game.challenges.Lead.stacks * 0.0005;
     var leadAttackOK = game.global.challengeActive != 'Lead' || enemyHealth < baseDamage || ((newSquadRdy && dHealth > dDamage + (dHealth * leadDamage)) || (dHealth - missingHealth > dDamage + (dHealth * leadDamage)));
@@ -2910,6 +2911,8 @@ function useScryerStance() {
 
     //check for corrupted cells (and exit)
     var iscorrupt = getCurrentEnemy(1).corrupted;
+    iscorrupt = iscorrupt || (mutations.Magma.active() && game.global.mapsActive);
+    iscorrupt = iscorrupt || (game.global.mapsActive && getCurrentMapObject().location == "Void" && game.global.world >= mutations.Corruption.start());
     if (iscorrupt && getPageSetting('ScryerSkipCorrupteds2')) {
         autoStance();
         return;
