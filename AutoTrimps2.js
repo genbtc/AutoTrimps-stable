@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.1-genbtc-11-23-2016+AutoPerks
+// @version      2.1.3.2-genbtc-11-25-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.1-genbtc-11-23-2016+AutoPerks';
+var ATversion = '2.1.3.2-genbtc-11-25-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -1123,10 +1123,10 @@ function highlightHousing() {
                     if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
                         bestBuilding = null;
                 }
-                var wallpct = getPageSetting('WarpstationWall3');
-                if (wallpct > 1 && bestBuilding == "Warpstation") {
+                var warpwallpct = getPageSetting('WarpstationWall3');
+                if (warpwallpct > 1 && bestBuilding == "Warpstation") {
                     //Warpstation Wall - allow only warps that cost 1/n'th less then current metal (try to save metal for next prestige)
-                    if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.metal.owned / wallpct))
+                    if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.metal.owned / warpwallpct))
                         bestBuilding = null;
                 }
                 break;
@@ -1175,7 +1175,15 @@ function buyBuildings() {
 
     //Buy non-housing buildings
     if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
-        safeBuyBuilding('Gym');
+        var gymwallpct = getPageSetting('GymWall');
+        var skipGym = false;
+        if (gymwallpct > 1) {
+            //Gym Wall - allow only gyms that cost 1/n'th less then current wood (try to save wood for nurseries for new z230+ Magma nursery strategy)
+            if (getBuildingItemPrice(game.buildings.Gym, "wood", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.wood.owned / gymwallpct))
+                skipGym = true;
+        }
+        if (!skipGym)
+            safeBuyBuilding('Gym');
     }
     if (!game.buildings.Tribute.locked && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {
         safeBuyBuilding('Tribute');
@@ -2599,7 +2607,7 @@ function autoMap() {
     }
 }
 
-//Controls "Manage Breed Timer" and "Geneticist Timer" - adjust geneticists to reach desired breed timer
+//Controls "Auto Breed Timer" and "Geneticist Timer" - adjust geneticists to reach desired breed timer
 function autoBreedTimer() {
     var fWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     if(getPageSetting('ManageBreedtimer')) {
@@ -2824,7 +2832,7 @@ function betterAutoFight2() {
     if (!game.global.fighting) {
         if (newSquadRdy || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch') {
             battle(true);
-            debug("AutoFight: Default = New Squad Ready", "other");
+            debug("AutoFight Default: New squad ready", "other");
         }
         //Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time
         else if (getBreedTime() < 2 && (game.global.lastBreedTime/1000) > autoTrimpSettings.GeneticistTimer.value) {
@@ -3167,7 +3175,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/23 Patch 4.0 fixes are still happening!<br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>Fix Bugs I created<br>NEW: Better AutoFight 2</b><br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">Screenshot of new hover tooltips beta0.1</a>, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/25 Patch 4.0 fixes are still happening!<br>Gym Wall (genbtc settings)</b><br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>NEW: Better AutoFight 2<br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
@@ -3226,12 +3234,15 @@ function mainLoop() {
     if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (genBTC settings area)
     autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
 
-    if (getPageSetting('UseScryerStance'))
-        useScryerStance();                                  //"Use Scryer Stance"
-    else
-        autoStance();                                           //"Auto Stance"
-    if (getPageSetting('BetterAutoFight')==1) betterAutoFight();     //"Better Auto Fight"
-    else if (getPageSetting('BetterAutoFight')==2) betterAutoFight2();     //"Better Auto Fight2"
+    if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"
+    else autoStance();           //"Auto Stance"
+
+    BAFsetting = getPageSetting('BetterAutoFight');
+    if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"
+    else if (BAFsetting==2) betterAutoFight2();     //"Better Auto Fight2"
+    else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight();   
+    oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
+
     if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 
