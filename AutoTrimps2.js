@@ -1063,9 +1063,12 @@ function safeBuyBuilding(building) {
         }
     }
     game.global.firing = false;
+    if (building == 'Gym' && getPageSetting('GymWall')){
+        game.global.buyAmt = 1;
+    }
     //buy max warpstations when we own <2 (ie: after a new giga)
     //thereafter, buy only 1 warpstation
-    if(building == 'Warpstation'){
+    if (building == 'Warpstation'){
         if (game.buildings.Warpstation.owned < 2) {
             game.global.buyAmt = 'Max';
             game.global.maxSplit = 1;
