@@ -3020,6 +3020,7 @@ var lastHeliumZone = 0;
 var zonePostpone = 0;
 //Decide When to Portal
 function autoPortal() {
+    var autoFinishDaily = (game.global.challengeActive == "Daily" && getPageSetting('AutoFinishDaily'));
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone (or buffer)
         case "Helium Per Hour":
@@ -3031,15 +3032,19 @@ function autoPortal() {
                     var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
                     var myHeliumHr = game.stats.heliumHour.value();
                     var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
-                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && !game.global.challengeActive) {
+                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && (!game.global.challengeActive || autoFinishDaily ) {
                         debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
-                        pushData();
                         tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
                         setTimeout(cancelTooltip,10000);
                         setTimeout(function(){ 
                             if (zonePostpone > 0)
-                                 return; 
-                            if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
+                                return;
+                            pushData();
+                            if (autoFinishDaily)
+                                abandonDaily();
+                                document.getElementById('finishDailyBtnContainer').style.display = 'none';
+                            }
+                            if (autoTrimpSettings.HeliumHourChallenge.selected != 'None')
                                 doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
                             else
                                 doPortal();
@@ -3050,9 +3055,14 @@ function autoPortal() {
             }
             break;
         case "Custom":
-            if(game.global.world > getPageSetting('CustomAutoPortal') && !game.global.challengeActive) {
+            if (game.global.world > getPageSetting('CustomAutoPortal') && 
+                (!game.global.challengeActive || autoFinishDaily ) {
+                if (autoFinishDaily)
+                    abandonDaily();
+                    document.getElementById('finishDailyBtnContainer').style.display = 'none';
+                }
                 pushData();
-                if(autoTrimpSettings.HeliumHourChallenge.selected != 'None')
+                if (autoTrimpSettings.HeliumHourChallenge.selected != 'None')
                     doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
                 else
                     doPortal();
@@ -3178,7 +3188,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/25 Patch 4.0 fixes are still happening!<br>Gym Wall (genbtc settings)</b><br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>NEW: Better AutoFight 2<br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/25 Patch 4.0 fixes are still happening!<br>Auto Finish Daily on portal (genbtc settings)<br>Gym Wall (genbtc settings)</b><br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>NEW: Better AutoFight 2<br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
