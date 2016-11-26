@@ -3057,7 +3057,7 @@ function autoPortal() {
         case "Custom":
             if (game.global.world > getPageSetting('CustomAutoPortal') && 
                 (!game.global.challengeActive || autoFinishDaily) ) {
-                if (autoFinishDaily)
+                if (autoFinishDaily) {
                     abandonDaily();
                     document.getElementById('finishDailyBtnContainer').style.display = 'none';
                 }
