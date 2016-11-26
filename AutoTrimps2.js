@@ -3032,7 +3032,7 @@ function autoPortal() {
                     var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
                     var myHeliumHr = game.stats.heliumHour.value();
                     var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
-                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && (!game.global.challengeActive || autoFinishDaily ) {
+                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && (!game.global.challengeActive || autoFinishDaily) ) {
                         debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
                         tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
                         setTimeout(cancelTooltip,10000);
@@ -3040,7 +3040,7 @@ function autoPortal() {
                             if (zonePostpone > 0)
                                 return;
                             pushData();
-                            if (autoFinishDaily)
+                            if (autoFinishDaily){
                                 abandonDaily();
                                 document.getElementById('finishDailyBtnContainer').style.display = 'none';
                             }
@@ -3056,7 +3056,7 @@ function autoPortal() {
             break;
         case "Custom":
             if (game.global.world > getPageSetting('CustomAutoPortal') && 
-                (!game.global.challengeActive || autoFinishDaily ) {
+                (!game.global.challengeActive || autoFinishDaily) ) {
                 if (autoFinishDaily)
                     abandonDaily();
                     document.getElementById('finishDailyBtnContainer').style.display = 'none';
