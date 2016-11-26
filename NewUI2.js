@@ -94,7 +94,7 @@ function initializeAllSettings() {
     //START MAKING BUTTONS IN THE TABS:
     //CORE:
     createSetting('ManualGather2', ['Gather/Build OFF','Auto Gather/Build','Science Research OFF'], '3-Way Button. Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research', 'multitoggle',1,null,"Core");
-    createSetting('BetterAutoFight', ['AutoFight OFF','Better Auto Fight 1','Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. #2 is the new one, #1 is the old algorithm (if you have any issues). WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle',1,null,"Core");
+    createSetting('BetterAutoFight', ['AutoFight OFF','Better Auto Fight 1','Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. #2 is the new one, #1 is the old algorithm (if you have any issues). The new BAF#2 does: 3)Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and 4) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle',1,null,"Core");
     createSetting('AutoStance', 'Auto Stance', 'Automatically swap stances to avoid death.', 'boolean',true,null,"Core");
     createSetting('BuyStorage', 'Buy Storage', 'Will buy storage when resource is almost full. (like AutoStorage, even anticipates Jestimp)', 'boolean',true,null,"Core");
     createSetting('BuyBuildings', 'Buy Buildings', 'Will buy non storage buildings as soon as they are available', 'boolean',true,null,"Core");
@@ -139,6 +139,7 @@ function initializeAllSettings() {
     createSetting('RunNewVoids', 'Run New Voids', 'Run new void maps acquired after the set void map zone. Runs them at Cell 95 by default, unless you set a decimal value indicating the cell, like: 187.75  CAUTION: May severely slow you down by trying to do too-high level voidmaps. Use the adjacent RunNewVoidsUntil setting to limit this.', 'boolean', null, null, 'Maps');
     createSetting('RunNewVoidsUntil', 'New Voids Until', 'Run New Voids Until: Put a cap on what zone new voids will run at, until this zone, inclusive. ', 'value', '-1', null, 'Maps');
     createSetting('VoidCheck', 'Void Difficulty Check', 'How many hits to be able to take from a void map boss in dominance stance before we attempt the map. Higher values will get you stronger (by farming for health) before attempting. 2 should be fine.', 'value', '2', null, 'Maps');
+    createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'Maps');
     createSetting('DisableFarm', 'Disable Farming', 'Disables the extended farming algorithm of the AutoMaps part of the script. Always returns to the world after reaching 10 map stacks. Use at your own risk. (No need to refresh anymore)', 'boolean', null, null, 'Maps');
 
     //Settings:
@@ -164,7 +165,7 @@ function initializeAllSettings() {
     //Settings advanced settings
     createSetting('LimitEquipment', 'Limit Equipment', 'Limit levels of equipment bought to:(level 11 - the prestige level). At or Above Prestige X (10), your equipment will remain at level 1. In other words, do not level equipment after ~level ~51, and only buy Prestiges. CAUTION: may reduce He/hr performance in many cases.', 'boolean', null, null, 'Settings');
     createSetting('BreedFire', 'Breed Fire', 'OPTIONAL. Fire Lumberjacks and Miners to speed up breeding when needed. Basically trades wood/metal to cut the wait between deaths down. Disclaimer: May heavily negatively impact wood-gathering. ', 'boolean', null, null, 'Settings');
-    createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'Settings');
+    createSetting('AutoMagmamancers', 'Auto Magmamancers', 'OPTIONAL. Auto Magmamancer Management. Hires Magmamancers when the Current Zone time goes over 10 minutes. Does a one-time spend of at most 10% of your resources. Every increment of 10 minutes after that repeats the 10% hiring process. When you go to the next level, it fires them all again. Disclaimer: May heavily negatively impact Gem count. ', 'boolean', null, null, 'Settings');
 
     //genBTC advanced settings - option buttons.
     createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genBTC');
@@ -185,16 +186,11 @@ function initializeAllSettings() {
     createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buys the upgrades the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null,'genBTC');
     createSetting('TrainerCaptoTributes', 'Cap Trainers to a % of Tributes', 'Only Buy a Trainer when its cost is LESS than X% of cost of a tribute. This setting can work in combination with the other one, or set the other one to -1 and this will take full control. Default: -1 (Disabled). 50% is close to the point where the cap does nothing. You can go as low as you want but recommended is 10% to 1%. (example: Trainer cost of 5001, Tribute cost of 100000, @ 5%, it would NOT buy the trainer.)', 'value', '-1', null, 'genBTC');
     createSetting('NoNurseriesUntil', 'No Nurseries Until z', 'For Magma z230+ purposes. Nurseries get shut down, and wasting nurseries early on is probably a bad idea. Might want to set this to 230+ for now. Can use combined with the old Max Nurseries cap setting.', 'value', 0, null, 'genBTC');
-    //migrate old magmite to new magmite
-    if (autoTrimpSettings["AutoMagmiteSpender2"] === undefined && autoTrimpSettings["AutoMagmiteSpender"]) {
-        createSetting('AutoMagmiteSpender2', ['Spend Magmite OFF','Spend Magmite (Portal)','Spend Magmite Always'], 'Auto Spends any unspent Magmite immediately before portaling. (Or Always, if toggled). Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore. For Magma z230+ purposes. EXPERIMENTAL.', 'multitoggle', 1, null, 'genBTC');
-        setPageSetting("AutoMagmiteSpender2",1 * autoTrimpSettings["AutoMagmiteSpender"].enabled);
-    } else {
-        createSetting('AutoMagmiteSpender2', ['Spend Magmite OFF','Spend Magmite (Portal)','Spend Magmite Always'], 'Auto Spends any unspent Magmite immediately before portaling. (Or Always, if toggled). Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore. For Magma z230+ purposes. EXPERIMENTAL.', 'multitoggle', 1, null, 'genBTC');
-    }
-    createSetting('ForceAbandon', 'Auto Force-Abandon', '(Trimpicide). If a new fight group is available and anticipation stacks arent maxed, force abandon and grab a new group. Located in the geneticist management script. I would leave this on. ', 'boolean', true, null, 'genBTC');
+    createSetting('AutoMagmiteSpender2', ['Spend Magmite OFF','Spend Magmite (Portal)','Spend Magmite Always'], 'Auto Spends any unspent Magmite immediately before portaling. (Or Always, if toggled). Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore. For Magma z230+ purposes.', 'multitoggle', 1, null, 'genBTC');
+    createSetting('ForceAbandon', 'Auto Force-Abandon', '(Trimpicide). If a new fight group is available and anticipation stacks arent maxed, force abandon and grab a new group. Located in the geneticist management script. I would leave this on. EXPERIMENTAL.', 'boolean', true, null, 'genBTC');
     createSetting('GymWall', 'Gym Wall', 'Conserves Wood. Only buys 1 Gym when you can afford <b>X</b> gyms wood cost (at the first one\'s price, simple math). -1 or 0 to disable. In other words, only allows gyms that cost less than 1/nth your currently owned wood. (to save wood for nurseries for new z230+ Magma nursery strategy). Takes decimal numbers. (Identical to the Warpstation wall setting which is why its called that). Setting to 1 does nothing besides stopping gyms from being bought 2 at a time due to the mastery.', 'value', 0, null, 'genBTC');
-    createSetting('AutoFinishDaily', 'Auto Finish Daily', 'With this on, the He/Hr Portal and Custom Auto Portal options will auto-finish the daily <b>whenever they trigger</b> and THEN portal you.', 'boolean', false, null, 'genBTC');    
+    createSetting('AutoFinishDaily', 'Auto Finish Daily', 'With this on, the He/Hr Portal and Custom Auto Portal options will auto-finish the daily <b>whenever they trigger</b> and THEN portal you.', 'boolean', false, null, 'genBTC');
+    createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those wlil still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');        
 
     // Scryer settings
     createSetting('UseScryerStance', 'Use Scryer Stance', 'Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Current point is to get Dark Essence. EXPERIMENTAL. This is the Master button. All other buttons have no effect if this one is off.', 'boolean',true,null,'Scryer');
@@ -211,7 +207,7 @@ function initializeAllSettings() {
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Spam');
     createSetting('SpamEquipment', 'Equipment Spam', 'Equipment Spam', 'boolean', true, null, 'Spam');
     createSetting('SpamMaps', 'Maps Spam', 'Maps Spam = Buy,Pick,Run Maps,Recycle,CantAfford', 'boolean', true, null, 'Spam');
-    createSetting('SpamOther', 'Other Spam', 'Other Spam = Better Auto Fight, Trimpicide, Robotrimp', 'boolean', true, null, 'Spam');
+    createSetting('SpamOther', 'Other Spam', 'Other Spam = Better Auto Fight, Trimpicide, Robotrimp, AutoMagmamancers', 'boolean', true, null, 'Spam');
     createSetting('SpamBuilding', 'Building Spam', 'Building Spam = all buildings, even storage', 'boolean', false, null, 'Spam');
     createSetting('SpamJobs', 'Job Spam', 'Job Spam = All jobs, in scientific notation', 'boolean', false, null, 'Spam');
 
@@ -219,6 +215,7 @@ function initializeAllSettings() {
     createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
+    createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
 }
 initializeAllSettings();
 
@@ -282,7 +279,7 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         }
         costText += "</div>";
     }
-    if (what == "ImportAutoTrimps"){
+    else if (what == "ImportAutoTrimps"){
         //runs the loadAutoTrimps() function.
         tooltipText = "Import your AUTOTRIMPS save string! It'll be fine, I promise.<br/><br/><textarea id='importBox' style='width: 100%' rows='5'></textarea>";
         costText="<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); loadAutoTrimps();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
@@ -290,10 +287,16 @@ function AutoTrimpsTooltip(what, isItIn, event) {
             document.getElementById('importBox').focus();
         };
     }
-    if (what == "DefaultAutoTrimps"){
+    else if (what == "DefaultAutoTrimps"){
         resetAutoTrimps();
-        tooltipText = "Autotrimps has been successfully reset to its defaults! Hit escape.";
+        tooltipText = "Autotrimps has been successfully reset to its defaults! ";
+        costText="<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div>";
         debug(tooltipText,"other");
+    }
+    else if (what == "CleanupAutoTrimps"){
+        cleanupAutoTrimps();
+        tooltipText = "Autotrimps saved-settings have been attempted to be cleaned up. If anything broke, refreshing will fix it, but check that your settings are correct! (prestige in particular)";
+        costText="<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div>";
     }
     game.global.lockTooltip = true;
     elem.style.left = "33.75%";
@@ -306,6 +309,15 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         ondisplay();
 }
 
+//remove stale values
+function cleanupAutoTrimps() {
+    for (var setting in autoTrimpSettings) {
+        var elem = document.getElementById(autoTrimpSettings[setting].id);
+        if (elem == null)
+            delete autoTrimpSettings[setting];
+    }
+}
+    
 //reset to defaults
 function resetAutoTrimps() {
     //stop AT, wait, remove
@@ -499,6 +511,8 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     } else if (type == 'infoclick') {
         btn.setAttribute('class', 'btn btn-info');
         btn.setAttribute("onclick", 'AutoTrimpsTooltip(\'' + defaultValue + '\', null, \'update\')');
+        btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
+        btn.setAttribute("onmouseout", 'tooltip("hide")');        
         btn.setAttribute("style", "display: block; font-size: 0.8vw;");
         btn.textContent = name;
         btnParent.style.width = '';

@@ -252,14 +252,18 @@ function clearData(portal) {
     }
 }
 
-//delete a specific portal number's graphs.
+//delete a specific portal number's graphs. use negative numbers to keep that many portals.
 function deleteSelected() {
     var txtboxvalue = document.getElementById('deleteSelectedTextBox').value;
     if (txtboxvalue == "")
         return;
-    for (var i = allSaveData.length-1; i >= 0; i--) {
-        if (allSaveData[i].totalPortals == txtboxvalue)
-            allSaveData.splice(i, 1);
+    if (parseInt(txtboxvalue) < 0) {
+        clearData(Math.abs(txtboxvalue));
+    } else {
+        for (var i = allSaveData.length-1; i >= 0; i--) {
+            if (allSaveData[i].totalPortals == txtboxvalue)
+                allSaveData.splice(i, 1);
+        }
     }
 }
 

@@ -1185,6 +1185,11 @@ function buyBuildings() {
             if (getBuildingItemPrice(game.buildings.Gym, "wood", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.wood.owned / gymwallpct))
                 skipGym = true;
         }
+        if (getPageSetting('DynamicGyms')) {
+            //start with simple calculation.
+            if (!game.global.preMapsActive && getBattleStats("block") > getCurrentEnemy().attack)
+                skipGym = true;
+        }
         if (!skipGym)
             safeBuyBuilding('Gym');
     }
@@ -1420,7 +1425,26 @@ function buyJobs() {
         safeBuyJob('Miner', game.jobs.Miner.owned * -1);
     if (!ratiobuy('Lumberjack', lumberjackRatio) && breedFire)
         safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
+    
+    //Magmamancers code:
+    //game.jobs.Magmamancer.getBonusPercent(true);
+    var timeOnZone = Math.floor((new Date().getTime() - game.global.zoneStarted) / 60000);
+    var stacks2 = Math.floor(timeOnZone / 10);
+    if (getPageSetting('AutoMagmamancers') && stacks2 > tierMagmamancers) {
+        preBuy();
+        game.global.firing = false;
+        game.global.buyAmt = 'Max';
+        game.global.maxSplit = .1;
+        buyJob('Magmamancer', true, true);
+        postBuy();
+        debug("Bought " + prettify(game.jobs.Magmamancer.owned) + ' Magmamancers', "other", "*users");
+        tierMagmamancers += 1;
+    }
+    else if (stacks2 < tierMagmamancers) {
+        tierMagmamancers = 0;
+    }
 }
+var tierMagmamancers = 0;
 
 
 //evaluateEquipmentEfficiency: Back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
@@ -2601,7 +2625,7 @@ function autoMap() {
         } else {
             selectMap(selectedMap);
             var levelText = " Level: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].level;
-            var voidorLevelText = game.global.mapsOwnedArray[getMapIndex(selectedMap)] == "Void" ? " Void: " : levelText;
+            var voidorLevelText = game.global.mapsOwnedArray[getMapIndex(selectedMap)].location == "Void" ? " Void: " : levelText;
             debug("Already have a map picked: Running map: " + selectedMap +
                 voidorLevelText +
                 " Name: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].name, "maps", 'th-large');
@@ -2852,6 +2876,11 @@ function betterAutoFight2() {
             battle(true);
             debug("AutoFight: NEW: BAF2 #3, RemainingTime + ArmyAdd.Time &lt; GeneTimer", "other");
         }
+        //Clicks fight anyway if we are dead and have >=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards.
+        else if (game.global.soldierHealth == 0 && (game.global.lastBreedTime/1000)>=31) {
+            battle(true);
+            debug("AutoFight: NEW: BAF2 #4, NextGroupBreedTimer went over 31 and we arent fighting.", "other");
+        }        
     }
 }
 
@@ -3168,6 +3197,7 @@ function initializeAutoTrimps() {
     //document.head.appendChild(document.createElement('script')).src = base + '/NewUI.js';
     document.head.appendChild(document.createElement('script')).src = base + '/NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
+    document.head.appendChild(document.createElement('script')).src = base + '/battlecalc.js';
     if (typeof(AutoPerks) === 'undefined')
         document.head.appendChild(document.createElement('script')).src = base + '/AutoPerks.js';
     else
@@ -3188,7 +3218,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/25 Patch 4.0 fixes are still happening!<br>Auto Finish Daily on portal (genbtc settings)<br>Gym Wall (genbtc settings)</b><br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>NEW: Better AutoFight 2<br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come.<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery.<br>Entirely remove high lumberjack ratio during Spire.<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked.<br>Added a No Nurseries Until setting in genBTC page', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/25 Patch 4.0 fixes are still happening!<br>Dynamic Gyms - dont buy gyms if your block is higher than enemy attack<br>Auto Magmamancer management after 10 mins<br>Auto Finish Daily on portal (genbtc settings)<br>Gym Wall (genbtc settings)</b><br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>New Better AutoFight #2(optional)<br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery<br>Entirely remove high lumberjack ratio during Spire<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked<br>Added a No Nurseries Until (genbtc settings)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
