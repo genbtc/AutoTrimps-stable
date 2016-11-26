@@ -3068,11 +3068,11 @@ function autoPortal() {
                         setTimeout(function(){ 
                             if (zonePostpone > 0)
                                 return;
-                            pushData();
                             if (autoFinishDaily){
                                 abandonDaily();
                                 document.getElementById('finishDailyBtnContainer').style.display = 'none';
                             }
+                            pushData();
                             if (autoTrimpSettings.HeliumHourChallenge.selected != 'None')
                                 doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
                             else
