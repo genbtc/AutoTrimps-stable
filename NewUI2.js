@@ -32,6 +32,7 @@ function createTabs(name,description){
           a_0.setAttribute('onclick', 'toggleTab(event, \'' + name + '\')');
           a_0.href = "#";
           a_0.appendChild( document.createTextNode(name) );
+      li_0.id = 'tab' + name;
       li_0.appendChild( a_0 );
 
    addtabsUL.appendChild( li_0 );
@@ -64,6 +65,18 @@ function toggleTab(evt, tabName) {
         evt.currentTarget.className += " active";
     }
 }
+function minimizeAllTabs() {
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }    
+}
 var addTabsDiv;
 var addtabsUL;
 //Actually Make the Tabs
@@ -81,6 +94,16 @@ function initializeAllTabs() {
     createTabs("Scryer","Scryer Stance");
     createTabs("Spam","Controls AutoTrimps message Spam");
     createTabs("Import Export","Import Export Settings");
+    //add a minimize button:
+    var li_0 = document.createElement('li');
+      var a_0 = document.createElement('a');
+          a_0.className = "tablinks minimize";
+          a_0.setAttribute('onclick', 'minimizeAllTabs()');
+          a_0.href = "#";
+          a_0.appendChild( document.createTextNode("Minimize All") );
+      li_0.appendChild( a_0 );
+      li_0.setAttribute("style","float:right!important;");
+   addtabsUL.appendChild( li_0 );    
     //Insert tabs into the game area
     document.getElementById("autoSettings").appendChild(addTabsDiv);
     //pretend click to make first tab active.
