@@ -1,25 +1,25 @@
-badHealth
-badMapHealth
-badMapStrength
-badStrength
-bloodthirst
+badHealth   = enemy, health
+badMapHealth    = enemy, health
+badMapStrength  = enemy, attack
+badStrength = enemy, attack
+bloodthirst = enemy, stacks
 bogged
 crits
-dedication
-dysfunctional
-evenTrimpBuff
+dedication  = gathering
+dysfunctional   = breeding
+evenTrimpBuff   = self,
 explosive
-famine
-karma
+famine  = gathering, loot
+karma   = loot, stacks
 large
-maxDamage
-minDamage
-oddTrimpNerf
-plague
-rampage
+maxDamage   = self,
+minDamage   = self,
+oddTrimpNerf = self,
+plague  = -health, stacks 
+rampage = self, stacks
 slippery
-toxic
-weakness
+toxic   = breeding, stacks
+weakness= self, -attack, stacks
 
 Main.js @ line 5455
 var dailyModifiers = {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.2-genbtc-11-25-2016+AutoPerks
+// @version      2.1.3.3-genbtc-11-26-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.2-genbtc-11-25-2016+AutoPerks';
+var ATversion = '2.1.3.3-genbtc-11-26-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -474,7 +474,7 @@ function getCorruptedCellsNum() {
     var corrupteds = 0;
     for (var i = 0; i < game.global.gridArray.length - 1; i++) {
         enemy = game.global.gridArray[i];
-        if (enemy.corrupted)
+        if (enemy.mutation == "Corruption")
             corrupteds++;
     }
     return corrupteds;
@@ -1972,11 +1972,11 @@ function autoStance() {
     var corrupt = game.global.world >= mutations.Corruption.start();
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         enemy = getCurrentEnemy();
-        var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate"));
+        var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate"));
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;
         //check for world Corruption
-        if (enemy && enemy.corrupted){
+        if (enemy && enemy.mutation == "Corruption"){
             enemyHealth *= getCorruptScale("health");
             enemyDamage *= getCorruptScale("attack");
         }
@@ -1999,7 +1999,7 @@ function autoStance() {
 
     } else if (game.global.mapsActive && !game.global.preMapsActive) {
         enemy = getCurrentEnemy();
-        var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.corrupted) && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
+        var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;
         //check for voidmap Corruption        
@@ -2954,7 +2954,7 @@ function useScryerStance() {
     }
 
     //check for corrupted cells (and exit)
-    var iscorrupt = getCurrentEnemy(1).corrupted;
+    var iscorrupt = getCurrentEnemy(1).mutation == "Corruption";
     iscorrupt = iscorrupt || (mutations.Magma.active() && game.global.mapsActive);
     iscorrupt = iscorrupt || (game.global.mapsActive && getCurrentMapObject().location == "Void" && game.global.world >= mutations.Corruption.start());
     if (iscorrupt && getPageSetting('ScryerSkipCorrupteds2')) {
@@ -3218,7 +3218,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/25 Patch 4.0 fixes are still happening!<br>Dynamic Gyms - dont buy gyms if your block is higher than enemy attack<br>Auto Magmamancer management after 10 mins<br>Auto Finish Daily on portal (genbtc settings)<br>Gym Wall (genbtc settings)</b><br>Auto Magmite Spender can now be toggled to Always Run<br>AutoTrimpicide/Force-Abandon is now toggleable<br>New Better AutoFight #2(optional)<br><a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come<br>Auto Spend Magmite before portaling - setting in genBTC page (read tooltip)<br>Buy 2 buildings instead of 1 if we have the mastery<br>Entirely remove high lumberjack ratio during Spire<br>During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22<br>Add a 10 second timeout Popup window that can postpone Autoportal when clicked<br>Added a No Nurseries Until (genbtc settings)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/26 Patch 4.0 fixes are still happening!<br>Patch corruption detection, and Scryer tooltips<br>Dynamic Gyms - dont buy gyms if your block is higher than enemy attack<br>Auto Magmamancer management after 10 mins<br>Auto Finish Daily on portal (genbtc settings)<br>Gym Wall (genbtc settings)</b>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
