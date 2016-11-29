@@ -3,91 +3,92 @@ badMapHealth    = enemy, health
 badMapStrength  = enemy, attack
 badStrength = enemy, attack
 bloodthirst = enemy, stacks
-bogged
-crits
+bogged  = self, health, drain
+crits   = enemy, crit
 dedication  = gathering
 dysfunctional   = breeding
-evenTrimpBuff   = self,
-explosive
+evenTrimpBuff   = self,+attack
+explosive  = enemy, attack, drainy
 famine  = gathering, loot
 karma   = loot, stacks
-large
-maxDamage   = self,
-minDamage   = self,
-oddTrimpNerf = self,
+large   = housing
+maxDamage   = self,attack
+minDamage   = self,attack
+oddTrimpNerf = self,-attack
 plague  = -health, stacks 
-rampage = self, stacks
-slippery
+rampage = self, +attack, stacks
+slippery= dodge
 toxic   = breeding, stacks
 weakness= self, -attack, stacks
 
 Main.js @ line 5455
-var dailyModifiers = {
-        minDamage: {
-            description = "Trimp min damage reduced by X"% (additive).";
-        },
-        maxDamage: {
-            description = "Trimp max damage increased by X"% (additive).";
-        },
-		plague: { //Half of electricity
-			description =  "Enemies stack a debuff with each attack, damaging Trimps for X% of total health per turn per stack, resets on Trimp death."
-        },
-		weakness: {
-			description = "Enemies stack a debuff with each attack, reducing Trimp attack by X% per stack. Stacks cap at 9 and reset on Trimp death.";
-        },
-		large: {
-            description = "All housing can store X% fewer Trimps";
-        },
-		dedication: {
-			description = "Gain X% more resources from gathering";
-        },
-		famine: {
-            description = "Gain X% less Metal, Food, Wood, and Gems from all sources";
-        },
-		badStrength: {
-			description = "Enemy attack increased by X%.";
-        },
-		badHealth: {
-			description = "Enemy health increased by X%.";
-        },
-		badMapStrength: {
-            description = "Enemy attack in maps increased by X%.";
-        },
-        badMapHealth: {
-            description = "Enemy health in maps increased by X%.";
-        },
-		crits: {
-            description = "Enemies have a 25% chance to crit for X% of normal damage";
-        },
-        bogged: {
-            description = "Your Trimps lose X% of their max health after each attack.";
-        },
-		dysfunctional: {
-            description = "Your Trimps breed X% slower";
-        },
-		oddTrimpNerf: {
-            description = "Trimps have X% less attack on odd numbered zones";
-        },
-        evenTrimpBuff: {
-            description = "Trimps have X% more attack on even numbered zones";
-        },
-        karma: {
-			description = 'Gain a stack after killing an enemy, increasing all non Helium loot by X%. Stacks cap at Y, and reset after clearing a zone.';
-        },		
-        toxic: {
-			description = "Gain a stack after killing an enemy, reducing breed speed by X% (compounding). Stacks cap at Y, and reset after clearing a zone.';
-        },
-		bloodthirst: {
-			description = "Enemies gain a stack of Bloodthirst whenever Trimps die. Every X stacks, enemies will heal to full and gain an additive 50% attack. Stacks cap at Y, and reset after killing an enemy.";
-        },            
-		explosive: {
-			description = "Enemies instantly deal % of their attack damage when killed";
-                            if (str > 15) {
-                                description += " UNLESS your block is as high as your maximum health";
-        },
-		slippery: {
-			description = "Enemies have a % chance to dodge your attacks on  odd? / ?even zones.";
-        },
-		rampage: {
-			description = "Gain a stack after killing an enemy, increasing Trimp attack by % (additive). Stacks cap at ? , and reset when your Trimps die.';
-        },
+var dailyModifiers = 
+{
+    minDamage: {
+        description : "Trimp min damage reduced by X % (additive)."
+    },
+    maxDamage: {
+        description : "Trimp max damage increased by X % (additive)."
+    },
+    plague: { 
+        //Half of electricity
+        description : "Enemies stack a debuff with each attack, damaging Trimps for X% of total health per turn per stack, resets on Trimp death."
+    },
+    weakness: {
+        description : "Enemies stack a debuff with each attack, reducing Trimp attack by X% per stack. Stacks cap at 9 and reset on Trimp death."
+    },
+    large: {
+        description : "All housing can store X% fewer Trimps"
+    },
+    dedication: {
+        description : "Gain X% more resources from gathering"
+    },
+    famine: {
+        description : "Gain X% less Metal, Food, Wood, and Gems from all sources"
+    },
+    badStrength: {
+        description : "Enemy attack increased by X%."
+    },
+    badHealth: {
+        description : "Enemy health increased by X%."
+    },
+    badMapStrength: {
+        description : "Enemy attack in maps increased by X%."
+    },
+    badMapHealth: {
+        description : "Enemy health in maps increased by X%."
+    },
+    crits: {
+        description : "Enemies have a 25% chance to crit for X% of normal damage"
+    },
+    bogged: {
+        description : "Your Trimps lose X% of their max health after each attack."
+    },
+    dysfunctional: {
+        description : "Your Trimps breed X% slower"
+    },
+    oddTrimpNerf: {
+        description : "Trimps have X% less attack on odd numbered zones"
+    },
+    evenTrimpBuff: {
+        description : "Trimps have X% more attack on even numbered zones"
+    },
+    karma: {
+        description : 'Gain a stack after killing an enemy, increasing all non Helium loot by X%. Stacks cap at Y, and reset after clearing a zone.'
+    },
+    toxic: {
+        description : "Gain a stack after killing an enemy, reducing breed speed by X% (compounding). Stacks cap at Y, and reset after clearing a zone."
+    },
+    bloodthirst: {
+        description : "Enemies gain a stack of Bloodthirst whenever Trimps die.Every X stacks, enemies will heal to full and gain an additive 50 % attack.Stacks cap at Y, and reset after killing an enemy."
+    },
+    explosive: {
+        description : " Enemies instantly deal % of their attack damage when killed if (str > 15) UNLESS your block is as high as your maximum health "
+    },
+    slippery: {
+        description : " Enemies have a % chance to dodge your attacks on odd ? / ?even zones."
+    },
+    rampage: {
+        description : "Gain a stack after killing an enemy, increasing Trimp attack by % (additive). Stacks cap at ? , and reset when your Trimps die."
+    },
+}

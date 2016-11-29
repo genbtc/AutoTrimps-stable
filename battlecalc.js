@@ -98,6 +98,10 @@ function getBattleStats(what) {
 		if ((game.global.formation == 1 && what == "health") || (game.global.formation == 2 && what == "attack") || (game.global.formation == 3 && what == "block")) formStrength = 4;
 		currentCalc *= formStrength;
 	}
+    //radiostacks increases from "Electricity" || "Mapocalypse"
+    if (game.global.radioStacks > 0 && what == "attack") {
+        currentCalc *= (1 - (game.global.radioStacks * 0.1));
+    }    
 	//Add Titimp
 	if (game.global.titimpLeft > 1 && game.global.mapsActive && what == "attack"){
 		currentCalc *= 2;
@@ -158,9 +162,71 @@ function getBattleStats(what) {
 		amt = (game.talents.voidPower2.purchased) ? 35 : 15;
 		currentCalc *= (1 + (amt / 100));
 	}
+	//Magma
+	if (mutations.Magma.active() && (what == "attack" || what == "health")){
+		mult = mutations.Magma.getTrimpDecay();
+		var lvls = game.global.world - mutations.Magma.start() + 1;
+		currentCalc *= mult;
+	}	
 	var critChance = getPlayerCritChance();
 	if (what == "attack" && critChance){
 		currentCalc *= getPlayerCritDamageMult();
 	}
     return currentCalc;
+}
+
+function calcBadGuyDmg(enemy) {
+    var number = enemy.attack;
+    var fluctuation = .2; //%fluctuation
+	var maxFluct = -1;
+	var minFluct = -1;
+
+    //Situational bad guy damage increases
+    if (game.global.challengeActive){
+        //Challenge bonuses here
+        if (game.global.challengeActive == "Coordinate"){
+            number *= getBadCoordLevel();
+        }
+        else if (game.global.challengeActive == "Meditate"){
+            number *= 1.5;
+        }
+        else if (game.global.challengeActive == "Nom" && typeof enemy.nomStacks !== 'undefined'){
+            number *= Math.pow(1.25, enemy.nomStacks);
+        }
+        else if (game.global.challengeActive == "Watch") {
+            number *= 1.25;
+        }
+        else if (game.global.challengeActive == "Lead"){
+            number *= (1 + (game.challenges.Lead.stacks * 0.04));
+        }
+        else if (game.global.challengeActive == "Scientist" && getScientistLevel() == 5) {
+            number *= 10;
+        }
+        else if (game.global.challengeActive == "Corrupted"){
+            number *= 3;
+        }
+        if (game.global.challengeActive == "Daily"){
+            if (typeof game.global.dailyChallenge.badStrength !== 'undefined'){
+                number *= dailyModifiers.badStrength.getMult(game.global.dailyChallenge.badStrength.strength);
+            }
+            if (typeof game.global.dailyChallenge.badMapStrength !== 'undefined' && game.global.mapsActive){
+                number *= dailyModifiers.badMapStrength.getMult(game.global.dailyChallenge.badMapStrength.strength);
+            }
+            if (typeof game.global.dailyChallenge.bloodthirst !== 'undefined'){
+                number *= dailyModifiers.bloodthirst.getMult(game.global.dailyChallenge.bloodthirst.strength, game.global.dailyChallenge.bloodthirst.stacks)
+            }
+        }
+    }
+    if (game.global.usingShriek) {
+        number *= game.mapUnlocks.roboTrimp.getShriekValue();
+    }
+
+	if (minFluct > 1) minFluct = 1;
+	if (maxFluct == -1) maxFluct = fluctuation;
+	if (minFluct == -1) minFluct = fluctuation;
+	var min = Math.floor(number * (1 - minFluct));
+    var max = Math.ceil(number + (number * maxFluct));
+	
+	//number = Math.floor(Math.random() * ((max + 1) - min)) + min;
+    return max;
 }

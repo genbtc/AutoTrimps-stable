@@ -1186,8 +1186,8 @@ function buyBuildings() {
                 skipGym = true;
         }
         if (getPageSetting('DynamicGyms')) {
-            //start with simple calculation.
-            if (!game.global.preMapsActive && getBattleStats("block") > getCurrentEnemy().attack)
+            //getBattleStats calculation comes from battlecalc.js and shows the tooltip-table block amount. calcBadGuyDmg is in that file also
+            if (!game.global.preMapsActive && getBattleStats("block") > calcBadGuyDmg(getCurrentEnemy()))
                 skipGym = true;
         }
         if (!skipGym)
@@ -1343,7 +1343,6 @@ function buyJobs() {
     totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     if (game.global.challengeActive == 'Watch'){
         scientistRatio = totalRatio / 10;
-        stopScientistsatFarmers = 1e8;
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire){
             //so the game buys scientists first while we sit around waiting for breed timer.
             var buyScientists = Math.floor((scientistRatio / totalRatio * totalDistributableWorkers) - game.jobs.Scientist.owned);
@@ -1359,8 +1358,13 @@ function buyJobs() {
     }
     else
     {   //exit if we are havent bred to at least 90% breedtimer yet...
-        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) 
+        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
+            //do Something tiny, so earlygame isnt stuck on 0
+            safeBuyJob('Miner', 1);
+            safeBuyJob('Farmer', 1);            
+            safeBuyJob('Lumberjack', 1);
             return;
+        }
     }
     var subtract = 0;
     //used multiple times below: (good job javascript for allowing functions in functions)
@@ -1376,26 +1380,24 @@ function buyJobs() {
     //Scientists:
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
-    if (getPageSetting('HireScientists') && !game.jobs.Scientist.locked) {
-        //if earlier in the game, buy a small amount of scientists
-        if (game.jobs.Farmer.owned < stopScientistsatFarmers && !breedFire) {
-            var buyScientists = Math.floor((scientistRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Scientist.owned - subtract;
-            if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
-                safeBuyJob('Scientist', buyScientists);
-        }
+    if (getPageSetting('HireScientists') && !game.jobs.Scientist.locked && !breedFire) {
+        var buyScientists = Math.floor((scientistRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Scientist.owned - subtract;
+        if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
+            safeBuyJob('Scientist', buyScientists);
     }    
-    //Trainers: capped to tributes percentage.
-    var trainerpercent = getPageSetting('TrainerCaptoTributes');
-    if (trainerpercent > 0){
-        var curtrainercost = game.jobs.Trainer.cost.food[0]*Math.pow(game.jobs.Trainer.cost.food[1], game.jobs.Trainer.owned);
-        var curtributecost = getBuildingItemPrice(game.buildings.Tribute, "food", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);
-        if (curtrainercost < curtributecost * (trainerpercent / 100) && (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1)) {
-            checkFireandHire('Trainer');
+    //Trainers:
+    if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
+        // capped to tributes percentage.
+        var trainerpercent = getPageSetting('TrainerCaptoTributes');
+        if (trainerpercent > 0) {
+            var curtrainercost = game.jobs.Trainer.cost.food[0]*Math.pow(game.jobs.Trainer.cost.food[1], game.jobs.Trainer.owned);
+            var curtributecost = getBuildingItemPrice(game.buildings.Tribute, "food", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);
+            if (curtrainercost < curtributecost * (trainerpercent/100))
+                checkFireandHire('Trainer');
         }
-    }
-    //Trainers: regular old way of hard capping trainers to a certain number. (sorry about lazy duplicate coding)
-    else if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
-        checkFireandHire('Trainer');
+        // regular
+        else
+            checkFireandHire('Trainer');
     }
     //Explorers:
     if (getPageSetting('MaxExplorers') > game.jobs.Explorer.owned || getPageSetting('MaxExplorers') == -1) {
@@ -1600,7 +1602,7 @@ function autoLevelEquipment() {
         enemyDamage *= 2.5;
         enemyHealth *= 7;
     }
-    var pierceMod = getPierceAmt();
+    var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //change name to make sure these are local to the function
     var enoughHealthE = !(doVoids && voidCheckPercent > 0) && 
         (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * pierceMod)  || 
@@ -1961,6 +1963,7 @@ function autoStance() {
     //no need to continue
     if (game.global.gridArray.length === 0) return;
     if (!getPageSetting('AutoStance')) return;
+    if (!game.upgrades.Formations.done) return;
 
     //start analyzing autostance
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
@@ -2062,7 +2065,7 @@ function autoStance() {
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy && enemy.corrupted == 'corruptDbl');
     var doubleAttackOK = !isDoubleAttack || ((newSquadRdy && dHealth > dDamage * 2) || dHealth - missingHealth > dDamage * 2);
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
-    var leadDamage = game.challenges.Lead.stacks * 0.0005;
+    var leadDamage = game.challenges.Lead.stacks * 0.0003;
     var leadAttackOK = game.global.challengeActive != 'Lead' || enemyHealth < baseDamage || ((newSquadRdy && dHealth > dDamage + (dHealth * leadDamage)) || (dHealth - missingHealth > dDamage + (dHealth * leadDamage)));
     //added voidcrit.
     //voidcrit is OK if the buff isn't crit-buff, or we will survive a crit, or we are going to one-shot them (so they won't be able to crit)
@@ -3231,7 +3234,6 @@ var OVKcellsWorld = 0;
 function mainCleanup() {
     //runs at zone 1 only.
     if (game.global.world == 1) {
-        stopScientistsatFarmers = 250000;   //put this here so it reverts every cycle (in case we portal out of watch challenge)
         lastHeliumZone = 0;
         zonePostpone = 0;
         OVKcellsWorld = 0;
