@@ -1372,12 +1372,15 @@ function buyJobs() {
     else
     {   //exit if we are havent bred to at least 90% breedtimer yet...
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
-            //do Something tiny, so earlygame isnt stuck on 0
-            safeBuyJob('Miner', 1);
-            safeBuyJob('Farmer', 1);            
-            safeBuyJob('Lumberjack', 1);
+            if (game.resources.trimps.owned > game.resources.trimps.realMax() * 0.2 && !breedFire) {
+                //do Something tiny, so earlygame isnt stuck on 0 (down to 20% breedtimer-stops getting stuck from too low.)
+                safeBuyJob('Miner', 1);
+                safeBuyJob('Farmer', 1);
+                safeBuyJob('Lumberjack', 1);
+            }
             return;
         }
+        //continue if we have >90% breedtimer:
     }
     var subtract = 0;
     //used multiple times below: (good job javascript for allowing functions in functions)
