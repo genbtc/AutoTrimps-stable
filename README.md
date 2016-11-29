@@ -47,22 +47,43 @@ Notes:
 If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
 Feel free to submit any bugs/suggestions as issues here on github.
 
-## Current feature changes by genBTC (up to date as of 11/26/2016): 
-- 11/26 Patch 4.0 fixes are happening!
+## Current feature changes by genBTC (up to date as of 11/29/2016): 
+- ***11/29***
+- Puts a 5 second pause in between cycling AutoMagmiteSpender from "on portal" to "always" so you can switch it to "off" without it spending all your magmite.
+- Make multi-toggle tooltip title give the name of all 3 options to be more descriptive.
+- new calcBadGuyDmg function, used in DynamicGyms.
+- stop using stopScientistsatFarmers and use MaxScientists instead.
+- hire 1 miner,farmer,lumber each cycle even if our breed timer is low to do something tiny, so earlygame isnt stuck on 0
+- fix/re-arrange lazy Trainers duplicate code
+- exit autostance if Formations isnt done (like level <60)
+- Lead damage stacks were wrongly on 0.0005, its 0.0003.
+- Trimpicide Mod #1: consider Titimp = forceAbandon and kill titimp if theres less than 5 seconds left on it or, we stand to gain more than 5 antistacks. 
+- Trimpicide Mod #2: if we're sitting around breeding for >60s  while being over 5 anti stacks away from target.
+- Include beta autostance2 code that im working on so I dont have a bunch of crazy local commits.
+- ***11/26***
+- Patch corruption detection, and Scryer tooltips
+- Dynamic Gyms - dont buy gyms if your block is higher than enemy attack
+- Auto Magmamancer management after 10 mins
+- Auto Finish Daily on portal (genbtc settings)
+- Gym Wall (genbtc settings)
+- ***11/23***
 - Auto Magmite Spender can now be toggled to Always Run
 - AutoTrimpicide/Force-Abandon is now toggleable
 - New Better AutoFight #2(optional)
 - <a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come
-- 11/22 Auto Spend Magmite before portaling - (setting in genBTC page)- Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore.
+- ***11/22***
+- Auto Spend Magmite before portaling - (setting in genBTC page)- Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore.
 - Buy 2 buildings instead of 1 if we have the mastery 
 - Entirely remove high lumberjack ratio during Spire.
 - During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.
 - Add a 10 second timeout Popup window that can postpone Autoportal when clicked.
 - Added a No Nurseries Until setting, in genBTC page
-- 11/20 Fixed spire map bug
+- ***11/20***
+- Fixed spire map bug
 - Added new ratios to AutoPerks (ZXV3,truth_late)
 - AutoFight if timer is <0.5 not <0.1 now
-- 11/19 Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). 
+- ***11/19***
+- Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). 
 - Re-arranged all the categories in the settings window and updated tooltips
 - Kill your trimps (AutoTrimpicide) for Anti-Stacks more often
 

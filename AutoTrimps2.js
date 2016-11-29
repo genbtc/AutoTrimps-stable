@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.3-genbtc-11-26-2016+AutoPerks
+// @version      2.1.3.4-genbtc-11-29-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.3-genbtc-11-26-2016+AutoPerks';
+var ATversion = '2.1.3.4-genbtc-11-29-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -2364,7 +2364,7 @@ function autoMap() {
         //enemyDamage *= 2; //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
         enemyHealth *= 2;
     }
-    var pierceMod = getPierceAmt();
+    var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //Lead specific farming calcuation section:
     if(game.global.challengeActive == 'Lead') {
         baseDamage /= mapbonusmulti;
@@ -2855,7 +2855,6 @@ function autoBreedTimer() {
     //reset breedFire once we have less than 2 seconds remaining
     if(getBreedTime(true) < 2) breedFire = false;
 
-    //if a new fight group is available and anticipation stacks aren't maxed, force abandon and grab a new group
     //Force Abandon Code (AutoTrimpicide):
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var nextgrouptime = (game.global.lastBreedTime/1000);
@@ -3393,7 +3392,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/26 Patch 4.0 fixes are still happening!<br>Patch corruption detection, and Scryer tooltips<br>Dynamic Gyms - dont buy gyms if your block is higher than enemy attack<br>Auto Magmamancer management after 10 mins<br>Auto Finish Daily on portal (genbtc settings)<br>Gym Wall (genbtc settings)</b>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/29 Patch 4.0 fixes are still happening!<br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">11/29 see Changelog here</a>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
