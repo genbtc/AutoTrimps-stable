@@ -116,9 +116,9 @@ initializeAllTabs();
 function initializeAllSettings() {
     //START MAKING BUTTONS IN THE TABS:
     //CORE:
-    createSetting('ManualGather2', ['Gather/Build OFF','Auto Gather/Build','Science Research OFF'], '3-Way Button. Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research', 'multitoggle',1,null,"Core");
+    createSetting('ManualGather2', ['Gather/Build OFF','Auto Gather/Build','Science Research OFF','Auto Gather/Build #2'], '3-Way Button. Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research. Please test the Auto Gather/Build #2, its experimental but should work.', 'multitoggle',1,null,"Core");
     createSetting('BetterAutoFight', ['AutoFight OFF','Better Auto Fight 1','Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. #2 is the new one, #1 is the old algorithm (if you have any issues). The new BAF#2 does: 3)Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and 4) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle',1,null,"Core");
-    createSetting('AutoStance', 'Auto Stance', 'Automatically swap stances to avoid death.', 'boolean',true,null,"Core");
+    createSetting('AutoStance', ['Auto Stance OFF','Auto Stance 1','Auto Stance 2'], 'Automatically swap stances to avoid death. Please test the Autostance #2, its very experimental, and in beta.', 'multitoggle',1,null,"Core");
     createSetting('BuyStorage', 'Buy Storage', 'Will buy storage when resource is almost full. (like AutoStorage, even anticipates Jestimp)', 'boolean',true,null,"Core");
     createSetting('BuyBuildings', 'Buy Buildings', 'Will buy non storage buildings as soon as they are available', 'boolean',true,null,"Core");
     createSetting('BuyJobs', 'Buy Jobs', 'Buys jobs based on ratios configured below. CAUTION: you cannot manually assign jobs with this. Toggle if you need to.', 'boolean',true,null,"Core");
@@ -546,7 +546,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         return;
     } else if (type == 'multitoggle') {
         defaultValue = defaultValue ? defaultValue : 0;
-        if (autoTrimpSettings[id] === undefined) {
+        if (autoTrimpSettings[id] === undefined || autoTrimpSettings[id].type != 'multitoggle') {
             autoTrimpSettings[id] = {
                 id: id,
                 name: name,

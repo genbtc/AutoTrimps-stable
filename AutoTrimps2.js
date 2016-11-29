@@ -1739,6 +1739,8 @@ function autoLevelEquipment() {
 
 //OLD: "Auto Gather/Build"
 function manualLabor() {
+    if (getPageSetting('ManualGather2')==0) return;
+    //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
 
     //FRESH GAME NO HELIUM CODE.
@@ -1850,6 +1852,7 @@ function manualLabor() {
 
 //NEW: #2 "Auto Gather/Build"
 function manualLabor2() {
+    if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
     var trapTrimpsOK = getPageSetting('TrapTrimps');
@@ -3102,11 +3105,15 @@ function exitSpireCell() {
 
 //use S stance
 function useScryerStance() {
+    function autostancefunction() {
+        if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"
+        else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"
+    };
     //check preconditions   (exit quick, if impossible to use)
     var use_auto = game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
     use_auto = use_auto || game.global.world <= 60;
     if (use_auto) {
-        autoStance();
+        autostancefunction();
         return;
     }
 
@@ -3149,7 +3156,7 @@ function useScryerStance() {
     //check for bosses (all levels)
     use_auto = use_auto || getPageSetting('ScryerSkipBoss2') == 2 && game.global.lastClearedCell == 98;
     if (use_auto) {
-        autoStance();    //falls back to autostance when not using S.
+        autostancefunction();    //falls back to autostance when not using S.
         return;
     }
 
@@ -3158,7 +3165,7 @@ function useScryerStance() {
     iscorrupt = iscorrupt || (mutations.Magma.active() && game.global.mapsActive);
     iscorrupt = iscorrupt || (game.global.mapsActive && getCurrentMapObject().location == "Void" && game.global.world >= mutations.Corruption.start());
     if (iscorrupt && getPageSetting('ScryerSkipCorrupteds2')) {
-        autoStance();
+        autostancefunction();
         return;
     }
 
@@ -3171,7 +3178,7 @@ function useScryerStance() {
         if (oktoswitch)
             setFormation(4);
     } else {
-        autoStance();
+        autostancefunction();
         return;
     }
 }
@@ -3466,7 +3473,8 @@ function mainLoop() {
     if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"
-    if (getPageSetting('ManualGather2')) manualLabor();  //"Auto Gather/Build"
+    if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"
+    else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40)
@@ -3478,7 +3486,8 @@ function mainLoop() {
     autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
 
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"
-    else autoStance();           //"Auto Stance"
+    else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"
+    else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"
 
     BAFsetting = getPageSetting('BetterAutoFight');
     if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"
