@@ -1,6 +1,6 @@
 //what is either "health" or "attack" or "block"
 // function ripped from Trimps "updates.js" line 1009
-function getBattleStats(what) {
+function getBattleStats(what,form,crit) {
 	var currentCalc = 0;
 //	var maxFluct = 0.2;
 //	var minFluct = 0.2;
@@ -93,7 +93,7 @@ function getBattleStats(what) {
 		currentCalc *= antiStrength;
 	}
 	//Add formations
-	if (game.global.formation > 0){
+	if (form && game.global.formation > 0){
 		var formStrength = 0.5;
 		if ((game.global.formation == 1 && what == "health") || (game.global.formation == 2 && what == "attack") || (game.global.formation == 3 && what == "block")) formStrength = 4;
 		currentCalc *= formStrength;
@@ -101,7 +101,7 @@ function getBattleStats(what) {
     //radiostacks increases from "Electricity" || "Mapocalypse"
     if (game.global.radioStacks > 0 && what == "attack") {
         currentCalc *= (1 - (game.global.radioStacks * 0.1));
-    }    
+    }
 	//Add Titimp
 	if (game.global.titimpLeft > 1 && game.global.mapsActive && what == "attack"){
 		currentCalc *= 2;
@@ -167,11 +167,13 @@ function getBattleStats(what) {
 		mult = mutations.Magma.getTrimpDecay();
 		var lvls = game.global.world - mutations.Magma.start() + 1;
 		currentCalc *= mult;
-	}	
-	var critChance = getPlayerCritChance();
-	if (what == "attack" && critChance){
-		currentCalc *= getPlayerCritDamageMult();
 	}
+    if (crit) {
+        var critChance = getPlayerCritChance();
+        if (what == "attack" && critChance){
+            currentCalc *= getPlayerCritDamageMult();
+        }
+    }
     return currentCalc;
 }
 

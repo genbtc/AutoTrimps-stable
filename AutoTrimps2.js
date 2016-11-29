@@ -1187,7 +1187,7 @@ function buyBuildings() {
         }
         if (getPageSetting('DynamicGyms')) {
             //getBattleStats calculation comes from battlecalc.js and shows the tooltip-table block amount. calcBadGuyDmg is in that file also
-            if (!game.global.preMapsActive && getBattleStats("block") > calcBadGuyDmg(getCurrentEnemy()))
+            if (!game.global.preMapsActive && getBattleStats("block",true) > calcBadGuyDmg(getCurrentEnemy()))
                 skipGym = true;
         }
         if (!skipGym)
@@ -1429,6 +1429,7 @@ function buyJobs() {
         safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
     
     //Magmamancers code:
+    if (game.jobs.Magmamancer.locked) return;
     //game.jobs.Magmamancer.getBonusPercent(true);
     var timeOnZone = Math.floor((new Date().getTime() - game.global.zoneStarted) / 60000);
     var stacks2 = Math.floor(timeOnZone / 10);
@@ -1598,12 +1599,12 @@ function autoLevelEquipment() {
             Cost: 0
         };
     }
-    var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
+    var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
     var spirecheck = (game.global.world == 200 && game.global.spireActive);
     if (spirecheck) {
-        var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 40;
+        var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 50;
         enemyDamage = getSpireStats(cell, "Snimp", "attack");
         enemyHealth = getSpireStats(cell, "Snimp", "health");
     }
@@ -1622,8 +1623,7 @@ function autoLevelEquipment() {
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //change name to make sure these are local to the function
     var enoughHealthE = !(doVoids && voidCheckPercent > 0) && 
-        (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * pierceMod)  || 
-            baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
+        (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
     var enoughDamageE = (baseDamage * 4 > enemyHealth);
 
     for (var equipName in equipmentList) {
@@ -1980,10 +1980,18 @@ function calcBaseDamageinX() {
         baseHealth /= 4;
     else if (game.global.formation != "0") 
         baseHealth *= 2;
-    
     //S stance is accounted for (combination of all the above's else clauses)
 }
 
+function calcBaseDamageinX2() {
+    //baseDamage
+    baseDamage = getBattleStats("attack");
+    //baseBlock
+    baseBlock = getBattleStats("block");
+    //baseHealth
+    baseHealth = getBattleStats("health");
+    //stances are not needed, if you do need it, call the function with (,true)
+}
 //Autostance - function originally created by Belaith (in 1971)
 //Automatically swap formations (stances) to avoid dying
 function autoStance() {
@@ -2149,7 +2157,7 @@ function autoStance() {
 
 function autoStance2() {
     //get back to a baseline of no stance (X)
-    calcBaseDamageinX();
+    calcBaseDamageinX2();
     //no need to continue
     if (game.global.gridArray.length === 0) return;
     if (!getPageSetting('AutoStance')) return;
@@ -2170,7 +2178,7 @@ function autoStance2() {
     var enemyFast = (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom"))
     //crits
     var critMulti = 1;
-    var isCrushed = (game.global.challengeActive == "Crushed") && checkCrushedCrit();
+    var isCrushed = (game.global.challengeActive == "Crushed") && game.global.soldierHealth > game.global.soldierCurrentBlock;
 		critMulti *= isCrushed ? 5 : 1;
     var isCritVoidMap = game.global.voidBuff == 'getCrit' || (enemy.corrupted == 'corruptCrit');
         critMulti *= isCritVoidMap ? 5 : 1;
@@ -2239,11 +2247,7 @@ function autoStance2() {
         dDamage += game.global.soldierHealth * leadDamage;
         xDamage += game.global.soldierHealth * leadDamage;
         bDamage += game.global.soldierHealth * leadDamage;
-    } else if (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse") {
-        dDamage += dHealth * game.global.radioStacks * 0.1;
-        xDamage += xHealth * game.global.radioStacks * 0.1;
-        bDamage += bHealth * game.global.radioStacks * 0.1;
-    }
+}
     //dont attach.
     if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed')) {
         dDamage += game.global.soldierHealth * 0.2;
@@ -2251,7 +2255,7 @@ function autoStance2() {
         bDamage += game.global.soldierHealth * 0.2;
     }
 
-    baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
+    //baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
     
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage    
     var oneshotFast = (!enemyFast ? enemyHealth < baseDamage : false);
@@ -2305,7 +2309,7 @@ function autoStance2() {
             debug("AutoStance H/1");
         }
     }
-    baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
+    //baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
 }
 
 var stackingTox = false;
@@ -2362,13 +2366,17 @@ function autoMap() {
 
 //START CALCULATING DAMAGES
     //PREPARE SOME VARIABLES
-    //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are adding two hits here (non-crit + crit)
-    baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()));
+    
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
-    baseDamage *= mapbonusmulti;
-    //get average enemyhealth and damage for the next zone, cell 30, snimp type and multiply it by a factor of .85 (don't ask why)
-    var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
+    if (getPageSetting('AutoStance')<=1) {
+        //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are adding two hits here (non-crit + crit)
+        baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
+        baseDamage *= mapbonusmulti;
+    }
+    
+    //get average enemyhealth and damage for the next zone, cell 50, snimp type and multiply it by a max range fluctuation of 1.2
+    var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Corruption Zone Proportionality Farming Calculator:
     var corrupt = game.global.world >= mutations.Corruption.start(true);
@@ -2393,7 +2401,6 @@ function autoMap() {
         //enemyDamage *= 2; //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
         enemyHealth *= 2;
     }
-    var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //Lead specific farming calcuation section:
     if(game.global.challengeActive == 'Lead') {
         baseDamage /= mapbonusmulti;
@@ -2401,19 +2408,19 @@ function autoMap() {
         enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
         //if the zone is odd:   (skip the +2 calc for the last level.
         if (game.global.world % 2 == 1 && game.global.world != 179){
-            enemyDamage = getEnemyMaxAttack(game.global.world + 2, 30, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
+            enemyDamage = getEnemyMaxAttack(game.global.world + 2, 40, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
             enemyHealth = getEnemyMaxHealth(game.global.world + 2);
-            baseDamage /= 1.5; //subtract the odd-zone bonus.
+            if (getPageSetting('AutoStance')<=1)
+                baseDamage /= 1.5; //subtract the odd-zone bonus.
         }
         //let people disable this if they want.
         if(!getPageSetting('DisableFarm')) {
             shouldFarm = enemyHealth / baseDamage > 5;
         }
     }
-    enoughHealth = (baseHealth * 4 > 30 * (enemyDamage - baseBlock / 2 > 0 ? enemyDamage - baseBlock / 2 : enemyDamage * pierceMod)
-                    ||
-                    baseHealth > 30 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
-    enoughDamage = baseDamage * 4 > enemyHealth;
+    var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
+    enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
+    enoughDamage = (baseDamage * 4 > enemyHealth);
     HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
     var shouldDoMaps;
@@ -2945,12 +2952,8 @@ function prestigeChanging2(){
     if (maxPrestigeIndex <= 2)
         return;
 
-     //find out the last zone (checks custom autoportal and challenge's portal zone)
-    var lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
-
-     //if we can't figure out lastzone (likely Helium per Hour AutoPortal setting), then use the last run's Portal zone.
-    if (lastzone < 0)
-        lastzone = game.global.lastPortal;
+     //find out the last zone
+    var lastzone = getPageSetting("DynamicPrestige2");
 
     // Find total prestiges needed by determining current prestiges versus the desired prestiges by the end of the run
     var neededPrestige = 0;
@@ -3116,8 +3119,11 @@ function useScryerStance() {
         autostancefunction();
         return;
     }
-
-    calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
+    
+    if (getPageSetting('AutoStance')<=1)
+        calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
+    else if (getPageSetting('AutoStance')==2)
+        calcBaseDamageinX2(); //calculate method #2
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var form = game.global.formation;
@@ -3495,7 +3501,7 @@ function mainLoop() {
     else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight();   
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
-    if (getPageSetting('DynamicPrestige')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
+    if (getPageSetting('DynamicPrestige2')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 
     //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
