@@ -711,13 +711,14 @@ function updateCustomButtons() {
         document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-danger");
     //auto portal setting, hide until player has unlocked the balance challenge
     (game.challenges.Balance.filter()) ? turnOn("AutoPortal") : turnOff("AutoPortal");
-    //custom auto portal value
+    //if custom auto portal is not selected, remove the custom value settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("CustomAutoPortal") : turnOff("CustomAutoPortal");
-    //challenge for he/hr setting
+    //if HeHr is not selected, remove HeliumHourChallenge settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour" || autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("HeliumHourChallenge") : turnOff("HeliumHourChallenge");
-    //do not portal before during He/hr auto portal value
+    //if HeHr is not selected, remove HeHrDontPortalBefore settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeHrDontPortalBefore") : turnOff("HeHrDontPortalBefore");
-
+    //if HeHr is not selected, remove HeHr buffer settingsbox
+    (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeliumHrBuffer") : turnOff("HeliumHrBuffer");
     //update dropdown selections:
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;

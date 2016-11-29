@@ -1437,9 +1437,18 @@ function buyJobs() {
         game.global.firing = false;
         game.global.buyAmt = 'Max';
         game.global.maxSplit = .1;
+        //fire dudes to make room.
+        var firesomedudes = calculateMaxAfford(game.jobs['Magmamancer'], false, false, true);
+        if (game.jobs.Farmer.owned > firesomedudes)
+            safeBuyJob('Farmer', -firesomedudes);
+        else if (game.jobs.Lumberjack.owned > firesomedudes)
+            safeBuyJob('Lumberjack', -firesomedudes);
+        else if (game.jobs.Miner.owned > firesomedudes)
+            safeBuyJob('Miner', -firesomedudes);
+        //buy the Magmamancers
         buyJob('Magmamancer', true, true);
         postBuy();
-        debug("Bought " + prettify(game.jobs.Magmamancer.owned) + ' Magmamancers', "other", "*users");
+        debug("Bought " + firesomedudes + ' Magmamancers', "other", "*users");
         tierMagmamancers += 1;
     }
     else if (stacks2 < tierMagmamancers) {
