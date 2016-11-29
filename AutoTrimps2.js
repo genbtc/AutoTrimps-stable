@@ -3238,6 +3238,7 @@ function mainCleanup() {
     }
 }
 var ATrunning = false;
+var magmiteSpenderChanged = false;
 function mainLoop() {
     ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //just better.
@@ -3297,11 +3298,12 @@ function mainLoop() {
     if (userscriptOn) userscripts();
     
     try {
-        if (getPageSetting('AutoMagmiteSpender2')==2)
+        if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
             autoMagmiteSpender();
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
+
     ATrunning = false;
 }
 
