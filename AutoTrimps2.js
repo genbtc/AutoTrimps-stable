@@ -278,11 +278,14 @@ function timeStamp() {
 
 function getPerSecBeforeManual(job) {
     var perSec = 0;
+    var increase = game.jobs[job].increase;
+    if (increase == "custom") return 0;
     if (game.jobs[job].owned > 0){
         perSec = (game.jobs[job].owned * game.jobs[job].modifier);
         if (game.portal.Motivation.level > 0) perSec += (perSec * game.portal.Motivation.level * game.portal.Motivation.modifier);
         if (game.portal.Motivation_II.level > 0) perSec *= (1 + (game.portal.Motivation_II.level * game.portal.Motivation_II.modifier));
         if (game.portal.Meditation.level > 0) perSec *= (1 + (game.portal.Meditation.getBonusPercent() * 0.01)).toFixed(2);
+        if (game.jobs.Magmamancer.owned > 0 && increase == "metal") perSec *= game.jobs.Magmamancer.getBonusPercent();
         if (game.global.challengeActive == "Meditate") perSec *= 1.25;
         else if (game.global.challengeActive == "Size") perSec *= 1.5;
         if (game.global.challengeActive == "Toxicity"){
@@ -291,6 +294,16 @@ function getPerSecBeforeManual(job) {
         }
         if (game.global.challengeActive == "Balance"){
             perSec *= game.challenges.Balance.getGatherMult();
+        }
+        if (game.global.challengeActive == "Decay"){
+            perSec *= 10;
+            perSec *= Math.pow(0.995, game.challenges.Decay.stacks);
+        }
+        if (game.global.challengeActive == "Daily"){
+            if (typeof game.global.dailyChallenge.dedication !== 'undefined')
+                perSec *= dailyModifiers.dedication.getMult(game.global.dailyChallenge.dedication.strength);
+            if (typeof game.global.dailyChallenge.famine !== 'undefined' && increase != "fragments" && increase != "science")
+                perSec *= dailyModifiers.famine.getMult(game.global.dailyChallenge.famine.strength);
         }
         if (game.global.challengeActive == "Watch") perSec /= 2;
         if (game.global.challengeActive == "Lead" && ((game.global.world % 2) == 1)) perSec*= 2;
@@ -2179,7 +2192,7 @@ function autoStance2() {
     //crits
     var critMulti = 1;
     var isCrushed = (game.global.challengeActive == "Crushed") && game.global.soldierHealth > game.global.soldierCurrentBlock;
-		critMulti *= isCrushed ? 5 : 1;
+        critMulti *= isCrushed ? 5 : 1;
     var isCritVoidMap = game.global.voidBuff == 'getCrit' || (enemy.corrupted == 'corruptCrit');
         critMulti *= isCritVoidMap ? 5 : 1;
     var isCritDaily = (game.global.challengeActive == "Daily") && (typeof game.global.dailyChallenge.crits !== 'undefined');
@@ -2228,13 +2241,13 @@ function autoStance2() {
     //calc X,D,B:
     var xDamage = (enemyDamage - baseBlock);
     if (xDamage < pierceMod) xDamage = pierceMod * enemyDamage;
-	if (xDamage < 0) xDamage = 0;
+    if (xDamage < 0) xDamage = 0;
     var dDamage = (enemyDamage - baseBlock / 2);
     if (dDamage < pierceMod) dDamage = pierceMod * enemyDamage;
-	if (dDamage < 0) dDamage = 0;
+    if (dDamage < 0) dDamage = 0;
     var bDamage = (enemyDamage - baseBlock * 4);
     if (bDamage < pierceMod) bDamage = pierceMod * enemyDamage;
-	if (bDamage < 0) bDamage = 0;
+    if (bDamage < 0) bDamage = 0;
 
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var leadChallenge = (game.global.challengeActive == 'Lead');
