@@ -1457,10 +1457,10 @@ function buyJobs() {
 }
 var tierMagmamancers = 0;
 
-
+var mapresourcetojob;
 //evaluateEquipmentEfficiency: Back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
 function evaluateEquipmentEfficiency(equipName) {
-    var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
+    mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
     
     //Returns the amount of stats that the equipment (or gym) will give when bought.
     function equipEffect(gameResource, equip) {
@@ -1477,7 +1477,10 @@ function evaluateEquipmentEfficiency(equipName) {
     //Returns the cost after Artisanistry of a piece of equipment.
     function equipCost(gameResource, equip) {
         var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
-        if (equip.Equip) price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
+        if (equip.Equip) 
+            price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
+        else
+            price = Math.ceil(price * (Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)));
         return price;
     }
     //Returns the amount of stats that the prestige will give when bought.
@@ -1572,22 +1575,27 @@ function evaluateEquipmentEfficiency(equipName) {
         Stat: equip.Stat,
         Factor: Factor,
         StatusBorder: StatusBorder,
-        Wall: Wall
+        Wall: Wall,
+        Cost: Cost
     };
 }
 
+var resourcesNeeded;
+var Best;
 //autoLevelEquipment = "Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
 function autoLevelEquipment() {
     //if((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
         //return;
-    var Best = {};
+    resourcesNeeded = {"food": 0, "wood": 0, "metal": 0, "science": 0, "gems": 0};  //list of amount of resources needed for stuff we want to afford    
+    Best = {};
     var keys = ['healthwood', 'healthmetal', 'attackmetal', 'blockwood'];
     for (var i = 0; i < keys.length; i++) {
         Best[keys[i]] = {
             Factor: 0,
             Name: '',
             Wall: false,
-            StatusBorder: 'white'
+            StatusBorder: 'white',
+            Cost: 0
         };
     }
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 30, 'Snimp', .85);
@@ -1636,13 +1644,14 @@ function autoLevelEquipment() {
                 Best[BKey].Wall = evaluation.Wall;
                 Best[BKey].StatusBorder = evaluation.StatusBorder;
             }
+            Best[BKey].Cost = evaluation.Cost;
             //Apply colors from before:        
             //white - Upgrade is not available
-            //yellow - Upgrade is not affordable
+            //yellow - Upgrade is not affordable (or capped)
             //orange - Upgrade is affordable, but will lower stats
             //red - Yes, do it now!
 
-            document.getElementById(equipName).style.borderColor = evaluation.StatusBorder;
+            document.getElementById(equipName).style.border = '1px solid ' + evaluation.StatusBorder;
             if (evaluation.StatusBorder != 'white' && evaluation.StatusBorder != 'yellow') {
                 document.getElementById(equip.Upgrade).style.color = evaluation.StatusBorder;
             }
@@ -1652,9 +1661,12 @@ function autoLevelEquipment() {
             if (evaluation.Wall) {
                 document.getElementById(equipName).style.color = 'yellow';
             }
-
+            //add up whats needed:
+            resourcesNeeded[equip.Resource] += Best[BKey].Cost;
+            
             //Code is Spaced This Way So You Can Read It:
-            if (evaluation.StatusBorder == 'red' &&
+            if (evaluation.StatusBorder == 'red') {
+                if 
                 (
                     ( getPageSetting('BuyWeaponUpgrades') && equipmentList[equipName].Stat == 'attack' )
                     ||
@@ -1676,14 +1688,18 @@ function autoLevelEquipment() {
                         )
                     )
                 )
-            )
-            {
-                var upgrade = equipmentList[equipName].Upgrade;
-                if (upgrade != "Gymystic")
-                    debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, "equips", '*upload');
-                else
-                    debug('Upgrading ' + upgrade + " # " + game.upgrades[upgrade].allowed, "equips", '*upload');
-                buyUpgrade(upgrade, true, true);
+                {
+                    var upgrade = equipmentList[equipName].Upgrade;
+                    if (upgrade != "Gymystic")
+                        debug('Upgrading ' + upgrade + " - Prestige " + game.equipment[equipName].prestige, "equips", '*upload');
+                    else
+                        debug('Upgrading ' + upgrade + " # " + game.upgrades[upgrade].allowed, "equips", '*upload');
+                    buyUpgrade(upgrade, true, true);
+                }
+                else {
+                    document.getElementById(equipName).style.color = 'orange';
+                    document.getElementById(equipName).style.border = '2px solid orange';
+                }
             }
         }
     }
@@ -1694,6 +1710,7 @@ function autoLevelEquipment() {
             var eqName = Best[stat].Name;
             var DaThing = equipmentList[eqName];
             document.getElementById(Best[stat].Name).style.color = Best[stat].Wall ? 'orange' : 'red';
+            document.getElementById(Best[stat].Name).style.border = '2px solid red';
             //If we're considering an attack item, we want to buy weapons if we don't have enough damage, or if we don't need health (so we default to buying some damage)
             if (getPageSetting('BuyWeapons') && DaThing.Stat == 'attack' && (!enoughDamageE || enoughHealthE)) {
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
