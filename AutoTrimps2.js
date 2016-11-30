@@ -2280,8 +2280,6 @@ function autoStance2(checkOnly) {
         bDamage += game.global.soldierHealth * 0.2;
     }
 
-    //baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
-
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
     var oneshotFast = (!enemyFast ? enemyHealth < baseDamage : false);
     var leadAttackOK = !leadChallenge || oneshotFast;
@@ -2296,11 +2294,11 @@ function autoStance2(checkOnly) {
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
         if (checkOnly) {
             var ourCritMult = getPlayerCritChance() ? getPlayerCritDamageMult() : 1;
-            var ourDmg = (baseDamage/2)*ourCritMult;
-            var surviveOneShot = enemyFast ? dHealth > dDamageNoCrit : enemyHealth < ourDmg;
-            var enoughHealth = (game.upgrades.Dominance.done && surviveOneShot && leadAttackOK && drainAttackOK && voidCritinDok);
-            var enoughDamage = enemyHealth < ourDmg;
-            return [enoughHealth,enoughDamage];
+            var ourDmgS = (baseDamage/2)*ourCritMult;
+            var surviveOneShot = enemyFast ? dHealth > dDamageNoCrit : enemyHealth < ourDmgS;
+            var enoughHealth2 = surviveOneShot && leadAttackOK && drainAttackOK && voidCritinDok;
+            var enoughDamage2 = enemyHealth < ourDmgS;
+            return [enoughHealth2,enoughDamage2];
         }
         //use D stance if: new army is ready&waiting / can survive void-double-attack or we can one-shot / can survive lead damage / can survive void-crit-dmg
         if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok) {
@@ -2342,7 +2340,6 @@ function autoStance2(checkOnly) {
             debug("AutoStance H/1");
         }
     }
-    //baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
     return true;
 }
 
@@ -2428,9 +2425,9 @@ function autoMap() {
             enemyDamage *= atkprop;
         //console.log("enemy dmg:" + enemyDamage + " enemy hp:" + enemyHealth + " base dmg: " + ourBaseDamage);
     }
-    //farm if ourBaseDamage is between 32 and 20 (takes over 8 hits in D stance to enter farming and under 5 hits to exit farming)
+    //farm if ourBaseDamage is between 16 and 12 (takes over 4 hits in D stance to enter farming and under 3 hits to exit farming)
     if(!getPageSetting('DisableFarm') && ourBaseDamage > 0) {
-        shouldFarm = shouldFarm ? enemyHealth / ourBaseDamage > 20 : enemyHealth / ourBaseDamage > 32;
+        shouldFarm = shouldFarm ? enemyHealth / ourBaseDamage > 12 : enemyHealth / ourBaseDamage > 16;
     }
     if(game.global.challengeActive == "Toxicity") {
         //enemyDamage *= 2; //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
@@ -2459,6 +2456,7 @@ function autoMap() {
         enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
         //enough damage if we can one-shot the enemy in D (baseDamage*4)
         enoughDamage = (ourBaseDamage * 4) > enemyHealth;
+        scryerStuck = false;
     } else {
         //enough health if we can pass all the tests in autostance2 under the best of the worst conditions.
         //enough damage if we can one-shot the enemy in S (baseDamage*4)
