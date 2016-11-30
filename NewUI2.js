@@ -75,7 +75,7 @@ function minimizeAllTabs() {
     tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }    
+    }
 }
 var addTabsDiv;
 var addtabsUL;
@@ -103,7 +103,7 @@ function initializeAllTabs() {
           a_0.appendChild( document.createTextNode("Minimize All") );
       li_0.appendChild( a_0 );
       li_0.setAttribute("style","float:right!important;");
-   addtabsUL.appendChild( li_0 );    
+   addtabsUL.appendChild( li_0 );
     //Insert tabs into the game area
     document.getElementById("autoSettings").appendChild(addTabsDiv);
     //pretend click to make first tab active.
@@ -209,7 +209,7 @@ function initializeAllSettings() {
     if (autoTrimpSettings["DynamicPrestige2"] === undefined && autoTrimpSettings["DynamicPrestige"]) {
         var lastzone;
         if (autoTrimpSettings["DynamicPrestige"].enabled) {
-            lastzone = checkSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
+            lastzone = checkPortalSettings() - 1; //subtract 1 because the function adds 1 for its own purposes.
              //if we can't figure out lastzone (likely Helium per Hour AutoPortal setting), then use the last run's Portal zone.
             if (lastzone < 0)
                 lastzone = game.global.lastPortal;
@@ -218,7 +218,7 @@ function initializeAllSettings() {
         setPageSetting("DynamicPrestige2",lastzone);
     } else {
         createSetting('DynamicPrestige2', 'Dynamic Prestige z', 'Dynamic Prestige: <b>Set Target Zone number: Z #. (disable with 0 or -1)</b><br> Skip getting prestiges at first, and Gradually work up to the desired Prestige setting you have set (set the Prestige dropdown to the highest weapon you want to end up on at the target zone you set here). Runs with Dagger to save a significant amount of time until we need better gear, then starts increasing the prestige setting near the end of the run.  Examines which prestiges you have, how many missing ones youd need to achieve the desired target and starts running 5 maps or 2 maps every zone, Until the target prestige is reached. Example: For mace, starts getting the prerequisite prestiges 10 zones away from max, then more and more, finally reaching the desired prestige by the last final zone (also goes for 9 mapbonus on the last zone). ', 'value', -1, null, 'genBTC');
-    }    
+    }
     createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'IMPORTANT SETTING. New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'genBTC');
     createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buys the upgrades the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null,'genBTC');
     createSetting('TrainerCaptoTributes', 'Cap Trainers to a % of Tributes', 'Only Buy a Trainer when its cost is LESS than X% of cost of a tribute. This setting can work in combination with the other one, or set the other one to -1 and this will take full control. Default: -1 (Disabled). 50% is close to the point where the cap does nothing. You can go as low as you want but recommended is 10% to 1%. (example: Trainer cost of 5001, Tribute cost of 100000, @ 5%, it would NOT buy the trainer.)', 'value', '-1', null, 'genBTC');
@@ -227,7 +227,7 @@ function initializeAllSettings() {
     createSetting('ForceAbandon', 'Auto Force-Abandon', '(Trimpicide). If a new fight group is available and anticipation stacks arent maxed, force abandon and grab a new group. Located in the geneticist management script. I would leave this on. EXPERIMENTAL.', 'boolean', true, null, 'genBTC');
     createSetting('GymWall', 'Gym Wall', 'Conserves Wood. Only buys 1 Gym when you can afford <b>X</b> gyms wood cost (at the first one\'s price, simple math). -1 or 0 to disable. In other words, only allows gyms that cost less than 1/nth your currently owned wood. (to save wood for nurseries for new z230+ Magma nursery strategy). Takes decimal numbers. (Identical to the Warpstation wall setting which is why its called that). Setting to 1 does nothing besides stopping gyms from being bought 2 at a time due to the mastery.', 'value', 0, null, 'genBTC');
     createSetting('AutoFinishDaily', 'Auto Finish Daily', 'With this on, the He/Hr Portal and Custom Auto Portal options will auto-finish the daily <b>whenever they trigger</b> and THEN portal you.', 'boolean', false, null, 'genBTC');
-    createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those will still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');        
+    createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those will still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');
 
     // Scryer settings
     createSetting('UseScryerStance', 'Use Scryer Stance', '<b>MASTER BUTTON</b> Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Get 2x resources or Dark Essence. <u>All other buttons have no effect if this one is off.</u>', 'boolean',true,null,'Scryer');
@@ -263,7 +263,7 @@ function loadAutoTrimps() {
         var tmpset = JSON.parse(thestring);
         if (tmpset == null)
             return;
-    } catch(err) { 
+    } catch(err) {
         debug("Error importing, the string is bad." + err.message);
         return;
     }
@@ -277,10 +277,9 @@ function loadAutoTrimps() {
     automationMenuSettingsInit();
     initializeAllTabs();
     initializeAllSettings();
-    updateValueFields();
     updateCustomButtons();
     saveSettings();
-    checkSettings();
+    checkPortalSettings();
     ATrunning = true;       //restart AT.
 }
 
@@ -354,7 +353,7 @@ function cleanupAutoTrimps() {
             delete autoTrimpSettings[setting];
     }
 }
-    
+
 //reset to defaults
 function resetAutoTrimps() {
     //stop AT, wait, remove
@@ -367,12 +366,11 @@ function resetAutoTrimps() {
     automationMenuSettingsInit();
     initializeAllTabs();
     initializeAllSettings();
-    updateValueFields();
     updateCustomButtons();
     saveSettings();
-    checkSettings();
+    checkPortalSettings();
     ATrunning = true;   //start AT.
-}        
+}
 
 function automationMenuInit() {
 
@@ -549,7 +547,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btn.setAttribute('class', 'btn btn-info');
         btn.setAttribute("onclick", 'AutoTrimpsTooltip(\'' + defaultValue + '\', null, \'update\')');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
-        btn.setAttribute("onmouseout", 'tooltip("hide")');        
+        btn.setAttribute("onmouseout", 'tooltip("hide")');
         btn.setAttribute("style", "display: block; font-size: 0.8vw;");
         btn.textContent = name;
         btnParent.style.width = '';
@@ -592,7 +590,7 @@ function settingChanged(id) {
     }
     if (btn.type == 'multitoggle') {
         //puts a 5 second pause in between cycling through from "on portal" to "always" so you can switch it to "off".
-        if (id == 'AutoMagmiteSpender2' && btn.value == 1) { 
+        if (id == 'AutoMagmiteSpender2' && btn.value == 1) {
             magmiteSpenderChanged = true;
             setTimeout(function(){ magmiteSpenderChanged = false;},5000);
         }
@@ -610,7 +608,7 @@ function settingChanged(id) {
     }
     updateCustomButtons();
     saveSettings();
-    checkSettings();
+    checkPortalSettings();
 }
 
 
@@ -672,36 +670,7 @@ function autoSetValue(id) {
     autoTrimpSettings[id].value = num;
     document.getElementById(id).textContent = ranstring + ': ' + txtNum;
     saveSettings();
-    checkSettings();
-}
-
-function updateValueFields() {
-    for (var setting in autoTrimpSettings) {
-        if (autoTrimpSettings[setting].type == 'value') {
-            var elem = document.getElementById(autoTrimpSettings[setting].id);
-            if (elem != null) elem.textContent = autoTrimpSettings[setting].name + ': ' + ((autoTrimpSettings[setting].value > -1) ? prettify(autoTrimpSettings[setting].value) : 'Infinite');
-        }
-    }
-    //automaps status
-    var status = document.getElementById('autoMapStatus');
-    if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
-    else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
-    else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
-    else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
-    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
-    else if (doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
-    else if (shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
-    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
-    else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
-    else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
-    else if (!enoughHealth) status.innerHTML = 'Want more health';
-    else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
-
-    //hider he/hr% status
-    var area51 = document.getElementById('hiderStatus');
-    var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
-    var lifetime = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
-    area51.innerHTML = 'He/hr: ' + getPercent.toFixed(3) + '%<br>&nbsp;&nbsp;&nbsp;He: ' + lifetime.toFixed(3) +'%';
+    checkPortalSettings();
 }
 
 function updateCustomButtons() {
@@ -737,15 +706,27 @@ function updateCustomButtons() {
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
-    //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
+    //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected; //dont update this, dynamic prestige takes it over and is handled elsewhere.
 
     //stop disable farming from needing a refresh
     if(getPageSetting('DisableFarm'))
         shouldFarm = false;
+    //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
+    if(document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
+        document.getElementById('Prestige').selectedIndex = 11;
+        autoTrimpSettings.Prestige.selected = "Bestplate";
+    }
+    //make sure value buttons are set accurately.
+    for (var setting in autoTrimpSettings) {
+        if (autoTrimpSettings[setting].type == 'value') {
+            var elem = document.getElementById(autoTrimpSettings[setting].id);
+            if (elem != null) elem.textContent = autoTrimpSettings[setting].name + ': ' + ((autoTrimpSettings[setting].value > -1) ? prettify(autoTrimpSettings[setting].value) : 'Infinite');
+        }
+    }
 }
 
 //buncha update stuff i wrote but ended up not needing:
-/*     
+/*
 for (var setting in autoTrimpSettings) {
     var btn = autoTrimpSettings[setting];
     var elem = document.getElementById(setting);
@@ -758,3 +739,50 @@ for (var setting in autoTrimpSettings) {
     }
 }
 */
+//Checks portal related UI settings (TODO: split into two, and move the validation check to NewUI)
+function checkPortalSettings() {
+    var portalLevel = -1;
+    var leadCheck = false;
+    switch(autoTrimpSettings.AutoPortal.selected) {
+        case "Off":
+            break;
+        case "Custom":
+            portalLevel = autoTrimpSettings.CustomAutoPortal.value + 1;
+            leadCheck = autoTrimpSettings.HeliumHourChallenge.selected == "Lead" ? true:false;
+            break;
+        case "Balance":
+            portalLevel = 41;
+            break;
+        case "Decay":
+            portalLevel = 56;
+            break;
+        case "Electricity":
+            portalLevel = 82;
+            break;
+        case "Crushed":
+            portalLevel = 126;
+            break;
+        case "Nom":
+            portalLevel = 146;
+            break;
+        case "Toxicity":
+            portalLevel = 166;
+            break;
+        case "Lead":
+            portalLevel = 181;
+            break;
+        case "Watch":
+            portalLevel = 181;
+            break;
+        case "Corrupted":
+            portalLevel = 191;
+            break;
+    }
+    if(portalLevel == -1)
+        return portalLevel;
+    if(autoTrimpSettings.VoidMaps.value >= portalLevel)
+        tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please Change Your Settings Now. This Box Will Not Go away Until You do. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
+    if((leadCheck || game.global.challengeActive == 'Lead') && (autoTrimpSettings.VoidMaps.value % 2 == 0 && portalLevel <= 181))
+        tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
+    return portalLevel;
+}

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.4-genbtc-11-29-2016+AutoPerks
+// @version      2.1.3.5-genbtc-11-30-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.4-genbtc-11-29-2016+AutoPerks';
+var ATversion = '2.1.3.5-genbtc-11-30-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -216,7 +216,7 @@ function setPageSetting(setting, value) {
     }
     updateCustomButtons();
     saveSettings();
-    checkSettings();
+    checkPortalSettings();
 }
 
 //Global debug message
@@ -252,7 +252,7 @@ function debug(message, type, lootIcon) {
             break;
         case "general":
             output = general;
-            break;            
+            break;
     }
     if (enableDebug && output) {
         console.log(timeStamp() + ' ' + message);
@@ -398,10 +398,11 @@ function setScienceNeeded() {
 }
 
 function setTitle() {
-    document.title = '(' + game.global.world + ')' + ' Trimps ' + document.getElementById('versionNumber').innerHTML;
-    //for the dummies like me who always forget to turn automaps back on after portaling
-    if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false) {
-        settingChanged("AutoMaps");
+    if (aWholeNewWorld) {
+        document.title = '(' + game.global.world + ')' + ' Trimps ' + document.getElementById('versionNumber').innerHTML;
+        //for the dummies like me who always forget to turn automaps back on after portaling
+        if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
+            settingChanged("AutoMaps");
     }
 }
 
@@ -525,7 +526,7 @@ function getPotencyMod() {
     }
     potencyMod = calcHeirloomBonus("Shield", "breedSpeed", potencyMod);
     return potencyMod;
-}    
+}
 
 function getBreedTime(remaining) {
     var trimps = game.resources.trimps;
@@ -1048,7 +1049,7 @@ function isBuildingInQueue(building) {
     for (var b in game.global.buildingsQueue) {
         if (game.global.buildingsQueue[b].includes(building)) return true;
     }
-}    
+}
 //An error-resilient function that will actually purchase buildings and return a success status
 function safeBuyBuilding(building) {
     if (isBuildingInQueue(building)) return false;
@@ -1062,7 +1063,7 @@ function safeBuyBuilding(building) {
         game.global.buyAmt = 2;
         if (!canAffordBuilding(building)) {
             game.global.buyAmt = 1;
-            if (!canAffordBuilding(building)) {            
+            if (!canAffordBuilding(building)) {
                 postBuy();
                 return false;
             }
@@ -1213,7 +1214,7 @@ function buyBuildings() {
     //NoNurseriesUntil', 'No Nurseries Until z', 'For Magma z230+ purposes. Nurseries get shut down, and wasting nurseries early on is probably a bad idea. Might want to set this to 230+ as well.'
     var nursminlvl = getPageSetting('NoNurseriesUntil');
     if (game.global.world < nursminlvl)
-        return;    
+        return;
     //only buy nurseries if enabled,   and we need to lower our breed time, or our target breed time is 0, or we aren't trying to manage our breed time before geneticists, and they aren't locked
     //even if we are trying to manage breed timer pre-geneticists, start buying nurseries once geneticists are unlocked AS LONG AS we can afford a geneticist (to prevent nurseries from outpacing geneticists soon after they are unlocked)
     if ((targetBreed < getBreedTime() || targetBreed <= 0 ||
@@ -1294,10 +1295,12 @@ function buyStorage() {
 function safeFireJob(job,amount) {
     //do some jiggerypokery in case jobs overflow and firing -1 worker does 0 (java integer overflow)
     var oldjob = game.jobs[job].owned;
-    if (oldjob == 0)
+    if (oldjob == 0 || amount == 0)
         return 0;
     var test = oldjob;
     var x = 1;
+    if (amount != null)
+        x = amount;
     if (!Number.isSafeInteger(oldjob)){
         while (oldjob == test) {
             test-=x;
@@ -1307,13 +1310,13 @@ function safeFireJob(job,amount) {
     preBuy();
     game.global.firing = true;
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-    while (freeWorkers == Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed) {
-        game.global.buyAmt = x;    
+    while (x >= 1 && freeWorkers == Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed) {
+        game.global.buyAmt = x;
         buyJob(job, true, true);
         x*=2;
     }
     postBuy();
-    return x;
+    return x/2;
 }
 
 
@@ -1374,8 +1377,8 @@ function buyJobs() {
     {   //exit if we are havent bred to at least 90% breedtimer yet...
         var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
-            if (breeding > game.resources.trimps.realMax() * 0.25) {
-                //do Something tiny, so earlygame isnt stuck on 0 (down to 20% breedtimer-stops getting stuck from too low.)            
+            if (breeding > game.resources.trimps.realMax() * 0.33) {
+                //do Something tiny, so earlygame isnt stuck on 0 (down to 33% trimps. stops getting stuck from too low.)
                 safeBuyJob('Miner', 1);
                 safeBuyJob('Farmer', 1);
                 safeBuyJob('Lumberjack', 1);
@@ -1390,7 +1393,7 @@ function buyJobs() {
         freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
         if (amount === null)
             amount = 1;
-        if (freeWorkers < amount) 
+        if (freeWorkers < amount)
             subtract = safeFireJob('Farmer');
         if (canAffordJob(job, false, amount) && !game.jobs[job].locked)
             safeBuyJob(job, amount);
@@ -1402,7 +1405,7 @@ function buyJobs() {
         var buyScientists = Math.floor((scientistRatio / totalRatio) * totalDistributableWorkers) - game.jobs.Scientist.owned - subtract;
         if((buyScientists > 0 && freeWorkers > 0) && (getPageSetting('MaxScientists') > game.jobs.Scientist.owned || getPageSetting('MaxScientists') == -1))
             safeBuyJob('Scientist', buyScientists);
-    }    
+    }
     //Trainers:
     if (getPageSetting('MaxTrainers') > game.jobs.Trainer.owned || getPageSetting('MaxTrainers') == -1) {
         // capped to tributes percentage.
@@ -1440,12 +1443,12 @@ function buyJobs() {
         else
             return false;
     }
-    ratiobuy('Farmer', farmerRatio);    
+    ratiobuy('Farmer', farmerRatio);
     if (!ratiobuy('Miner', minerRatio) && breedFire && game.global.turkimpTimer === 0)
         safeBuyJob('Miner', game.jobs.Miner.owned * -1);
     if (!ratiobuy('Lumberjack', lumberjackRatio) && breedFire)
         safeBuyJob('Lumberjack', game.jobs.Lumberjack.owned * -1);
-    
+
     //Magmamancers code:
     if (game.jobs.Magmamancer.locked) return;
     //game.jobs.Magmamancer.getBonusPercent(true);
@@ -1459,11 +1462,11 @@ function buyJobs() {
         //fire dudes to make room.
         var firesomedudes = calculateMaxAfford(game.jobs['Magmamancer'], false, false, true);
         if (game.jobs.Farmer.owned > firesomedudes)
-            safeBuyJob('Farmer', -firesomedudes);
+            safeFireJob('Farmer', firesomedudes);
         else if (game.jobs.Lumberjack.owned > firesomedudes)
-            safeBuyJob('Lumberjack', -firesomedudes);
+            safeFireJob('Lumberjack', firesomedudes);
         else if (game.jobs.Miner.owned > firesomedudes)
-            safeBuyJob('Miner', -firesomedudes);
+            safeFireJob('Miner', firesomedudes);
         //buy the Magmamancers
         buyJob('Magmamancer', true, true);
         postBuy();
@@ -1480,7 +1483,7 @@ var mapresourcetojob;
 //evaluateEquipmentEfficiency: Back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
 function evaluateEquipmentEfficiency(equipName) {
     mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
-    
+
     //Returns the amount of stats that the equipment (or gym) will give when bought.
     function equipEffect(gameResource, equip) {
         if (equip.Equip) {
@@ -1496,7 +1499,7 @@ function evaluateEquipmentEfficiency(equipName) {
     //Returns the cost after Artisanistry of a piece of equipment.
     function equipCost(gameResource, equip) {
         var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
-        if (equip.Equip) 
+        if (equip.Equip)
             price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
         else
             price = Math.ceil(price * (Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)));
@@ -1541,12 +1544,12 @@ function evaluateEquipmentEfficiency(equipName) {
                 var NextCost = Math.ceil(getNextPrestigeCost(equip.Upgrade) * Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level));
             Wall = (NextEffect / NextCost > Factor);
         }
-    
+
         //white - Upgrade is not available
         //yellow - Upgrade is not affordable
         //orange - Upgrade is affordable, but will lower stats
         //red - Yes, do it now!
-    
+
         if (!CanAfford) {
             StatusBorder = 'yellow';
         } else {
@@ -1605,7 +1608,7 @@ var Best;
 function autoLevelEquipment() {
     //if((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
         //return;
-    resourcesNeeded = {"food": 0, "wood": 0, "metal": 0, "science": 0, "gems": 0};  //list of amount of resources needed for stuff we want to afford    
+    resourcesNeeded = {"food": 0, "wood": 0, "metal": 0, "science": 0, "gems": 0};  //list of amount of resources needed for stuff we want to afford
     Best = {};
     var keys = ['healthwood', 'healthmetal', 'attackmetal', 'blockwood'];
     for (var i = 0; i < keys.length; i++) {
@@ -1640,7 +1643,7 @@ function autoLevelEquipment() {
     }
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //change name to make sure these are local to the function
-    var enoughHealthE = !(doVoids && voidCheckPercent > 0) && 
+    var enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
         (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
     var enoughDamageE = (baseDamage * 4 > enemyHealth);
 
@@ -1663,7 +1666,7 @@ function autoLevelEquipment() {
                 Best[BKey].StatusBorder = evaluation.StatusBorder;
             }
             Best[BKey].Cost = evaluation.Cost;
-            //Apply colors from before:        
+            //Apply colors from before:
             //white - Upgrade is not available
             //yellow - Upgrade is not affordable (or capped)
             //orange - Upgrade is affordable, but will lower stats
@@ -1681,10 +1684,10 @@ function autoLevelEquipment() {
             }
             //add up whats needed:
             resourcesNeeded[equip.Resource] += Best[BKey].Cost;
-            
+
             //Code is Spaced This Way So You Can Read It:
             if (evaluation.StatusBorder == 'red') {
-                if 
+                if
                 (
                     ( getPageSetting('BuyWeaponUpgrades') && equipmentList[equipName].Stat == 'attack' )
                     ||
@@ -1862,9 +1865,9 @@ function manualLabor() {
         //    setGather('science');
         //Build more traps if we have TrapTrimps on, and we own less than 1000 traps.
         else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < 1000)
-            setGather('buildings'); //confusing (was always like this, see commits @ 2/23/16). 
+            setGather('buildings'); //confusing (was always like this, see commits @ 2/23/16).
         else
-            setGather(lowestResource); 
+            setGather(lowestResource);
     }
 }
 
@@ -1875,7 +1878,7 @@ function manualLabor2() {
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
-    
+
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=1000) {
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
@@ -1891,7 +1894,7 @@ function manualLabor2() {
     }
     //Traps and Trimps
     if (trapTrimpsOK && (breedingTrimps < 5 || targetBreed < getBreedTime(true))) {
-        if (game.buildings.Trap.owned > 0) { 
+        if (game.buildings.Trap.owned > 0) {
             setGather('trimps');//gatherTrimps = true;
             return;
         }
@@ -1900,15 +1903,15 @@ function manualLabor2() {
     }
     //Buildings:
     //if we have more than 2 buildings in queue, or (our modifier is real fast and trapstorm is off), build
-    if ((!game.talents.foreman.purchased && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 1000 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) || 
+    if ((!game.talents.foreman.purchased && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 1000 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) ||
     //if trapstorm is off (likely we havent gotten it yet, the game is still early, buildings take a while to build ), then Prioritize Storage buildings when they hit the front of the queue (should really be happening anyway since the queue should be >2(fits the clause above this), but in case they are the only object in the queue.)
-    (!game.global.trapBuildToggled && (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1')) || 
+    (!game.global.trapBuildToggled && (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1')) ||
     //Build more traps if we have TrapTrimps on, and we own less than 1000 traps.
     (trapTrimpsOK && game.global.trapBuildToggled && game.buildings.Trap.owned < 1000)) {
         setGather('buildings');//buildBuildings = true;
         return;
     }
-    //Sciencey:    
+    //Sciencey:
     //if we have some upgrades sitting around which we don't have enough science for, gather science
     if (document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
         //if we have less than a minute of science
@@ -1978,25 +1981,25 @@ function calcBaseDamageinX() {
     //baseDamage
     baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
     //D stance
-    if (game.global.formation == 2) 
+    if (game.global.formation == 2)
         baseDamage /= 4;
-    else if (game.global.formation != "0") 
+    else if (game.global.formation != "0")
         baseDamage *= 2;
 
     //baseBlock
     baseBlock = game.global.soldierCurrentBlock;
     //B stance
-    if (game.global.formation == 3) 
+    if (game.global.formation == 3)
         baseBlock /= 4;
-    else if (game.global.formation != "0") 
+    else if (game.global.formation != "0")
         baseBlock *= 2;
 
     //baseHealth
     baseHealth = game.global.soldierHealthMax;
     //H stance
-    if (game.global.formation == 1) 
+    if (game.global.formation == 1)
         baseHealth /= 4;
-    else if (game.global.formation != "0") 
+    else if (game.global.formation != "0")
         baseHealth *= 2;
     //S stance is accounted for (combination of all the above's else clauses)
 }
@@ -2060,7 +2063,7 @@ function autoStance() {
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;
-        //check for voidmap Corruption        
+        //check for voidmap Corruption
         if (getCurrentMapObject().location == "Void" && corrupt) {
             enemyDamage *= getCorruptScale("attack");
             enemyHealth *= getCorruptScale("health");
@@ -2173,13 +2176,13 @@ function autoStance() {
     baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
 }
 
-function autoStance2() {
+function autoStance2(checkOnly) {
     //get back to a baseline of no stance (X)
     calcBaseDamageinX2();
     //no need to continue
-    if (game.global.gridArray.length === 0) return;
-    if (!getPageSetting('AutoStance')) return;
-    if (!game.upgrades.Formations.done) return;
+    if (game.global.gridArray.length === 0) return true;
+    if (!getPageSetting('AutoStance') && !checkOnly) return true;
+    if (!game.upgrades.Formations.done) return true;
 
     //start analyzing autostance
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
@@ -2190,10 +2193,9 @@ function autoStance2() {
     //COMMON:
     var corrupt = game.global.world >= mutations.Corruption.start();
     var enemy = getCurrentEnemy();
-    if (typeof enemy === 'undefined') return;
+    if (typeof enemy === 'undefined') return true;
     var enemyHealth = enemy.health;
     var enemyDamage = calcBadGuyDmg(enemy);
-    var enemyFast = (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom"))
     //crits
     var critMulti = 1;
     var isCrushed = (game.global.challengeActive == "Crushed") && game.global.soldierHealth > game.global.soldierCurrentBlock;
@@ -2206,6 +2208,8 @@ function autoStance2() {
     //double attacks
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl');
     enemyDamage *= isDoubleAttack ? 2 : 1;
+    //fast
+    var enemyFast = (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom")) || isDoubleAttack;
     //
     if (enemy.corrupted == 'corruptStrong')
         enemyDamage *= 2;
@@ -2226,7 +2230,7 @@ function autoStance2() {
         }
     //MAPS:
     } else if (game.global.mapsActive && !game.global.preMapsActive) {
-        //check for voidmap Corruption        
+        //check for voidmap Corruption
         if (getCurrentMapObject().location == "Void" && corrupt) {
             enemyDamage *= getCorruptScale("attack");
             enemyHealth *= getCorruptScale("health");
@@ -2253,6 +2257,9 @@ function autoStance2() {
     var bDamage = (enemyDamage - baseBlock * 4);
     if (bDamage < pierceMod) bDamage = pierceMod * enemyDamage;
     if (bDamage < 0) bDamage = 0;
+    var dDamageNoCrit = (enemyDamage/critMulti - baseBlock/2);
+    if (dDamageNoCrit < pierceMod) dDamageNoCrit = pierceMod * (enemyDamage/critMulti);
+    if (dDamageNoCrit < 0) dDamageNoCrit = 0;    
 
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var leadChallenge = (game.global.challengeActive == 'Lead');
@@ -2274,8 +2281,8 @@ function autoStance2() {
     }
 
     //baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
-    
-    //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage    
+
+    //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
     var oneshotFast = (!enemyFast ? enemyHealth < baseDamage : false);
     var leadAttackOK = !leadChallenge || oneshotFast;
     var drainAttackOK = !drainChallenge || oneshotFast;
@@ -2285,8 +2292,16 @@ function autoStance2() {
     var surviveB = ((newSquadRdy && bHealth > bDamage) || (bHealth - missingHealth > bDamage));
     var voidCritinDok = !isCritThing || oneshotFast || surviveD;
     var voidCritinXok = !isCritThing || oneshotFast || surviveX;
-    
+
     if (!game.global.preMapsActive && game.global.soldierHealth > 0) {
+        if (checkOnly) {
+            var ourCritMult = getPlayerCritChance() ? getPlayerCritDamageMult() : 1;
+            var ourDmg = (baseDamage/2)*ourCritMult;
+            var surviveOneShot = enemyFast ? dHealth > dDamageNoCrit : enemyHealth < ourDmg;
+            var enoughHealth = (game.upgrades.Dominance.done && surviveOneShot && leadAttackOK && drainAttackOK && voidCritinDok);
+            var enoughDamage = enemyHealth < ourDmg;
+            return [enoughHealth,enoughDamage];
+        }
         //use D stance if: new army is ready&waiting / can survive void-double-attack or we can one-shot / can survive lead damage / can survive void-crit-dmg
         if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok) {
             setFormation(2);
@@ -2328,6 +2343,7 @@ function autoStance2() {
         }
     }
     //baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
+    return true;
 }
 
 var stackingTox = false;
@@ -2336,6 +2352,8 @@ var needToVoid = false;
 var needPrestige = false;
 var voidCheckPercent = 0;
 var HDratio = 0;
+var ourBaseDamage = 0;
+var scryerStuck = false;
 
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
@@ -2345,11 +2363,6 @@ function autoMap() {
     //if we are prestige mapping, force equip first mode
     var prestige = autoTrimpSettings.Prestige.selected;
     if(prestige != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
-    //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
-    if(document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
-        document.getElementById('Prestige').selectedIndex = 11;
-        autoTrimpSettings.Prestige.selected = "Bestplate";
-    }
     //Control in-map right-side-buttons for people who can't control themselves. If you wish to use these buttons manually, turn off autoMaps temporarily.
     if(game.options.menu.repeatUntil.enabled == 2) toggleSetting('repeatUntil');
     if(game.options.menu.exitTo.enabled != 0) toggleSetting('exitTo');
@@ -2384,15 +2397,19 @@ function autoMap() {
 
 //START CALCULATING DAMAGES
     //PREPARE SOME VARIABLES
-    
+
+    //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are taking the average of adding two hits together here (non-crit dmg + crit dmg)
+    ourBaseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
-    if (getPageSetting('AutoStance')<=1) {
-        //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are adding two hits here (non-crit + crit)
-        baseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
-        baseDamage *= mapbonusmulti;
+    if (getPageSetting('AutoStance')<=1)
+        ourBaseDamage *= mapbonusmulti;
+    else {
+        if (game.global.mapsActive)
+            ourBaseDamage *= mapbonusmulti;
+        ourBaseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
     }
-    
+
     //get average enemyhealth and damage for the next zone, cell 50, snimp type and multiply it by a max range fluctuation of 1.2
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
@@ -2409,11 +2426,11 @@ function autoMap() {
         var atkprop = cptpct * cptatk;           //Proportion of cells corrupted * attack of a corrupted cell
         if (atkprop >= 1)
             enemyDamage *= atkprop;
-        //console.log("enemy dmg:" + enemyDamage + " enemy hp:" + enemyHealth + " base dmg: " + baseDamage);
+        //console.log("enemy dmg:" + enemyDamage + " enemy hp:" + enemyHealth + " base dmg: " + ourBaseDamage);
     }
-    //farm if basedamage is between 10 and 16)
-    if(!getPageSetting('DisableFarm')) {
-        shouldFarm = shouldFarm ? getEnemyMaxHealth(game.global.world) / baseDamage > 10 : getEnemyMaxHealth(game.global.world) / baseDamage > 16;
+    //farm if ourBaseDamage is between 32 and 20 (takes over 8 hits in D stance to enter farming and under 5 hits to exit farming)
+    if(!getPageSetting('DisableFarm') && ourBaseDamage > 0) {
+        shouldFarm = shouldFarm ? enemyHealth / ourBaseDamage > 20 : enemyHealth / ourBaseDamage > 32;
     }
     if(game.global.challengeActive == "Toxicity") {
         //enemyDamage *= 2; //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
@@ -2421,29 +2438,46 @@ function autoMap() {
     }
     //Lead specific farming calcuation section:
     if(game.global.challengeActive == 'Lead') {
-        baseDamage /= mapbonusmulti;
+        ourBaseDamage /= mapbonusmulti;
         enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
         //if the zone is odd:   (skip the +2 calc for the last level.
         if (game.global.world % 2 == 1 && game.global.world != 179){
-            enemyDamage = getEnemyMaxAttack(game.global.world + 2, 40, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
+            enemyDamage = getEnemyMaxAttack(game.global.world + 2, 50, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
             enemyHealth = getEnemyMaxHealth(game.global.world + 2);
             if (getPageSetting('AutoStance')<=1)
-                baseDamage /= 1.5; //subtract the odd-zone bonus.
+                ourBaseDamage /= 1.5; //subtract the odd-zone bonus.
         }
         //let people disable this if they want.
         if(!getPageSetting('DisableFarm')) {
-            shouldFarm = enemyHealth / baseDamage > 5;
+            shouldFarm = enemyHealth / ourBaseDamage > 5;
         }
     }
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
-    enoughDamage = (baseDamage * 4 > enemyHealth);
-    HDratio = getEnemyMaxHealth(game.global.world) / baseDamage;
+    if (!wantToScry) {
+        //enough health if we can survive 8 hits in D stance (health/2 and block/2)
+        enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
+        //enough damage if we can one-shot the enemy in D (baseDamage*4)
+        enoughDamage = (ourBaseDamage * 4) > enemyHealth;
+    } else {
+        //enough health if we can pass all the tests in autostance2 under the best of the worst conditions.
+        //enough damage if we can one-shot the enemy in S (baseDamage*4)
+        var result = autoStance2(true);
+        enoughHealth = result[0];
+        enoughDamage = result[1];
+        scryerStuck = !enoughHealth;
+    }
+/*     var enemy = getCurrentEnemy();
+    if (typeof enemy != 'undefined') {
+        var enemyHealth = enemy.health;
+        var enemyDamage = calcBadGuyDmg(enemy);
+    } */
+    
+    HDratio = enemyHealth / (ourBaseDamage);
     //prevents map-screen from flickering on and off during startup when base damage is 0.
     var shouldDoMaps;
-    if (baseDamage > 0){
-        shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm;
+    if (ourBaseDamage > 0){
+        shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm || scryerStuck;
     }
     var selectedMap = "world";
 
@@ -2457,8 +2491,8 @@ function autoMap() {
             if (game.global.mapBonus != 10)
                 shouldDoMaps = true;
         }
-        //Go into maps on 30 stacks, and I assume our enemy health to damage ratio is worse than 10 (so that shouldfarm would be true),
-        // and exit farming once we get enough damage to drop under 10.
+        //Go into maps on 30 stacks, and I assume our enemy health to damage ratio is worse than 20 (so that shouldfarm would be true),
+        // and exit farming once we get enough damage to drop under 20.
         if (game.global.gridArray[99].nomStacks == 30){
             shouldFarm = (HDratio > 20);
             shouldDoMaps = true;
@@ -2488,7 +2522,7 @@ function autoMap() {
         shouldDoWatchMaps = true;
     }
     //Farm X Minutes Before Spire:
-    var shouldDoSpireMaps = false;    
+    var shouldDoSpireMaps = false;
     var needFarmSpire = game.global.world == 200 && game.global.spireActive && (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire'));
     if (needFarmSpire) {
         shouldDoMaps = true;
@@ -2511,7 +2545,12 @@ function autoMap() {
             var cpthlth = getCorruptScale("health")/2; //get corrupted health mod
             if (mutations.Magma.active())
                 maphp *= cpthlth;
-            if (baseDamage * 2 < maphp){
+            var mapdmg = ourBaseDamage * 2; //2 for titimp.
+            if (getPageSetting('AutoStance')<=1 || game.global.mapsActive)
+                mapdmg /= mapbonusmulti;    //unfactor mapbonus dmg
+            if (game.upgrades.Dominance.done && !getPageSetting('ScryerUseinMaps2'))
+                mapdmg*=4;  //dominance stance and not-scryer stance in maps.
+            if (mapdmg < maphp){
                 break;
             }
         }
@@ -2735,8 +2774,9 @@ function autoMap() {
             if (game.global.switchToMaps &&
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
-                (!enoughDamage && game.global.lastClearedCell < 5) ||
-                (shouldFarm && game.global.lastClearedCell >= 59))
+                ((!enoughDamage || !enoughHealth) && game.global.lastClearedCell < 5) ||
+                (shouldFarm && game.global.lastClearedCell >= 59)) ||
+                (scryerStuck)
                 &&
                     (
                     (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1)
@@ -2744,6 +2784,10 @@ function autoMap() {
                     || (doVoids && game.global.lastClearedCell > 93)
                     )
                 ){
+                //output stuck message
+                if (scryerStuck) {
+                    debug("Got perma-stuck on cell " + (game.global.lastClearedCell+2) + " during scryer stance. Are your scryer settings correct? Entering map to farm to fix it.");
+                }
                 mapsClicked();
             }
         }
@@ -2798,7 +2842,7 @@ function autoMap() {
                 biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Random";
             }
             if (needFarmSpire)
-                document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;            
+                document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
             //recalculate cost.
             updateMapCost();
             //if we are "Farming" for resources, make sure it's Plentiful OR metal (and always aim for lowest difficulty)
@@ -2914,7 +2958,7 @@ function autoBreedTimer() {
     var nextgrouptime = (game.global.lastBreedTime/1000);
     var newstacks = nextgrouptime >= targetBreed ? targetBreed : nextgrouptime;
     //kill titimp if theres less than 5 seconds left on it or, we stand to gain more than 5 antistacks.
-    var killTitimp = (game.global.titimpLeft < 5 || (game.global.titimpLeft >= 5 && newstacks - game.global.antiStacks >= 5))    
+    var killTitimp = (game.global.titimpLeft < 5 || (game.global.titimpLeft >= 5 && newstacks - game.global.antiStacks >= 5))
     if (getPageSetting('ForceAbandon') && game.portal.Anticipation.level && game.global.antiStacks < targetBreed && game.resources.trimps.soldiers > 0 && killTitimp) {
         //if a new fight group is available and anticipation stacks aren't maxed, force abandon and grab a new group
         if (newSquadRdy && nextgrouptime >= targetBreed) {
@@ -2945,17 +2989,17 @@ function forceAbandonTrimps() {
     else if (game.global.mapsActive) {
         mapsClicked();
         if (game.global.switchToMaps)
-            mapsClicked();        
+            mapsClicked();
         runMap();
     }
     //in world without automaps
     else  {
         mapsClicked();
         if (game.global.switchToMaps)
-            mapsClicked();        
+            mapsClicked();
         mapsClicked();
     }
-    debug("Killed your army! (to get " + parseInt(getPageSetting('GeneticistTimer')) + " Anti-stacks). Trimpicide successful.","other");    
+    debug("Killed your army! (to get " + parseInt(getPageSetting('GeneticistTimer')) + " Anti-stacks). Trimpicide successful.","other");
 }
 
 //Change prestiges as we go (original idea thanks to Hider)
@@ -3081,7 +3125,9 @@ function betterAutoFight2() {
     var lowLevelFight = game.resources.trimps.maxSoldiers < breeding * 0.5 && breeding > game.resources.trimps.realMax() * 0.1 && game.global.world < 5 && game.global.sLevel > 0;
     //Manually fight if:     //game.global.soldierHealth > 0 //just fight if we're alive,or if == 0; we're dead, and also fight :P
     if (!game.global.fighting) {
-        if (newSquadRdy || game.global.soldierHealth > 0 || lowLevelFight || game.global.challengeActive == 'Watch') {
+        if (game.global.soldierHealth > 0)
+            battle(true); //just fight, dont speak.
+        else if (newSquadRdy || lowLevelFight || game.global.challengeActive == 'Watch') {
             battle(true);
             debug("AutoFight Default: New squad ready", "other");
         }
@@ -3104,7 +3150,7 @@ function betterAutoFight2() {
         else if (game.global.soldierHealth == 0 && (game.global.lastBreedTime/1000)>=31) {
             battle(true);
             debug("AutoFight: NEW: BAF2 #4, NextGroupBreedTimer went over 31 and we arent fighting.", "other");
-        }        
+        }
     }
 }
 
@@ -3124,6 +3170,7 @@ function exitSpireCell() {
         endSpire();
 }
 
+var wantToScry = false;
 //use S stance
 function useScryerStance() {
     function autostancefunction() {
@@ -3135,9 +3182,10 @@ function useScryerStance() {
     use_auto = use_auto || game.global.world <= 60;
     if (use_auto) {
         autostancefunction();
+        wantToScry = false;
         return;
     }
-    
+
     if (getPageSetting('AutoStance')<=1)
         calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
     else if (getPageSetting('AutoStance')==2)
@@ -3181,6 +3229,7 @@ function useScryerStance() {
     use_auto = use_auto || getPageSetting('ScryerSkipBoss2') == 2 && game.global.lastClearedCell == 98;
     if (use_auto) {
         autostancefunction();    //falls back to autostance when not using S.
+        wantToScry = false;
         return;
     }
 
@@ -3190,6 +3239,7 @@ function useScryerStance() {
     iscorrupt = iscorrupt || (game.global.mapsActive && getCurrentMapObject().location == "Void" && game.global.world >= mutations.Corruption.start());
     if (iscorrupt && getPageSetting('ScryerSkipCorrupteds2')) {
         autostancefunction();
+        wantToScry = false;
         return;
     }
 
@@ -3201,8 +3251,10 @@ function useScryerStance() {
     if (valid_min && valid_max) {
         if (oktoswitch)
             setFormation(4);
+        wantToScry = true;
     } else {
         autostancefunction();
+        wantToScry = false;
         return;
     }
 }
@@ -3296,7 +3348,7 @@ function autoPortal() {
                         debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
                         tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
                         setTimeout(cancelTooltip,10000);
-                        setTimeout(function(){ 
+                        setTimeout(function(){
                             if (zonePostpone > 0)
                                 return;
                             if (autoFinishDaily){
@@ -3315,7 +3367,7 @@ function autoPortal() {
             }
             break;
         case "Custom":
-            if (game.global.world > getPageSetting('CustomAutoPortal') && 
+            if (game.global.world > getPageSetting('CustomAutoPortal') &&
                 (!game.global.challengeActive || autoFinishDaily) ) {
                 if (autoFinishDaily) {
                     abandonDaily();
@@ -3345,54 +3397,6 @@ function autoPortal() {
         default:
             break;
     }
-}
-
-//Checks portal related UI settings (TODO: split into two, and move the validation check to NewUI)
-function checkSettings() {
-    var portalLevel = -1;
-    var leadCheck = false;
-    switch(autoTrimpSettings.AutoPortal.selected) {
-        case "Off":
-            break;
-        case "Custom":
-            portalLevel = autoTrimpSettings.CustomAutoPortal.value + 1;
-            leadCheck = autoTrimpSettings.HeliumHourChallenge.selected == "Lead" ? true:false;
-            break;
-        case "Balance":
-            portalLevel = 41;
-            break;
-        case "Decay":
-            portalLevel = 56;
-            break;
-        case "Electricity":
-            portalLevel = 82;
-            break;
-        case "Crushed":
-            portalLevel = 126;
-            break;
-        case "Nom":
-            portalLevel = 146;
-            break;
-        case "Toxicity":
-            portalLevel = 166;
-            break;
-        case "Lead":
-            portalLevel = 181;
-            break;
-        case "Watch":
-            portalLevel = 181;
-            break;
-        case "Corrupted":
-            portalLevel = 191;
-            break;
-    }
-    if(portalLevel == -1)
-        return portalLevel;
-    if(autoTrimpSettings.VoidMaps.value >= portalLevel)
-        tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please Change Your Settings Now. This Box Will Not Go away Until You do. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel , 'cancelTooltip()', 'Void Maps Conflict');
-    if((leadCheck || game.global.challengeActive == 'Lead') && (autoTrimpSettings.VoidMaps.value % 2 == 0 && portalLevel < 182))
-        tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
-    return portalLevel;
 }
 
 //Actually Portal.
@@ -3449,7 +3453,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>11/29 Patch 4.0 fixes are still happening!<br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">11/29 see Changelog here</a>', 'cancelTooltip()', 'Script Update Notice ' + ATversion);    
+    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>Patch 4.0 fixes are still happening!<br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">11/29 see Changelog here</a></b><br>Changed automaps damage/health calculations', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
@@ -3461,6 +3465,9 @@ var OVKcellsInWorld = 0;
 var OVKcellsInWorldZone = 0;
 var lastOVKcellsInWorld = 0;
 var lastOVKcellsInWorldZone = 0;
+var currentworld = 0;
+var lastrunworld = 0;
+var aWholeNewWorld = false;
 //reset stuff that may not have gotten cleaned up on portal
 function mainCleanup() {
     //runs at zone 1 only.
@@ -3470,6 +3477,9 @@ function mainCleanup() {
         OVKcellsInWorld = 0;
         OVKcellsInWorldZone = 0;
     }
+    lastrunworld = currentworld;
+    currentworld = game.global.world;
+    aWholeNewWorld = lastrunworld != currentworld;
 }
 var ATrunning = false;
 var magmiteSpenderChanged = false;
@@ -3492,7 +3502,6 @@ function mainLoop() {
     if(document.getElementById('tipTitle').innerHTML == 'Spire') cancelTooltip();
     setTitle();          //set the browser title
     setScienceNeeded();  //determine how much science is needed
-    updateValueFields(); //refresh the UI
 
     if (getPageSetting('ExitSpireCell') >= 1) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"
@@ -3520,7 +3529,7 @@ function mainLoop() {
     BAFsetting = getPageSetting('BetterAutoFight');
     if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"
     else if (BAFsetting==2) betterAutoFight2();     //"Better Auto Fight2"
-    else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight();   
+    else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight();
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
     if (getPageSetting('DynamicPrestige2')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
@@ -3528,28 +3537,26 @@ function mainLoop() {
 
     //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
     if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
-    if (OVKcellsInWorldZone < game.global.world) {
+    if (aWholeNewWorld) {
         lastOVKcellsInWorld = OVKcellsInWorld;
-        lastOVKcellsInWorldZone = OVKcellsInWorldZone;
     }
     OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
-    OVKcellsInWorldZone = game.global.world;
 
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
-    
+
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
             autoMagmiteSpender();
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
-
+    updateValueFields(); //refresh the UI
     ATrunning = false;
 }
 
 
-var userscriptOn = true;    //controls the looping of userscripts and can be self-disabled 
+var userscriptOn = true;    //controls the looping of userscripts and can be self-disabled
 var globalvar0,globalvar1,globalvar2,globalvar3,globalvar4,globalvar5,globalvar6,globalvar7,globalvar8,globalvar9;
 //left blank intentionally. the user will provide this. blank global vars are included as an example
 function userscripts()
@@ -3707,7 +3714,7 @@ function formatMinutesForDescriptions(number){
     var seconds = Math.floor((number*60) % 60);
     var minutes = Math.floor(number % 60);
     var hours = Math.floor(number / 60);
-    if (hours == 0) 
+    if (hours == 0)
         text = minutes + " minutes " + seconds + " seconds";
     else if (minutes > 0) {
         if (minutes < 10) minutes = "0" + minutes;
@@ -3745,3 +3752,28 @@ breedbarContainer.appendChild(addbreedTimerContainer);
 var armycount = document.getElementById('trimpsFighting');
 armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
 armycount.setAttribute("onmouseout", 'tooltip("hide")');
+
+//update the UI with stuff from automaps.
+function updateValueFields() {
+    //automaps status
+    var status = document.getElementById('autoMapStatus');
+    if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
+    else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
+    else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
+    else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
+    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
+    else if (doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
+    else if (shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
+    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
+    else if (scryerStuck) status.innerHTML = 'Scryer Got Stuck, Farming';
+    else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
+    else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
+    else if (!enoughHealth) status.innerHTML = 'Want more health';
+    else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
+
+    //hider he/hr% status
+    var area51 = document.getElementById('hiderStatus');
+    var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
+    var lifetime = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
+    area51.innerHTML = 'He/hr: ' + getPercent.toFixed(3) + '%<br>&nbsp;&nbsp;&nbsp;He: ' + lifetime.toFixed(3) +'%';
+}
