@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.5-genbtc-11-30-2016+AutoPerks
+// @version      2.1.3.6-genbtc-11-30b-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.5-genbtc-11-30-2016+AutoPerks';
+var ATversion = '2.1.3.6-genbtc-11-30b-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -1201,7 +1201,7 @@ function buyBuildings() {
         }
         if (getPageSetting('DynamicGyms')) {
             //getBattleStats calculation comes from battlecalc.js and shows the tooltip-table block amount. calcBadGuyDmg is in that file also
-            if (!game.global.preMapsActive && getBattleStats("block",true) > calcBadGuyDmg(getCurrentEnemy()))
+            if (!game.global.preMapsActive && getBattleStats("block",true) > calcBadGuyDmg(getCurrentEnemy(),null,true))
                 skipGym = true;
         }
         if (!skipGym)
@@ -1621,12 +1621,14 @@ function autoLevelEquipment() {
         };
     }
     var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
+    enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
     var spirecheck = (game.global.world == 200 && game.global.spireActive);
     if (spirecheck) {
         var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 50;
         enemyDamage = getSpireStats(cell, "Snimp", "attack");
+        enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
         enemyHealth = getSpireStats(cell, "Snimp", "health");
     }
 
@@ -1980,6 +1982,20 @@ function manualLabor2() {
 function calcBaseDamageinX() {
     //baseDamage
     baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
+    if (game.global.challengeActive == "Daily"){
+        if (typeof game.global.dailyChallenge.weakness !== 'undefined'){
+            baseDamage *= dailyModifiers.weakness.getMult(game.global.dailyChallenge.weakness.strength, game.global.dailyChallenge.weakness.stacks);
+        }
+        if (typeof game.global.dailyChallenge.oddTrimpNerf !== 'undefined' && ((game.global.world % 2) == 1)){
+            baseDamage *= dailyModifiers.oddTrimpNerf.getMult(game.global.dailyChallenge.oddTrimpNerf.strength);
+        }
+        if (typeof game.global.dailyChallenge.evenTrimpBuff !== 'undefined' && ((game.global.world % 2) == 0)){
+            baseDamage *= dailyModifiers.evenTrimpBuff.getMult(game.global.dailyChallenge.evenTrimpBuff.strength);
+        }
+        if (typeof game.global.dailyChallenge.rampage !== 'undefined'){
+            baseDamage *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
+        }
+    }    
     //D stance
     if (game.global.formation == 2)
         baseDamage /= 4;
@@ -2002,11 +2018,12 @@ function calcBaseDamageinX() {
     else if (game.global.formation != "0")
         baseHealth *= 2;
     //S stance is accounted for (combination of all the above's else clauses)
+        
 }
 
 function calcBaseDamageinX2() {
     //baseDamage
-    baseDamage = getBattleStats("attack");
+    baseDamage = calcOurDmg(game.global.soldierCurrentAttack,true);
     //baseBlock
     baseBlock = getBattleStats("block");
     //baseHealth
@@ -2036,6 +2053,7 @@ function autoStance() {
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Nom") && game.global.challengeActive != "Coordinate"));
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;
+        enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
         //check for world Corruption
         if (enemy && enemy.mutation == "Corruption"){
             enemyHealth *= getCorruptScale("health");
@@ -2063,6 +2081,7 @@ function autoStance() {
         var enemyFast = game.global.challengeActive == "Slow" || ((((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Nom") || game.global.voidBuff == "doubleAttack") && game.global.challengeActive != "Coordinate");
         var enemyHealth = enemy.health;
         var enemyDamage = enemy.attack * 1.2;
+        enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
         //check for voidmap Corruption
         if (getCurrentMapObject().location == "Void" && corrupt) {
             enemyDamage *= getCorruptScale("attack");
@@ -2195,7 +2214,7 @@ function autoStance2(checkOnly) {
     var enemy = getCurrentEnemy();
     if (typeof enemy === 'undefined') return true;
     var enemyHealth = enemy.health;
-    var enemyDamage = calcBadGuyDmg(enemy);
+    var enemyDamage = calcBadGuyDmg(enemy,null,true);
     //crits
     var critMulti = 1;
     var isCrushed = (game.global.challengeActive == "Crushed") && game.global.soldierHealth > game.global.soldierCurrentBlock;
@@ -2215,12 +2234,6 @@ function autoStance2(checkOnly) {
         enemyDamage *= 2;
     if (enemy.corrupted == 'corruptTough')
         enemyHealth *= 5;
-    /* comes from battlecalc.js calcBadGuyDmg now.
-    if (game.global.challengeActive == 'Lead')
-        enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
-    if (game.global.challengeActive == 'Watch')
-        enemyDamage *= 1.25;
-    */
     //WORLD:
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         //check for world Corruption
@@ -2272,14 +2285,14 @@ function autoStance2(checkOnly) {
         dDamage += game.global.soldierHealth * leadDamage;
         xDamage += game.global.soldierHealth * leadDamage;
         bDamage += game.global.soldierHealth * leadDamage;
-}
+    }
     //dont attach.
     if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed')) {
         dDamage += game.global.soldierHealth * 0.2;
         xDamage += game.global.soldierHealth * 0.2;
         bDamage += game.global.soldierHealth * 0.2;
     }
-
+    baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
     var oneshotFast = (!enemyFast ? enemyHealth < baseDamage : false);
     var leadAttackOK = !leadChallenge || oneshotFast;
@@ -2298,6 +2311,7 @@ function autoStance2(checkOnly) {
             var surviveOneShot = enemyFast ? dHealth > dDamageNoCrit : enemyHealth < ourDmgS;
             var enoughHealth2 = surviveOneShot && leadAttackOK && drainAttackOK && voidCritinDok;
             var enoughDamage2 = enemyHealth < ourDmgS;
+            baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp
             return [enoughHealth2,enoughDamage2];
         }
         //use D stance if: new army is ready&waiting / can survive void-double-attack or we can one-shot / can survive lead damage / can survive void-crit-dmg
@@ -2340,6 +2354,7 @@ function autoStance2(checkOnly) {
             debug("AutoStance H/1");
         }
     }
+    baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp
     return true;
 }
 
@@ -2351,6 +2366,7 @@ var voidCheckPercent = 0;
 var HDratio = 0;
 var ourBaseDamage = 0;
 var scryerStuck = false;
+var shouldDoMaps = false;
 
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
@@ -2369,6 +2385,7 @@ function autoMap() {
         enoughDamage = true; enoughHealth = true; shouldFarm = false;
         return;
     }
+    var AutoStance = getPageSetting('AutoStance');
     //if we are in mapology and we have no credits, exit
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) return;
     //FIND VOID MAPS LEVEL:
@@ -2392,24 +2409,28 @@ function autoMap() {
         needPrestige = false;
     */
 
-//START CALCULATING DAMAGES
-    //PREPARE SOME VARIABLES
-
+//START CALCULATING DAMAGES:
     //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are taking the average of adding two hits together here (non-crit dmg + crit dmg)
     ourBaseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
-    if (getPageSetting('AutoStance')<=1)
-        ourBaseDamage *= mapbonusmulti;
-    else {
-        if (game.global.mapsActive)
-            ourBaseDamage *= mapbonusmulti;
-        ourBaseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp :P
-    }
+    //(autostance2 has mapbonusmulti built in, along with titimp)
+    ourBaseDamage *= mapbonusmulti;
 
     //get average enemyhealth and damage for the next zone, cell 50, snimp type and multiply it by a max range fluctuation of 1.2
-    var enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
-    var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
+    var enemyDamage;
+    var enemyHealth;
+    if (AutoStance<=1) {
+        enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
+        enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
+        enemyHealth = getEnemyMaxHealth(game.global.world + 1);
+    } else {
+        enemyDamage = calcBadGuyDmg(null,getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.0),true);
+        enemyHealth = getEnemyMaxHealth(game.global.world + 1);
+    }
+    if(game.global.challengeActive == "Toxicity") {
+        enemyHealth *= 2;
+    }
     //Corruption Zone Proportionality Farming Calculator:
     var corrupt = game.global.world >= mutations.Corruption.start(true);
     if (getPageSetting('CorruptionCalc') && corrupt) {
@@ -2425,55 +2446,48 @@ function autoMap() {
             enemyDamage *= atkprop;
         //console.log("enemy dmg:" + enemyDamage + " enemy hp:" + enemyHealth + " base dmg: " + ourBaseDamage);
     }
-    //farm if ourBaseDamage is between 16 and 12 (takes over 4 hits in D stance to enter farming and under 3 hits to exit farming)
+    // enter farming if it takes over 4 hits in D stance (16) (and exit if under.)
     if(!getPageSetting('DisableFarm') && ourBaseDamage > 0) {
-        shouldFarm = shouldFarm ? enemyHealth / ourBaseDamage > 12 : enemyHealth / ourBaseDamage > 16;
+        shouldFarm = enemyHealth > (ourBaseDamage * 16);
     }
-    if(game.global.challengeActive == "Toxicity") {
-        //enemyDamage *= 2; //ignore damage changes (which would effect how much health we try to buy) entirely since we die in 20 attacks anyway?
-        enemyHealth *= 2;
-    }
+
     //Lead specific farming calcuation section:
     if(game.global.challengeActive == 'Lead') {
         ourBaseDamage /= mapbonusmulti;
-        enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
+        if (AutoStance<=1)
+            enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
         //if the zone is odd:   (skip the +2 calc for the last level.
         if (game.global.world % 2 == 1 && game.global.world != 179){
             enemyDamage = getEnemyMaxAttack(game.global.world + 2, 50, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
+            enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
             enemyHealth = getEnemyMaxHealth(game.global.world + 2);
-            if (getPageSetting('AutoStance')<=1)
-                ourBaseDamage /= 1.5; //subtract the odd-zone bonus.
+            ourBaseDamage /= 1.5; //subtract the odd-zone bonus.
         }
         //let people disable this if they want.
         if(!getPageSetting('DisableFarm')) {
-            shouldFarm = enemyHealth / ourBaseDamage > 5;
+            shouldFarm = enemyHealth > (ourBaseDamage * 10);
         }
     }
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     if (!wantToScry) {
         //enough health if we can survive 8 hits in D stance (health/2 and block/2)
         enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
-        //enough damage if we can one-shot the enemy in D (baseDamage*4)
+        //enough damage if we can one-shot the enemy in D (ourBaseDamage*4)
         enoughDamage = (ourBaseDamage * 4) > enemyHealth;
         scryerStuck = false;
     } else {
         //enough health if we can pass all the tests in autostance2 under the best of the worst conditions.
-        //enough damage if we can one-shot the enemy in S (baseDamage*4)
+        //enough damage if we can one-shot the enemy in S (ourBaseDamage/2)
         var result = autoStance2(true);
         enoughHealth = result[0];
         enoughDamage = result[1];
         scryerStuck = !enoughHealth;
     }
-/*     var enemy = getCurrentEnemy();
-    if (typeof enemy != 'undefined') {
-        var enemyHealth = enemy.health;
-        var enemyDamage = calcBadGuyDmg(enemy);
-    } */
-    
-    HDratio = enemyHealth / (ourBaseDamage);
+
+    HDratio = enemyHealth / ourBaseDamage;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
-    var shouldDoMaps;
+    shouldDoMaps = false;
     if (ourBaseDamage > 0){
         shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm || scryerStuck;
     }
@@ -2489,10 +2503,9 @@ function autoMap() {
             if (game.global.mapBonus != 10)
                 shouldDoMaps = true;
         }
-        //Go into maps on 30 stacks, and I assume our enemy health to damage ratio is worse than 20 (so that shouldfarm would be true),
-        // and exit farming once we get enough damage to drop under 20.
+        //Go into maps on 30 stacks, farm until we fall under 10 H:D ratio
         if (game.global.gridArray[99].nomStacks == 30){
-            shouldFarm = (HDratio > 20);
+            shouldFarm = (HDratio > 10);
             shouldDoMaps = true;
         }
     }
@@ -2544,8 +2557,7 @@ function autoMap() {
             if (mutations.Magma.active())
                 maphp *= cpthlth;
             var mapdmg = ourBaseDamage * 2; //2 for titimp.
-            if (getPageSetting('AutoStance')<=1 || game.global.mapsActive)
-                mapdmg /= mapbonusmulti;    //unfactor mapbonus dmg
+            mapdmg /= mapbonusmulti;    //unfactor mapbonus dmg
             if (game.upgrades.Dominance.done && !getPageSetting('ScryerUseinMaps2'))
                 mapdmg*=4;  //dominance stance and not-scryer stance in maps.
             if (mapdmg < maphp){
@@ -2772,7 +2784,7 @@ function autoMap() {
             if (game.global.switchToMaps &&
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
-                ((!enoughDamage || !enoughHealth) && game.global.lastClearedCell < 5) ||
+                ((!enoughDamage || !enoughHealth) && game.global.lastClearedCell < 9) ||
                 (shouldFarm && game.global.lastClearedCell >= 59)) ||
                 (scryerStuck)
                 &&
@@ -3171,9 +3183,10 @@ function exitSpireCell() {
 var wantToScry = false;
 //use S stance
 function useScryerStance() {
+    var AutoStance = getPageSetting('AutoStance');
     function autostancefunction() {
-        if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"
-        else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"
+        if (AutoStance<=1) autoStance();    //"Auto Stance"
+        else if (AutoStance==2) autoStance2();   //"Auto Stance #2"
     };
     //check preconditions   (exit quick, if impossible to use)
     var use_auto = game.global.preMapsActive || game.global.gridArray.length === 0 || game.global.highestLevelCleared < 180;
@@ -3184,9 +3197,9 @@ function useScryerStance() {
         return;
     }
 
-    if (getPageSetting('AutoStance')<=1)
+    if (AutoStance<=1)
         calcBaseDamageinX(); //calculate internal script variables normally processed by autostance.
-    else if (getPageSetting('AutoStance')==2)
+    else if (AutoStance==2)
         calcBaseDamageinX2(); //calculate method #2
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
@@ -3451,7 +3464,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>ChangeLog: -Please Read- </b><br><b>Patch 4.0 fixes are still happening!<br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">11/29 see Changelog here</a></b><br>Changed automaps damage/health calculations', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
+    tooltip('confirm', null, 'update', '<b>Working on big code changes. <u>Report any bugs/problems please!</u><br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a></b><br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option). <u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 
