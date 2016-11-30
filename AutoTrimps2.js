@@ -1320,6 +1320,7 @@ function safeFireJob(job,amount) {
 //Hires and Fires all workers (farmers/lumberjacks/miners/scientists/trainers/explorers)
 function buyJobs() {
     var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+    var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
     var totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     var farmerRatio = parseInt(getPageSetting('FarmerRatio'));
     var lumberjackRatio = parseInt(getPageSetting('LumberjackRatio'));
@@ -1371,9 +1372,10 @@ function buyJobs() {
     }
     else
     {   //exit if we are havent bred to at least 90% breedtimer yet...
+        var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
-            if (game.resources.trimps.owned > game.resources.trimps.realMax() * 0.2 && !breedFire) {
-                //do Something tiny, so earlygame isnt stuck on 0 (down to 20% breedtimer-stops getting stuck from too low.)
+            if (breeding > game.resources.trimps.realMax() * 0.25) {
+                //do Something tiny, so earlygame isnt stuck on 0 (down to 20% breedtimer-stops getting stuck from too low.)            
                 safeBuyJob('Miner', 1);
                 safeBuyJob('Farmer', 1);
                 safeBuyJob('Lumberjack', 1);
@@ -3455,14 +3457,18 @@ function delayStartAgain(){
 //Main LOGIC Loop///////////////////////
 ////////////////////////////////////////
 
-var OVKcellsWorld = 0;
+var OVKcellsInWorld = 0;
+var OVKcellsInWorldZone = 0;
+var lastOVKcellsInWorld = 0;
+var lastOVKcellsInWorldZone = 0;
 //reset stuff that may not have gotten cleaned up on portal
 function mainCleanup() {
     //runs at zone 1 only.
     if (game.global.world == 1) {
         lastHeliumZone = 0;
         zonePostpone = 0;
-        OVKcellsWorld = 0;
+        OVKcellsInWorld = 0;
+        OVKcellsInWorldZone = 0;
     }
 }
 var ATrunning = false;
@@ -3522,7 +3528,12 @@ function mainLoop() {
 
     //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
     if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
-    if (game.portal.Overkill.level) OVKcellsWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length
+    if (OVKcellsInWorldZone < game.global.world) {
+        lastOVKcellsInWorld = OVKcellsInWorld;
+        lastOVKcellsInWorldZone = OVKcellsInWorldZone;
+    }
+    OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
+    OVKcellsInWorldZone = game.global.world;
 
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();

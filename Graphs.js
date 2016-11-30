@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 600px"><div id="graph" style="margin-bottom: 15px;margin-top: 10px; height: 540px;"></div><div id="graphFooter" style="height: 50px;"></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour','HeliumPerHour Delta', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour'];
+var graphList = ['HeliumPerHour','HeliumPerHour Delta', 'Helium', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -46,7 +46,7 @@ document.getElementById('graphFooter').appendChild(btn1);
 var btn2 = document.createElement("button");
 var t = document.createTextNode("Clear All Previous Data");
 btn2.appendChild(t);
-btn2.setAttribute("onclick", "clearData(); drawGraph();");
+btn2.setAttribute("onclick", "clearData(null,true); drawGraph();");
 btn2.setAttribute("class", "settingBtn");
 btn2.setAttribute('style', 'margin-left: 10vw; ');
 if(game.options.menu.darkTheme.enabled != 2) btn2.setAttribute("style", "color:black; margin-left: 10vw; ");
@@ -243,12 +243,18 @@ function toggleAllGraphs() {
     }    
 }
 
-function clearData(portal) {
+function clearData(portal,clrall) {
     //clear data of runs with portalnumbers prior than X (15) away from current portal number. (or 0 = clear all)
-    if(!portal) 
+    if(!portal)
         portal = 0;
-    while(allSaveData[0].totalPortals < game.global.totalPortals - portal) {
-        allSaveData.shift();
+    if (!clrall) {
+        while(allSaveData[0].totalPortals < game.global.totalPortals - portal) {
+            allSaveData.shift();
+        }
+    } else {
+        while(allSaveData[0].totalPortals != game.global.totalPortals) {
+            allSaveData.shift();
+        }
     }
 }
 
@@ -394,7 +400,8 @@ function pushData() {
         trimps: game.resources.trimps.realMax(),
         coord: game.upgrades.Coordination.done,
         lastwarp: game.global.lastWarp,
-        essence: getTotalDarkEssenceCount()
+        essence: getTotalDarkEssenceCount(),
+        overkill: lastOVKcellsInWorld
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
@@ -902,7 +909,7 @@ function setGraphData(graph) {
                     currentPortal = allSaveData[i].totalPortals;
                     if(allSaveData[i].world == 1 && currentZone != -1 )
                         graphData[graphData.length -1].data.push(0);
-                        startEssence = allSaveData[i].essence;
+                    startEssence = allSaveData[i].essence;
                     
                     if(currentZone == -1 || allSaveData[i].world != 1) {
                         var loop = allSaveData[i].world;
@@ -915,16 +922,52 @@ function setGraphData(graph) {
                 if(currentZone < allSaveData[i].world && currentZone != -1) {
                     graphData[graphData.length - 1].data.push(Math.floor((allSaveData[i].essence - startEssence) / ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000)));
                 }
-            
                 currentZone = allSaveData[i].world;
-                
             }
             title = 'Dark Essence/Hour (Cumulative)';
             xTitle = 'Zone';
             yTitle = 'Dark Essence/Hour';
             yType = 'Linear';
-            break; 
+            break;
             
+        case 'OverkillCells':
+            var currentPortal = -1;
+            graphData = [];
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    if(allSaveData[i].world == 1 && currentZone != -1 )
+                        graphData[graphData.length -1].data.push(0);
+                    
+                    if(currentZone == -1 || allSaveData[i].world != 1) {
+                        var loop = allSaveData[i].world;
+                        while (loop > 0) {
+                            graphData[graphData.length -1].data.push(0);
+                            loop--;
+                        }
+                    }
+                }
+                if(currentZone < allSaveData[i].world && currentZone != -1) {
+                    var num;
+                    if (typeof allSaveData[i].overkill == "object")
+                        num = allSaveData[i].overkill[1];
+                    else if (typeof allSaveData[i].overkill == "number")
+                        num = allSaveData[i].overkill;
+                    if (num)
+                        graphData[graphData.length - 1].data.push(num);
+                }
+                currentZone = allSaveData[i].world;
+            }
+            title = 'Overkilled Cells';
+            xTitle = 'Zone';
+            yTitle = 'Overkilled Cells';
+            yType = 'Linear';
+            break;
+        
     }
     if (oldData != JSON.stringify(graphData)) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
