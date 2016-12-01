@@ -2023,7 +2023,7 @@ function calcBaseDamageinX() {
 
 function calcBaseDamageinX2() {
     //baseDamage
-    baseDamage = calcOurDmg(game.global.soldierCurrentAttack,true);
+    baseDamage = calcOurDmg(game.global.soldierCurrentAttack,false);
     //baseBlock
     baseBlock = getBattleStats("block");
     //baseHealth

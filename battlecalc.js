@@ -244,6 +244,12 @@ function calcOurDmg(number,maxormin) { //number = base attack
             number *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
         }
     }
+    //Formations
+    if (game.global.formation == 2)
+        number /= 4;
+    else if (game.global.formation != "0")
+        number *= 2;
+
     if (minFluct > 1) minFluct = 1;
     if (maxFluct == -1) maxFluct = fluctuation;
     if (minFluct == -1) minFluct = fluctuation;
