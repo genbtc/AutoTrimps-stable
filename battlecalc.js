@@ -296,8 +296,8 @@ function calcBadGuyDmg(enemy,attack,daily) {
         else if (game.global.challengeActive == "Corrupted"){
             number *= 3;
         }
-        else if (daily)
-            number *= calcDailyAttackMod(number);
+        if (daily)
+            number = calcDailyAttackMod(number);
     }
     if (game.global.usingShriek) {
         number *= game.mapUnlocks.roboTrimp.getShriekValue();
