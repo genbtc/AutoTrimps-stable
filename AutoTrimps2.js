@@ -1252,7 +1252,7 @@ function buyUpgrades() {
         if (upgrade == 'Shieldblock' && !getPageSetting('BuyShieldblock')) continue;
         if (upgrade == 'Gigastation' && (game.global.lastWarp ? game.buildings.Warpstation.owned < (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')) : game.buildings.Warpstation.owned < getPageSetting('FirstGigastation'))) continue;
         //skip bloodlust during scientist challenges and while we have autofight enabled.
-        if (upgrade == 'Bloodlust' && game.global.challengeActive == 'Scientist' && getPageSetting('AutoFight')) continue;
+        if (upgrade == 'Bloodlust' && game.global.challengeActive == 'Scientist' && getPageSetting('BetterAutoFight')) continue;
         //skip potency when autoBreedTimer is disabled
         if (upgrade == 'Potency' && getPageSetting('GeneticistTimer') >= 0) continue;
 
