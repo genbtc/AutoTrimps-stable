@@ -2795,8 +2795,8 @@ function autoMap() {
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
                 ((!enoughDamage || !enoughHealth) && game.global.lastClearedCell < 9) ||
-                (shouldFarm && game.global.lastClearedCell >= 59)) ||
-                (scryerStuck)
+                (shouldFarm && game.global.lastClearedCell >= 59) ||
+                (scryerStuck))
                 &&
                     (
                     (game.resources.trimps.realMax() <= game.resources.trimps.owned + 1)
