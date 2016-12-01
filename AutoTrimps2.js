@@ -2233,7 +2233,7 @@ function autoStance2(checkOnly) {
         enemyDamage *= 2;
     if (enemy.corrupted == 'corruptTough')
         enemyHealth *= 5;
-    //WORLD:
+/*     //WORLD:
     if (!game.global.mapsActive && !game.global.preMapsActive) {
         //check for world Corruption
         if (enemy.mutation == "Corruption"){
@@ -2257,7 +2257,7 @@ function autoStance2(checkOnly) {
             enemyHealth *= (getCorruptScale("health") / 2);
             enemyDamage *= (getCorruptScale("attack") / 2);
         }
-    }
+    } */
     //calc X,D,B:
     var xDamage = (enemyDamage - baseBlock);
     var dDamage = (enemyDamage - baseBlock / 2);
@@ -2322,7 +2322,7 @@ function autoStance2(checkOnly) {
             return [enoughHealth2,enoughDamage2];
         }
         //use D stance if: new army is ready&waiting / can survive void-double-attack or we can one-shot / can survive lead damage / can survive void-crit-dmg
-        if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && voidCritinDok) {
+        if (game.upgrades.Dominance.done && surviveD && leadAttackOK && drainAttackOK && (!isCritThing || voidCritinDok)) {
             setFormation(2);
         //if CritVoidMap, switch out of D stance if we cant survive. Do various things.
         } else if (isCritThing && !voidCritinDok) {
@@ -2477,7 +2477,10 @@ function autoMap() {
         }
     }
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    if (!wantToScry) {
+    enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
+    enoughDamage = (ourBaseDamage * 4) > enemyHealth;
+    //remove this in the meantime until it works for everyone.
+/*     if (!wantToScry) {
         //enough health if we can survive 8 hits in D stance (health/2 and block/2)
         enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
         //enough damage if we can one-shot the enemy in D (ourBaseDamage*4)
@@ -2490,7 +2493,7 @@ function autoMap() {
         enoughHealth = result[0];
         enoughDamage = result[1];
         scryerStuck = !enoughHealth;
-    }
+    } */
 
     HDratio = enemyHealth / ourBaseDamage;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
