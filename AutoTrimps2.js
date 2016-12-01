@@ -2354,11 +2354,15 @@ function autoStance2(checkOnly) {
             else
                 setFormation("0");
         } else if (game.upgrades.Barrier.done && surviveB) {
-            setFormation(3);    //does this ever run?
-            debug("AutoStance B/3");
-        } else if (game.global.formation != 1) {
-            setFormation(1);    //the last thing that runs
-            debug("AutoStance H/1");
+            if (game.global.formation != 3) {
+                setFormation(3);    //does this ever run?
+                debug("AutoStance B/3");
+            }
+        } else {
+            if (game.global.formation != 1) {
+                setFormation(1);    //the last thing that runs
+                debug("AutoStance H/1");
+            }
         }
     }
     baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp
@@ -2976,6 +2980,7 @@ function autoBreedTimer() {
     //Force Abandon Code (AutoTrimpicide):
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var nextgrouptime = (game.global.lastBreedTime/1000);
+    if  (targetBreed > 30) targetBreed = 30; //play nice with custom timers over 30.
     var newstacks = nextgrouptime >= targetBreed ? targetBreed : nextgrouptime;
     //kill titimp if theres less than 5 seconds left on it or, we stand to gain more than 5 antistacks.
     var killTitimp = (game.global.titimpLeft < 5 || (game.global.titimpLeft >= 5 && newstacks - game.global.antiStacks >= 5))
@@ -2999,6 +3004,8 @@ function forceAbandonTrimps() {
     if (game.global.mapsActive && getCurrentMapObject().location == "Void") return;
     //dont if were on map-selection screen.
     if (game.global.preMapsActive) return;
+    //dont if we are in spire:
+    if (game.global.world == 200 && game.global.spireActive && !game.global.mapsActive) return;
     if (getPageSetting('AutoMaps')) {
         mapsClicked();
         //force abandon army

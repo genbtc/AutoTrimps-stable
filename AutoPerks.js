@@ -101,9 +101,9 @@ html += "<option id='preset_TruthEarly'>Truth (early)</option>"
 html += "<option id='preset_TruthLate'>Truth (late)</option>"
 html += "<option id='preset_nsheetz'>nSheetz</option>"
 html += "<option id='preset_nsheetzNew'>nSheetz(new)</option>"
-html += "<option id='preset_HiderHehr'>Hider (He/hr)</option>"
+html += "<option id='preset_HiderHehr'>Hider* (He/hr)</option>"
 html += "<option id='preset_HiderBalance'>Hider (Balance)</option>"
-html += "<option id='preset_HiderMore'>Hider (More Zones)</option>"
+html += "<option id='preset_HiderMore'>Hider* (More Zones)</option>"
 html += "<option id='customPreset'>Custom</option></select>"
 ratioPreset.innerHTML = html;
 //load the last ratio used
@@ -515,9 +515,9 @@ var preset_TruthEarly = [30, 4, 4, 4, 4, 2, 24, 8, 60, 2, 3];
 var preset_TruthLate = [120, 4, 4, 4, 4, 2, 24, 8, 60, 2, 3];
 var preset_nsheetz = [42, 1.75, 5, 4, 1.5, 5, 29, 3.5, 100, 1, 5];
 var preset_nsheetzNew= [160, 1.5, 5, 2.5, 1.5, 3.5, 18, 3, 100, 1, 10];
-var preset_HiderHehr = [90, 4, 12, 10, 0.005, 8, 8, 0.005, 20, 0.1, 3];
+var preset_HiderHehr = [90, 4, 12, 10, 1, 8, 8, 1, 20, 0.1, 3];
 var preset_HiderBalance = [75, 4, 8, 4, 1, 4, 24, 1, 75, 0.5, 3];
-var preset_HiderMore = [20, 4, 10, 12, 0.005, 8, 8, 0.005, 40, 0.1, 0.5];
+var preset_HiderMore = [20, 4, 10, 12, 1, 8, 8, 1, 40, 0.1, 0.5];
 var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore];
 //ratio was replaced by position, value will be pulled from ratios above later.
 var looting = new AutoPerks.VariablePerk("looting", 1, false,             0, 0.05);
