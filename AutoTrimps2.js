@@ -2226,7 +2226,6 @@ function autoStance2(checkOnly) {
     enemyDamage *= critMulti;
     //double attacks
     var isDoubleAttack = game.global.voidBuff == 'doubleAttack' || (enemy.corrupted == 'corruptDbl');
-    enemyDamage *= isDoubleAttack ? 2 : 1;
     //fast
     var enemyFast = (game.global.challengeActive == "Slow" || ((game.badGuys[enemy.name].fast || enemy.mutation == "Corruption") && game.global.challengeActive != "Coordinate" && game.global.challengeActive != "Nom")) || isDoubleAttack;
     //
@@ -2259,20 +2258,28 @@ function autoStance2(checkOnly) {
             enemyDamage *= (getCorruptScale("attack") / 2);
         }
     }
-    var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //calc X,D,B:
     var xDamage = (enemyDamage - baseBlock);
-    if (xDamage < pierceMod) xDamage = pierceMod * enemyDamage;
-    if (xDamage < 0) xDamage = 0;
     var dDamage = (enemyDamage - baseBlock / 2);
-    if (dDamage < pierceMod) dDamage = pierceMod * enemyDamage;
-    if (dDamage < 0) dDamage = 0;
     var bDamage = (enemyDamage - baseBlock * 4);
-    if (bDamage < pierceMod) bDamage = pierceMod * enemyDamage;
-    if (bDamage < 0) bDamage = 0;
     var dDamageNoCrit = (enemyDamage/critMulti - baseBlock/2);
-    if (dDamageNoCrit < pierceMod) dDamageNoCrit = pierceMod * (enemyDamage/critMulti);
-    if (dDamageNoCrit < 0) dDamageNoCrit = 0;    
+    var pierce = 0;
+    if (game.global.brokenPlanet && !game.global.mapsActive) {
+        pierce = getPierceAmt();    
+        var atkPierce = pierce * enemyDamage;
+        if (xDamage < atkPierce) xDamage = atkPierce;
+        if (dDamage < atkPierce) dDamage = atkPierce;
+        if (bDamage < atkPierce) bDamage = atkPierce;
+        if (dDamageNoCrit < atkPierce) dDamageNoCrit = pierce * (enemyDamage/critMulti);
+    }
+    if (xDamage < 0) xDamage = 0;
+    if (dDamage < 0) dDamage = 0;
+    if (bDamage < 0) bDamage = 0;
+    if (dDamageNoCrit < 0) dDamageNoCrit = 0;
+    xDamage *= isDoubleAttack ? 2 : 1;
+    dDamage *= isDoubleAttack ? 2 : 1;
+    bDamage *= isDoubleAttack ? 2 : 1;
+    dDamageNoCrit *= isDoubleAttack ? 2 : 1;
 
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var leadChallenge = (game.global.challengeActive == 'Lead');
