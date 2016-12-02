@@ -3490,12 +3490,12 @@ function delayStartAgain(){
 ////////////////////////////////////////
 
 var OVKcellsInWorld = 0;
-var OVKcellsInWorldZone = 0;
 var lastOVKcellsInWorld = 0;
-var lastOVKcellsInWorldZone = 0;
 var currentworld = 0;
 var lastrunworld = 0;
 var aWholeNewWorld = false;
+var lastZoneStartTime = 0;
+var ZoneStartTime = 0;
 //reset stuff that may not have gotten cleaned up on portal
 function mainCleanup() {
     //runs at zone 1 only.
@@ -3503,7 +3503,9 @@ function mainCleanup() {
         lastHeliumZone = 0;
         zonePostpone = 0;
         OVKcellsInWorld = 0;
-        OVKcellsInWorldZone = 0;
+        lastOVKcellsInWorld = 0;
+        lastZoneStartTime = 0;
+        ZoneStartTime = 0;
     }
     lastrunworld = currentworld;
     currentworld = game.global.world;
@@ -3569,7 +3571,11 @@ function mainLoop() {
         lastOVKcellsInWorld = OVKcellsInWorld;
     }
     OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
-
+    //track time in each zone for better graphs
+    if (aWholeNewWorld) {
+        lastZoneStartTime = new Date().getTime() - ZoneStartTime;
+    }
+    ZoneStartTime = game.global.zoneStarted;
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
 
