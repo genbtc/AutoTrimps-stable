@@ -93,7 +93,7 @@ if(game.options.menu.darkTheme.enabled != 2) ratioPreset.setAttribute("style", o
 else ratioPreset.setAttribute('style', oldstyle);
 //List of the perk options are populated at the bottom of this file.
 //populate dump perk dropdown list
-//        var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore];
+//        var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore,preset_genBTC];
 var html = "<option id='preset_ZXV'>ZXV</option>"
 html += "<option id='preset_ZXVnew'>ZXV (new)</option>"
 html += "<option id='preset_ZXV3'>ZXV 3</option>"
@@ -104,6 +104,7 @@ html += "<option id='preset_nsheetzNew'>nSheetz(new)</option>"
 html += "<option id='preset_HiderHehr'>Hider* (He/hr)</option>"
 html += "<option id='preset_HiderBalance'>Hider (Balance)</option>"
 html += "<option id='preset_HiderMore'>Hider* (More Zones)</option>"
+html += "<option id='preset_genBTC'>genBTC</option>"
 html += "<option id='customPreset'>Custom</option></select>"
 ratioPreset.innerHTML = html;
 //load the last ratio used
@@ -518,7 +519,8 @@ var preset_nsheetzNew= [160, 1.5, 5, 2.5, 1.5, 3.5, 18, 3, 100, 1, 10];
 var preset_HiderHehr = [90, 4, 12, 10, 1, 8, 8, 1, 20, 0.1, 3];
 var preset_HiderBalance = [75, 4, 8, 4, 1, 4, 24, 1, 75, 0.5, 3];
 var preset_HiderMore = [20, 4, 10, 12, 1, 8, 8, 1, 40, 0.1, 0.5];
-var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore];
+var preset_genBTC = [100, 8, 8, 4, 4, 5, 18, 8, 14, 1, 1];
+var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore,preset_genBTC];
 //ratio was replaced by position, value will be pulled from ratios above later.
 var looting = new AutoPerks.VariablePerk("looting", 1, false,             0, 0.05);
 var toughness = new AutoPerks.VariablePerk("toughness", 1, false,         1, 0.05);
