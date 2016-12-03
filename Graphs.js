@@ -21,7 +21,6 @@ var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
 else btn.setAttribute("style", "color:black");
-btn.setAttribute("class", "settingBtn");
 btn.setAttribute("onmouseover", 'tooltip(\"Graph\", \"customText\", event, \"What graph would you like to display?\")');
 btn.setAttribute("onmouseout", 'tooltip("hide")');
 btn.setAttribute("onchange", "setGraphData(document.getElementById('graphSelection').value)");
@@ -38,19 +37,30 @@ var btn1 = document.createElement("button");
 var u = document.createTextNode("Refresh");
 btn1.appendChild(u);
 btn1.setAttribute("onclick", "drawGraph()");
-btn1.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2) btn1.setAttribute("style", "color:black");
 document.getElementById('graphFooter').appendChild(btn1);
 
+//clear data checkbox
+var btn2cb = document.createElement("input");
+btn2cb.type = 'checkbox';
+btn2cb.setAttribute("onclick", "toggleClearButton();");
+btn2cb.setAttribute('style', 'margin-left: 10vw; ');
+if(game.options.menu.darkTheme.enabled != 2) btn2cb.setAttribute("style", "color:black; margin-left: 10vw; ");
+document.getElementById('graphFooter').appendChild(btn2cb);
+function toggleClearButton() {
+    btn2.disabled=!btn2cb.checked;
+}
 //clear data button
 var btn2 = document.createElement("button");
 var t = document.createTextNode("Clear All Previous Data");
 btn2.appendChild(t);
 btn2.setAttribute("onclick", "clearData(null,true); drawGraph();");
-btn2.setAttribute("class", "settingBtn");
-btn2.setAttribute('style', 'margin-left: 10vw; ');
-if(game.options.menu.darkTheme.enabled != 2) btn2.setAttribute("style", "color:black; margin-left: 10vw; ");
+btn2.setAttribute("class", "btn");
+btn2.setAttribute('style', 'margin-left: 0.25vw; padding: 0;');
+btn2.disabled=true;
+if(game.options.menu.darkTheme.enabled != 2) btn2.setAttribute("style", "color:black; margin-left: 0.5vw; padding: 0;");
 document.getElementById('graphFooter').appendChild(btn2);
+
 
 
 //textbox for clear data button
@@ -64,7 +74,6 @@ var btn3 = document.createElement("button");
 var tt = document.createTextNode("Delete Selected Portal");
 btn3.appendChild(tt);
 btn3.setAttribute("onclick", "deleteSelected(); drawGraph();");
-btn3.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2) btn3.setAttribute("style", "color:black");
 document.getElementById('graphFooter').appendChild(btn3);
 
@@ -72,7 +81,6 @@ document.getElementById('graphFooter').appendChild(btn3);
 var btnExp = document.createElement("button");
 var exp = document.createTextNode("Export your Graph Database");
 btnExp.appendChild(exp);
-btnExp.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2)
     btnExp.setAttribute("style", "margin-left: 10vw; margin-right: 5px; color:black");
 else
@@ -87,7 +95,7 @@ btnExp.setAttribute("onclick", 'GraphsImportExportTooltip(\'ExportGraphs\', null
 var btnImp = document.createElement("button");
 var imp = document.createTextNode("Replace your Graph Database");
 btnImp.appendChild(imp);
-btnImp.setAttribute("class", "settingBtn");
+
 if(game.options.menu.darkTheme.enabled != 2)
     btnImp.setAttribute("style", "color:black");
 document.getElementById('graphFooter').appendChild(btnImp);
@@ -97,7 +105,6 @@ btnImp.setAttribute("onclick", 'GraphsImportExportTooltip(\'ImportGraphs\', null
 var btnImpApp = document.createElement("button");
 var impapp = document.createTextNode("Append to your Graph Database");
 btnImpApp.appendChild(impapp);
-btnImpApp.setAttribute("class", "settingBtn");
 if(game.options.menu.darkTheme.enabled != 2)
     btnImpApp.setAttribute("style", "color:black");
 document.getElementById('graphFooter').appendChild(btnImpApp);
@@ -109,7 +116,6 @@ var btn4 = document.createElement("button");
 var t = document.createTextNode("Invert Selection");
 btn4.appendChild(t);
 btn4.setAttribute("onclick", "toggleSelectedGraphs()");
-btn4.setAttribute("class", "settingBtn");
 btn4.setAttribute('style', 'position:relative; float:right;');
 if(game.options.menu.darkTheme.enabled != 2) btn4.setAttribute("style", "color:black; position:relative; float:right; margin-right: 0.5vw; ");
 document.getElementById('graphFooter').appendChild(btn4);
@@ -119,7 +125,6 @@ var btn5 = document.createElement("button");
 var t = document.createTextNode("All Off/On");
 btn5.appendChild(t);
 btn5.setAttribute("onclick", "toggleAllGraphs()");
-btn5.setAttribute("class", "settingBtn");
 btn5.setAttribute('style', 'position:relative; float:right;');
 if(game.options.menu.darkTheme.enabled != 2) btn5.setAttribute("style", "color:black; position:relative; float:right; margin-right: 1vw; ");
 document.getElementById('graphFooter').appendChild(btn5);
