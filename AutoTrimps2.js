@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.6-genbtc-11-30b-2016+AutoPerks
+// @version      2.1.3.6b-genbtc-12-2-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.6-genbtc-11-30b-2016+AutoPerks';
+var ATversion = '2.1.3.6b-genbtc-12-2-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -3481,7 +3481,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>Working on big code changes. <u>Report any bugs/problems please!</u><br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a></b><br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option). <u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
+    tooltip('confirm', null, 'update', '<br>12/2 Some small changes <a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check commit history</a> (if you care)<br><b><u>Report any bugs/problems please!</u></b><br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a><br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option). <u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 

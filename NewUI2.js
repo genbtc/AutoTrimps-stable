@@ -129,7 +129,6 @@ function initializeAllSettings() {
     createSetting('BuyWeaponUpgrades', 'Buy Weapon Upgrades', '(Prestiges) Will buy the most efficient weapon upgrade available. ', 'boolean',true,null,"Core");
     createSetting('TrapTrimps', 'Trap Trimps', 'Automatically trap trimps when needed, including building traps. (when you turn off, make sure you also turn off the ingame AutoTraps button)', 'boolean',true,null,"Core");
     createSetting('BuyShieldblock', 'Buy Shield Block', 'Will buy the shield block upgrade. CAUTION: If you are progressing past zone 60, you probably don\'t want this :)', 'boolean',false,null,"Core");
-
     createSetting('AutoHeirlooms', 'Auto Heirlooms', 'Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.', 'boolean',true,null,"Core");
     createSetting('HireScientists', 'Hire Scientists', 'Enable or disable hiring of scientists. Math: ScientistRatio=(FarmerRatio+LumberjackRatio+MinerRatio)/25 and stops hiring scientists after 250k Farmers.', 'boolean',true,null,"Core");
     createSetting('WorkerRatios', 'Auto Worker Ratios', 'Automatically changes worker ratios based on current progress. WARNING: overrides worker ratio settings. Settings: 1/1/1 up to 300k trimps, 3/3/5 up to 3mil trimps, then 3/1/4 above 3 mil trimps, then 1/1/10 above 1000 tributes, then 1/2/22 above 1500 tributes, then 1/12/12 above 3000 tributes.', 'boolean',true,null,"Core");
@@ -144,6 +143,7 @@ function initializeAllSettings() {
     }
     createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-portal if you have a challenge active, the challenge setting dictates which challenge it will select for the next run. All challenge settings will portal right after the challenge ends, regardless. Helium Per Hour portals at cell 1 of the first level where your He/Hr went down even slightly compared to the current runs Best He/Hr. Take note, there is a Buffer option in the genBTC settings, which is like a grace percentage of how low it can dip without triggering.  CAUTION: Selecting He/hr may immediately portal you if its lower.', 'dropdown', 'Off', ['Off', 'Helium Per Hour', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted', 'Custom'],"Core");
     createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead','Corrupted'],"Core");
+    document.getElementById("HeliumHourChallengeLabel").innerHTML = "Challenge:";
     createSetting('CustomAutoPortal', 'Custom Portal', 'Automatically portal AFTER clearing this level.(ie: setting to 200 would portal when you first reach level 201)', 'value', '200',null, "Core");
     createSetting('HeHrDontPortalBefore', 'He/Hr Dont Portal Before', 'Do NOT allow Helium per Hour AutoPortal setting to portal BEFORE this level is reached. It is an additional check that prevents drops in helium/hr from triggering autoportal. Set to 0 or -1 to completely disable this check.', 'value', '200',null, "Core");
     createSetting('HeliumHrBuffer', 'He/Hr Portal Buffer %', 'IMPORTANT SETTING. When using the He/Hr Autoportal, it will portal if your He/Hr drops by this amount of % lower than your best for current run, default is 0% (ie: set to 5 to portal at 95% of your best)', 'value', '0', null, 'Core');
@@ -200,11 +200,6 @@ function initializeAllSettings() {
     createSetting('DelayArmorWhenNeeded', 'Delay Armor', 'Delays buying armor prestige-upgrades during Want More Damage or Farming automap-modes, Although if you need health AND damage, it WILL buy armor prestiges tho.', 'boolean', null, null, 'genBTC');
     createSetting('AutoRoboTrimp', 'AutoRoboTrimp', 'Use RoboTrimps ability starting at this level, and every 5 levels thereafter. (set to 0 to disable. default 60.) 60 is a good choice for mostly everybody.', 'value', '60', null, 'genBTC');
     createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available.', 'dropdown', 'Off', ["Off","Helium", "Battle", "Void"], 'genBTC');
-    var AGULabel = document.createElement("Label");
-    AGULabel.id = 'AutoGoldenUpgradesLabel';
-    AGULabel.innerHTML = "Golden Upgrades:";
-    AGULabel.setAttribute('style', 'margin-right: 0.4vw; font-size: 0.8vw;');
-    document.getElementById("AutoGoldenUpgrades").parentNode.insertBefore(AGULabel,document.getElementById("AutoGoldenUpgrades"));
     //migrate old dynamic prestige to new dynamic prestige
     if (autoTrimpSettings["DynamicPrestige2"] === undefined && autoTrimpSettings["DynamicPrestige"]) {
         var lastzone;
@@ -527,8 +522,8 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         }
         var btn = document.createElement("select");
         btn.id = id;
-        if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
-        else btn.setAttribute("style", "color:black");
+        if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8; font-size: 1.1vw;");
+        else btn.setAttribute("style", "color:black; font-size: 1.1vw;");
         btn.setAttribute("class", "noselect settingsBtn");
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
@@ -541,10 +536,17 @@ function createSetting(id, name, description, type, defaultValue, list, containe
             btn.appendChild(option);
         }
         btn.value = autoTrimpSettings[id].selected;
+        
+        var dropdownLabel = document.createElement("Label");
+        dropdownLabel.id = id + "Label";
+        dropdownLabel.innerHTML = id + ":";
+        dropdownLabel.setAttribute('style', 'margin-right: 0.3vw; font-size: 0.8vw;');
+        btnParent.appendChild(dropdownLabel);
         btnParent.appendChild(btn);
 
         if(container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
+
     } else if (type == 'infoclick') {
         btn.setAttribute('class', 'btn btn-info');
         btn.setAttribute("onclick", 'AutoTrimpsTooltip(\'' + defaultValue + '\', null, \'update\')');
