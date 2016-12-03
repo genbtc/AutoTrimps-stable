@@ -597,33 +597,29 @@ function setGraphData(graph) {
 
         case 'HeHr % / LifetimeHe':
             var currentPortal = -1;
-            var currentZone = -1;
+            var currentZone = 0;
             graphData = [];
-            for (var i in allSaveData) {
+            for (var i = 0; i < allSaveData.length;  i++) {
+                if (typeof allSaveData[i].hehr != "string")
+                    continue;
                 if (allSaveData[i].totalPortals != currentPortal) {
                     graphData.push({
                         name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
                         data: []
                     });
                     currentPortal = allSaveData[i].totalPortals;
-                    if(allSaveData[i].world == 1 && currentZone != -1 )
-                        graphData[graphData.length -1].data.push(0);
-
-                    if(currentZone == -1 || allSaveData[i].world != 1) {
-                        var loop = allSaveData[i].world;
-                        while (loop > 0) {
-                            graphData[graphData.length -1].data.push(0);
-                            loop--;
-                        }
+                    currentZone = 0;
+                }
+                if (currentZone != allSaveData[i].world - 1) { 
+                    var loop = allSaveData[i].world - 1 - currentZone;
+                    while (loop > 0) {
+                        graphData[graphData.length - 1].data.push(0);
+                        loop--;
                     }
                 }
-                if(currentZone < allSaveData[i].world && currentZone != -1) {
-                    var num;
-                    if (typeof allSaveData[i].hehr == "string")
-                        num = allSaveData[i].hehr;
-                    if (num)
-                        graphData[graphData.length - 1].data.push(num*1);
-                }
+                //write datapoint
+                graphData[graphData.length - 1].data.push(allSaveData[i].hehr*1);
+                //increment counter
                 currentZone = allSaveData[i].world;
             }
             title = 'He/Hr % of LifetimeHe';
@@ -635,33 +631,29 @@ function setGraphData(graph) {
 
         case 'He % / LifetimeHe':
             var currentPortal = -1;
-            var currentZone = -1;
+            var currentZone = 0;
             graphData = [];
-            for (var i in allSaveData) {
+            for (var i = 0; i < allSaveData.length;  i++) {
+                if (typeof allSaveData[i].helife != "string")
+                    continue;
                 if (allSaveData[i].totalPortals != currentPortal) {
                     graphData.push({
                         name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
                         data: []
                     });
                     currentPortal = allSaveData[i].totalPortals;
-                    if(allSaveData[i].world == 1 && currentZone != -1 )
-                        graphData[graphData.length -1].data.push(0);
-
-                    if(currentZone == -1 || allSaveData[i].world != 1) {
-                        var loop = allSaveData[i].world;
-                        while (loop > 0) {
-                            graphData[graphData.length -1].data.push(0);
-                            loop--;
-                        }
+                    currentZone = 0;
+                }
+                if (currentZone != allSaveData[i].world - 1) { 
+                    var loop = allSaveData[i].world - 1 - currentZone;
+                    while (loop > 0) {
+                        graphData[graphData.length - 1].data.push(0);
+                        loop--;
                     }
                 }
-                if(currentZone < allSaveData[i].world && currentZone != -1) {
-                    var num;
-                    if (typeof allSaveData[i].helife == "string")
-                        num = allSaveData[i].helife;
-                    if (num)
-                        graphData[graphData.length - 1].data.push(num*1);
-                }
+                //write datapoint
+                graphData[graphData.length - 1].data.push(allSaveData[i].helife*1);
+                //increment counter
                 currentZone = allSaveData[i].world;
             }
             title = 'He % of LifetimeHe';
