@@ -16,7 +16,7 @@ settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 600px"><div id="graph" style="margin-bottom: 15px;margin-top: 10px; height: 540px;"></div><div id="graphFooter" style="height: 50px;"></div>';
 
 //Create the dropdown for what graph to show
-var graphList = ['HeliumPerHour','HeliumPerHour Delta', 'Helium', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
+var graphList = ['HeliumPerHour','HeliumPerHour Delta', 'Helium', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Time to Clear Zone', 'Clear Time', 'Cumulative Clear Time', 'Void Maps', 'Loot Sources', 'Run Time', 'Void Map History', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps','Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 if(game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8");
@@ -496,6 +496,43 @@ function setGraphData(graph) {
             yType = 'Linear';
             valueSuffix = ' Seconds';
             break;
+        case 'Time to Clear Zone':
+            var graphData = [];
+            var currentPortal = -1;
+            var currentZone = -1;
+            for (var i = 0; i < allSaveData.length;  i++) {
+                if (typeof allSaveData[i].zonetime != "number")
+                    continue;
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    currentZone = 0;
+                }
+                if (currentZone != allSaveData[i].world - 1) { 
+                    var loop = allSaveData[i].world - 1 - currentZone;
+                    while (loop > 0) {
+                        graphData[graphData.length - 1].data.push(0);
+                        loop--;
+                    }
+                }
+                //write datapoint
+                if (allSaveData[i].zonetime > 14e11)    //only needed for me since i wrote the wrong format once.
+                    graphData[graphData.length - 1].data.push(Math.round((allSaveData[i].currentTime - allSaveData[i].zonetime) / 1000));
+                else
+                    graphData[graphData.length - 1].data.push(Math.round(allSaveData[i].zonetime/1000));
+                //increment counter
+                currentZone = allSaveData[i].world;
+            }
+            title = 'Time to Clear Zone (experimental new time tracking system that supports pauses)';
+            xTitle = 'Zone';
+            yTitle = 'Zone Time';
+            yType = 'Linear';
+            valueSuffix = ' Seconds';
+            break;
+
         case 'Cumulative Clear Time':
             var graphData = [];
             var currentPortal = -1;
@@ -527,7 +564,6 @@ function setGraphData(graph) {
                     }
                 }
                 currentZone = allSaveData[i].world;
-
             }
             title = 'Cumulative Time at start of zone#';
             xTitle = 'Zone';
