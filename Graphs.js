@@ -273,11 +273,13 @@ function toggleSelectedGraphs() {
 //Turn all graphs on/off (to the opposite of which one we are closer to)
 function toggleAllGraphs() {
     var count = 0;
-    for (var run in chart1.series){
+    for (var i=0; i < chart1.series.length; i++){
+        var run = chart1.series[i];
         if (run.visible)
             count++;
     }
-    for (var run in chart1.series){
+    for (var i=0; i < chart1.series.length; i++){
+        var run = chart1.series[i];
         if (count > chart1.series.length/2)
             run.hide();
         else
