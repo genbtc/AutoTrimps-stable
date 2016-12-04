@@ -8,12 +8,90 @@
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
+var ATversion = '2.1.3.7-genbtc-12-4-2016+Modular';
+
+////////////////////////////////////////////////////////////////////////////////
+//Main Loader Initialize Function (loads first, load everything else)///////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////
+var atscript = document.getElementById('AutoTrimps-script')
+  , base = 'https://genbtc.github.io/AutoTrimps/'
+  , module = 'modules/'
+  ;
+if (atscript !== null) {
+    base = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
+}
+//Load Modular pieces:
+document.head.appendChild(document.createElement('script')).src = base + module + 'utils.js';
+
+function initializeAutoTrimps() {
+    loadPageVariables();
+    document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
+    document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
+    //    
+    document.head.appendChild(document.createElement('script')).src = base + module + 'query.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'heirlooms.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'buildings.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'jobs.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'equipment.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'gather.js';    
+    document.head.appendChild(document.createElement('script')).src = base + module + 'autostance.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'battlecalc.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'automaps.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'autobreedtimer.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'dynprestige.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'autofight.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'scryer.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'portal.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'other.js';
+    document.head.appendChild(document.createElement('script')).src = base + module + 'upgrades.js';
+    //Autoperks
+    if (typeof(AutoPerks) === 'undefined')
+        document.head.appendChild(document.createElement('script')).src = base + module + 'autoperks.js';
+    else
+        debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
+    toggleSettingsMenu();
+    toggleSettingsMenu();
+        
+    debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');    
+}
+
+function printChangelog() {
+    tooltip('confirm', null, 'update', 
+'<b>Add a farm lower level zones option (maps settings tab)</b>\
+<br>12/2 Some small changes <a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check commit history</a> (if you care)\
+<br><b><u>Report any bugs/problems please!</u></b>\
+<br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a>\
+<br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option).\
+<br><u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.\
+<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)'
+    , 'cancelTooltip()', 'Script Update Notice ' + ATversion);
+}
+////////////////////////////////////////
+//Main DELAY Loop///////////////////////
+////////////////////////////////////////
+
+//Magic Numbers/////////////////////////
+var runInterval = 100;      //How often to loop through logic
+var startupDelay = 2000;    //How long to wait for everything to load
+
+setTimeout(delayStart, startupDelay);
+function delayStart() {
+    initializeAutoTrimps();
+    printChangelog();
+    setTimeout(delayStartAgain, startupDelay);
+}
+function delayStartAgain(){
+    setInterval(mainLoop, runInterval);
+    updateCustomButtons();
+    document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
+}
 
 ////////////////////////////////////////
-//Global Variables/////////////////////////////
+//Global Main vars /////////////////////
 ////////////////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.7-genbtc-12-4-2016+Modular';
+
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -35,75 +113,6 @@ var preBuyFiring;
 var preBuyTooltip;
 var preBuymaxSplit;
 
-//Magic Numbers/////////////////////////
-var runInterval = 100;      //How often to loop through logic
-var startupDelay = 2000;    //How long to wait for everything to load
-
-
-////////////////////////////////////////////////////////////////////////////////
-//Main Loader Initialize Function (loads first, load everything else)///////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////
-function initializeAutoTrimps() {
-    debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
-    loadPageVariables();
-
-    var atscript = document.getElementById('AutoTrimps-script')
-      , base = 'https://genbtc.github.io/AutoTrimps'
-      ;
-    if (atscript !== null) {
-        base = atscript.getAttribute('src').replace(/\/AutoTrimps2\.js$/, '');
-    }
-    //Load Modular pieces:
-    document.head.appendChild(document.createElement('script')).src = base + '/utils.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/query.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/heirlooms.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/buildings.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/jobs.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/equipment.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/gather.js';    
-    document.head.appendChild(document.createElement('script')).src = base + '/autostance.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/battlecalc.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/automaps.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/autobreedtimer.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/dynprestige.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/autofight.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/scryer.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/portal.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/other.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/upgrades.js';
-    //
-    document.head.appendChild(document.createElement('script')).src = base + '/NewUI2.js';
-    document.head.appendChild(document.createElement('script')).src = base + '/Graphs.js';
-    //Autoperks
-    if (typeof(AutoPerks) === 'undefined')
-        document.head.appendChild(document.createElement('script')).src = base + '/AutoPerks.js';
-    else
-        debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
-    toggleSettingsMenu();
-    toggleSettingsMenu();
-}
-
-////////////////////////////////////////
-//Main DELAY Loop///////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-setTimeout(delayStart, startupDelay);
-function delayStart() {
-    initializeAutoTrimps();
-    setTimeout(delayStartAgain, startupDelay);
-}
-function delayStartAgain(){
-    setInterval(mainLoop, runInterval);
-    updateCustomButtons();
-    tooltip('confirm', null, 'update', '<b>Add a farm lower level zones option (maps settings tab)</b><br>12/2 Some small changes <a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check commit history</a> (if you care)<br><b><u>Report any bugs/problems please!</u></b><br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a><br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option). <u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
-    document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
-}
-
-////////////////////////////////////////
-//Main vars ////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
 var ATrunning = false;
 var magmiteSpenderChanged = false;
 var OVKcellsInWorld = 0;
@@ -136,7 +145,7 @@ function mainCleanup() {
 ////////////////////////////////////////
 function mainLoop() {
     ATrunning = true;
-    if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //just better.
+    if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
     mainCleanup();
     if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades || ATrunning == false) return;
@@ -154,36 +163,37 @@ function mainLoop() {
     setTitle();          //set the browser title
     setScienceNeeded();  //determine how much science is needed
 
-    if (getPageSetting('ExitSpireCell') >= 1) exitSpireCell(); //"Exit Spire After Cell" (genBTC settings area)
-    if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"
-    if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"
-    autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (genBTC settings area)
-    if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"
-    if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"
-    if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"
-    if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"
-    else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"
-    if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"
-    if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"
-    if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40)
-    if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (genBTC settings area)
-    else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"
+    //EXECUTE CORE LOGIC
+    if (getPageSetting('ExitSpireCell') >= 1) exitSpireCell(); //"Exit Spire After Cell" (other.js)
+    if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"  (jobs.js)
+    if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"       (upgrades.js)
+    autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (other.js)
+    if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"     (buildings.js)
+    if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"   (buildings.js)
+    if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"    (jobs.js)
+    if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"           (gather.js)
+    else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"     (")
+    if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"   (automaps.js)
+    if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"     (autobreedtimer.js)
+    if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40) (portal.js)
+    if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (heirlooms.js)
+    else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"      (")
+    if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (heirlooms.js)    
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
-    if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (genBTC settings area)
-    if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (genBTC settings area)
-    autoLevelEquipment();                                   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
+    if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (other.js)
+    autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
 
-    if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"
-    else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"
-    else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"
+    if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
+    else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"      (autostance.js)
+    else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"       (")
 
     BAFsetting = getPageSetting('BetterAutoFight');
-    if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"
-    else if (BAFsetting==2) betterAutoFight2();     //"Better Auto Fight2"
+    if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"  (autofight.js)
+    else if (BAFsetting==2) betterAutoFight2();     //"Better Auto Fight2"  (")
     else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight();
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
-    if (getPageSetting('DynamicPrestige2')) prestigeChanging2(); //"Dynamic Prestige" (genBTC settings area)
+    if (getPageSetting('DynamicPrestige2')) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 
     //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
@@ -200,7 +210,7 @@ function mainLoop() {
 
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
-            autoMagmiteSpender();
+            autoMagmiteSpender();       //(other.js)
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
@@ -208,7 +218,7 @@ function mainLoop() {
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
     //refresh the UI
-    updateValueFields();
+    updateValueFields();   // (NewUI2.js)
     ATrunning = false;
     //rinse, repeat
 }
