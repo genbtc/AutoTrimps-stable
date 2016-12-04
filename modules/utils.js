@@ -39,7 +39,14 @@ function getCorruptScale(type) {
 //Saves automation settings to browser cache
 function saveSettings() {
     // debug('Saved');
-    localStorage.setItem('autoTrimpSettings', JSON.stringify(autoTrimpSettings));
+    try {
+        localStorage.setItem('autoTrimpSettings', JSON.stringify(autoTrimpSettings));
+    } catch(e) {
+      if (e.code == 22) {
+        // Storage full, maybe notify user or do some clean-up
+        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
+      }
+    }        
 }
 
 //Grabs the automation settings from the page

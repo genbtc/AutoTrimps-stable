@@ -124,7 +124,14 @@ document.getElementById("portalWrapper").appendChild(customRatios);
 
 AutoPerks.saveDumpPerk = function() {
     var dumpIndex = document.getElementById("dumpPerk").selectedIndex;
-    localStorage.setItem('AutoperkSelectedDumpPresetID', dumpIndex);
+    try {
+        localStorage.setItem('AutoperkSelectedDumpPresetID', dumpIndex);
+    } catch(e) {
+      if (e.code == 22) {
+        // Storage full, maybe notify user or do some clean-up
+        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
+      }
+    }
 }
 AutoPerks.saveCustomRatios = function() {
     var perkRatioBoxes = document.getElementsByClassName('perkRatios');
@@ -132,7 +139,14 @@ AutoPerks.saveCustomRatios = function() {
     for(var i = 0; i < perkRatioBoxes.length; i++) {
         customRatios.push({'id':perkRatioBoxes[i].id,'value':parseFloat(perkRatioBoxes[i].value)});
     }
-    localStorage.setItem('AutoPerksCustomRatios', JSON.stringify(customRatios));
+    try {
+        localStorage.setItem('AutoPerksCustomRatios', JSON.stringify(customRatios));
+    } catch(e) {
+      if (e.code == 22) {
+        // Storage full, maybe notify user or do some clean-up
+        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
+      }
+    }        
 }
 
 //sets the ratioboxes with the default ratios embedded in the script when perks are instanciated. hardcoded @ lines 461-488 (ish)
@@ -167,7 +181,14 @@ AutoPerks.setDefaultRatios = function() {
         }
     }
     //save the last ratio used
-    localStorage.setItem('AutoperkSelectedRatioPresetID', ratioSet);
+    try {
+        localStorage.setItem('AutoperkSelectedRatioPresetID', ratioSet);
+    } catch(e) {
+      if (e.code == 22) {
+        // Storage full, maybe notify user or do some clean-up
+        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
+      }
+    }        
 }
 
 //updates the internal perk variables with values grabbed from the custom ratio input boxes that the user may have changed.
