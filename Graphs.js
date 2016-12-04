@@ -449,6 +449,89 @@ function gatherInfo() {
     }
 }
 
+var dataBase = {}
+var databaseIndexEntry = {
+    Index: 0,
+    Portal: 0,
+    Challenge: 0,    
+    World: 0
+}
+var databaseDirtyEntry = {
+    State: false,
+    Reason: "",
+    Index: -1
+}
+var portalExistsArray = [];
+var portalRunArray = [];
+var portalRunIndex = 0;
+
+function chkdsk() {
+    rebuildDataIndex();
+    checkIndexConsistency();
+    checkWorldSequentiality();
+    if (databaseDirtyEntry.State == true) {
+        //
+    }
+    
+}
+
+function rebuildDataIndex() {
+    for (var i = 0; i < allSaveData.length-1;  i++) {
+        //database
+        dataBase[i] ={
+            Index: i,
+            Portal: allSaveData[i].totalPortals,
+            Challenge: allSaveData[i].challenge,
+            World: allSaveData[i].world
+        }
+        //reverse lookup quickArray
+        portalRunArray.push({Index: i, Portal: allSaveData[i].totalPortals , Challenge: allSaveData[i].challenge});
+        
+        if (typeof portalExistsArray[allSaveData[i].totalPortals] == "undefined")
+            portalExistsArray[allSaveData[i].totalPortals] = {Exists: true, Row: portalRunIndex, Index: i, Challenge: allSaveData[i].challenge};
+        else {
+            databaseDirtyFlag.State = true;
+            databaseDirtyFlag.Reason = 'oreoportal';
+            databaseDirtyFlag.Index = i;
+            row = portalExistsArray[allSaveData[i].totalPortals].Row;
+        }
+        portalRunIndex++;        
+    }
+}
+
+function checkIndexConsistency() {
+    for (var i = 0; i < dataBase.length-1;  i++) {
+        if (dataBase[i].Index != i) {
+            databaseDirtyFlag = [true,'index',i];
+            break;
+        }
+    }
+}
+
+function checkWorldSequentiality() {
+    var lastworld,currentworld,nextworld;
+    for (var i = 1; i < dataBase.length-1;  i++) {
+        lastworldEntry = dataBase[i-1];
+        currentworldEntry = dataBase[i];
+        nextworldEntry = dataBase[i+1];        
+        lastworld = lastworldEntry.World;
+        currentworld = currentworldEntry.World;
+        nextworld = nextworldEntry.World
+        if (lastworld > currentworld && currentworld != 1) {
+            databaseDirtyFlag.State = true;
+            databaseDirtyFlag.Reason = 'descending';
+            databaseDirtyFlag.Index = i;
+            break;
+        }
+        if (lastworld > currentworld && currentworld == 1 && lastworld == nextworld) {
+            databaseDirtyFlag.State = true;
+            databaseDirtyFlag.Reason = 'badportal';
+            databaseDirtyFlag.Index = i;
+            break;
+        }
+    }    
+}
+
 function drawGraph() {
     setGraphData(document.getElementById('graphSelection').value);
 }
@@ -1197,4 +1280,4 @@ if (tmpGraphData !== null) {
 }
 
 //run the main gatherInfo function 1 time every second
-setInterval(gatherInfo, 1000);
+setInterval(gatherInfo, 100);

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    http://tampermonkey.net/
-// @version      2.1.3.6b-genbtc-12-2-2016+AutoPerks
+// @version      2.1.3.7-genbtc-12-4-2016+AutoPerks
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
@@ -12,7 +12,7 @@
 ////////////////////////////////////////
 //Variables/////////////////////////////
 ////////////////////////////////////////
-var ATversion = '2.1.3.6b-genbtc-12-2-2016+AutoPerks';
+var ATversion = '2.1.3.7-genbtc-12-4-2016+AutoPerks';
 var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
@@ -426,7 +426,7 @@ function getEnemyMaxAttack(world, level, name, diff, corrupt) {
         amt *= Math.pow(1.15, world - 59);
     }
     if (world < 60) amt *= 0.85;
-    if (world > 6 && game.global.mapsActive) amt *= 1.1;
+    //if (world > 6 && game.global.mapsActive) amt *= 1.1;
     if (diff) {
         amt *= diff;
     }
@@ -455,7 +455,7 @@ function getEnemyMaxHealth(world, level, corrupt) {
         amt *= Math.pow(1.1, world - 59);
     }
     if (world < 60) amt *= 0.75;
-    if (world > 5 && game.global.mapsActive) amt *= 1.1;
+    //if (world > 5 && game.global.mapsActive) amt *= 1.1;
     if (!corrupt)
         amt *= game.badGuys["Grimp"].health;
     else
@@ -2300,6 +2300,8 @@ function autoStance2(checkOnly) {
         bDamage += game.global.soldierHealth * 0.2;
     }
     baseDamage *= (game.global.titimpLeft > 0 ? 2 : 1); //consider titimp
+    baseDamage *= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;    //consider mapbonus
+
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
     var oneshotFast = (!enemyFast ? enemyHealth < baseDamage : false);
     var leadAttackOK = !leadChallenge || oneshotFast;
@@ -2319,6 +2321,7 @@ function autoStance2(checkOnly) {
             var enoughHealth2 = surviveOneShot && leadAttackOK && drainAttackOK && voidCritinDok;
             var enoughDamage2 = enemyHealth < ourDmgS;
             baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp
+            baseDamage /= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;    //unconsider mapbonus
             return [enoughHealth2,enoughDamage2];
         }
         //use D stance if: new army is ready&waiting / can survive void-double-attack or we can one-shot / can survive lead damage / can survive void-crit-dmg
@@ -2366,6 +2369,7 @@ function autoStance2(checkOnly) {
         }
     }
     baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp
+    baseDamage /= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;    //unconsider mapbonus
     return true;
 }
 
@@ -2376,6 +2380,7 @@ var needPrestige = false;
 var voidCheckPercent = 0;
 var HDratio = 0;
 var ourBaseDamage = 0;
+var ourBaseDamage2 = 0;
 var scryerStuck = false;
 var shouldDoMaps = false;
 
@@ -2425,7 +2430,8 @@ function autoMap() {
     ourBaseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
-    //(autostance2 has mapbonusmulti built in, along with titimp)
+    //(autostance2 has mapbonusmulti built in)
+    ourBaseDamage2 = ourBaseDamage; //keep a version without mapbonus
     ourBaseDamage *= mapbonusmulti;
 
     //get average enemyhealth and damage for the next zone, cell 50, snimp type and multiply it by a max range fluctuation of 1.2
@@ -2434,11 +2440,10 @@ function autoMap() {
     if (AutoStance<=1) {
         enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
         enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
-        enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     } else {
         enemyDamage = calcBadGuyDmg(null,getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.0),true);
-        enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     }
+    enemyHealth = getEnemyMaxHealth(game.global.world + 1,50);
     if(game.global.challengeActive == "Toxicity") {
         enemyHealth *= 2;
     }
@@ -2470,9 +2475,9 @@ function autoMap() {
         enemyHealth *= (1 + (game.challenges.Lead.stacks * 0.04));
         //if the zone is odd:   (skip the +2 calc for the last level.
         if (game.global.world % 2 == 1 && game.global.world != 179){
-            enemyDamage = getEnemyMaxAttack(game.global.world + 2, 50, 'Chimp', 1); //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
-            enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
-            enemyHealth = getEnemyMaxHealth(game.global.world + 2);
+             //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
+            enemyDamage = getEnemyMaxAttack(game.global.world + 2, 50, 'Chimp', 1.2);
+            enemyHealth = getEnemyMaxHealth(game.global.world + 2, 50);
             ourBaseDamage /= 1.5; //subtract the odd-zone bonus.
         }
         //let people disable this if they want.
@@ -2508,8 +2513,12 @@ function autoMap() {
     var selectedMap = "world";
 
 //BEGIN AUTOMAPS DECISIONS:
+    var shouldFarmLowerZone = false;
     //if we are at max map bonus, and we don't need to farm, don't do maps
-    if(game.global.mapBonus == 10 && !shouldFarm) shouldDoMaps = false;
+    if (game.global.mapBonus == 10 && !shouldFarm)
+        shouldDoMaps = false;
+    else if (game.global.mapBonus == 10 && shouldFarm)
+        shouldFarmLowerZone = getPageSetting('LowerFarmingZone');
 
     //FarmWhenNomStacks7
     if(game.global.challengeActive == 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
@@ -2527,7 +2536,7 @@ function autoMap() {
     //stack tox stacks if we are doing max tox, or if we need to clear our void maps
     if(game.global.challengeActive == 'Toxicity' && game.global.lastClearedCell > 93 && game.challenges.Toxicity.stacks < 1500 && ((getPageSetting('MaxTox') && game.global.world > 59) || needToVoid)) {
         shouldDoMaps = true;
-        //we willl get at least 85 toxstacks from the 1st voidmap (unless we have overkill)
+        //we will get at least 85 toxstacks from the 1st voidmap (unless we have overkill)
 //            if (!game.portal.Overkill.locked && game.stats.cellsOverkilled.value)
 
         stackingTox = !(needToVoid && game.challenges.Toxicity.stacks > 1415);
@@ -2558,27 +2567,26 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }
-
-
+    
     //Dynamic Siphonology section (when necessary)
-    var siphlvl = game.global.world - game.portal.Siphonology.level;
+    //Lower Farming Zone = Lowers the zone used during Farming mode. Starts 10 zones below current and Finds the minimum map level you can successfully one-shot
+    var siphlvl = shouldFarmLowerZone ? game.global.world - 10 : game.global.world - game.portal.Siphonology.level;
     var maxlvl = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
-    if (getPageSetting('DynamicSiphonology')){
+    if (getPageSetting('DynamicSiphonology') || shouldFarmLowerZone){
         for (siphlvl; siphlvl < maxlvl; siphlvl++) {
             //check HP vs damage and find how many siphonology levels we need.
-            var maphp = getEnemyMaxHealth(siphlvl);
+            var maphp = getEnemyMaxHealth(siphlvl) * 1.1;   // 1.1 mod is for all maps (taken out of the function)
             var cpthlth = getCorruptScale("health")/2; //get corrupted health mod
             if (mutations.Magma.active())
                 maphp *= cpthlth;
-            var mapdmg = ourBaseDamage * 2; //2 for titimp.
-            mapdmg /= mapbonusmulti;    //unfactor mapbonus dmg
+            var mapdmg = ourBaseDamage2 * (game.unlocks.imps.Titimp ? 2 :  1); // *2 for titimp. (ourBaseDamage2 has no mapbonus in it)
             if (game.upgrades.Dominance.done && !getPageSetting('ScryerUseinMaps2'))
                 mapdmg*=4;  //dominance stance and not-scryer stance in maps.
             if (mapdmg < maphp){
                 break;
             }
         }
-    }
+    }  
     var obj = {};
     var siphonMap = -1;
     for (var map in game.global.mapsOwnedArray) {
@@ -3481,7 +3489,7 @@ function delayStart() {
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     updateCustomButtons();
-    tooltip('confirm', null, 'update', '<br>12/2 Some small changes <a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check commit history</a> (if you care)<br><b><u>Report any bugs/problems please!</u></b><br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a><br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option). <u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
+    tooltip('confirm', null, 'update', '<b>Add a farm lower level zones option (maps settings tab)</b><br>12/2 Some small changes <a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check commit history</a> (if you care)<br><b><u>Report any bugs/problems please!</u></b><br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a><br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option). <u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
 

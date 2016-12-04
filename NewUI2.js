@@ -153,6 +153,7 @@ function initializeAllSettings() {
     createSetting('AutoMaps', 'Auto Maps', 'Recommended. Automatically run maps to progress. Very Important. Has multiple modes: <b>Prestige, Voids, Want more Damage, Want more Health, Want Health & Damage, and Farming.</b>Prestige takes precedence and does equal level maps until it gets what is needed as per Autotrimps Prestige dropdown setting. Voids is self explanatory: use the Void Difficulty Check setting to control the amount of farming. If \'want more damage\', it will only do 10 maps for 200% mapbonus damage bonus. If \'Farming\', it does maps beyond 10 if the displayed number is over >16x. \'Want more health[or and damage]\' is basically just a status message telling you need more health, theres not much that can be done besides tell AutoLevelEquipment to keep buying stuff. If you \'want health\' but your damage is OK to continue, invest in more HP perks.', 'boolean',true,null,"Maps");
     createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps. Decides when to run Unique maps. Required for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc) and their AutoPortal. Required to auto-run The Wall and Dimension of Anger. Required for Bionic Before Spire.', 'boolean',true,null,"Maps");
     createSetting('DynamicSiphonology', 'Dynamic Siphonology', 'Recommended. Use the right level of siphonology based on your damage output. IE: Only uses  siphonology if you are weak. With this OFF it means it ALWAYS uses the lowest siphonology map you can create.', 'boolean', true, null, 'Maps');
+    createSetting('LowerFarmingZone', 'Lower Farming Zone', 'Lowers the zone used during Farming mode. Uses the dynamic siphonology code, to Find the minimum map level you can successfully one-shot, and uses this level for any maps done after the first 10 map stacks. The difference being it goes lower than what gives you map-bonus, but after 10 stacks you dont need bonus, you just want to do maps that you can one-shot. Goes as low as 10 below current zone if your damage is that bad, but this is extreme and indicates you should probably portal.', 'boolean', true, null, 'Maps');
     createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm level 200/199(or BW) maps for X minutes before continuing onto attempting Spire - No Longer runs 10 maps prior to this countdown, so your timer will likely need to increase. (0 to disable)', 'value', '0', null, 'Maps');
     createSetting('RunBionicBeforeSpire', 'Run Bionic Before Spire', 'CAUTION:  Runs Bionic Wonderlands and repeatedly farms VI(level 200) before attempting Spire, for the purpose of farming. Then attempts the spire. The Minutes-Before-Spire timer runs concurrently to this, and needs to be set. If not set, it will exit without doing any Bionics... You can un-toggle it as desired. WARNING: These 100 square maps take ~3x longer than normal maps. WARNING: If you dont have Bionic Magnet mastery, this will run the pre-requisites and take longer.' , 'boolean', null, null, 'Maps');
     createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Optional/Rare. Exits the Spire early, after completing cell X. example: 40 for Row 4. (better use 0 to disable, not -1)', 'value', '0', null, 'Maps');
@@ -402,7 +403,7 @@ function automationMenuInit() {
     newContainer = document.createElement("DIV");
     newContainer.setAttribute("style", "display: block; font-size: 1.1vw; text-align: center; background-color: rgba(0,0,0,0.3);");
     newContainer.setAttribute("onmouseover", 'tooltip(\"Health to Damage ratio\", \"customText\", event, \"This status box displays the current mode Automaps is in. The number usually shown here during Farming or Want more Damage modes is the \'HDratio\' meaning EnemyHealth to YourDamage Ratio (in X stance). Above 16 will trigger farming, above 4 will trigger going for Map bonus up to 10 stacks. If the number is not shown, hovering will display it below.<p><b>enoughHealth: </b>\" + enoughHealth + \"<br><b>enoughDamage: </b>\" + enoughDamage +\"<br><b>shouldFarm: </b>\" + shouldFarm +\"<br><b>H:D ratio = </b>\" + HDratio + \"<br>\")');
-    newContainer.setAttribute("onmouseout", 'tooltip("hide")');    
+    newContainer.setAttribute("onmouseout", 'tooltip("hide")');
     abutton = document.createElement("SPAN");
     abutton.id = 'autoMapStatus';
     newContainer.appendChild(abutton);
@@ -536,7 +537,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
             btn.appendChild(option);
         }
         btn.value = autoTrimpSettings[id].selected;
-        
+
         var dropdownLabel = document.createElement("Label");
         dropdownLabel.id = id + "Label";
         dropdownLabel.innerHTML = id + ":";
