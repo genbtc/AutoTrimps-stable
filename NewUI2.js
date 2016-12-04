@@ -744,6 +744,7 @@ for (var setting in autoTrimpSettings) {
     }
 }
 */
+
 //Checks portal related UI settings (TODO: split into two, and move the validation check to NewUI)
 function checkPortalSettings() {
     var portalLevel = -1;
@@ -791,3 +792,28 @@ function checkPortalSettings() {
         tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
     return portalLevel;
 }
+
+
+//UI startup:
+//Add breeding box:
+var breedbarContainer = document.querySelector('#trimps > div.row');
+var addbreedTimerContainer = document.createElement("DIV");
+addbreedTimerContainer.setAttribute('class', "col-xs-3");
+addbreedTimerContainer.setAttribute('style','padding-left: 0;');
+addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now (capped at 30 obv.)\")');
+addbreedTimerContainer.setAttribute("onmouseout", 'tooltip("hide")');
+var addbreedTimerInside = document.createElement("DIV");
+addbreedTimerInside.id='turkimpBuff';
+addbreedTimerInside.setAttribute('style','display: block;');
+var addbreedTimerInsideIcon = document.createElement("SPAN");
+addbreedTimerInsideIcon.setAttribute('class',"icomoon icon-clock");
+var addbreedTimerInsideText = document.createElement("SPAN");
+addbreedTimerInsideText.id='hiddenBreedTimer';
+addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
+addbreedTimerInside.appendChild(addbreedTimerInsideText);
+addbreedTimerContainer.appendChild(addbreedTimerInside);
+breedbarContainer.appendChild(addbreedTimerContainer);
+//Add tooltip to current army count
+var armycount = document.getElementById('trimpsFighting');
+armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
+armycount.setAttribute("onmouseout", 'tooltip("hide")');
