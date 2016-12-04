@@ -1645,9 +1645,17 @@ function autoLevelEquipment() {
     }
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //change name to make sure these are local to the function
-    var enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
-        (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
-    var enoughDamageE = (baseDamage * 4 > enemyHealth);
+    var enoughHealthE,enoughDamageE;
+    if (game.upgrades.Dominance.done) {
+        enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
+            (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
+        enoughDamageE = (baseDamage * 4 > enemyHealth);
+    } else {
+        enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
+            (baseHealth > 8 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
+        enoughDamageE = (baseDamage > enemyHealth);
+    }
+    
 
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];
@@ -2485,8 +2493,12 @@ function autoMap() {
             shouldFarm = enemyHealth > (ourBaseDamage * 10);
         }
     }
+    //Enough Health and Damage calculations:
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
+    if (game.upgrades.Dominance.done)
+        enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
+    else
+        enoughHealth = (baseHealth > 8 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
     enoughDamage = (ourBaseDamage * 4) > enemyHealth;
     //remove this in the meantime until it works for everyone.
 /*     if (!wantToScry) {
@@ -2503,17 +2515,20 @@ function autoMap() {
         enoughDamage = result[1];
         scryerStuck = !enoughHealth;
     } */
-
+    //Health:Damage ratio: (status)
     HDratio = enemyHealth / ourBaseDamage;
-    //prevents map-screen from flickering on and off during startup when base damage is 0.
-    shouldDoMaps = false;
-    if (ourBaseDamage > 0){
-        shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm || scryerStuck;
-    }
-    var selectedMap = "world";
+
 
 //BEGIN AUTOMAPS DECISIONS:
+    //vars
+    var selectedMap = "world";
     var shouldFarmLowerZone = false;
+    shouldDoMaps = false;
+    //prevents map-screen from flickering on and off during startup when base damage is 0.    
+    if (ourBaseDamage > 0){
+        shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm || scryerStuck;
+    }        
+    
     //if we are at max map bonus, and we don't need to farm, don't do maps
     if (game.global.mapBonus == 10 && !shouldFarm)
         shouldDoMaps = false;
