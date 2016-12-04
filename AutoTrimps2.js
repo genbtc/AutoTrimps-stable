@@ -2515,6 +2515,7 @@ function autoMap() {
         enoughDamage = result[1];
         scryerStuck = !enoughHealth;
     } */
+    
     //Health:Damage ratio: (status)
     HDratio = enemyHealth / ourBaseDamage;
 
@@ -2526,7 +2527,7 @@ function autoMap() {
     shouldDoMaps = false;
     //prevents map-screen from flickering on and off during startup when base damage is 0.    
     if (ourBaseDamage > 0){
-        shouldDoMaps = !enoughHealth || !enoughDamage || shouldFarm || scryerStuck;
+        shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck;
     }        
     
     //if we are at max map bonus, and we don't need to farm, don't do maps
@@ -2534,6 +2535,8 @@ function autoMap() {
         shouldDoMaps = false;
     else if (game.global.mapBonus == 10 && shouldFarm)
         shouldFarmLowerZone = getPageSetting('LowerFarmingZone');
+    else if (game.global.mapBonus == 0 && !enoughHealth)
+        shouldDoMaps = true;
 
     //FarmWhenNomStacks7
     if(game.global.challengeActive == 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
@@ -2821,7 +2824,7 @@ function autoMap() {
             if (game.global.switchToMaps &&
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
-                ((!enoughDamage || !enoughHealth) && game.global.lastClearedCell < 9) ||
+                (!enoughDamage && game.global.lastClearedCell < 9) ||
                 (shouldFarm && game.global.lastClearedCell >= 59) ||
                 (scryerStuck))
                 &&
