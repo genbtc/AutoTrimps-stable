@@ -4,7 +4,7 @@
 Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)<br />
 
 [![Join the chat at https://gitter.im/AutoTrimps/Lobby](https://badges.gitter.im/AutoTrimps/Lobby.svg)](https://gitter.im/AutoTrimps/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-## Discussion / Discord Channel 
+## Discussion / Discord Channel
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"><img src="https://pbs.twimg.com/profile_images/568588143226413056/9Lwrixxj.png" width=48></a>
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
@@ -24,7 +24,7 @@ Overly detailed Chrome/TamperMonkey Instructions:
 - The .user.js file is a "stub" or "loader" that references the AutoTrimps2.js file which is where the actual script is located.
 - The purpose of .user.js is so that you don't have to rely on TamperMonkey's update functionality - instead it will automaticaly download the updated copy from the URL provided everytime its loaded.
 
-FireFox/GreaseMonkey instructions: 
+FireFox/GreaseMonkey instructions:
 - GreaseMonkey identifies userscripts by visiting a URL that ends with ".user.js" in them:
 - Visit this URL, and Agree to install the userscript:  https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js
 
@@ -47,7 +47,7 @@ Notes:
 If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
 Feel free to submit any bugs/suggestions as issues here on github.
 
-## Current feature changes by genBTC (up to date as of 11/29/2016): 
+## Current feature changes by genBTC (up to date as of 11/29/2016):
 - ***11/29***
 - Puts a 5 second pause in between cycling AutoMagmiteSpender from "on portal" to "always" so you can switch it to "off" without it spending all your magmite.
 - Make multi-toggle tooltip title give the name of all 3 options to be more descriptive.
@@ -57,7 +57,7 @@ Feel free to submit any bugs/suggestions as issues here on github.
 - fix/re-arrange lazy Trainers duplicate code
 - exit autostance if Formations isnt done (like level <60)
 - Lead damage stacks were wrongly on 0.0005, its 0.0003.
-- Trimpicide Mod #1: consider Titimp = forceAbandon and kill titimp if theres less than 5 seconds left on it or, we stand to gain more than 5 antistacks. 
+- Trimpicide Mod #1: consider Titimp = forceAbandon and kill titimp if theres less than 5 seconds left on it or, we stand to gain more than 5 antistacks.
 - Trimpicide Mod #2: if we're sitting around breeding for >60s  while being over 5 anti stacks away from target.
 - Include beta autostance2 code that im working on so I dont have a bunch of crazy local commits.
 - ***11/26***
@@ -73,7 +73,7 @@ Feel free to submit any bugs/suggestions as issues here on github.
 - <a href="https://puu.sh/srfQq/38a0be6656.png" target="#">New Hover tooltips: Screenshot</a> beta0.1, more to come
 - ***11/22***
 - Auto Spend Magmite before portaling - (setting in genBTC page)- Part 1 buys any permanent one-and-done upgrades in order from most expensive to least. Part 2 then finds/buys the cheapest non-permanent multi-upgrade and repeats itself until you cant buy anymore.
-- Buy 2 buildings instead of 1 if we have the mastery 
+- Buy 2 buildings instead of 1 if we have the mastery
 - Entirely remove high lumberjack ratio during Spire.
 - During Magma with 3000+ Tributes, switch to 1/12/12 auto-worker-ratios instead of 1/2/22.
 - Add a 10 second timeout Popup window that can postpone Autoportal when clicked.
@@ -83,13 +83,13 @@ Feel free to submit any bugs/suggestions as issues here on github.
 - Added new ratios to AutoPerks (ZXV3,truth_late)
 - AutoFight if timer is <0.5 not <0.1 now
 - ***11/19***
-- Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer). 
+- Doesnt run the 10 maps for Mapbonus before Spire now. Please increase/adjust your MinutesBeforeSpire Timer accordingly (the 10 maps were never accounted for in that timer).
 - Re-arranged all the categories in the settings window and updated tooltips
 - Kill your trimps (AutoTrimpicide) for Anti-Stacks more often
 
 ## Gap in Changelog exists here.
 
-## Prior feature changes by genBTC (up to date as of 8/5/2016): 
+## Prior feature changes by genBTC (up to date as of 8/5/2016):
 - Minutes to Farm Before Spire - force some time to be spent so you can for sure complete Spire (recommended: 3-10 minutes)
 - Auto Upgrade Heirlooms - spends ALL your nullifium on the recommended upgrades
 - Auto Golden Upgrades = Buys all the Golden Helium, Battle, or Voids when available.
@@ -128,7 +128,7 @@ This image is a quick documentation of the heirloom carry bug, and the fix: http
 - Dynamic Siphonology - only when needed based on (Enemyhealth / baseDamage)
 Created a new setting in the advanced options. "Dynamic Siphonology".
 It will switch to the proper Map-level as soon as the current map is completed.
-So you can choose original behavior of always using the lowest level map, 
+So you can choose original behavior of always using the lowest level map,
 or the modified behavior, which increases the map level based on your damage.
 The old behavior of "no siphonology at all when using DisableFarming" is no longer applied, under any circumstance.
 - Skip Gear Level 58&59: Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.
@@ -139,7 +139,7 @@ The old behavior of "no siphonology at all when using DisableFarming" is no long
 This way you can see things progressing, instead of wondering what is going on.
 The number pertains to Enemy Health / Base Damage(non-stance). Above 16 means farm. Below 10 means stop farming.
 - Farm @ cell 61 (megamining) not 82 (megafarming).
-- Farm if enemyHealth divided by baseDamage (in X stance) is between 10 and 16. (Used to be 10 and 15). 
+- Farm if enemyHealth divided by baseDamage (in X stance) is between 10 and 16. (Used to be 10 and 15).
 Means it will farm very slightly less.
 - Take Map Bonus +%Damage into account for farming decisions. (so you can farm less.)
 - Stop from firing all scientists when it reaches the threshhold. (250k farmers)
@@ -182,28 +182,32 @@ See changelog at the original version's github page: https://github.com/zininzin
 - Yellow border - upgrade is available, but not affordable
 - Orange border - upgrade is available, affordable, but will actually reduce stat in question
 - Red border - you have enough resources to level equip after upgrade to surpass it's current stats.
-- Green border on buildings - Best for gems 
+- Green border on buildings - Best for gems
 
 
 ## Detailed Code Documentation:
 
 Since javascript is easily human readable, Much can be learned by reading the source code, starting with this knowledge:
 
+The script was faux-modularized on 12/4/2016, with the modules residing in the '/modules/' dir. This means that although the files are seperate, they are all still required for the script to run. In addition, the interoperability of the modules is still undocumented, and some(most) rely on other modules. Sometime in the future, you will be able to load/use different verisons of the various modules. 
+AutoTrimps2.js is the main file that loads the modules, and then runs its mainLoop.
+
 The mainLoop() consists of the following subroutine functions, all of which are enable-able/disable-able by their buttons.:
+-     exitSpireCell();        //"Exit Spire After Cell" (other.js)
 -     workerRatios();         //"Auto Worker Ratios"
 -     buyUpgrades();          //"Buy Upgrades"
 -     autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
 -     buyStorage();           //"Buy Storage"
 -     buyBuildings();         //"Buy Buildings"
--     buyJobs();              //"Buy Jobs"    
+-     buyJobs();              //"Buy Jobs"
 -     manualLabor();          //"Auto Gather/Build"
--     autoMap();              //"Auto Maps"    
--     manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
--     autoPortal();           //"Auto Portal" (hidden until level 60)
+-     autoMap();              //"Auto Maps"
+-     autoBreedTimer();          //"Genetecist Timer" / "Auto Breed Timer"
+-     autoPortal();           //"Auto Portal" (hidden until level 40)
 -     autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
+-     autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
 -     toggleAutoTrap();       //"Trap Trimps"
 -     autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
--     autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
 -     autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
 -     autoStance();           //"Auto Stance"
 -     betterAutoFight();      //"Better Auto Fight"

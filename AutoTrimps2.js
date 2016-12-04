@@ -207,7 +207,8 @@ function mainLoop() {
         lastZoneStartTime = new Date().getTime() - ZoneStartTime;
     }
     ZoneStartTime = game.global.zoneStarted;
-
+    
+    //Auto Magmite Spender
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
             autoMagmiteSpender();       //(other.js)
