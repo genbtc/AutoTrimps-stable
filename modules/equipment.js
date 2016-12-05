@@ -252,15 +252,13 @@ function autoLevelEquipment() {
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     //change name to make sure these are local to the function
     var enoughHealthE,enoughDamageE;
-    if (game.upgrades.Dominance.done) {
-        enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
-            (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
-        enoughDamageE = (baseDamage * 4 > enemyHealth);
-    } else {
-        enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
-            (baseHealth > 8 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
-        enoughDamageE = (baseDamage > enemyHealth);
-    }
+    const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
+    const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
+    var numHits = 8;    //this can be changed.
+    //asks if we can survive x number of hits in either D stance or X stance.
+    enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
+        (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
+    enoughDamageE = (baseDamage * FORMATION_MOD_2 > enemyHealth);
     
 
     for (var equipName in equipmentList) {
