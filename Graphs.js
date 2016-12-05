@@ -21,8 +21,8 @@ newItem.setAttribute("class", "btn btn-default");
 newItem.setAttribute("onclick", "autoToggleGraph(); drawGraph();");
 var settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
 settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
-document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 600px; overflow: auto;"><div id="graph" style="margin-bottom: 10px;margin-top: 10px; height: 530px;"></div>';
-document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
+document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style="display: none; height: 600px; overflow: auto;"><div id="graph" style="margin-bottom: 10px;margin-top: 5px; height: 530px;"></div>';
+document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;font-size: 1em;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
 //Create the buttons in the graph Footer:
 //Create the dropdown for what graph to show    (these correspond to headings in setGraph() and have to match)
 var graphList = ['HeliumPerHour', 'HeliumPerHour Delta', 'Helium', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time #2', 'Clear Time', 'Cumulative Clear Time #2','Cumulative Clear Time', 'Run Time', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
@@ -41,19 +41,19 @@ for (var item in graphList) {
 document.getElementById('graphFooterLine1').appendChild(btn);
 //just write it in HTML instead of a million lines of DOM javascript.
 document.getElementById("graphFooterLine1").innerHTML += '\
-<div style="flex:auto;"><button onclick="drawGraph()">Refresh</button></div>\
+<div><button onclick="drawGraph()">Refresh</button></div>\
 <div style="flex:0 100 5%;"></div>\
 <div><input type="checkbox" id="clrChkbox" onclick="toggleClearButton();"></div>\
-<div style="flex:auto; margin-left: 0.5vw;"><button id="clrAllDataBtn" onclick="clearData(null,true); drawGraph();" class="btn" disabled= style="flex:auto; padding: 2px 6px;border: 1px solid white;">Clear All Previous Data</button></div>\
+<div style="margin-left: 0.5vw;"><button id="clrAllDataBtn" onclick="clearData(null,true); drawGraph();" class="btn" disabled="" style="flex:auto; padding: 2px 6px;border: 1px solid white;">Clear All Previous Data</button></div>\
 <div style="flex:0 100 5%;"></div>\
-<div style="flex: 0 2 3.5vw;"><input style="width:100%;min-width: 40px;" id="deleteSelectedTextBox"></div>\
+<div style="flex:0 2 3.5vw;"><input style="width:100%;min-width: 40px;" id="deleteSelectedTextBox"></div>\
 <div style="flex:auto; margin-left: 0.5vw;"><button onclick="deleteSelected(); drawGraph();">Delete Selected Portal</button></div>\
 <div style="flex:0 100 5%;"></div>\
 <div style="flex:auto;"><button  onclick="GraphsImportExportTooltip(\'ExportGraphs\', null, \'update\')">Export your Graph Database</button></div>\
 <div style="float:right; margin-right: 0.5vw;"><button onclick="toggleSelectedGraphs()">Invert Selection</button></div>\
 <div style="float:right; margin-right: 1vw;"><button onclick="toggleAllGraphs()">All Off/On</button></div>';
 document.getElementById("graphFooterLine2").innerHTML += '\
-<span style="float: left;">Tips: You can zoom by dragging a box around an area. You can turn series off by clicking them on the legend. To delete a portal, Type its portal number in the box and press Delete Selected</span>\
+<span style="float: left;" onmouseover=\'tooltip(\"Tips\", \"customText\", event, \"You can zoom by dragging a box around an area. You can turn portals off by clicking them on the legend. Quickly view the last portal by clicking it off, then Invert Selection. Or by clicking All Off, then clicking the portal on. To delete a portal, Type its portal number in the box and press Delete Selected. Using negative numbers in the Delete Selected box will KEEP that many portals (starting counting backwards from the current one), ie: if you have Portals 1000-1015, typing -10 will keep 1005-1015. Export Graph Database will make a backup of all the graph data (not that useful yet). There is a browser data storage limitation of 10MB, so do not exceed 15 portals-worth of data.\")\'>Tips: Hover for usage tips.</span>\
 <input style="height: 20px; float: right; margin-right: 0.5vw;" type="checkbox" id="rememberCB">\
 <span style="float: right; margin-right: 0.5vw;">Try to Remember Which Portals are Selected when switching between Graphs:</span>';
 //handle the locking mechanism checkbox for the Clear all previous data button:
