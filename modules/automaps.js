@@ -118,8 +118,8 @@ function autoMap() {
     const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
     var numHits = 8;    //this can be changed.
     //asks if we can survive x number of hits in either D stance or X stance.
-    enoughHealthE = (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
-    enoughDamageE = (baseDamage * FORMATION_MOD_2 > enemyHealth);
+    enoughHealth = (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
+    enoughDamage = (baseDamage * FORMATION_MOD_2 > enemyHealth);
 
     //remove this in the meantime until it works for everyone.
 /*     if (!wantToScry) {
