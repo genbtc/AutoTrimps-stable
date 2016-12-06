@@ -362,7 +362,7 @@ function autoMap() {
             }
             selectedMap = theMap.id;
             //Restart the voidmap if we hit 30 nomstacks on the final boss
-            if(game.global.mapsActive && game.global.challengeActive == "Nom" && getPageSetting('FarmWhenNomStacks7')) {
+            if(game.global.mapsActive && getCurrentMapObject().location == "Void" && game.global.challengeActive == "Nom" && getPageSetting('FarmWhenNomStacks7')) {
                 if(game.global.mapGridArray[theMap.size-1].nomStacks >= 100) {
                     mapsClicked(true);
                 }
