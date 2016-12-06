@@ -202,7 +202,7 @@ function autoMap() {
         shouldDoSpireMaps = true;
     }
     //Run a single map to get nurseries when blacksmithery is purchased
-    if (game.talents.blacksmith.purchased && game.buildings.Nursery.locked && game.global.world >= 60) {
+    if (game.talents.blacksmith.purchased && game.buildings.Nursery.locked && game.global.world >= 50) {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }

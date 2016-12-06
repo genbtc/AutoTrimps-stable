@@ -47,7 +47,17 @@ Notes:
 If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
 Feel free to submit any bugs/suggestions as issues here on github.
 
-## Current feature changes by genBTC (up to date as of 11/29/2016):
+## Current feature changes by genBTC (up to date as of 12/4/2016):
+- ***12/4***
+- Completely rewrite lots of the Graphs.js code.
+- Converted the codebase into individual files, to help people find stuff.
+- For automaps, Not enough Health doesnt do 10 maps anymore, it only does 1.
+- Adjust enoughHealth calculation for people without D stance.
+- Add a farm lower level zones option (maps settings tab).
+- ***12/2***
+- Changed Automaps farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option).
+- Hover over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.
+- Add dailymods: weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)
 - ***11/29***
 - Puts a 5 second pause in between cycling AutoMagmiteSpender from "on portal" to "always" so you can switch it to "off" without it spending all your magmite.
 - Make multi-toggle tooltip title give the name of all 3 options to be more descriptive.
