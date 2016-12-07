@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
-// @namespace    http://tampermonkey.net/
-// @version      2.1.3.7-genbtc-12-4-2016+Modular
+// @namespace    https://github.com/genbtc/AutoTrimps
+// @version      2.1.3.8-genbtc-12-6-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.3.7-genbtc-12-4-2016+Modular';
+var ATversion = '2.1.3.8-genbtc-12-6-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -21,30 +21,18 @@ var atscript = document.getElementById('AutoTrimps-script')
 if (atscript !== null) {
     base = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
 }
-//Load Modular pieces:
+//Load stuff needed to load other stuff:
 document.head.appendChild(document.createElement('script')).src = base + module + 'utils.js';
 
 function initializeAutoTrimps() {
     loadPageVariables();
     document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
-    //    
-    document.head.appendChild(document.createElement('script')).src = base + module + 'query.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'heirlooms.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'buildings.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'jobs.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'equipment.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'gather.js';    
-    document.head.appendChild(document.createElement('script')).src = base + module + 'autostance.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'battlecalc.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'automaps.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'autobreedtimer.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'dynprestige.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'autofight.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'scryer.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'portal.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'other.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'upgrades.js';
+    //Load modules:
+    var modules = ['query', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other', 'upgrades'];
+    for (var i=0,len=modules.length; i<len; i++) {
+        document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
+    }
     //Autoperks
     if (typeof(AutoPerks) === 'undefined')
         document.head.appendChild(document.createElement('script')).src = base + module + 'autoperks.js';
@@ -52,20 +40,19 @@ function initializeAutoTrimps() {
         debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
     toggleSettingsMenu();
     toggleSettingsMenu();
-        
+    //
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');    
 }
 
 function printChangelog() {
-    tooltip('confirm', null, 'update', 
-'<b>Add a farm lower level zones option (maps settings tab)</b>\
-<br>12/2 Some small changes <a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check commit history</a> (if you care)\
+    tooltip('confirm', null, 'update', '\
+<b>PSA: AutoTrimps was not designed for  new/low-level players.</b>The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned. Happy scripting! -genBTC <br> \
+<br><b>12/6 - AutoMagmiteSpender now has a new cost efficiency algorithm.</b>(read new tooltip)\
+<br><b>AT now does its Nursery map for Blacksmithery owners at z50 not z60</b>, to prevent breeding time-stalls.\
 <br><b><u>Report any bugs/problems please!</u></b>\
-<br><a href=" https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-11292016" target="#">Read the 11/29 Changelog Here</a>\
-<br><b>Changed Automaps</b> farming/damage/health calculations. AutoMaps farms above 16x now. (10x in Lead, 10x in Nom with the Farm on >7 NOMstacks option).\
-<br><u>Hover</u> over the Farming/Advancing/WantMoreDamage status area to see the precise number now. Read the AutoMaps tooltip in settings for slightly more information.\
-<br><b>Add dailymods:</b> weakness, rampage, oddtrimpnerf, eventrimpbuff, badStrength, badMapStrength, bloodthirst to Autostance1. (and AS2 has minDmg, maxDmg too)'
-    , 'cancelTooltip()', 'Script Update Notice ' + ATversion);
+<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-1242016" target="#">Read the 12/4 Changelog Here</a>\
+<br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
+', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }
 ////////////////////////////////////////
 //Main DELAY Loop///////////////////////
@@ -96,6 +83,7 @@ var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
 
+var MODULES = {};
 var bestBuilding;
 var scienceNeeded;
 var breedFire = false;

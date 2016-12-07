@@ -1,5 +1,28 @@
+MODULES["automaps"] = {};
+//These can be changed (in the console) if you know what you're doing:
+MODULES["automaps"].farmingCutoff = 16;     //above this the game will farm.
+MODULES["automaps"].numHitsSurvived = 8;    //survive X hits in D stance or not enough Health.
+MODULES["automaps"].LeadfarmingCutoff = 10; //lead has its own farmingCutoff
+MODULES["automaps"].NomfarmingCutoff = 10;  //nom has its own farmingCutoff
+MODULES["automaps"].NurseryMapLevel = 50;   //with blacksmithery, run map for nursery on this level
+//if FarmWhenNomStacks7 setting is on: [x,y,z];
+MODULES["automaps"].NomFarmStacksCutoff = [7,30,100];  
+//[x] get maxMapBonus (10) if we go above (7) stacks on Improbability (boss)
+//[y] go into maps on (30) stacks on Improbability (boss), farm until we fall under the 'NomfarmingCutoff' (10)
+//[z] restarts your voidmap if you hit (100) stacks on Improbability (boss)
+MODULES["automaps"].MapTierZone = [70,47,16];    //descending order for these.
+//                 .MapTier?Sliders = [size,difficulty,loot,biome];
+MODULES["automaps"].MapTier0Sliders = [9,9,9,'Mountain'];   //Zone 70+ (9/9/9 Metal)
+MODULES["automaps"].MapTier1Sliders = [9,9,4,'Mountain']; //Zone 47-70 (9/9/4 Metal)
+MODULES["automaps"].MapTier2Sliders = [9,9,0,'Random'];   //Zone 16-47 (9/9/0 Random)
+MODULES["automaps"].MapTier3Sliders = [9,0,0,'Random'];    //Zone 6-16 (9/0/0 Random)
+MODULES["automaps"].preferGardens = true;   //prefer run Garden maps instead of ^^ if we have Decay done
+//These have no reason to be changed, or things may get weird:
+MODULES["automaps"].maxMapBonus = 10;       //
+MODULES["automaps"].shouldFarmCell = 59;
+MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
 
-
+//Initialize Global Vars (dont mess with these, nothing good can come from it).
 var stackingTox = false;
 var doVoids = false;
 var needToVoid = false;
@@ -14,6 +37,7 @@ var shouldDoMaps = false;
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
 function autoMap() {
+    var customVars = MODULES["automaps"];
     //allow script to handle abandoning
     if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
     //if we are prestige mapping, force equip first mode
@@ -91,7 +115,7 @@ function autoMap() {
     }
     // enter farming if it takes over 4 hits in D stance (16) (and exit if under.)
     if(!getPageSetting('DisableFarm') && ourBaseDamage > 0) {
-        shouldFarm = enemyHealth > (ourBaseDamage * 16);
+        shouldFarm = enemyHealth > (ourBaseDamage * customVars.farmingCutoff);
     }
 
     //Lead specific farming calcuation section:
@@ -109,16 +133,17 @@ function autoMap() {
         }
         //let people disable this if they want.
         if(!getPageSetting('DisableFarm')) {
-            shouldFarm = enemyHealth > (ourBaseDamage * 10);
+            shouldFarm = enemyHealth > (ourBaseDamage * customVars.LeadfarmingCutoff);
         }
     }
     //Enough Health and Damage calculations:
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
-    if (game.upgrades.Dominance.done)
-        enoughHealth = (baseHealth/2 > 8 * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod));
-    else
-        enoughHealth = (baseHealth > 8 * (enemyDamage - baseBlock > 0 ? enemyDamage - baseBlock : enemyDamage * pierceMod));
-    enoughDamage = (ourBaseDamage * 4) > enemyHealth;
+    const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
+    const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
+    //asks if we can survive x number of hits in either D stance or X stance.
+    enoughHealth = (baseHealth/FORMATION_MOD_1 > customVars.numHitsSurvived * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
+    enoughDamage = (baseDamage * FORMATION_MOD_2 > enemyHealth);
+
     //remove this in the meantime until it works for everyone.
 /*     if (!wantToScry) {
         //enough health if we can survive 8 hits in D stance (health/2 and block/2)
@@ -149,23 +174,25 @@ function autoMap() {
         shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck;
     }        
     
-    //if we are at max map bonus, and we don't need to farm, don't do maps
-    if (game.global.mapBonus == 10 && !shouldFarm)
+    //if we are at max map bonus (10), and we don't need to farm, don't do maps
+    if (game.global.mapBonus == customVars.maxMapBonus && !shouldFarm)
         shouldDoMaps = false;
-    else if (game.global.mapBonus == 10 && shouldFarm)
+    else if (game.global.mapBonus == customVars.maxMapBonus && shouldFarm)
         shouldFarmLowerZone = getPageSetting('LowerFarmingZone');
+    //do 1 map if we dont have enough health
     else if (game.global.mapBonus == 0 && !enoughHealth)
         shouldDoMaps = true;
 
     //FarmWhenNomStacks7
     if(game.global.challengeActive == 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
-        if (game.global.gridArray[99].nomStacks > 7){
-            if (game.global.mapBonus != 10)
+        //Get maxMapBonus (10) if we go above (7) stacks on Improbability (boss)
+        if (game.global.gridArray[99].nomStacks > customVars.NomFarmStacksCutoff[0]){
+            if (game.global.mapBonus != customVars.maxMapBonus)
                 shouldDoMaps = true;
         }
-        //Go into maps on 30 stacks, farm until we fall under 10 H:D ratio
-        if (game.global.gridArray[99].nomStacks == 30){
-            shouldFarm = (HDratio > 10);
+        //Go into maps on (30) stacks on Improbability (boss), farm until we fall under (10) H:D ratio
+        if (game.global.gridArray[99].nomStacks == customVars.NomFarmStacksCutoff[1]){
+            shouldFarm = (HDratio > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
         }
     }
@@ -186,7 +213,7 @@ function autoMap() {
     else stackingTox = false;
 
     //during 'watch' challenge, run maps on these levels:
-    var watchmaps = [15, 25, 35, 50];
+    var watchmaps = customVars.watchChallengeMaps;
     var shouldDoWatchMaps = false;
     if (game.global.challengeActive == 'Watch' && watchmaps.indexOf(game.global.world) > -1 && game.global.mapBonus < 1){
         shouldDoMaps = true;
@@ -200,7 +227,7 @@ function autoMap() {
         shouldDoSpireMaps = true;
     }
     //Run a single map to get nurseries when blacksmithery is purchased
-    if (game.talents.blacksmith.purchased && game.buildings.Nursery.locked && game.global.world >= 60) {
+    if (game.talents.blacksmith.purchased && game.buildings.Nursery.locked && game.global.world >= customVars.NurseryMapLevel) {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }
@@ -359,9 +386,9 @@ function autoMap() {
                     shouldFarm = false;
             }
             selectedMap = theMap.id;
-            //Restart the voidmap if we hit 30 nomstacks on the final boss
-            if(game.global.mapsActive && game.global.challengeActive == "Nom" && getPageSetting('FarmWhenNomStacks7')) {
-                if(game.global.mapGridArray[theMap.size-1].nomStacks >= 100) {
+            //Restart the voidmap if we hit 100 nomstacks on the final boss
+            if(game.global.mapsActive && getCurrentMapObject().location == "Void" && game.global.challengeActive == "Nom" && getPageSetting('FarmWhenNomStacks7')) {
+                if(game.global.mapGridArray[theMap.size-1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
                     mapsClicked(true);
                 }
             }
@@ -382,7 +409,7 @@ function autoMap() {
             //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.
             } else if (needFarmSpire) {
                 var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
-                if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == (game.global.decayDone ? 'Plentiful' : 'Mountain'))
+                if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";
@@ -397,7 +424,7 @@ function autoMap() {
     }
 
     //don't map on even worlds if on Lead, except if person is dumb and wants to void on even
-    if(game.global.challengeActive == 'Lead' && !doVoids && (game.global.world % 2 == 0 || game.global.lastClearedCell < 59)) {
+    if(game.global.challengeActive == 'Lead' && !doVoids && (game.global.world % 2 == 0 || game.global.lastClearedCell < customVars.shouldFarmCell)) {
         if(game.global.preMapsActive)
             mapsClicked();
         return; //exit
@@ -444,7 +471,7 @@ function autoMap() {
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
                 (!enoughDamage && game.global.lastClearedCell < 9) ||
-                (shouldFarm && game.global.lastClearedCell >= 59) ||
+                (shouldFarm && game.global.lastClearedCell >= customVars.shouldFarmCell) ||
                 (scryerStuck))
                 &&
                     (
@@ -476,39 +503,42 @@ function autoMap() {
 
             //instead of normal map locations, use Plentiful (Gardens) if the Decay challenge has been completed. (for +25% better loot)
 
-            if (game.global.world >= 70) {
+            if (game.global.world >= customVars.MapTierZone[0]) {
                 //Zone 70+ (9/9/9 Metal):
-                sizeAdvMapsRange.value = 9;
-                adjustMap('size', 9);
-                difficultyAdvMapsRange.value = 9;
-                adjustMap('difficulty', 9);
-                lootAdvMapsRange.value = 9;
-                adjustMap('loot', 9);
-                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";  //metal is the current meta
-            } else if (game.global.world >= 47) {
+                sizeAdvMapsRange.value = customVars.MapTier0Sliders[0];
+                adjustMap('size', customVars.MapTier0Sliders[0]);
+                difficultyAdvMapsRange.value = customVars.MapTier0Sliders[1];
+                adjustMap('difficulty', customVars.MapTier0Sliders[1]);
+                lootAdvMapsRange.value = customVars.MapTier0Sliders[2];
+                adjustMap('loot', customVars.MapTier0Sliders[2]);
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];  //metal is the current meta
+            } else if (game.global.world >= customVars.MapTierZone[1]) {
                 //Zone 47-70 (9/9/4 Metal):
-                sizeAdvMapsRange.value = 9;
-                adjustMap('size', 9);
-                difficultyAdvMapsRange.value = 9;
-                adjustMap('difficulty', 9);
-                lootAdvMapsRange.value = 4;
-                adjustMap('loot', 4);
-                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";  //metal is the current meta
+                sizeAdvMapsRange.value = customVars.MapTier1Sliders[0];
+                adjustMap('size', customVars.MapTier1Sliders[0]);
+                difficultyAdvMapsRange.value = customVars.MapTier1Sliders[1];
+                adjustMap('difficulty', customVars.MapTier1Sliders[1]);
+                lootAdvMapsRange.value = customVars.MapTier1Sliders[2];
+                adjustMap('loot', customVars.MapTier1Sliders[2]);
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];  //metal is the current meta
+            } else if (game.global.world >= customVars.MapTierZone[2]) {
+                //Zone 16-47 (9/9/0 Random):
+                sizeAdvMapsRange.value = customVars.MapTier2Sliders[0];
+                adjustMap('size', customVars.MapTier2Sliders[0]);
+                difficultyAdvMapsRange.value = customVars.MapTier2Sliders[1];
+                adjustMap('difficulty', customVars.MapTier2Sliders[1]);
+                lootAdvMapsRange.value = customVars.MapTier2Sliders[2];
+                adjustMap('loot', customVars.MapTier2Sliders[2]);
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];
             } else {
                 //Zone 6-16 (9/0/0 Random):
-                //Zone 16-47 (9/9/0 Random):
-                sizeAdvMapsRange.value = 9;
-                adjustMap('size', 9);
-                if (game.global.world >= 16) {
-                    difficultyAdvMapsRange.value = 9;
-                    adjustMap('difficulty', 9);
-                } else {
-                    difficultyAdvMapsRange.value = 0;
-                    adjustMap('difficulty', 0);
-                }
-                lootAdvMapsRange.value = 0;
-                adjustMap('loot', 0);
-                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Random";
+                sizeAdvMapsRange.value = customVars.MapTier3Sliders[0];
+                adjustMap('size', customVars.MapTier3Sliders[0]);
+                difficultyAdvMapsRange.value = customVars.MapTier3Sliders[1];
+                adjustMap('difficulty', customVars.MapTier3Sliders[1]);
+                lootAdvMapsRange.value = customVars.MapTier3Sliders[2];
+                adjustMap('loot', customVars.MapTier3Sliders[2]);
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];
             }
             if (needFarmSpire)
                 document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
@@ -516,7 +546,7 @@ function autoMap() {
             updateMapCost();
             //if we are "Farming" for resources, make sure it's Plentiful OR metal (and always aim for lowest difficulty)
             if(shouldFarm || !enoughDamage || !enoughHealth || game.global.challengeActive == 'Metal') {
-                biomeAdvMapsSelect.value = game.global.decayDone ? "Plentiful" : "Mountain";
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : "Mountain";
                 updateMapCost();
             } else {
                 //if we can't afford the map:
@@ -536,29 +566,29 @@ function autoMap() {
                 lootAdvMapsRange.value -= 1;
             }
             //if we can't afford the map we designed, pick our highest existing map
+            var maplvlpicked = document.getElementById("mapLevelInput").value;
             if (updateMapCost(true) > game.resources.fragments.owned) {
                 selectMap(game.global.mapsOwnedArray[highestMap].id);
-                debug("Can't afford the map we designed, #" + document.getElementById("mapLevelInput").value, "maps", '*crying2');
+                debug("Can't afford the map we designed, #" + maplvlpicked , "maps", '*crying2');
                 debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, "maps", '*happy2');
                 runMap();
             } else {
-                debug("BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, "maps", 'th-large');
+                debug("BUYING a Map, level: #" + maplvlpicked, "maps", 'th-large');
                 var result = buyMap();
                 if(result == -2){
                     debug("Too many maps, recycling now: ", "maps", 'th-large');
                     recycleBelow(true);
-                    debug("Retrying BUYING a Map, level: #" + document.getElementById("mapLevelInput").value, "maps", 'th-large');
+                    debug("Retrying BUYING a Map, level: #" + maplvlpicked, "maps", 'th-large');
                     buyMap();
                 }
             }
             //if we already have a map picked, run it
         } else {
             selectMap(selectedMap);
-            var levelText = " Level: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].level;
-            var voidorLevelText = game.global.mapsOwnedArray[getMapIndex(selectedMap)].location == "Void" ? " Void: " : levelText;
-            debug("Already have a map picked: Running map: " + selectedMap +
-                voidorLevelText +
-                " Name: " + game.global.mapsOwnedArray[getMapIndex(selectedMap)].name, "maps", 'th-large');
+            var themapobj = game.global.mapsOwnedArray[getMapIndex(selectedMap)];
+            var levelText = " Level: " + themapobj.level;
+            var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
+            debug("Already have a map picked: Running map: " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
             runMap();
         }
     }
