@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC-GraphsOnly
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/genbtc/AutoTrimps
 // @version      2.1.3.8-genbtc-12-6-2016-GraphsOnly
-// @description  try to take over the world!
+// @description  Graphs Module (only) from AutoTrimps
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
