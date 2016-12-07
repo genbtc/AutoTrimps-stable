@@ -21,30 +21,18 @@ var atscript = document.getElementById('AutoTrimps-script')
 if (atscript !== null) {
     base = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
 }
-//Load Modular pieces:
+//Load stuff needed to load other stuff:
 document.head.appendChild(document.createElement('script')).src = base + module + 'utils.js';
 
 function initializeAutoTrimps() {
     loadPageVariables();
     document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
-    //    
-    document.head.appendChild(document.createElement('script')).src = base + module + 'query.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'heirlooms.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'buildings.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'jobs.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'equipment.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'gather.js';    
-    document.head.appendChild(document.createElement('script')).src = base + module + 'autostance.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'battlecalc.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'automaps.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'autobreedtimer.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'dynprestige.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'autofight.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'scryer.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'portal.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'other.js';
-    document.head.appendChild(document.createElement('script')).src = base + module + 'upgrades.js';
+    //Load modules:
+    var modules = ['query', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other', 'upgrades'];
+    for (var i=0,len=modules.length; i<len; i++) {
+        document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
+    }
     //Autoperks
     if (typeof(AutoPerks) === 'undefined')
         document.head.appendChild(document.createElement('script')).src = base + module + 'autoperks.js';
@@ -52,7 +40,7 @@ function initializeAutoTrimps() {
         debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
     toggleSettingsMenu();
     toggleSettingsMenu();
-        
+    //
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');    
 }
 
@@ -95,6 +83,7 @@ var AutoTrimpsDebugTabVisible = true;
 var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
 
+var MODULES = {};
 var bestBuilding;
 var scienceNeeded;
 var breedFire = false;
