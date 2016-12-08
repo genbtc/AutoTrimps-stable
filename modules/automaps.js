@@ -48,7 +48,7 @@ function autoMap() {
     if(game.options.menu.exitTo.enabled != 0) toggleSetting('exitTo');
     if(game.options.menu.repeatVoids.enabled != 0) toggleSetting('repeatVoids');
     //exit and do nothing if we are prior to zone 6 (maps haven't been unlocked):
-    if (!game.global.mapsUnlocked) {
+    if (!game.global.mapsUnlocked || !(baseDamage > 0)) {   //if we have no damage, why bother running anything? (this fixes weird bugs)
         enoughDamage = true; enoughHealth = true; shouldFarm = false;
         return;
     }
@@ -114,7 +114,7 @@ function autoMap() {
         //console.log("enemy dmg:" + enemyDamage + " enemy hp:" + enemyHealth + " base dmg: " + ourBaseDamage);
     }
     // enter farming if it takes over 4 hits in D stance (16) (and exit if under.)
-    if(!getPageSetting('DisableFarm') && ourBaseDamage > 0) {
+    if(!getPageSetting('DisableFarm')) {
         shouldFarm = enemyHealth > (ourBaseDamage * customVars.farmingCutoff);
     }
 
