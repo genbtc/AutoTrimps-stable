@@ -471,7 +471,7 @@ function autoPlusSettingsMenu() {
 function createSetting(id, name, description, type, defaultValue, list, container) {
     var btnParent = document.createElement("DIV");
    // btnParent.setAttribute('class', 'optionContainer');
-   btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; width: 14.5vw;');
+   btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-bottom: 1vw; width: 13.142vw;');
     var btn = document.createElement("DIV");
     btn.id = id;
     if (type == 'boolean') {
@@ -484,6 +484,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 enabled: defaultValue ? defaultValue : false
             };
         }
+        btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
@@ -502,6 +503,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 value: defaultValue
             };
         }
+        btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn btn-info');
         btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
@@ -571,6 +573,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 value: defaultValue
             };
         }
+        btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].value);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name.join(' / ') + '\", \"customText\", event, \"' + description + '\")');
@@ -585,6 +588,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         autoTrimpSettings[id].name = name;
     if (autoTrimpSettings[id].description != description)
         autoTrimpSettings[id].description = description;
+    autoTrimpSettings["ATversion"] = ATversion;
 }
 
 function settingChanged(id) {
@@ -671,9 +675,12 @@ function autoSetValue(id) {
             if (!base) num = parseFloat(num);
         }
     } else return;
-    var txtNum = (num > -1) ? prettify(num) : 'Infinite';
     autoTrimpSettings[id].value = num;
-    document.getElementById(id).textContent = ranstring + ': ' + txtNum;
+    if (num > -1)
+        document.getElementById(id).textContent = ranstring + ': ' + prettify(num);
+    else
+        //document.getElementById(id).textContent = ranstring + ': ' + 'Infinite';
+        document.getElementById(id).innerHTML = ranstring + ': ' + "<span class='icomoon icon-infinity'></span>"
     saveSettings();
     checkPortalSettings();
 }
@@ -725,7 +732,14 @@ function updateCustomButtons() {
     for (var setting in autoTrimpSettings) {
         if (autoTrimpSettings[setting].type == 'value') {
             var elem = document.getElementById(autoTrimpSettings[setting].id);
-            if (elem != null) elem.textContent = autoTrimpSettings[setting].name + ': ' + ((autoTrimpSettings[setting].value > -1) ? prettify(autoTrimpSettings[setting].value) : 'Infinite');
+            if (elem != null) {
+                if (autoTrimpSettings[setting].value > -1)
+                    elem.textContent = autoTrimpSettings[setting].name + ': ' + prettify(autoTrimpSettings[setting].value);
+                else
+                    //elem.textContent = ranstring + ': ' + 'Infinite';
+                    elem.innerHTML = autoTrimpSettings[setting].name + ': ' + "<span class='icomoon icon-infinity'></span>"
+                // elem.textContent = autoTrimpSettings[setting].name + ': ' + ((autoTrimpSettings[setting].value > -1) ? prettify(autoTrimpSettings[setting].value) : 'Infinite');
+            }
         }
     }
 }

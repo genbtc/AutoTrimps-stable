@@ -390,9 +390,7 @@ function autoMap() {
             if(ourHealth/diff < eAttack - baseBlock) {
                 shouldFarm = true;
                 voidCheckPercent = Math.round((ourHealth/diff)/(eAttack-baseBlock)*100);
-                //exit out of the voidmap if we go back into void-farm-for-health mode (less than 95%, account for some leeway during equipment buying.)
-                if(voidCheckPercent < 95 && game.global.mapsActive && getCurrentMapObject().location == "Void")
-                    mapsClicked(true);
+                abandonVoidMap();   //exit/restart if below <95% health, we have ForceAbandon on, and its not due to randomly losing anti stacks
                 break;
             }
             else {

@@ -65,7 +65,7 @@ function autoBreedTimer() {
     var newstacks = nextgrouptime >= targetBreed ? targetBreed : nextgrouptime;
     //kill titimp if theres less than 5 seconds left on it or, we stand to gain more than 5 antistacks.
     var killTitimp = (game.global.titimpLeft < 5 || (game.global.titimpLeft >= 5 && newstacks - game.global.antiStacks >= 5))
-    if (getPageSetting('ForceAbandon') && game.portal.Anticipation.level && game.global.antiStacks < targetBreed && game.resources.trimps.soldiers > 0 && killTitimp) {
+    if (game.portal.Anticipation.level && game.global.antiStacks < targetBreed && game.resources.trimps.soldiers > 0 && killTitimp) {
         //if a new fight group is available and anticipation stacks aren't maxed, force abandon and grab a new group
         if (newSquadRdy && nextgrouptime >= targetBreed) {
             forceAbandonTrimps();
@@ -78,7 +78,30 @@ function autoBreedTimer() {
 }
 
 //Abandon trimps function that should handle all special cases.
+function abandonVoidMap() {
+    //do nothing if the button isnt set to on.
+    if (!getPageSetting('ForceAbandon')) return;
+    //exit out of the voidmap if we go back into void-farm-for-health mode (less than 95%, account for some leeway during equipment buying.)
+    if (game.global.mapsActive && getCurrentMapObject().location == "Void") {        
+        var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
+        if(voidCheckPercent < 95) {
+            //only exit if it happened for reasons other than random losses of anti-stacks.
+            if (game.portal.Anticipation.level) {
+                if (targetBreed == 0 || targetBreed == -1)
+                    mapsClicked(true);
+                else if (game.global.antiStacks == targetBreed)
+                    mapsClicked(true);
+            }
+            else
+                mapsClicked(true);
+        }
+        return;
+    }
+}
+//Abandon trimps function that should handle all special cases.
 function forceAbandonTrimps() {
+    //do nothing if the button isnt set to on.
+    if (!getPageSetting('ForceAbandon')) return;
     //dont if <z6 (no button)
     if (!game.global.mapsUnlocked) return;
     //dont if were in a voidmap
