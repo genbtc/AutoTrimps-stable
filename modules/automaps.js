@@ -5,11 +5,11 @@ MODULES["automaps"].numHitsSurvived = 8;    //survive X hits in D stance or not 
 MODULES["automaps"].LeadfarmingCutoff = 10; //lead has its own farmingCutoff
 MODULES["automaps"].NomfarmingCutoff = 10;  //nom has its own farmingCutoff
 MODULES["automaps"].NurseryMapLevel = 50;   //with blacksmithery, run map for nursery on this level
-//if FarmWhenNomStacks7 setting is on: [x,y,z];
-MODULES["automaps"].NomFarmStacksCutoff = [7,30,100];  
+//if FarmWhenNomStacks7 setting is on   = [x, y, z];
+MODULES["automaps"].NomFarmStacksCutoff = [7,30,100];
 //[x] get maxMapBonus (10) if we go above (7) stacks on Improbability (boss)
 //[y] go into maps on (30) stacks on Improbability (boss), farm until we fall under the 'NomfarmingCutoff' (10)
-//[z] restarts your voidmap if you hit (100) stacks on Improbability (boss)
+//[z] restarts your voidmap if you hit (100) stacks
 MODULES["automaps"].MapTierZone = [70,47,16];    //descending order for these.
 //                 .MapTier?Sliders = [size,difficulty,loot,biome];
 MODULES["automaps"].MapTier0Sliders = [9,9,9,'Mountain'];   //Zone 70+ (9/9/9 Metal)
@@ -184,6 +184,7 @@ function autoMap() {
         shouldDoMaps = true;
 
     //FarmWhenNomStacks7
+    var restartVoidMap = false;
     if(game.global.challengeActive == 'Nom' && getPageSetting('FarmWhenNomStacks7')) {
         //Get maxMapBonus (10) if we go above (7) stacks on Improbability (boss)
         if (game.global.gridArray[99].nomStacks > customVars.NomFarmStacksCutoff[0]){
@@ -194,6 +195,17 @@ function autoMap() {
         if (game.global.gridArray[99].nomStacks == customVars.NomFarmStacksCutoff[1]){
             shouldFarm = (HDratio > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
+        }
+        //If we ever hit (100) nomstacks in the world, farm.
+        if(!game.global.mapsActive && game.global.gridArray[game.global.lastClearedCell + 1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
+            shouldFarm = (HDratio > customVars.NomfarmingCutoff);
+            shouldDoMaps = true;
+        }
+        //If we ever hit (100) nomstacks in a map (likely a voidmap), farm, (exit the voidmap and prevent void from running, until situation is clear)
+        if(game.global.mapsActive && game.global.mapGridArray[game.global.lastClearedMapCell + 1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
+            shouldFarm = (HDratio > customVars.NomfarmingCutoff);
+            shouldDoMaps = true;
+            restartVoidMap = true;
         }
     }
 
@@ -378,15 +390,20 @@ function autoMap() {
             if(ourHealth/diff < eAttack - baseBlock) {
                 shouldFarm = true;
                 voidCheckPercent = Math.round((ourHealth/diff)/(eAttack-baseBlock)*100);
+                //exit out of the voidmap if we go back into void-farm-for-health mode (less than 95%, account for some leeway during equipment buying.)
+                if(voidCheckPercent < 95 && game.global.mapsActive && getCurrentMapObject().location == "Void")
+                    mapsClicked(true);
                 break;
             }
             else {
                 voidCheckPercent = 0;
                 if(getPageSetting('DisableFarm'))
-                    shouldFarm = false;
+                    shouldFarm = shouldFarm || false;
             }
-            selectedMap = theMap.id;
-            //Restart the voidmap if we hit 100 nomstacks on the final boss
+            //only go into the voidmap if we need to.
+            if (!restartVoidMap)
+                selectedMap = theMap.id;
+            //Restart the voidmap if we hit (100) nomstacks on the final boss
             if(game.global.mapsActive && getCurrentMapObject().location == "Void" && game.global.challengeActive == "Nom" && getPageSetting('FarmWhenNomStacks7')) {
                 if(game.global.mapGridArray[theMap.size-1].nomStacks >= customVars.NomFarmStacksCutoff[2]) {
                     mapsClicked(true);
@@ -458,6 +475,9 @@ function autoMap() {
             if (game.global.repeatMap) {
                 repeatClicked();
             }
+            if (restartVoidMap) {
+                mapsClicked(true);
+            }
         }
     //clicks the maps button, once or twice (inside the world):
     } else if (!game.global.preMapsActive && !game.global.mapsActive) {
@@ -487,7 +507,7 @@ function autoMap() {
                 mapsClicked();
             }
         }
-        //forcibly run watch maps
+        //forcibly run watch maps (or click to restart voidmap?)
         if (shouldDoWatchMaps) {
             mapsClicked();
         }

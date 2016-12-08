@@ -46,8 +46,11 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>12/6 - AutoMagmiteSpender now has a new cost efficiency algorithm.</b>(read new tooltip)\
-<br><b>AT now does its Nursery map for Blacksmithery owners at z50 not z60</b>, to prevent breeding time-stalls.(+fixed bug)\
+<br><b>12/8 - FarmWithNomStacks changes</b> (read tooltip)\
+<br><b>Nom stacks now calced by Autostance1</b>\
+<br><b>Default VoidDifficultyCheck is now defaulting to 6</b>\
+<br>12/6 - AutoMagmiteSpender now has a new cost efficiency algorithm.(read new tooltip)\
+<br>AT now does its Nursery map for Blacksmithery owners at z50 not z60, to prevent breeding time-stalls.(+fixed bug)\
 <br><b><u>Report any bugs/problems please!</u></b>\
 <br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-1242016" target="#">Read the 12/4 Changelog Here</a>\
 <br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
@@ -134,6 +137,7 @@ function mainLoop() {
     ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
+    if (armycount.className != "tooltipadded") addToolTipToArmyCount();
     mainCleanup();
     if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades || ATrunning == false) return;
     game.global.addonUser = true;

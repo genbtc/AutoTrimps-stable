@@ -222,7 +222,7 @@ function isBuildingInQueue(building) {
 function getArmyTime() {
     var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
-    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : trimps.maxSoldiers;
+    var adjustedMax = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : game.resources.trimps.maxSoldiers;
     var potencyMod = getPotencyMod();
     var tps = breeding * potencyMod;
     var addTime = adjustedMax / tps;

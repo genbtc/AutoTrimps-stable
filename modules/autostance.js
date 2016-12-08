@@ -85,6 +85,9 @@ function autoStance() {
         if (enemy && enemy.corrupted == 'corruptTough') {
             enemyHealth *= 5;
         }
+        if (enemy && game.global.challengeActive == "Nom" && typeof enemy.nomStacks !== 'undefined'){
+            enemyDamage *= Math.pow(1.25, enemy.nomStacks);
+        }
         if (game.global.challengeActive == 'Lead') {
             enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
         }
@@ -122,6 +125,9 @@ function autoStance() {
         }
         if (enemy && enemy.corrupted == 'corruptTough') {
             enemyHealth *= 5;
+        }
+        if (enemy && game.global.challengeActive == "Nom" && typeof enemy.nomStacks !== 'undefined'){
+            enemyDamage *= Math.pow(1.25, enemy.nomStacks);
         }
         if (game.global.challengeActive == 'Lead') {
             enemyDamage *= (1 + (game.challenges.Lead.stacks * 0.04));
