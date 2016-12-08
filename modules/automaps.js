@@ -466,8 +466,8 @@ function autoMap() {
             if (!game.global.switchToMaps){
                 mapsClicked();
             }
-            //Get Impatient/Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone)
-            if (game.global.switchToMaps &&
+            //Get Impatient/Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone) (handle shouldDoWatchMaps elsewhere below)
+            if (game.global.switchToMaps && !shouldDoWatchMaps &&
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
                 (!enoughDamage && game.global.lastClearedCell < 9) ||
