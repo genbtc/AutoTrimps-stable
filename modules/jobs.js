@@ -1,3 +1,15 @@
+MODULES["jobs"] = {};
+//These can be changed (in the console) if you know what you're doing:
+MODULES["jobs"].scientistRatio = 25;        //ratio for scientists. (totalRatios / this)
+MODULES["jobs"].scientistRatio2 = 10;       //used for lowlevel and Watch challenge
+MODULES["jobs"].magmamancerRatio = 0.1;     //buys 10% of your gem resources per go.
+//Worker Ratios = [Farmer,Lumber,Miner]
+MODULES["jobs"].autoRatio6 = [1,12,12];
+MODULES["jobs"].autoRatio5 = [1,2,22];
+MODULES["jobs"].autoRatio4 = [1,1,10];
+MODULES["jobs"].autoRatio3 = [3,1,4];
+MODULES["jobs"].autoRatio2 = [3,3,5];
+MODULES["jobs"].autoRatio1 = [1,1,1];
 
 function safeBuyJob(jobTitle, amount) {
     if (amount === undefined) amount = 1;
@@ -59,9 +71,9 @@ function buyJobs() {
     var lumberjackRatio = parseInt(getPageSetting('LumberjackRatio'));
     var minerRatio = parseInt(getPageSetting('MinerRatio'));
     var totalRatio = farmerRatio + lumberjackRatio + minerRatio;
-    var scientistRatio = totalRatio / 25;
+    var scientistRatio = totalRatio / MODULES["jobs"].scientistRatio;
     if (game.jobs.Farmer.owned < 100) {
-        scientistRatio = totalRatio / 10;
+        scientistRatio = totalRatio / MODULES["jobs"].scientistRatio2;
     }
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
@@ -89,7 +101,7 @@ function buyJobs() {
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     if (game.global.challengeActive == 'Watch'){
-        scientistRatio = totalRatio / 10;
+        scientistRatio = totalRatio / MODULES["jobs"].scientistRatio2;
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire){
             //so the game buys scientists first while we sit around waiting for breed timer.
             var buyScientists = Math.floor((scientistRatio / totalRatio * totalDistributableWorkers) - game.jobs.Scientist.owned);
@@ -188,7 +200,7 @@ function buyJobs() {
         preBuy();
         game.global.firing = false;
         game.global.buyAmt = 'Max';
-        game.global.maxSplit = .1;
+        game.global.maxSplit = MODULES["jobs"].magmamancerRatio;
         //fire dudes to make room.
         var firesomedudes = calculateMaxAfford(game.jobs['Magmamancer'], false, false, true);
         if (game.jobs.Farmer.owned > firesomedudes)
@@ -211,34 +223,24 @@ var tierMagmamancers = 0;
 
 
 function workerRatios() {
+    var ratioSet;
     if (game.buildings.Tribute.owned > 3000 && mutations.Magma.active()) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '12';
-        autoTrimpSettings.MinerRatio.value = '12';
+        ratioSet = MODULES["jobs"].autoRatio6;
     } else if (game.buildings.Tribute.owned > 1500) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '2';
-        autoTrimpSettings.MinerRatio.value = '22';
+        ratioSet = MODULES["jobs"].autoRatio5;
     } else if (game.buildings.Tribute.owned > 1000) {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '10';
+        ratioSet = MODULES["jobs"].autoRatio4;
     } else if (game.resources.trimps.realMax() > 3000000) {
-        autoTrimpSettings.FarmerRatio.value = '3';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '4';
+        ratioSet = MODULES["jobs"].autoRatio3;
     } else if (game.resources.trimps.realMax() > 300000) {
-        autoTrimpSettings.FarmerRatio.value = '3';
-        autoTrimpSettings.LumberjackRatio.value = '3';
-        autoTrimpSettings.MinerRatio.value = '5';
+        ratioSet = MODULES["jobs"].autoRatio2;
     } else {
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '1';
+        ratioSet = MODULES["jobs"].autoRatio1;
     }
     if (game.global.challengeActive == 'Watch'){
-        autoTrimpSettings.FarmerRatio.value = '1';
-        autoTrimpSettings.LumberjackRatio.value = '1';
-        autoTrimpSettings.MinerRatio.value = '1';
+        ratioSet = MODULES["jobs"].autoRatio1;
     }
+    setPageSetting('FarmerRatio',ratioSet[0]);
+    setPageSetting('LumberjackRatio',ratioSet[1]);
+    setPageSetting('MinerRatio',ratioSet[2]);
 }

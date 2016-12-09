@@ -1,3 +1,7 @@
+MODULES["equipment"] = {};
+//These can be changed (in the console) if you know what you're doing:
+MODULES["equipment"].numHitsSurvived = 8;   //survive X hits in D stance or not enough Health.
+
 var equipmentList = {
     'Dagger': {
         Upgrade: 'Dagadder',
@@ -254,7 +258,7 @@ function autoLevelEquipment() {
     var enoughHealthE,enoughDamageE;
     const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
     const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
-    var numHits = 8;    //this can be changed.
+    var numHits = MODULES["equipment"].numHitsSurvived;    //this can be changed.
     //asks if we can survive x number of hits in either D stance or X stance.
     enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
         (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));

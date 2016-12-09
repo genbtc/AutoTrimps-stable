@@ -1,3 +1,6 @@
+MODULES["portal"] = {};
+//These can be changed (in the console) if you know what you're doing:
+MODULES["portal"].timeout = 10000;  //time to delay before autoportaling in milliseconds
 
 /////////////////////////////////////////////////////
 //Portal Related Code)///////////////////////////////
@@ -21,7 +24,7 @@ function autoPortal() {
                     if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && (!game.global.challengeActive || autoFinishDaily) ) {
                         debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
                         tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
-                        setTimeout(cancelTooltip,10000);
+                        setTimeout(cancelTooltip,MODULES["portal"].timeout);
                         setTimeout(function(){
                             if (zonePostpone > 0)
                                 return;
@@ -35,7 +38,7 @@ function autoPortal() {
                             else
                                 doPortal();
                             zonePostpone = 0;
-                        },10100);
+                        },MODULES["portal"].timeout+100);
                     }
                 }
             }
