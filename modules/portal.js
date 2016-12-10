@@ -86,7 +86,29 @@ function doPortal(challenge) {
         debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
     }
     portalClicked();
-    if(challenge) selectChallenge(challenge);
+    //Auto Start Daily:
+    if (getPageSetting('AutoStartDaily')) {
+        selectChallenge('Daily');
+        checkCompleteDailies();
+        var yesterdayDone = (game.global.recentDailies.indexOf(getDailyTimeString(-1)) != -1);
+        var todayDone = (game.global.recentDailies.indexOf(getDailyTimeString()) != -1);
+        if (yesterdayDone && todayDone) {
+            debug("All available Dailies already completed.");
+            //Fallback to w/e Regular challenge we picked.
+            if(challenge)
+                selectChallenge(challenge); 
+        } else if (!yesterdayDone) {
+            getDailyChallenge(-1);
+            debug("Portaling into Daily for: " + getDailyTimeString(-1,true) + " now!");
+        } else if (!todayDone) {
+            getDailyChallenge(0);
+            debug("Portaling into Daily for: " + getDailyTimeString(0,true) + " now!");
+        }
+    }
+    //Regular Challenge:
+    else if(challenge) {
+        selectChallenge(challenge);
+    }
     activateClicked();
     activatePortal();
     lastHeliumZone = 0; zonePostpone = 0;

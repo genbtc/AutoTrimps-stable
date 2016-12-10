@@ -1,8 +1,8 @@
 MODULES["autobreedtimer"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["autobreedtimer"].buyGensIncrement = 1;     //buy this many geneticists at a time
-MODULES["autobreedtimer"].fireGensIncrement = 10;   //Fire this many geneticists at a time
-MODULES["autobreedtimer"].fireGensFloor = 10;       //Dont FIRE below this number (nothing to do with hiring up to it)
+MODULES["autobreedtimer"].buyGensIncrement = 1;     //Buy this many geneticists at a time   (not needed much with new gen. code)
+MODULES["autobreedtimer"].fireGensIncrement = 10;   //Fire this many geneticists at a time  (not needed much with new gen. code)
+MODULES["autobreedtimer"].fireGensFloor = 10;       //Dont FIRE below this number (nothing to do with hiring up to it)(maybe is disregarded?)
 MODULES["autobreedtimer"].breedFireOn = 6;          //turn breedfire on at X seconds (if BreedFire)
 MODULES["autobreedtimer"].breedFireOff = 2;         //turn breedfire off at X seconds(if BreedFire)
 MODULES["autobreedtimer"].killTitimpStacks = 5;     //number of titimp stacks difference that must exist to Force Abandon
@@ -20,8 +20,6 @@ function autoBreedTimer() {
             if(getPageSetting('FarmWhenNomStacks7') && game.global.gridArray[99].nomStacks >= 5 && !game.global.mapsActive) {
                 //if Improbability already has 5 nomstacks, do 30 antistacks.
                 setPageSetting('GeneticistTimer',30);
-                //actually buy them here because we can't wait.
-                safeBuyJob('Geneticist', 1+(autoTrimpSettings.GeneticistTimer.value - getBreedTime())*2);
             }
             else
                 setPageSetting('GeneticistTimer',10);
@@ -36,25 +34,39 @@ function autoBreedTimer() {
     //Don't hire geneticists if total breed time remaining is greater than our target breed time
     //Don't hire geneticists if we have already reached 30 anti stacks (put off further delay to next trimp group)
     if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && !breedFire) {
+        var time = getBreedTime();
+        var timeOK = time > 0 ? time : 0.1;
+        var numgens = Math.round(Math.log(autoTrimpSettings.GeneticistTimer.value / timeOK ) / Math.log(1.02));
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
-        if (fWorkers < customVars.buyGensIncrement)
+        if (fWorkers < numgens)
             //do some jiggerypokery in case jobs overflow and firing -workers does 0 (java integer overflow)
-            safeFireJob('Farmer', customVars.buyGensIncrement);
-        if (canAffordJob('Geneticist', false, customVars.buyGensIncrement)) {
-            //hire a geneticist
+            safeFireJob('Farmer', numgens);
+        //hire geneticists in bulk
+        if (canAffordJob('Geneticist', false, numgens))
+            safeBuyJob('Geneticist', numgens);
+        //hire geneticists slowly
+        else            
             safeBuyJob('Geneticist', customVars.buyGensIncrement);
-        }
     }
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
     if ((targetBreed < getBreedTime() || !game.jobs.Geneticist.locked || !getPageSetting('ManageBreedtimer') || game.global.challengeActive == 'Watch') && game.upgrades.Potency.allowed > game.upgrades.Potency.done && canAffordTwoLevel('Potency') && getPageSetting('BuyUpgrades')) {
         buyUpgrade('Potency');
     }
-    //otherwise, if we have some geneticists, start firing them
-    else if ((targetBreed*1.02 < getBreedTime() || targetBreed*1.02 < getBreedTime(true)) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > customVars.fireGensFloor) {
-        safeBuyJob('Geneticist', -1*customVars.fireGensIncrement);
-        //debug('fired (10) geneticists');
+    //otherwise, if we have too many geneticists, (total time) - start firing them #1
+    else if (targetBreed*1.02 < getBreedTime() && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > customVars.fireGensFloor) {
+        var time = getBreedTime();
+        var timeOK = time > 0 ? time : 0.1;
+        var numgens = Math.round(Math.log(autoTrimpSettings.GeneticistTimer.value / timeOK ) / Math.log(1.02));
+        safeBuyJob('Geneticist', numgens);
+    }
+    //otherwise, if we have too many geneticists, (remaining time) - start firing them #2
+    else if (targetBreed*1.02 < getBreedTime(true) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > customVars.fireGensFloor) {
+        var time = getBreedTime(true);
+        var timeOK = time > 0 ? time : 0.1;
+        var numgens = Math.round(Math.log(autoTrimpSettings.GeneticistTimer.value / timeOK ) / Math.log(1.02));
+        safeBuyJob('Geneticist', numgens);
     }
     //if our time remaining to full trimps is still too high, fire some jobs to get-er-done
     //needs option to toggle? advanced options?

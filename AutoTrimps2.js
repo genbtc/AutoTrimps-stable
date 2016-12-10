@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.3.9-genbtc-12-9-2016+Modular
+// @version      2.1.3.10-genbtc-12-10-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.3.9-genbtc-12-9-2016+Modular';
+var ATversion = '2.1.3.10-genbtc-12-10-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -46,8 +46,10 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>12/9 - Fixed: DynamicPrestige=-1 wasnt disabling it</b>\
-<br><b>12/9 - Fixed: needPrestige conflicting with needFarmSpire</b>\
+<br><b>12/10 - New: AutoStartDaily option (read tooltip)</b>\
+<br><b>New way to buy geneticists (fast) - report any bugs</b>\
+<br>12/9 - Fixed: DynamicPrestige=-1 wasnt disabling it\
+<br>Fixed: needPrestige conflicting with needFarmSpire\
 <br>12/8 - FarmWithNomStacks changes (read tooltip)\
 <br>Nom stacks now calced by Autostance1\
 <br>Default VoidDifficultyCheck is now defaulting to 6\
