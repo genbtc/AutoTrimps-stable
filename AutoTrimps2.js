@@ -109,6 +109,8 @@ var ATrunning = false;
 var magmiteSpenderChanged = false;
 var OVKcellsInWorld = 0;
 var lastOVKcellsInWorld = 0;
+var BAFsetting, oldBAFsetting;
+
 var currentworld = 0;
 var lastrunworld = 0;
 var aWholeNewWorld = false;
