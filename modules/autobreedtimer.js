@@ -1,6 +1,6 @@
 MODULES["autobreedtimer"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["autobreedtimer"].buyGensIncrement = 2;     //buy this many geneticists at a time
+MODULES["autobreedtimer"].buyGensIncrement = 1;     //buy this many geneticists at a time
 MODULES["autobreedtimer"].fireGensIncrement = 10;   //Fire this many geneticists at a time
 MODULES["autobreedtimer"].fireGensFloor = 10;       //Dont FIRE below this number (nothing to do with hiring up to it)
 MODULES["autobreedtimer"].breedFireOn = 6;          //turn breedfire on at X seconds (if BreedFire)
