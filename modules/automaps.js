@@ -415,16 +415,16 @@ function autoMap() {
     if (shouldDoMaps || doVoids || needPrestige) {
         //selectedMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
         if (selectedMap == "world") {
-            //if needPrestige, TRY to find current level map as the highest level map we own.
-            if (needPrestige) {
-                if (game.global.world == game.global.mapsOwnedArray[highestMap].level)
-                    selectedMap = game.global.mapsOwnedArray[highestMap].id;
-                else
-                    selectedMap = "create";
             //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.
-            } else if (needFarmSpire) {
+            if (needFarmSpire) {
                 var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
                 if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
+                    selectedMap = game.global.mapsOwnedArray[highestMap].id;
+                else
+                    selectedMap = "create";            
+            //if needPrestige, TRY to find current level map as the highest level map we own.
+            } else if (needPrestige) {
+                if (game.global.world == game.global.mapsOwnedArray[highestMap].level)
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
                     selectedMap = "create";

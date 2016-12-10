@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.3.8b-genbtc-12-7-2016+Modular
+// @version      2.1.3.9-genbtc-12-9-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.3.8b-genbtc-12-7-2016+Modular';
+var ATversion = '2.1.3.9-genbtc-12-9-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -46,9 +46,11 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>12/8 - FarmWithNomStacks changes</b> (read tooltip)\
-<br><b>Nom stacks now calced by Autostance1</b>\
-<br><b>Default VoidDifficultyCheck is now defaulting to 6</b>\
+<br><b>12/9 - Fixed: DynamicPrestige=-1 wasnt disabling it</b>\
+<br><b>12/9 - Fixed: needPrestige conflicting with needFarmSpire</b>\
+<br>12/8 - FarmWithNomStacks changes (read tooltip)\
+<br>Nom stacks now calced by Autostance1\
+<br>Default VoidDifficultyCheck is now defaulting to 6\
 <br>12/6 - AutoMagmiteSpender now has a new cost efficiency algorithm.(read new tooltip)\
 <br>AT now does its Nursery map for Blacksmithery owners at z50 not z60, to prevent breeding time-stalls.(+fixed bug)\
 <br><b><u>Report any bugs/problems please!</u></b>\
@@ -184,7 +186,7 @@ function mainLoop() {
     else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight();
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
-    if (getPageSetting('DynamicPrestige2')) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
+    if (getPageSetting('DynamicPrestige2')>0) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 
     //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
