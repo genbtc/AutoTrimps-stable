@@ -9,6 +9,7 @@ function manualLabor() {
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
+    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax() ? true : false;
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=500) {
@@ -20,13 +21,14 @@ function manualLabor() {
         }
     }
 
-    if(getPageSetting('TrapTrimps') && breedingTrimps < 5 && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
+    if(getPageSetting('TrapTrimps') && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
     }
-    else if (getPageSetting('TrapTrimps') && breedingTrimps < 5 && game.buildings.Trap.owned > 0) {
+    else if (getPageSetting('TrapTrimps') && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
         setGather('trimps');
+        if(trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed) safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
         setGather('science');
@@ -124,6 +126,7 @@ function manualLabor2() {
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
+    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax() ? true : false;
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=1000) {
@@ -139,9 +142,10 @@ function manualLabor2() {
         }
     }
     //Traps and Trimps:
-    if (trapTrimpsOK && (breedingTrimps < 5 || targetBreed < getBreedTime(true))) {
+    if (trapTrimpsOK && (breedingTrimps < 5 || targetBreed < getBreedTime(true) || trapperTrapUntilFull)) {
         if (game.buildings.Trap.owned > 0) {
             setGather('trimps');//gatherTrimps = true;
+            if(trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed) safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
             return;
         }
         if (game.buildings.Trap.owned == 0 && canAffordBuilding('Trap'))

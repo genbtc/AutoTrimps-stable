@@ -118,7 +118,7 @@ function buyJobs() {
     else
     {   //exit if we are havent bred to at least 90% breedtimer yet...
         var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
-        if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
+        if (!(game.global.challengeActive == "Trapper") && game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
             if (breeding > game.resources.trimps.realMax() * 0.33) {
                 //do Something tiny, so earlygame isnt stuck on 0 (down to 33% trimps. stops getting stuck from too low.)
                 safeBuyJob('Miner', 1);
