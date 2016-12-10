@@ -134,6 +134,7 @@ function buyFoodEfficientHousing() {
 //Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym, Tribute, Nursery)s
 function buyBuildings() {
     var customVars = MODULES["buildings"];
+    
     //Preemptively halt all building purchases during Trapper if any kind of AT autobattle is on and pop < 75%, or vanilla autobattle is on and pop < 100% to help avoid prolonged stalling
     if(game.global.challengeActive == 'Trapper' && (getPageSetting('BetterAutoFight') != 0 && game.resources.trimps.owned < game.resources.trimps.realMax() * .75 || !game.global.pauseFight && game.resources.trimps.owned < game.resources.trimps.realMax())) return;
 
