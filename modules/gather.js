@@ -23,6 +23,7 @@ function manualLabor() {
     }
     else if (getPageSetting('TrapTrimps') && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
         setGather('trimps');
+        if(trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed) safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
         setGather('science');
@@ -139,6 +140,7 @@ function manualLabor2() {
     if (trapTrimpsOK && (breedingTrimps < 5 || targetBreed < getBreedTime(true) || trapperTrapUntilFull)) {
         if (game.buildings.Trap.owned > 0) {
             setGather('trimps');//gatherTrimps = true;
+            if(trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed) safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
             return;
         }
         if (game.buildings.Trap.owned == 0 && canAffordBuilding('Trap'))
