@@ -1,3 +1,10 @@
+MODULES["buildings"] = {};
+//These can be changed (in the console) if you know what you're doing:
+MODULES["buildings"].nursCostRatio = 0.05;   //nursery to warpstation/collector cost ratio. Also for extra gems.
+MODULES["buildings"].storageMainCutoff = 0.85;      //when to buy more storage. (85% )
+MODULES["buildings"].storageLowlvlCutoff1 = 0.7;    //when to buy more storage at zone 1
+MODULES["buildings"].storageLowlvlCutoff2 = 0.5;    //when to buy more storage from zone 2-10   (more leeway so it doesnt fill up)
+
 var housingList = ['Hut', 'House', 'Mansion', 'Hotel', 'Resort', 'Gateway', 'Collector', 'Warpstation'];
 
 //An error-resilient function that will actually purchase buildings and return a success status
@@ -126,10 +133,11 @@ function buyFoodEfficientHousing() {
 
 //Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym, Tribute, Nursery)s
 function buyBuildings() {
+    var customVars = MODULES["buildings"];
     //Preemptively halt all building purchases during Trapper if AT's autofight isn't turned on and autoBattle is so that it will trigger from a full population ASAP
     //Enabling AT's Autofight during Trapper is HIGHLY recommended
     if(game.global.challengeActive == 'Trapper' && (getPageSetting('BetterAutoFight') == 0 && !game.global.pauseFight) && game.resources.trimps.owned < game.resources.trimps.realMax()) return;
-    
+
     if(game.global.world!=1 && ((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist")))
         return;
     highlightHousing();
@@ -176,14 +184,13 @@ function buyBuildings() {
         (targetBreed < getBreedTime(true) && game.global.challengeActive == 'Watch') ||
         (!game.jobs.Geneticist.locked && canAffordJob('Geneticist', false, 1))) && !game.buildings.Nursery.locked)
     {
-        var nwr = 0.05; //nursery to warpstation cost ratio (unrelated to the 20 below), has been this way since forever.
-        var gemCostratio = 20;  //(1/20th)
+        var nwr = customVars.nursCostRatio; //nursery to warpstation/collector cost ratio. Also for extra gems.
         var nursCost = getBuildingItemPrice(game.buildings.Nursery, "gems", false, 1);
         var warpCost = getBuildingItemPrice(game.buildings.Warpstation, "gems", false, 1);
         var collCost = getBuildingItemPrice(game.buildings.Collector, "gems", false, 1);
         var resomod = Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level);    //need to apply the resourceful mod when comparing anything other than building vs building.
         //buy nurseries irrelevant of warpstations (after we unlock them) - if we have enough extra gems that its not going to impact anything. note:(we will be limited by wood anyway - might use a lot of extra wood)
-        var buyWithExtraGems = (!game.buildings.Warpstation.locked && nursCost * resomod < game.resources.gems.owned/gemCostratio);
+        var buyWithExtraGems = (!game.buildings.Warpstation.locked && nursCost * resomod < nwr * game.resources.gems.owned);
         //refactored the old calc, and added new buyWithExtraGems tacked on the front
         if ((getPageSetting('MaxNursery') > game.buildings.Nursery.owned || getPageSetting('MaxNursery') == -1) &&
             ( buyWithExtraGems ||
@@ -199,6 +206,7 @@ function buyBuildings() {
 
 //Buys more storage if resource is over 85% full (or 50% if Zone 2-10) (or 70% if zone==1)
 function buyStorage() {
+    var customVars = MODULES["buildings"];
     var packMod = 1 + game.portal.Packrat.level * game.portal.Packrat.modifier;
     var Bs = {
         'Barn': 'food',
@@ -214,7 +222,9 @@ function buyStorage() {
             jest = simpleSeconds(Bs[B], 45);
             jest = scaleToCurrentMap(jest);
         }
-        if ((game.global.world==1 && owned > max * 0.7) || (game.global.world >= 2 && game.global.world < 10 && owned > max * 0.5) || (owned + jest > max * 0.85)) {
+        if ((game.global.world==1 && owned > max * customVars.storageLowlvlCutoff1) || 
+            (game.global.world >= 2 && game.global.world < 10 && owned > max * customVars.storageLowlvlCutoff2) || 
+            (owned + jest > max * customVars.storageMainCutoff)) {
             // debug('Buying ' + B + '(' + Bs[B] + ') at ' + Math.floor(game.resources[Bs[B]].owned / (game.resources[Bs[B]].max * packMod * 0.99) * 100) + '%');
             if (canAffordBuilding(B) && game.triggers[B].done) {
                 safeBuyBuilding(B);

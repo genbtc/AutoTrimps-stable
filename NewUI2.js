@@ -141,7 +141,7 @@ function initializeAllSettings() {
         autoTrimpSettings["PrestigeBackup"].id = "PrestigeBackup";
         autoTrimpSettings["PrestigeBackup"].name = "PrestigeBackup";
     }
-    createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-portal if you have a challenge active, the challenge setting dictates which challenge it will select for the next run. All challenge settings will portal right after the challenge ends, regardless. Helium Per Hour portals at cell 1 of the first level where your He/Hr went down even slightly compared to the current runs Best He/Hr. Take note, there is a Buffer option in the genBTC settings, which is like a grace percentage of how low it can dip without triggering.  CAUTION: Selecting He/hr may immediately portal you if its lower.', 'dropdown', 'Off', ['Off', 'Helium Per Hour', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted', 'Custom'],"Core");
+    createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-portal if you have a challenge active, the challenge setting dictates which challenge it will select for the next run. All challenge settings will portal right after the challenge ends, regardless. Helium Per Hour portals at cell 1 of the first level where your He/Hr went down even slightly compared to the current runs Best He/Hr. Take note, there is a Buffer option, which is like a grace percentage of how low it can dip without triggering.  CAUTION: Selecting He/hr may immediately portal you if its lower-(use Pause AutoTrimps button to pause the script first to avoid this)', 'dropdown', 'Off', ['Off', 'Helium Per Hour', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted', 'Custom'],"Core");
     createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead','Corrupted'],"Core");
     document.getElementById("HeliumHourChallengeLabel").innerHTML = "Challenge:";
     createSetting('CustomAutoPortal', 'Custom Portal', 'Automatically portal AFTER clearing this level.(ie: setting to 200 would portal when you first reach level 201)', 'value', '200',null, "Core");
@@ -158,12 +158,12 @@ function initializeAllSettings() {
     createSetting('RunBionicBeforeSpire', 'Run Bionic Before Spire', 'CAUTION:  Runs Bionic Wonderlands and repeatedly farms VI(level 200) before attempting Spire, for the purpose of farming. Then attempts the spire. The Minutes-Before-Spire timer runs concurrently to this, and needs to be set. If not set, it will exit without doing any Bionics... You can un-toggle it as desired. WARNING: These 100 square maps take ~3x longer than normal maps. WARNING: If you dont have Bionic Magnet mastery, this will run the pre-requisites and take longer.' , 'boolean', null, null, 'Maps');
     createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Optional/Rare. Exits the Spire early, after completing cell X. example: 40 for Row 4. (better use 0 to disable, not -1)', 'value', '0', null, 'Maps');
     createSetting('CorruptionCalc', 'Corruption Farm Mode', 'Recommended. Enabling this will cause the Automaps routine to take amount of corruption in a zone into account, to decide whether it should do maps first for map bonus. ONLY in Zone 181+ (or Headstart 1,2,3 zone: 176,166,151) ', 'boolean', false, null, 'Maps');
-    createSetting('FarmWhenNomStacks7', 'Farm on >7 NOMstacks', 'Optional. On Improbability(cell 100). Ideally meant to be used with DisableFarming (otherwise farming would take care of this, but its slower). If Improbability already has 5 NOMstacks, stack 30 Anticipation. If the Improbability has >7 NOMstacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On! (exits when we get under 10x)', 'boolean', null, null, 'Maps');
+    createSetting('FarmWhenNomStacks7', 'Farm on >7 NOMstacks', 'Optional. If Improbability already has 5 NOMstacks, stack 30 Anticipation. If the Improbability has >7 NOMstacks on it, get +200% dmg from MapBonus. If we still cant kill it, enter Farming mode at 30 stacks, Even with DisableFarming On! (exits when we get under 10x). Farms if we hit 100 stacks in the world. If we ever hit (100) nomstacks in a map (likely a voidmap), farm, (exit the voidmap) and (prevent void from running, until situation is clear). Restarts any voidmaps if we hit 100 stacks. ', 'boolean', null, null, 'Maps');
     createSetting('VoidMaps', 'Void Maps', 'The zone at which you want all your void maps to be cleared (Cell 96).  0 is off', 'value', '0',null,"Maps");
     createSetting('RunNewVoids', 'Run New Voids', 'Run new void maps acquired after the set void map zone. Runs them at Cell 95 by default, unless you set a decimal value indicating the cell, like: 187.75  CAUTION: May severely slow you down by trying to do too-high level voidmaps. Use the adjacent RunNewVoidsUntil setting to limit this.', 'boolean', null, null, 'Maps');
     createSetting('RunNewVoidsUntil', 'New Voids Until', 'Run New Voids Until: Put a cap on what zone new voids will run at, until this zone, inclusive. ', 'value', '-1', null, 'Maps');
     //createSetting('VoidsPerZone', 'Voids per Zone', 'Run a max of this many Voids per zone, if you have a lot of Voids saved up. Then moves onto the next zone and does more voids.', 'value', '-1', null, 'Maps');
-    createSetting('VoidCheck', 'Void Difficulty Check', 'How many hits to be able to take from a void map boss in X stance before we attempt the map. Higher values will get you stronger (by farming for health) before attempting. 12 should be fine.', 'value', '12', null, 'Maps');
+    createSetting('VoidCheck', 'Void Difficulty Check', 'How many hits to be able to take from a void map boss in X stance before we attempt the map. Higher values will get you stronger (by farming maps for health) before attempting. Disabling this with 0 or -1 translates into a default of surviving 2 hits. I recommend somewhere between 2 and 12 (default is now 6).', 'value', '6', null, 'Maps');
     createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'Maps');
     createSetting('DisableFarm', 'Disable Farming', 'Disables the extended farming algorithm of the AutoMaps part of the script. Always returns to the world after reaching 10 map stacks. Use at your own risk. (No need to refresh anymore)', 'boolean', null, null, 'Maps');
 
@@ -471,7 +471,7 @@ function autoPlusSettingsMenu() {
 function createSetting(id, name, description, type, defaultValue, list, container) {
     var btnParent = document.createElement("DIV");
    // btnParent.setAttribute('class', 'optionContainer');
-   btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; width: 14.5vw;');
+   btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-bottom: 1vw; width: 13.142vw;');
     var btn = document.createElement("DIV");
     btn.id = id;
     if (type == 'boolean') {
@@ -484,6 +484,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 enabled: defaultValue ? defaultValue : false
             };
         }
+        btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
@@ -502,6 +503,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 value: defaultValue
             };
         }
+        btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn btn-info');
         btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
@@ -571,6 +573,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 value: defaultValue
             };
         }
+        btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].value);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name.join(' / ') + '\", \"customText\", event, \"' + description + '\")');
@@ -585,6 +588,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         autoTrimpSettings[id].name = name;
     if (autoTrimpSettings[id].description != description)
         autoTrimpSettings[id].description = description;
+    autoTrimpSettings["ATversion"] = ATversion;
 }
 
 function settingChanged(id) {
@@ -671,9 +675,12 @@ function autoSetValue(id) {
             if (!base) num = parseFloat(num);
         }
     } else return;
-    var txtNum = (num > -1) ? prettify(num) : 'Infinite';
     autoTrimpSettings[id].value = num;
-    document.getElementById(id).textContent = ranstring + ': ' + txtNum;
+    if (num > -1)
+        document.getElementById(id).textContent = ranstring + ': ' + prettify(num);
+    else
+        //document.getElementById(id).textContent = ranstring + ': ' + 'Infinite';
+        document.getElementById(id).innerHTML = ranstring + ': ' + "<span class='icomoon icon-infinity'></span>"
     saveSettings();
     checkPortalSettings();
 }
@@ -725,7 +732,14 @@ function updateCustomButtons() {
     for (var setting in autoTrimpSettings) {
         if (autoTrimpSettings[setting].type == 'value') {
             var elem = document.getElementById(autoTrimpSettings[setting].id);
-            if (elem != null) elem.textContent = autoTrimpSettings[setting].name + ': ' + ((autoTrimpSettings[setting].value > -1) ? prettify(autoTrimpSettings[setting].value) : 'Infinite');
+            if (elem != null) {
+                if (autoTrimpSettings[setting].value > -1)
+                    elem.textContent = autoTrimpSettings[setting].name + ': ' + prettify(autoTrimpSettings[setting].value);
+                else
+                    //elem.textContent = ranstring + ': ' + 'Infinite';
+                    elem.innerHTML = autoTrimpSettings[setting].name + ': ' + "<span class='icomoon icon-infinity'></span>"
+                // elem.textContent = autoTrimpSettings[setting].name + ': ' + ((autoTrimpSettings[setting].value > -1) ? prettify(autoTrimpSettings[setting].value) : 'Infinite');
+            }
         }
     }
 }
@@ -807,7 +821,7 @@ addbreedTimerInside.id='turkimpBuff';
 addbreedTimerInside.setAttribute('style','display: block;');
 var addbreedTimerInsideIcon = document.createElement("SPAN");
 addbreedTimerInsideIcon.setAttribute('class',"icomoon icon-clock");
-var addbreedTimerInsideText = document.createElement("SPAN");
+var addbreedTimerInsideText = document.createElement("SPAN");   //updated in the top of mainLoop() each cycle
 addbreedTimerInsideText.id='hiddenBreedTimer';
 addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
 addbreedTimerInside.appendChild(addbreedTimerInsideText);
@@ -815,5 +829,8 @@ addbreedTimerContainer.appendChild(addbreedTimerInside);
 breedbarContainer.appendChild(addbreedTimerContainer);
 //Add tooltip to current army count
 var armycount = document.getElementById('trimpsFighting');
-armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
-armycount.setAttribute("onmouseout", 'tooltip("hide")');
+function addToolTipToArmyCount() {        
+    armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
+    armycount.setAttribute("onmouseout", 'tooltip("hide")');
+    armycount.setAttribute("class", 'tooltipadded');
+}

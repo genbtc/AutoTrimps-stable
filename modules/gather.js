@@ -1,3 +1,8 @@
+MODULES["gather"] = {};
+//These can be changed (in the console) if you know what you're doing:
+MODULES["gather"].minTraps = 100;
+MODULES["gather"].minScienceAmount = 100;
+MODULES["gather"].minScienceSeconds = 60;
 
 //OLD: "Auto Gather/Build"
 function manualLabor() {
@@ -25,7 +30,7 @@ function manualLabor() {
         setGather('trimps');
         if(trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed) safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
-    else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < 100 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
+    else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
         setGather('science');
     //if we have more than 2 buildings in queue, or (our modifier is real fast and trapstorm is off), build
     else if (!game.talents.foreman.purchased && (game.global.buildingsQueue.length ? (game.global.buildingsQueue.length > 1 || game.global.autoCraftModifier == 0 || (getPlayerModifier() > 1000 && game.global.buildingsQueue[0] != 'Trap.1')) : false)) {
@@ -96,7 +101,7 @@ function manualLabor() {
                 setGather(lowestResource);//gather the lowest resource
         //This stuff seems to be repeated from above. Should be refactored and fixed so this is not confusing.
         } else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
-            if (game.resources.science.owned < getPsString('science', true) * 60 && game.global.turkimpTimer < 1 && haveWorkers)
+            if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds && game.global.turkimpTimer < 1 && haveWorkers)
                 setGather('science');
             else if (game.global.turkimpTimer > 0)
                 setGather('metal');
@@ -106,8 +111,8 @@ function manualLabor() {
         //refactored into the if else block above:
         //else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
         //    setGather('science');
-        //Build more traps if we have TrapTrimps on, and we own less than 1000 traps.
-        else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < 1000)
+        //Build more traps if we have TrapTrimps on, and we own less than (100) traps.
+        else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < MODULES["gather"].minTraps)
             setGather('buildings'); //confusing (was always like this, see commits @ 2/23/16).
         else
             setGather(lowestResource);
@@ -155,16 +160,17 @@ function manualLabor2() {
     ((game.global.buildingsQueue.length >= 2 && manualBuildSpeedAdvantage > 3) ||
     //Prioritize Storage buildings when they hit the front of the queue (in case they are the only object in the queue).
     (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1') ||
-    //manualBuild traps if we have TrapTrimps on, AutoTraps on, and we own less than 100 traps.
-    (trapTrimpsOK && game.global.trapBuildAllowed && game.global.trapBuildToggled && game.buildings.Trap.owned < 100))) {
+    //manualBuild traps if we have TrapTrimps on, AutoTraps on, and we own less than (100) traps.
+    (trapTrimpsOK && game.global.trapBuildAllowed && game.global.trapBuildToggled && game.buildings.Trap.owned < MODULES["gather"].minTraps))) {
         setGather('buildings');//buildBuildings = true;
         return;
     }
     //Sciencey:
     //if we have some upgrades sitting around which we don't have enough science for, gather science
     if (document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
-        //if we have less than a minute of science
-        if (game.resources.science.owned < 100 || (game.resources.science.owned < getPsString('science', true) * 60 && game.global.turkimpTimer < 1))
+        //if we have less than (100) science or less than a minute of science
+        if (game.resources.science.owned < MODULES["gather"].minScienceAmount || 
+           (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds && game.global.turkimpTimer < 1))
             if (getPageSetting('ManualGather2') != 2) {
                 setGather('science');
                 return;

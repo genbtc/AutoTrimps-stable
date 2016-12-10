@@ -1,4 +1,6 @@
-
+// MODULES["dynprestige"] = {};
+//These can be changed (in the console) if you know what you're doing:
+// MODULES["dynprestige"]
 
 //Change prestiges as we go (original idea thanks to Hider)
 //The idea is like this. We will stick to Dagger until the end of the run, then we will slowly start grabbing prestiges, so we can hit the Prestige we want by the last zone.
