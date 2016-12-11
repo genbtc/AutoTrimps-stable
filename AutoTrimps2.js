@@ -76,6 +76,7 @@ function delayStart() {
 }
 function delayStartAgain(){
     setInterval(mainLoop, runInterval);
+    setInterval(guiLoop, runInterval*10);
     updateCustomButtons();
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
 }
@@ -161,7 +162,7 @@ function mainLoop() {
     setScienceNeeded();  //determine how much science is needed
 
     //EXECUTE CORE LOGIC
-    if (getPageSetting('ExitSpireCell') >= 1) exitSpireCell(); //"Exit Spire After Cell" (other.js)
+    if (getPageSetting('ExitSpireCell') >0) exitSpireCell(); //"Exit Spire After Cell" (other.js)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"  (jobs.js)
     if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"       (upgrades.js)
     autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (other.js)
@@ -215,10 +216,13 @@ function mainLoop() {
     
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
-    //refresh the UI
-    updateValueFields();   // (NewUI2.js)
+
     ATrunning = false;
     //rinse, repeat
+}
+//GUI Updates happen on this thread, every 1000ms, concurrently
+function guiLoop() {
+    updateCustomButtons();
 }
 
 // Userscript loader. write your own!

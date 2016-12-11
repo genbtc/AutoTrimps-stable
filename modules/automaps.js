@@ -610,10 +610,12 @@ function autoMap() {
             runMap();
         }
     }
+    //refresh the UI status (10x per second)
+    updateAutoMapsStatus();
 }
 
 //update the UI with stuff from automaps.
-function updateValueFields() {
+function updateAutoMapsStatus() {
     //automaps status
     var status = document.getElementById('autoMapStatus');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';

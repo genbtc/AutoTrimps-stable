@@ -87,9 +87,6 @@ function setPageSetting(setting, value) {
         // debug('found a dropdown');
         autoTrimpSettings[setting].selected = value;
     }
-    updateCustomButtons();
-    saveSettings();
-    checkPortalSettings();
 }
 
 //Global debug message
