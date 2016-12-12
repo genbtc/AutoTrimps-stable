@@ -175,9 +175,9 @@ function autoMap() {
     }        
     
     //if we are at max map bonus (10), and we don't need to farm, don't do maps
-    if (game.global.mapBonus == customVars.maxMapBonus && !shouldFarm)
+    if (game.global.mapBonus >= customVars.maxMapBonus && !shouldFarm)
         shouldDoMaps = false;
-    else if (game.global.mapBonus == customVars.maxMapBonus && shouldFarm)
+    else if (game.global.mapBonus >= customVars.maxMapBonus && shouldFarm)
         shouldFarmLowerZone = getPageSetting('LowerFarmingZone');
     //do 1 map if we dont have enough health
     else if (game.global.mapBonus == 0 && !enoughHealth)
