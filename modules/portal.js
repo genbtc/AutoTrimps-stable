@@ -5,42 +5,59 @@ MODULES["portal"].timeout = 10000;  //time to delay before autoportaling in mill
 /////////////////////////////////////////////////////
 //Portal Related Code)///////////////////////////////
 /////////////////////////////////////////////////////
-var lastHeliumZone = 0;
-var zonePostpone = 0;
+//var lastHeliumZone = 0; //zone where the He/hr portal conditions were first met
+var zonePostpone = 0;   //additional postponement of the zone above.
+
 //Decide When to Portal
 function autoPortal() {
+    if(!game.global.portalActive) return;
     var autoFinishDaily = (game.global.challengeActive == "Daily" && getPageSetting('AutoFinishDaily'));
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone (or buffer)
         case "Helium Per Hour":
-            game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
-            if(game.global.world > lastHeliumZone) {
-                lastHeliumZone = game.global.world;
-                if(game.global.world > (game.stats.bestHeliumHourThisRun.atZone + zonePostpone) && game.global.world >= getPageSetting('HeHrDontPortalBefore')) {
-                    zonePostpone = 0;
-                    var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
-                    var myHeliumHr = game.stats.heliumHour.value();
-                    var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
-                    if(myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100)) && (!game.global.challengeActive || autoFinishDaily) ) {
-                        debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  game.stats.bestHeliumHourThisRun.atZone, "general");
-                        tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
-                        setTimeout(cancelTooltip,MODULES["portal"].timeout);
-                        setTimeout(function(){
-                            if (zonePostpone > 0)
-                                return;
-                            if (autoFinishDaily){
-                                abandonDaily();
-                                document.getElementById('finishDailyBtnContainer').style.display = 'none';
-                            }
-                            pushData();
-                            if (autoTrimpSettings.HeliumHourChallenge.selected != 'None')
-                                doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
-                            else
-                                doPortal();
-                            zonePostpone = 0;
-                        },MODULES["portal"].timeout+100);
-                    }
+            var OKtoPortal = false;
+            if (!game.global.challengeActive || autoFinishDaily) {
+                var minZone = getPageSetting('HeHrDontPortalBefore');
+                game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
+                var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
+                var bestHeHrZone = game.stats.bestHeliumHourThisRun.atZone;
+                var myHeliumHr = game.stats.heliumHour.value();
+                var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
+                //double the buffer if we are in the middle of a zone   (allows portaling midzone if we exceed 5x the buffer)
+                if (!aWholeNewWorld)
+                    heliumHrBuffer *= 5;
+                var bufferExceeded = myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100));
+                if (bufferExceeded && game.global.world >= minZone) {
+                    OKtoPortal = true;
+                    if (aWholeNewWorld)
+                        zonePostpone = 0;   //reset the zonePostPone if we see a new zone
                 }
+                //make sure people with 0 buffer only portal on aWholeNewWorld (not midzone)
+                if (heliumHrBuffer == 0 && !aWholeNewWorld)
+                    OKtoPortal = false;
+                //Postpone Portal (and Actually Portal) code:
+                if (OKtoPortal && zonePostpone == 0) {
+                    zonePostpone+=1;
+                    //lastHeliumZone = game.global.world;
+                    debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  bestHeHrZone, "general");
+                    tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
+                    //set up 2 things to happen after the timeout. close the tooltip:
+                    setTimeout(cancelTooltip,MODULES["portal"].timeout);
+                    //and check if we hit the confirm to postpone, and if not, portal.
+                    setTimeout(function(){
+                        if (zonePostpone >= 2)
+                            return; //do nothing if we postponed.
+                        if (autoFinishDaily){
+                            abandonDaily();
+                            document.getElementById('finishDailyBtnContainer').style.display = 'none';
+                        }
+                        //
+                        if (autoTrimpSettings.HeliumHourChallenge.selected != 'None')
+                            doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
+                        else
+                            doPortal();
+                    },MODULES["portal"].timeout+100);
+                }                
             }
             break;
         case "Custom":
@@ -50,7 +67,7 @@ function autoPortal() {
                     abandonDaily();
                     document.getElementById('finishDailyBtnContainer').style.display = 'none';
                 }
-                pushData();
+                //
                 if (autoTrimpSettings.HeliumHourChallenge.selected != 'None')
                     doPortal(autoTrimpSettings.HeliumHourChallenge.selected);
                 else
@@ -67,7 +84,6 @@ function autoPortal() {
         case "Lead":
         case "Corrupted":
             if(!game.global.challengeActive) {
-                pushData();
                 doPortal(autoTrimpSettings.AutoPortal.selected);
             }
             break;
@@ -78,6 +94,7 @@ function autoPortal() {
 
 //Actually Portal.
 function doPortal(challenge) {
+    //AutoPerks.clickAllocate()
     if(!game.global.portalActive) return;
     try {
         if (getPageSetting('AutoMagmiteSpender2')==1)
@@ -109,6 +126,9 @@ function doPortal(challenge) {
     else if(challenge) {
         selectChallenge(challenge);
     }
+    //Push He Data: 
+    pushData();
+    //Actually Portal.
     activateClicked();
     activatePortal();
     lastHeliumZone = 0; zonePostpone = 0;
