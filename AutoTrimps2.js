@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.3.11-genbtc-12-12-2016+Modular
+// @version      2.1.4.0-genbtc-12-14-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.3.11-genbtc-12-12-2016+Modular';
+var ATversion = '2.1.4.0-genbtc-12-14-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -46,6 +46,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b>12/14 - NEW: AutoAllocatePerks (genbtc settings) - uses AutoPerks ratio system to Auto Spend Helium during AutoPortal</b>\
 <br><b>12/12 - Fix: HeHrBuffer will now portal midzone if you exceed 5x your buffer</b>\
 <br>12/10 - New: AutoStartDaily option (read tooltip)\
 <br>New way to buy geneticists (fast) - report any bugs\

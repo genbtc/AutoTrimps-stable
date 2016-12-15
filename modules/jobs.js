@@ -201,9 +201,12 @@ function buyJobs() {
         var old = preBuy2();
         game.global.firing = false;
         game.global.buyAmt = 'Max';
-        game.global.maxSplit = MODULES["jobs"].magmamancerRatio;
+        game.global.maxSplit = MODULES["jobs"].magmamancerRatio;    // (10%)
         //fire dudes to make room.
         var firesomedudes = calculateMaxAfford(game.jobs['Magmamancer'], false, false, true);
+        //fire (10x) as many workers as we need so "Max" (0.1) can work, because FreeWorkers are considered as part of the (10%) calc
+        var inverse = (1 /  MODULES["jobs"].magmamancerRatio);
+        firesomedudes *= inverse;
         if (game.jobs.Farmer.owned > firesomedudes)
             safeFireJob('Farmer', firesomedudes);
         else if (game.jobs.Lumberjack.owned > firesomedudes)
@@ -216,7 +219,7 @@ function buyJobs() {
         game.global.maxSplit = MODULES["jobs"].magmamancerRatio;
         buyJob('Magmamancer', true, true);
         postBuy2(old);
-        debug("Bought " + firesomedudes + ' Magmamancers', "other", "*users");
+        debug("Bought " + (firesomedudes/inverse) + ' Magmamancers. Total Owned: ' + game.jobs['Magmamancer'].owned, "other", "*users");
         tierMagmamancers += 1;
     }
     else if (stacks2 < tierMagmamancers) {

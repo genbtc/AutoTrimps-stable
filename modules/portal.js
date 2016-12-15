@@ -41,6 +41,7 @@ function autoPortal() {
                     zonePostpone+=1;
                     //lastHeliumZone = game.global.world;
                     debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  bestHeHrZone, "general");
+                    cancelTooltip();
                     tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
                     //set up 2 things to happen after the timeout. close the tooltip:
                     setTimeout(cancelTooltip,MODULES["portal"].timeout);
@@ -95,7 +96,6 @@ function autoPortal() {
 
 //Actually Portal.
 function doPortal(challenge) {
-    //AutoPerks.clickAllocate()
     if(!game.global.portalActive) return;
     try {
         if (getPageSetting('AutoMagmiteSpender2')==1)
@@ -103,7 +103,11 @@ function doPortal(challenge) {
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
     }
+    //Go into portal screen
     portalClicked();
+    //AutoPerks: do this first, because it reflashes the screen.
+    if (getPageSetting('AutoAllocatePerks'))
+        AutoPerks.clickAllocate();
     //Auto Start Daily:
     if (getPageSetting('AutoStartDaily')) {
         selectChallenge('Daily');
