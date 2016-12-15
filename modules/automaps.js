@@ -53,6 +53,7 @@ function autoMap() {
         enoughDamage = true; enoughHealth = true; shouldFarm = false;
         return;
     }
+    updateAutoMapsStatus();    //refresh the UI status (10x per second)
     var AutoStance = getPageSetting('AutoStance');
     //if we are in mapology and we have no credits, exit
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) return;
@@ -117,6 +118,7 @@ function autoMap() {
     // enter farming if it takes over 4 hits in D stance (16) (and exit if under.)
     if(!getPageSetting('DisableFarm')) {
         shouldFarm = enemyHealth > (ourBaseDamage * customVars.farmingCutoff);
+        if(game.options.menu.repeatUntil.enabled == 1) toggleSetting('repeatUntil');    //turn repeat forever on if farming is on. 
     }
 
     //Lead specific farming calcuation section:
@@ -611,8 +613,6 @@ function autoMap() {
             runMap();
         }
     }
-    //refresh the UI status (10x per second)
-    updateAutoMapsStatus();
 }
 
 //update the UI with stuff from automaps.
