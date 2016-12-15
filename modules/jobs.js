@@ -14,7 +14,7 @@ MODULES["jobs"].autoRatio1 = [1,1,1];
 function safeBuyJob(jobTitle, amount) {
     if (amount === undefined) amount = 1;
     if (amount === 0) return false;
-    preBuy();
+    var old = preBuy2();
     if (amount < 0) {
         amount = Math.abs(amount);
         game.global.firing = true;
@@ -30,7 +30,7 @@ function safeBuyJob(jobTitle, amount) {
     }
     debug((game.global.firing ? 'Firing ' : 'Hiring ') + prettify(game.global.buyAmt) + ' ' + jobTitle + 's', "jobs", "*users");
     buyJob(jobTitle, true, true);
-    postBuy();
+    postBuy2(old);
     return true;
 }
 
@@ -49,7 +49,7 @@ function safeFireJob(job,amount) {
             x*=2;
         }
     }
-    preBuy();
+    var old = preBuy2();
     game.global.firing = true;
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     while (x >= 1 && freeWorkers == Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed) {
@@ -57,7 +57,7 @@ function safeFireJob(job,amount) {
         buyJob(job, true, true);
         x*=2;
     }
-    postBuy();
+    postBuy2(old);
     return x/2;
 }
 
@@ -197,7 +197,7 @@ function buyJobs() {
     var timeOnZone = Math.floor((new Date().getTime() - game.global.zoneStarted) / 60000);
     var stacks2 = Math.floor(timeOnZone / 10);
     if (getPageSetting('AutoMagmamancers') && stacks2 > tierMagmamancers) {
-        preBuy();
+        var old = preBuy2();
         game.global.firing = false;
         game.global.buyAmt = 'Max';
         game.global.maxSplit = MODULES["jobs"].magmamancerRatio;
@@ -210,8 +210,11 @@ function buyJobs() {
         else if (game.jobs.Miner.owned > firesomedudes)
             safeFireJob('Miner', firesomedudes);
         //buy the Magmamancers
+        game.global.firing = false;
+        game.global.buyAmt = 'Max';
+        game.global.maxSplit = MODULES["jobs"].magmamancerRatio;
         buyJob('Magmamancer', true, true);
-        postBuy();
+        postBuy2(old);
         debug("Bought " + firesomedudes + ' Magmamancers', "other", "*users");
         tierMagmamancers += 1;
     }

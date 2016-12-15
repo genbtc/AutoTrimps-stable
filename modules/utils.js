@@ -161,7 +161,18 @@ function postBuy() {
     game.global.lockTooltip = preBuyTooltip;
     game.global.maxSplit = preBuymaxSplit;
 }
+//#2 Called before buying things that can be purchased in bulk 
+function preBuy2() {
+    return [game.global.buyAmt,game.global.firing,game.global.lockTooltip,game.global.maxSplit];
+}
 
+//#2 Called after buying things that can be purchased in bulk
+function postBuy2(old) {
+    game.global.buyAmt = old[0];
+    game.global.firing = old[1];
+    game.global.lockTooltip = old[2];
+    game.global.maxSplit = old[3];
+}
 
 function setTitle() {
     if (aWholeNewWorld) {
