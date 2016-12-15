@@ -133,12 +133,13 @@ function buyJobs() {
     //used multiple times below: (good job javascript for allowing functions in functions)
     function checkFireandHire(job,amount) {
         freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-        if (amount === null)
+        if (amount == null)
             amount = 1;
-        if (freeWorkers < amount)
-            subtract = safeFireJob('Farmer');
-        if (canAffordJob(job, false, amount) && !game.jobs[job].locked)
+        if (canAffordJob(job, false, amount) && !game.jobs[job].locked) {
+            if (freeWorkers < amount)
+                subtract = safeFireJob('Farmer');
             safeBuyJob(job, amount);
+        }
     }
     //Scientists:
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;

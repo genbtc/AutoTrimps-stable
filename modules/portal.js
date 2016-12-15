@@ -1,6 +1,7 @@
 MODULES["portal"] = {};
 //These can be changed (in the console) if you know what you're doing:
 MODULES["portal"].timeout = 10000;  //time to delay before autoportaling in milliseconds
+MODULES["portal"].bufferExceedFactor = 5;  //amount for: allows portaling midzone if we exceed (5x) the buffer
 
 /////////////////////////////////////////////////////
 //Portal Related Code)///////////////////////////////
@@ -23,9 +24,9 @@ function autoPortal() {
                 var bestHeHrZone = game.stats.bestHeliumHourThisRun.atZone;
                 var myHeliumHr = game.stats.heliumHour.value();
                 var heliumHrBuffer = Math.abs(getPageSetting('HeliumHrBuffer'));
-                //double the buffer if we are in the middle of a zone   (allows portaling midzone if we exceed 5x the buffer)
+                //Multiply the buffer by (5) if we are in the middle of a zone   (allows portaling midzone if we exceed (5x) the buffer)
                 if (!aWholeNewWorld)
-                    heliumHrBuffer *= 5;
+                    heliumHrBuffer *= MODULES["portal"].bufferExceedFactor;
                 var bufferExceeded = myHeliumHr < bestHeHr * (1-(heliumHrBuffer/100));
                 if (bufferExceeded && game.global.world >= minZone) {
                     OKtoPortal = true;
