@@ -59,7 +59,6 @@ function safeBuyBuilding(building) {
 
 //Decision function to buy best "Food" Buildings
 function buyFoodEfficientHousing() {
-
     var foodHousing = ["Hut", "House", "Mansion", "Hotel", "Resort"];
     var unlockedHousing = [];
     for (var house in foodHousing) {
@@ -96,15 +95,9 @@ function buyFoodEfficientHousing() {
         document.getElementById(bestfoodBuilding).style.border = "1px solid #00CC00";
         safeBuyBuilding(bestfoodBuilding);
     }
-
 }
 
-//Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym,Tribute,Nursery)s
-function buyBuildings() {
-    if ((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
-        return;
-    var oldBuy = preBuy2();
-    game.global.buyAmt = 1;
+function buyGemEfficientHousing() {
     var gemHousing = ["Hotel", "Resort", "Gateway", "Collector", "Warpstation"];
     var unlockedHousing = [];
     for (var house in gemHousing) {
@@ -112,15 +105,10 @@ function buyBuildings() {
             unlockedHousing.push(gemHousing[house]);
         }
     }
-    if (!unlockedHousing.length) {
-        buyFoodEfficientHousing();
-        return;
-    }
     var obj = {};
     for (var house in unlockedHousing) {
         var building = game.buildings[unlockedHousing[house]];
-        var cost = 0;
-        cost += getBuildingItemPrice(building, "gems", false, 1);
+        var cost = getBuildingItemPrice(building, "gems", false, 1);
         var ratio = cost / building.increase.by;
         //don't consider Gateway if we can't afford it right now - hopefully to prevent game waiting for fragments to buy gateway when collector could be bought right now
         if (unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway'))
@@ -137,16 +125,15 @@ function buyBuildings() {
     //loop through the array and find the first one that isn't limited by max settings
     for (var best in keysSorted) {
         var max = getPageSetting('Max' + keysSorted[best]);
-        if (max === false)
-            max = -1;
         if (game.buildings[keysSorted[best]].owned < max || max == -1) {
             bestBuilding = keysSorted[best];
-
+            //WarpStation Cap:
             if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
                 //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
                 if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
                     bestBuilding = null;
             }
+            //WarpStation Wall:
             var warpwallpct = getPageSetting('WarpstationWall3');
             if (warpwallpct > 1 && bestBuilding == "Warpstation") {
                 //Warpstation Wall - allow only warps that cost 1/n'th less then current metal (try to save metal for next prestige)
@@ -156,18 +143,28 @@ function buyBuildings() {
             break;
         }
     }
-    //buy
+    //if we found something make it green and buy it
     if (bestBuilding) {
         document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
         safeBuyBuilding(bestBuilding);
-    } else {
-        buyFoodEfficientHousing();
     }
+}    
 
+//Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym,Tribute,Nursery)s
+function buyBuildings() {
+    if ((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
+        return;
+    var customVars = MODULES["buildings"];
+    var oldBuy = preBuy2();
+    game.global.buyAmt = 1;
+    buyFoodEfficientHousing();  //["Hut", "House", "Mansion", "Hotel", "Resort"];
+    buyGemEfficientHousing();   //["Hotel", "Resort", "Gateway", "Collector", "Warpstation"];
+    //WormHoles:
     if (getPageSetting('MaxWormhole') > 0 && game.buildings.Wormhole.owned < getPageSetting('MaxWormhole') && !game.buildings.Wormhole.locked) {
         safeBuyBuilding('Wormhole');
     }
-    //Buy non-housing buildings
+    //Buy non-housing buildings:
+    //Gyms:
     if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
         var gymwallpct = getPageSetting('GymWall');
         var skipGym = false;
@@ -184,9 +181,11 @@ function buyBuildings() {
         if (!skipGym)
             safeBuyBuilding('Gym');
     }
+    //Tributes:
     if (!game.buildings.Tribute.locked && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {
         safeBuyBuilding('Tribute');
     }
+    //Nurseries:
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     //NoNurseriesUntil', 'No Nurseries Until z', 'For Magma z230+ purposes. Nurseries get shut down, and wasting nurseries early on is probably a bad idea. Might want to set this to 230+ as well.'
     var nursminlvl = getPageSetting('NoNurseriesUntil');
