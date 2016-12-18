@@ -46,6 +46,13 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b>12/18 Fixes: skip prestige if unbought prestige\
+<br>dynamic prestige not reverting to dagger after the target zone is reached\
+<br>Graphs - clear time, removed #2s, (essence graph might be messed up but its fixed now)\
+<br>Change forceAbandonTrimps "sitting around breeding forever when not on full anti stacks" from 60 seconds to 31.\
+<br>Fix BAF2 #4 for players without geneticists.\
+<br>Buildings cost efficiency + jobs low level fixes\
+<br>Some low level jobs and Buildings fixes.\
 <br><b>12/14 - NEW: AutoAllocatePerks (genbtc settings) - uses AutoPerks ratio system to Auto Spend Helium during AutoPortal</b>\
 <br><b>12/12 - Fix: HeHrBuffer will now portal midzone if you exceed 5x your buffer</b>\
 <br>12/10 - New: AutoStartDaily option (read tooltip)\
