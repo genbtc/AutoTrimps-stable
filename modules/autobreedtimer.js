@@ -100,7 +100,7 @@ function autoBreedTimer() {
             forceAbandonTrimps();
         }
         //if we're sitting around breeding forever and over (5) anti stacks away from target.
-        else if (nextgrouptime >= 60 && newstacks - game.global.antiStacks >= customVars.killTitimpStacks) {
+        else if (nextgrouptime >= 31 && newstacks - game.global.antiStacks >= customVars.killTitimpStacks) {
             forceAbandonTrimps();
         }
     }

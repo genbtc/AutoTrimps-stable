@@ -34,6 +34,7 @@ var ourBaseDamage = 0;
 var ourBaseDamage2 = 0;
 var scryerStuck = false;
 var shouldDoMaps = false;
+var mapTimeEstimate = 0;
 
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
@@ -71,10 +72,21 @@ function autoMap() {
                                  (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids') && (voidsuntil == -1 || game.global.world <= voidsuntil)));
     if(game.global.totalVoidMaps == 0 || !needToVoid)
         doVoids = false;
-    //calculate if we are behind on prestiges
+    //calculate if we are behind on unlocking prestiges
     needPrestige = prestige != "Off" && game.mapUnlocks[prestige].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
    //dont need prestige if we are caught up, and have unbought prestiges:
-     /*if (needPrestige && game.upgrades[prestige].allowed == Math.floor(game.mapUnlocks[prestige].last) && game.upgrades[prestige].done < game.upgrades[prestige].allowed)
+    var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Supershield','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
+    for (var i=0,len=prestigeList.length; i < len; i++) {
+        var p = prestigeList[i];
+        if (game.upgrades[p].allowed - game.upgrades[p].done > 0) {
+            needPrestige = false;
+            break;
+        }
+    }
+    //var unusedPrestige = false;
+    //prestigeList.forEach(function(p){if (game.upgrades[p].allowed - game.upgrades[p].done > 0) unusedPrestige = true;})
+    //if (needPrestige && unusedPrestige) needPrestige = false;
+    /*if (needPrestige && game.upgrades[prestige].allowed == Math.floor(game.mapUnlocks[prestige].last) && game.upgrades[prestige].done < game.upgrades[prestige].allowed)
         needPrestige = false;
     */
 
@@ -175,7 +187,11 @@ function autoMap() {
     //prevents map-screen from flickering on and off during startup when base damage is 0.    
     if (ourBaseDamage > 0){
         shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck;
-    }        
+    }
+    
+    if (mapTimeEstimate == 0) {
+        var lastzone = lookUpZoneData(game.global.world-1);
+    }
     
     //if we are at max map bonus (10), and we don't need to farm, don't do maps
     if (game.global.mapBonus >= customVars.maxMapBonus && !shouldFarm)
@@ -454,7 +470,7 @@ function autoMap() {
         var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 6;
         //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
         //or repeatbionics is true and there are still prestige items available to get
-        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < 9 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps) || repeatBionics)) {
+        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < customVars.maxMapBonus-1 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps) || repeatBionics)) {
             var targetPrestige = autoTrimpSettings.Prestige.selected;
             //make sure repeat map is on
             if (!game.global.repeatMap) {

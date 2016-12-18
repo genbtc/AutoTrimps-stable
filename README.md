@@ -53,7 +53,17 @@ Feel free to submit any bugs/suggestions as issues here on github.
 
 The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned. Happy scripting! -genBTC
 
-## Current feature changes by genBTC (up to date as of 12/4/2016):
+## Current feature changes by genBTC (up to date as of 12/9/2016):
+- ***12/9***
+- Fixed: DynamicPrestige=-1 wasnt disabling it
+- Fixed: needPrestige conflicting with needFarmSpire
+- ***12/8***
+- FarmWithNomStacks changes (read tooltip)
+- Nom stacks now calced by Autostance1
+- Default VoidDifficultyCheck is now defaulting to 6
+- ***12/6***
+- AutoMagmiteSpender now has a new cost efficiency algorithm.(read new tooltip)
+- AT now does its Nursery map for Blacksmithery owners at z50 not z60, to prevent breeding time-stalls.(+fixed bug)
 - ***12/4***
 - Completely rewrite lots of the Graphs.js code.
 - Converted the codebase into individual files, to help people find stuff.

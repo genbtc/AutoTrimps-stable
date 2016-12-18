@@ -25,7 +25,7 @@ document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style
 document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;font-size: 1em;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
 //Create the buttons in the graph Footer:
 //Create the dropdown for what graph to show    (these correspond to headings in setGraph() and have to match)
-var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time #2', 'Clear Time', 'Cumulative Clear Time #2','Cumulative Clear Time', 'Run Time', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
+var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 //btn.setAttribute("style", "");
@@ -46,14 +46,14 @@ document.getElementById("graphFooterLine1").innerHTML += '\
 <div><input type="checkbox" id="clrChkbox" onclick="toggleClearButton();"></div>\
 <div style="margin-left: 0.5vw;"><button id="clrAllDataBtn" onclick="clearData(null,true); drawGraph();" class="btn" disabled="" style="flex:auto; padding: 2px 6px;border: 1px solid white;">Clear All Previous Data</button></div>\
 <div style="flex:0 100 5%;"></div>\
-<div style="flex:0 2 3.5vw;"><input style="width:100%;min-width: 40px;" id="deleteSelectedTextBox"></div>\
-<div style="flex:auto; margin-left: 0.5vw;"><button onclick="deleteSelected(); drawGraph();">Delete Selected Portal</button></div>\
+<div style="flex:0 2 3.5vw;"><input style="width:100%;min-width: 40px;" id="deleteSpecificTextBox"></div>\
+<div style="flex:auto; margin-left: 0.5vw;"><button onclick="deleteSpecific(); drawGraph();">Delete Specific Portal</button></div>\
 <div style="flex:0 100 5%;"></div>\
 <div style="flex:auto;"><button  onclick="GraphsImportExportTooltip(\'ExportGraphs\', null, \'update\')">Export your Graph Database</button></div>\
-<div style="float:right; margin-right: 0.5vw;"><button onclick="toggleSelectedGraphs()">Invert Selection</button></div>\
+<div style="float:right; margin-right: 0.5vw;"><button onclick="toggleSpecificGraphs()">Invert Selection</button></div>\
 <div style="float:right; margin-right: 1vw;"><button onclick="toggleAllGraphs()">All Off/On</button></div>';
 document.getElementById("graphFooterLine2").innerHTML += '\
-<span style="float: left;" onmouseover=\'tooltip(\"Tips\", \"customText\", event, \"You can zoom by dragging a box around an area. You can turn portals off by clicking them on the legend. Quickly view the last portal by clicking it off, then Invert Selection. Or by clicking All Off, then clicking the portal on. To delete a portal, Type its portal number in the box and press Delete Selected. Using negative numbers in the Delete Selected box will KEEP that many portals (starting counting backwards from the current one), ie: if you have Portals 1000-1015, typing -10 will keep 1005-1015. Export Graph Database will make a backup of all the graph data (not that useful yet). There is a browser data storage limitation of 10MB, so do not exceed 15 portals-worth of data.\")\'>Tips: Hover for usage tips.</span>\
+<span style="float: left;" onmouseover=\'tooltip(\"Tips\", \"customText\", event, \"You can zoom by dragging a box around an area. You can turn portals off by clicking them on the legend. Quickly view the last portal by clicking it off, then Invert Selection. Or by clicking All Off, then clicking the portal on. To delete a portal, Type its portal number in the box and press Delete Specific. Using negative numbers in the Delete Specific box will KEEP that many portals (starting counting backwards from the current one), ie: if you have Portals 1000-1015, typing -10 will keep 1005-1015. Export Graph Database will make a backup of all the graph data (not that useful yet). There is a browser data storage limitation of 10MB, so do not exceed 15 portals-worth of data.\")\'>Tips: Hover for usage tips.</span>\
 <input style="height: 20px; float: right; margin-right: 0.5vw;" type="checkbox" id="rememberCB">\
 <span style="float: right; margin-right: 0.5vw;">Try to Remember Which Portals are Selected when switching between Graphs:</span>';
 //handle the locking mechanism checkbox for the Clear all previous data button:
@@ -220,8 +220,8 @@ function clearData(portal,clrall) {
 }
 
 //delete a specific portal number's graphs. use negative numbers to keep that many portals.
-function deleteSelected() {
-    var txtboxvalue = document.getElementById('deleteSelectedTextBox').value;
+function deleteSpecific() {
+    var txtboxvalue = document.getElementById('deleteSpecificTextBox').value;
     if (txtboxvalue == "")
         return;
     if (parseInt(txtboxvalue) < 0) {
@@ -337,17 +337,10 @@ function setColor(tmp) {
 }
 
 function getTotalDarkEssenceCount() {
-    return game.global.essence + getTotalTalentCost();
+    var purchased = 10 * (Math.pow(3, countPurchasedTalents()) - 1) / (3 - 1);
+    return game.global.essence + purchased;
 }
-/* //old:
-function getTotalDarkEssenceCount() {
-    var result = game.global.essence;
-    for (var i=0; i < countPurchasedTalents(); i++) {
-        result += Math.floor(10 * Math.pow(3, i));
-    }
-    return result;
-}
-*/
+
 function pushData() {
     debug('Starting Zone ' + game.global.world,"general");
     //helium/hour % of totalHE, and currentRun/totalLifetime HE
@@ -370,10 +363,11 @@ function pushData() {
         coord: game.upgrades.Coordination.done,
         lastwarp: game.global.lastWarp,
         essence: getTotalDarkEssenceCount(),
-        overkill: lastOVKcellsInWorld,
         hehr: getPercent.toFixed(4),
         helife: lifetime.toFixed(4),
-        zonetime: lastZoneStartTime
+        overkill: GraphsVars.OVKcellsInWorld,
+        zonetime: GraphsVars.ZoneStartTime,
+        mapbonus: GraphsVars.MapBonus
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
@@ -398,22 +392,56 @@ function initializeData() {
     }
 }
 
+var GraphsVars = {};
+function InitGraphsVars() {
+    GraphsVars.currentPortal = 0;
+    GraphsVars.OVKcellsInWorld = 0;
+    GraphsVars.lastOVKcellsInWorld = 0;
+    GraphsVars.currentworld = 0;
+    GraphsVars.lastrunworld = 0;
+    GraphsVars.aWholeNewWorld = false;
+    GraphsVars.lastZoneStartTime = 0;
+    GraphsVars.ZoneStartTime = 0;
+    GraphsVars.MapBonus = 0;
+    GraphsVars.aWholeNewPortal = 0;
+    GraphsVars.currentPortal = 0;
+}
+InitGraphsVars();
+
 //main function of the graphs script - runs every second.
 function gatherInfo() {
     initializeData();
-    //if we have reached a new zone, push a new data point (main
-    if (allSaveData.length > 0 && allSaveData[allSaveData.length - 1].world != game.global.world) {
-        pushData();
-    }
-
-    //clear filtered loot data upon portaling. < 5 check to hopefully throw out bone portal shenanigans
-    if(allSaveData[allSaveData.length -1].totalPortals != game.global.totalPortals && game.global.world < 5) {
-        for(var r in filteredLoot) {
-            for(var b in filteredLoot[r]){
-                filteredLoot[r][b] = 0;
-            }
+    //Track portal.
+    GraphsVars.aWholeNewPortal = GraphsVars.currentPortal != game.global.totalPortals;
+    if (GraphsVars.aWholeNewPortal) {
+        GraphsVars.currentPortal = game.global.totalPortals;
+        //clear filtered loot data upon portaling. < 5 check to hopefully throw out bone portal shenanigans
+        filteredLoot = {
+            'produced': {metal: 0, wood: 0, food: 0, gems: 0},
+            'looted': {metal: 0, wood: 0, food: 0, gems: 0}
         }
     }
+    //Track zone.
+    GraphsVars.aWholeNewWorld = GraphsVars.currentworld != game.global.world;
+    if (GraphsVars.aWholeNewWorld) {
+        GraphsVars.currentworld = game.global.world;
+        //if we have reached a new zone, push a new data point (main)
+        if (allSaveData.length > 0 && allSaveData[allSaveData.length - 1].world != game.global.world) {
+            pushData();
+        }
+        //reset stuff,prepare tracking variables.
+        GraphsVars.OVKcellsInWorld = 0;
+        GraphsVars.ZoneStartTime = 0;
+        GraphsVars.MapBonus = 0;
+    }
+
+    //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
+    if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
+    GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
+    //track time in each zone for better graphs
+    GraphsVars.ZoneStartTime = new Date().getTime() - game.global.zoneStarted;
+    //track mapbonus
+    GraphsVars.MapBonus = game.global.mapBonus;
 }
 
 var dataBase = {}
@@ -727,7 +755,7 @@ function setGraphData(graph) {
             break;
         case 'Clear Time':
             graphData = allPurposeGraph('cleartime1',true,null,true);
-            title = 'Time to clear zone (old/obsoleted; use Time to Clear Zone instead)';
+            title = 'Time to clear zone (fixed, supports Pauses)';
             xTitle = 'Zone';
             yTitle = 'Clear Time';
             yType = 'Linear';
@@ -749,7 +777,7 @@ function setGraphData(graph) {
             break;
         case 'Cumulative Clear Time':
             graphData = allPurposeGraph('cumucleartime1',true,null,true);
-            title = '#1 Cumulative Time at END of zone# (old/obsoleted; use Cumulative Clear Time #2 instead)';
+            title = '#1 Cumulative Time at END of zone# (fixed, supports Pauses)';
             xTitle = 'Zone';
             yTitle = 'Cumulative Clear Time';
             yType = 'datetime';
@@ -946,7 +974,7 @@ function setGraphData(graph) {
                     break;
                 case 'cleartime1':
                     funcToRun = function specialCalc(e1,e2) {
-                        return Math.round((e1.currentTime - e2.currentTime) / 1000);
+                        return Math.round(((e1.currentTime - e2.currentTime)-(e1.portalTime - e2.portalTime)) / 1000);
                     }
                     break;
                 case 'cumucleartime2':
@@ -957,7 +985,7 @@ function setGraphData(graph) {
                     break;
                 case 'cumucleartime1':
                     funcToRun = function specialCalc(e1,e2) {
-                        return Math.round(e1.currentTime - e2.currentTime);
+                        return Math.round((e1.currentTime - e2.currentTime)-(e1.portalTime - e2.portalTime));
                     }
                     useAccumulator = true;
                     break;
@@ -1127,6 +1155,14 @@ function addResCheckMax(what, number, noStat, fromGather, nonFilteredLoot) {
     }
 }//END overwriting default game functions!!!!!!!!!!!!!!!!!!!!!!
 
-
+function lookUpZoneData(zone,portal) {
+    if (portal == null)
+        portal = game.global.totalPortals;
+    for (var i=allSaveData.length-1,end=0; i >= 0; i--) {
+        if (allSaveData[i].totalPortals != portal) continue;
+        if (allSaveData[i].world != zone) continue;
+        return allSaveData[i];
+    }
+}
 //run the main gatherInfo function 1 time every second
 setInterval(gatherInfo, 100);

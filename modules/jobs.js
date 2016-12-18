@@ -24,12 +24,14 @@ function safeBuyJob(jobTitle, amount) {
         game.global.buyAmt = amount;
         //if can afford, buy what we wanted,
         if (!canAffordJob(jobTitle, false)){
-            game.global.buyAmt = 'Max'; //if we can't afford it, just use 'Max'. -it will always succeed-
+            game.global.buyAmt = 'Max'; //if we can't afford it, try to use 'Max'.
             game.global.maxSplit = 1;
         }
     }
-    debug((game.global.firing ? 'Firing ' : 'Hiring ') + prettify(game.global.buyAmt) + ' ' + jobTitle + 's', "jobs", "*users");
-    buyJob(jobTitle, true, true);
+    if (canAffordJob(jobTitle, false)) {
+        debug((game.global.firing ? 'Firing ' : 'Hiring ') + prettify(game.global.buyAmt) + ' ' + jobTitle + 's', "jobs", "*users");
+        buyJob(jobTitle, true, true);
+    }
     postBuy2(old);
     return true;
 }
@@ -96,8 +98,9 @@ function buyJobs() {
     } else if (game.jobs.Farmer.owned == 0 && game.jobs.Lumberjack.locked && freeWorkers > 0) {
         safeBuyJob('Farmer', 1);
     //make sure the game always buys 10 scientists.
-    } else if (game.jobs.Scientist.owned < 10 && scienceNeeded > 100)
-        safeBuyJob('Scientist', 10);
+    } else if (getPageSetting('HireScientists') && game.jobs.Scientist.owned < 10 && scienceNeeded > 100 && freeWorkers > 0 && game.jobs.Farmer.owned >= 10) {
+        safeBuyJob('Scientist', 1);
+    }
     freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     totalDistributableWorkers = freeWorkers + game.jobs.Farmer.owned + game.jobs.Miner.owned + game.jobs.Lumberjack.owned;
     if (game.global.challengeActive == 'Watch'){
@@ -120,10 +123,13 @@ function buyJobs() {
         var breeding = (game.resources.trimps.owned - game.resources.trimps.employed);
         if (!(game.global.challengeActive == "Trapper") && game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
             if (breeding > game.resources.trimps.realMax() * 0.33) {
-                //do Something tiny, so earlygame isnt stuck on 0 (down to 33% trimps. stops getting stuck from too low.)
-                safeBuyJob('Miner', 1);
-                safeBuyJob('Farmer', 1);
-                safeBuyJob('Lumberjack', 1);
+                freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+                if (freeWorkers > 0) {
+                    //do Something tiny, so earlygame isnt stuck on 0 (down to 33% trimps. stops getting stuck from too low.)
+                    safeBuyJob('Miner', 1);
+                    safeBuyJob('Farmer', 1);
+                    safeBuyJob('Lumberjack', 1);
+                }
             }
             return;
         }

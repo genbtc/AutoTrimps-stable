@@ -24,8 +24,9 @@ function useScryerStance() {
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var form = game.global.formation;
     var oktoswitch = true;
+    var die = getPageSetting('ScryerDieToUseS');
     if (form == 0 || form == 1)
-        oktoswitch = newSquadRdy || (missingHealth < (baseHealth / 2));
+        oktoswitch = die || newSquadRdy || (missingHealth < (baseHealth / 2));
 
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
     if (useoverkill && game.portal.Overkill.level == 0)

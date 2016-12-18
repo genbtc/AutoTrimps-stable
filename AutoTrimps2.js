@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.4.0-genbtc-12-14-2016+Modular
+// @version      2.1.4.1-genbtc-12-16-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.4.0-genbtc-12-14-2016+Modular';
+var ATversion = '2.1.4.1-genbtc-12-16-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
     //Load modules:
-    var modules = ['query', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other', 'upgrades'];
+    var modules = ['query', 'heirlooms', 'buildings2', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other', 'upgrades'];
     for (var i=0,len=modules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
     }
@@ -50,15 +50,8 @@ function printChangelog() {
 <br><b>12/12 - Fix: HeHrBuffer will now portal midzone if you exceed 5x your buffer</b>\
 <br>12/10 - New: AutoStartDaily option (read tooltip)\
 <br>New way to buy geneticists (fast) - report any bugs\
-<br>12/9 - Fixed: DynamicPrestige=-1 wasnt disabling it\
-<br>Fixed: needPrestige conflicting with needFarmSpire\
-<br>12/8 - FarmWithNomStacks changes (read tooltip)\
-<br>Nom stacks now calced by Autostance1\
-<br>Default VoidDifficultyCheck is now defaulting to 6\
-<br>12/6 - AutoMagmiteSpender now has a new cost efficiency algorithm.(read new tooltip)\
-<br>AT now does its Nursery map for Blacksmithery owners at z50 not z60, to prevent breeding time-stalls.(+fixed bug)\
 <br><b><u>Report any bugs/problems please!</u></b>\
-<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-1242016" target="#">Read the 12/4 Changelog Here</a>\
+<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-1292016" target="#">Read the 12/9 Changelog Here</a>\
 <br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }
@@ -112,30 +105,22 @@ var preBuymaxSplit;
 
 var ATrunning = false;
 var magmiteSpenderChanged = false;
-var OVKcellsInWorld = 0;
-var lastOVKcellsInWorld = 0;
 var BAFsetting, oldBAFsetting;
 
 var currentworld = 0;
 var lastrunworld = 0;
 var aWholeNewWorld = false;
-var lastZoneStartTime = 0;
-var ZoneStartTime = 0;
 
 //reset stuff that may not have gotten cleaned up on portal
 function mainCleanup() {
-    //runs at zone 1 only.
-    if (game.global.world == 1) {
-        lastHeliumZone = 0;
-        zonePostpone = 0;
-        OVKcellsInWorld = 0;
-        lastOVKcellsInWorld = 0;
-        lastZoneStartTime = 0;
-        ZoneStartTime = 0;
-    }
     lastrunworld = currentworld;
     currentworld = game.global.world;
     aWholeNewWorld = lastrunworld != currentworld;
+    //run once per portal:
+    if (currentworld == 1 && aWholeNewWorld) {
+        lastHeliumZone = 0;
+        zonePostpone = 0;
+    }
 }
 
 ////////////////////////////////////////
@@ -195,18 +180,6 @@ function mainLoop() {
 
     if (getPageSetting('DynamicPrestige2')>0) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
-
-    //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
-    if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
-    if (aWholeNewWorld) {
-        lastOVKcellsInWorld = OVKcellsInWorld;
-    }
-    OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
-    //track time in each zone for better graphs
-    if (aWholeNewWorld) {
-        lastZoneStartTime = new Date().getTime() - ZoneStartTime;
-    }
-    ZoneStartTime = game.global.zoneStarted;
     
     //Auto Magmite Spender
     try {

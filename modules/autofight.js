@@ -64,7 +64,7 @@ function betterAutoFight2() {
             debug("AutoFight: NEW: BAF2 #3, RemainingTime + ArmyAdd.Time &lt; GeneTimer", "other");
         }
         //Clicks fight anyway if we are dead and have >=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards.
-        else if (game.global.soldierHealth == 0 && (game.global.lastBreedTime/1000)>=31) {
+        else if (game.global.soldierHealth == 0 && (game.global.lastBreedTime/1000)>=31 && getPageSetting('GeneticistTimer') >= 0 && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > 10 ) {
             battle(true);
             debug("AutoFight: NEW: BAF2 #4, NextGroupBreedTimer went over 31 and we arent fighting.", "other");
         }
