@@ -56,11 +56,8 @@ function printChangelog() {
 <br>Buildings cost efficiency + jobs low level fixes\
 <br>Some low level jobs and Buildings fixes.\
 <br><b>12/14 - NEW: AutoAllocatePerks (genbtc settings) - uses AutoPerks ratio system to Auto Spend Helium during AutoPortal</b>\
-<br><b>12/12 - Fix: HeHrBuffer will now portal midzone if you exceed 5x your buffer</b>\
-<br>12/10 - New: AutoStartDaily option (read tooltip)\
-<br>New way to buy geneticists (fast) - report any bugs\
 <br><b><u>Report any bugs/problems please!</u></b>\
-<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-1292016" target="#">Read the 12/9 Changelog Here</a>\
+<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-12122016" target="#">Read the 12/12 Changelog Here</a>\
 <br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }
