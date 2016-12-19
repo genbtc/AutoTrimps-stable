@@ -22,6 +22,8 @@ MODULES["automaps"].preferGardens = true;   //prefer run Garden maps instead of 
 MODULES["automaps"].maxMapBonus = 10;       //
 MODULES["automaps"].shouldFarmCell = 59;
 MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
+MODULES["automaps"].SkipPrestigeIfUnbought = true;   //whether or not to skip prestige mode if we have unbought prestiges (see next var)
+MODULES["automaps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
 
 //Initialize Global Vars (dont mess with these, nothing good can come from it).
 var stackingTox = false;
@@ -74,21 +76,17 @@ function autoMap() {
         doVoids = false;
     //calculate if we are behind on unlocking prestiges
     needPrestige = prestige != "Off" && game.mapUnlocks[prestige].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
-   //dont need prestige if we are caught up, and have unbought prestiges:
-    var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Supershield','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
-    for (var i=0,len=prestigeList.length; i < len; i++) {
-        var p = prestigeList[i];
-        if (game.upgrades[p].allowed - game.upgrades[p].done > 0) {
-            needPrestige = false;
-            break;
+    //dont need prestige if we are caught up, and have (2) unbought prestiges:
+    if (customVars.SkipPrestigeIfUnbought == true) {
+        var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Supershield','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
+        var numUnbought = 0;
+        for (var i=0,len=prestigeList.length; i < len; i++) {
+            var p = prestigeList[i];
+            if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+                numUnbought++;
         }
+        if (numUnbought >= customVars.SkipNumUnboughtPrestiges) needPrestige = false;
     }
-    //var unusedPrestige = false;
-    //prestigeList.forEach(function(p){if (game.upgrades[p].allowed - game.upgrades[p].done > 0) unusedPrestige = true;})
-    //if (needPrestige && unusedPrestige) needPrestige = false;
-    /*if (needPrestige && game.upgrades[prestige].allowed == Math.floor(game.mapUnlocks[prestige].last) && game.upgrades[prestige].done < game.upgrades[prestige].allowed)
-        needPrestige = false;
-    */
 
 //START CALCULATING DAMAGES:
     //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are taking the average of adding two hits together here (non-crit dmg + crit dmg)

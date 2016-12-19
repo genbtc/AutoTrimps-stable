@@ -12,7 +12,7 @@ function manualLabor() {
     var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax() ? true : false;
 
     //FRESH GAME NO HELIUM CODE.
-    if (game.global.world <=3 && game.global.totalHeliumEarned<=500) {
+    if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned))
                 setGather('food');
@@ -129,7 +129,7 @@ function manualLabor2() {
     var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax() ? true : false;
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
-    if (game.global.world <=3 && game.global.totalHeliumEarned<=1000) {
+    if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
         if (game.global.buildingsQueue.length == 0 && (game.global.playerGathering != 'trimps' || game.buildings.Trap.owned == 0)){
             if (!game.triggers.wood.done || game.resources.food.owned < 10 || Math.floor(game.resources.food.owned) < Math.floor(game.resources.wood.owned)) {
                 setGather('food');

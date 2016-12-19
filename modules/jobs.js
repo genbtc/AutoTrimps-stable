@@ -79,7 +79,7 @@ function buyJobs() {
     }
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
-    if (game.global.world == 1 && game.global.totalHeliumEarned<=1000){
+    if (game.global.world == 1 && game.global.totalHeliumEarned<=5000){
         if (game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9){
             if (game.resources.food.owned > 5 && freeWorkers > 0){
                 if (game.jobs.Farmer.owned == game.jobs.Lumberjack.owned)

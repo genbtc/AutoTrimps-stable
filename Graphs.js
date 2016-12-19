@@ -25,7 +25,7 @@ document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style
 document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;font-size: 1em;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
 //Create the buttons in the graph Footer:
 //Create the dropdown for what graph to show    (these correspond to headings in setGraph() and have to match)
-var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
+var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 //btn.setAttribute("style", "");
@@ -177,7 +177,7 @@ function applyRememberedSelections() {
 }
 
 //Invert graph selections
-function toggleSelectedGraphs() {
+function toggleSpecificGraphs() {
     for (var i=0; i < chart1.series.length; i++){
         var run = chart1.series[i];
         if (run.visible)
@@ -826,6 +826,13 @@ function setGraphData(graph) {
             yTitle = 'Number of Void Maps';
             yType = 'Linear';
             break;
+        case 'Map Bonus':
+            graphData = allPurposeGraph('mapbonus',true,"number");
+            title = 'Map Bonus History';
+            xTitle = 'Zone';
+            yTitle = 'Map Bonus Stacks';
+            yType = 'Linear';
+            break;        
         case 'Coords':
             graphData = allPurposeGraph('coord',true,"number");
             title = 'Coordination History';
