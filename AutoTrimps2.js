@@ -46,6 +46,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b>12/20 Disable Farm mode if we have nothing left to farm for (prevent infinite farming)</b>\
 <br><b>12/19 Turn Skip prestige if >=2 unbought prestiges into an option in Maps settings</b>\
 <br><b>Bug Fixes + redo geneticists buying again.</b>\
 <br><b>Add Map Bonus Graph</b>\
@@ -55,9 +56,8 @@ function printChangelog() {
 <br>Fix BAF2 #4 for players without geneticists.\
 <br>Buildings cost efficiency + jobs low level fixes\
 <br>Some low level jobs and Buildings fixes.\
-<br><b>12/14 - NEW: AutoAllocatePerks (genbtc settings) - uses AutoPerks ratio system to Auto Spend Helium during AutoPortal</b>\
 <br><b><u>Report any bugs/problems please!</u></b>\
-<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-12122016" target="#">Read the 12/12 Changelog Here</a>\
+<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-12142016" target="#">Read the 12/14 Changelog Here</a>\
 <br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }

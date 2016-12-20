@@ -1,6 +1,7 @@
 MODULES["equipment"] = {};
 //These can be changed (in the console) if you know what you're doing:
 MODULES["equipment"].numHitsSurvived = 8;   //survive X hits in D stance or not enough Health.
+MODULES["equipment"].capEquipto10 = 10;     //cap equip to 10 (or some other number)
 
 var equipmentList = {
     'Dagger': {
@@ -192,7 +193,7 @@ function evaluateEquipmentEfficiency(equipName) {
         Factor = 0;
         Wall = true;
     }
-    if (gameResource.level >= 10 && getPageSetting('CapEquip')) {
+    if (gameResource.level >= MODULES["equipment"].capEquipto10 && getPageSetting('CapEquip')) {
         Factor = 0;
         Wall = true;
     }
@@ -374,4 +375,19 @@ function autoLevelEquipment() {
         }
     }
     postBuy();
+}
+
+function areWeAttackLevelCapped() {
+    //check if we have cap to 10 equip on, and we are capped for all attack weapons
+    var attack = [];
+    for (var equipName in equipmentList) {
+        var equip = equipmentList[equipName];
+        var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
+        if (!gameResource.locked) {
+            var evaluation = evaluateEquipmentEfficiency(equipName);
+            if (evaluation.Stat == "attack")
+                attack.push(evaluation);
+        }
+    }
+    return attack.every(evaluation => (evaluation.Factor == 0 && evaluation.Wall == true));  
 }

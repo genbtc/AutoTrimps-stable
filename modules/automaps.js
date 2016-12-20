@@ -36,6 +36,7 @@ var ourBaseDamage2 = 0;
 var scryerStuck = false;
 var shouldDoMaps = false;
 var mapTimeEstimate = 0;
+var lastMapWeWereIn = null;
 
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
@@ -127,7 +128,7 @@ function autoMap() {
     // enter farming if it takes over 4 hits in D stance (16) (and exit if under.)
     if(!getPageSetting('DisableFarm')) {
         shouldFarm = enemyHealth > (ourBaseDamage * customVars.farmingCutoff);
-        if(game.options.menu.repeatUntil.enabled == 1) toggleSetting('repeatUntil');    //turn repeat forever on if farming is on. 
+        if(game.options.menu.repeatUntil.enabled == 1) toggleSetting('repeatUntil');    //turn repeat forever on if farming is on.
     }
 
     //Lead specific farming calcuation section:
@@ -151,7 +152,7 @@ function autoMap() {
     //Enough Health and Damage calculations:
     var pierceMod = (game.global.brokenPlanet && !game.global.mapsActive) ? getPierceAmt() : 0;
     const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
-    //const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
+    //const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;
     //asks if we can survive x number of hits in either D stance or X stance.
     enoughHealth = (baseHealth/FORMATION_MOD_1 > customVars.numHitsSurvived * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
     enoughDamage = (ourBaseDamage * customVars.enoughDamageCutoff > enemyHealth);
@@ -171,7 +172,7 @@ function autoMap() {
         enoughDamage = result[1];
         scryerStuck = !enoughHealth;
     } */
-    
+
     //Health:Damage ratio: (status)
     HDratio = enemyHealth / ourBaseDamage;
 
@@ -181,15 +182,15 @@ function autoMap() {
     var selectedMap = "world";
     var shouldFarmLowerZone = false;
     shouldDoMaps = false;
-    //prevents map-screen from flickering on and off during startup when base damage is 0.    
+    //prevents map-screen from flickering on and off during startup when base damage is 0.
     if (ourBaseDamage > 0){
         shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck;
     }
-    
+
     if (mapTimeEstimate == 0) {
         var lastzone = lookUpZoneData(game.global.world-1);
     }
-    
+
     //if we are at max map bonus (10), and we don't need to farm, don't do maps
     if (game.global.mapBonus >= customVars.maxMapBonus && !shouldFarm)
         shouldDoMaps = false;
@@ -222,6 +223,34 @@ function autoMap() {
             shouldFarm = (HDratio > customVars.NomfarmingCutoff);
             shouldDoMaps = true;
             restartVoidMap = true;
+        }
+    }
+    
+    //Disable Farm mode if we have nothing left to farm for (prevent infinite farming)
+    if (shouldFarm && !needPrestige) {
+        //check if we have cap to 10 equip on, and we are capped for all attack weapons
+        var capped = areWeAttackLevelCapped();
+        //check if we have any additional prestiges available to unlock:
+        var prestigeitemsleft;
+        if (game.global.mapsActive) {
+            prestigeitemsleft = addSpecials(true, true, getCurrentMapObject());
+        }
+        else if (lastMapWeWereIn) {
+            prestigeitemsleft = addSpecials(true, true, lastMapWeWereIn);
+        }
+        //check if we have unbought+available prestiges
+        var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest'];
+        var numUnbought = 0;
+        for (var i=0,len=prestigeList.length; i < len; i++) {
+            var p = prestigeList[i];
+            if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
+                numUnbought++;
+        }
+        //Disable farm mode, only do up to mapbonus.
+        if (capped && prestigeitemsleft == 0 && numUnbought == 0) {
+            shouldFarm = false;
+            if (game.global.mapBonus >= customVars.maxMapBonus && !shouldFarm)
+                shouldDoMaps = false;
         }
     }
 
@@ -259,7 +288,7 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }
-    
+
     //Dynamic Siphonology section (when necessary)
     //Lower Farming Zone = Lowers the zone used during Farming mode. Starts 10 zones below current and Finds the minimum map level you can successfully one-shot
     var siphlvl = shouldFarmLowerZone ? game.global.world - 10 : game.global.world - game.portal.Siphonology.level;
@@ -278,7 +307,7 @@ function autoMap() {
                 break;
             }
         }
-    }  
+    }
     var obj = {};
     var siphonMap = -1;
     for (var map in game.global.mapsOwnedArray) {
@@ -437,7 +466,7 @@ function autoMap() {
                 if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
-                    selectedMap = "create";            
+                    selectedMap = "create";
             //if needPrestige, TRY to find current level map as the highest level map we own.
             } else if (needPrestige) {
                 if (game.global.world == game.global.mapsOwnedArray[highestMap].level)
@@ -606,6 +635,7 @@ function autoMap() {
                 debug("Can't afford the map we designed, #" + maplvlpicked , "maps", '*crying2');
                 debug("..picking our highest map:# " + game.global.mapsOwnedArray[highestMap].id + " Level: " + game.global.mapsOwnedArray[highestMap].level, "maps", '*happy2');
                 runMap();
+                lastMapWeWereIn = getCurrentMapObject();
             } else {
                 debug("BUYING a Map, level: #" + maplvlpicked, "maps", 'th-large');
                 var result = buyMap();
@@ -624,6 +654,7 @@ function autoMap() {
             var voidorLevelText = themapobj.location == "Void" ? " Void: " : levelText;
             debug("Already have a map picked: Running map: " + selectedMap + voidorLevelText + " Name: " + themapobj.name, "maps", 'th-large');
             runMap();
+            lastMapWeWereIn = getCurrentMapObject();
         }
     }
 }
