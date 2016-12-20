@@ -15,20 +15,25 @@ function safeBuyJob(jobTitle, amount) {
     if (amount === undefined) amount = 1;
     if (amount === 0) return false;
     var old = preBuy2();
+    var result;
     if (amount < 0) {
         amount = Math.abs(amount);
         game.global.firing = true;
         game.global.buyAmt = amount;
+        result = true;
     } else{
         game.global.firing = false;
         game.global.buyAmt = amount;
         //if can afford, buy what we wanted,
-        if (!canAffordJob(jobTitle, false)){
-            game.global.buyAmt = 'Max'; //if we can't afford it, try to use 'Max'.
+        result = canAffordJob(jobTitle, false);
+        if (!result) {
+            game.global.buyAmt = 'Max';
             game.global.maxSplit = 1;
-        }
+            //if we can't afford it, try to use 'Max' and try again.
+            result = canAffordJob(jobTitle, false);
+        }        
     }
-    if (canAffordJob(jobTitle, false)) {
+    if (result) {
         debug((game.global.firing ? 'Firing ' : 'Hiring ') + prettify(game.global.buyAmt) + ' ' + jobTitle + 's', "jobs", "*users");
         buyJob(jobTitle, true, true);
     }
@@ -124,13 +129,15 @@ function buyJobs() {
         if (!(game.global.challengeActive == "Trapper") && game.resources.trimps.owned < game.resources.trimps.realMax() * 0.9 && !breedFire) {
             if (breeding > game.resources.trimps.realMax() * 0.33) {
                 freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
-                if (freeWorkers > 0) {
+                //only hire if we have less than 300k trimps (dont spam up the late game with meaningless 1's)
+                if (freeWorkers > 0 && game.resources.trimps.realMax() <= 3e5) {
                     //do Something tiny, so earlygame isnt stuck on 0 (down to 33% trimps. stops getting stuck from too low.)
                     safeBuyJob('Miner', 1);
                     safeBuyJob('Farmer', 1);
                     safeBuyJob('Lumberjack', 1);
                 }
             }
+            //standard quit routine if <90% breed:
             return;
         }
         //continue if we have >90% breedtimer:

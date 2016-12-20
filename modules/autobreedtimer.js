@@ -12,6 +12,7 @@ MODULES["autobreedtimer"].voidCheckPercent = 95;    //Void Check health %, for f
 function autoBreedTimer() {
     var customVars = MODULES["autobreedtimer"];
     var fWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     if(getPageSetting('ManageBreedtimer')) {
         if(game.portal.Anticipation.level == 0) setPageSetting('GeneticistTimer',0);
         else if(game.global.challengeActive == 'Electricity' || game.global.challengeActive == 'Mapocalypse') setPageSetting('GeneticistTimer',3.5);
@@ -29,54 +30,47 @@ function autoBreedTimer() {
     var inDamageStance = game.upgrades.Dominance.done ? game.global.formation == 2 : game.global.formation == 0;
     var inScryerStance = (game.global.world >= 60 && game.global.highestLevelCleared >= 180) && game.global.formation == 4;
     //(inDamageStance||inScryerStance);
-    var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
+    var targetBreed = getPageSetting('GeneticistTimer');
     //if we need to hire geneticists
     //Don't hire geneticists if total breed time remaining is greater than our target breed time
-    //Don't hire geneticists if we have already reached 30 anti stacks (put off further delay to next trimp group)
-    if (targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && (game.global.lastBreedTime/1000 + getBreedTime(true) < autoTrimpSettings.GeneticistTimer.value) && game.resources.trimps.soldiers > 0 && !breedFire) {
+    //Don't hire geneticists if we have already reached 30 anti stacks (put off further delay to next trimp group) //&& (game.global.lastBreedTime/1000 + getBreedTime(true) < targetBreed) 
+    if (newSquadRdy && targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && game.resources.trimps.soldiers > 0 && !breedFire) {
         var time = getBreedTime();
         var timeOK = time > 0 ? time : 0.1;
-        var numgens = Math.trunc(Math.log(autoTrimpSettings.GeneticistTimer.value / timeOK ) / Math.log(1.02));
+        var numgens = Math.trunc(Math.log(targetBreed / timeOK ) / Math.log(1.02));
         //insert 10% of total food limit here? or cost vs tribute?
         //if there's no free worker spots, fire a farmer
-        if (fWorkers < numgens)
+        if (numgens > 0 && fWorkers < numgens)
             //do some jiggerypokery in case jobs overflow and firing -workers does 0 (java integer overflow)
             safeFireJob('Farmer', numgens);
         //hire geneticists in bulk
-        if (canAffordJob('Geneticist', false, numgens)) {
+        if (numgens > 0 && canAffordJob('Geneticist', false, numgens)) {
             //debug("1a. Time: " + getBreedTime(true) + " / " + getBreedTime() );
             //debug("1b. " + numgens + " Genes.. / " + game.jobs.Geneticist.owned + " -> " + (game.jobs.Geneticist.owned+numgens));
             safeBuyJob('Geneticist', numgens);            
             //debug("1c. Time: " + getBreedTime(true) + " / " + getBreedTime() );
         }
-        //hire geneticists slowly
+        //if all else fails, hire geneticists slowly (not likely)
         else            
             safeBuyJob('Geneticist', customVars.buyGensIncrement);
     }
+    var fire1 = targetBreed*1.02 < getBreedTime();
+    var fire2 = targetBreed*1.02 < getBreedTime(true);
+    var fireobj = fire1 ? getBreedTime() : getBreedTime(true);    
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
     if ((targetBreed < getBreedTime() || !game.jobs.Geneticist.locked || !getPageSetting('ManageBreedtimer') || game.global.challengeActive == 'Watch') && game.upgrades.Potency.allowed > game.upgrades.Potency.done && canAffordTwoLevel('Potency') && getPageSetting('BuyUpgrades')) {
         buyUpgrade('Potency');
     }
     //otherwise, if we have too many geneticists, (total time) - start firing them #1
-    else if (targetBreed*1.02 < getBreedTime() && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > customVars.fireGensFloor) {
-        var time = getBreedTime();
-        var timeOK = time > 0 ? time : 0.1;
-        var numgens = Math.trunc(Math.log(autoTrimpSettings.GeneticistTimer.value / timeOK ) / Math.log(1.02));
+    //otherwise, if we have too many geneticists, (remaining time) - start firing them #2
+    else if ((fire1 || fire2) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > customVars.fireGensFloor) {
+        var timeOK = fireobj > 0 ? fireobj : 0.1;
+        var numgens = Math.trunc(Math.log(targetBreed / timeOK ) / Math.log(1.02));
         //debug("2a. Time: " + getBreedTime(true) + " / " + getBreedTime() );
         //debug("2b. " + numgens + " Genes.. / " + game.jobs.Geneticist.owned + " -> " + (game.jobs.Geneticist.owned+numgens));
         safeBuyJob('Geneticist', numgens);    
         //debug("2c. Time: " + getBreedTime(true) + " / " + getBreedTime() );
-    }
-    //otherwise, if we have too many geneticists, (remaining time) - start firing them #2
-    else if (targetBreed*1.02 < getBreedTime(true) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > customVars.fireGensFloor) {
-        var time = getBreedTime(true);
-        var timeOK = time > 0 ? time : 0.1;
-        var numgens = Math.trunc(Math.log(autoTrimpSettings.GeneticistTimer.value / timeOK ) / Math.log(1.02));
-        //debug("3a. Time: " + getBreedTime(true) + " / " + getBreedTime() );
-        //debug("3b. " + numgens + " Genes.. / " + game.jobs.Geneticist.owned + " -> " + (game.jobs.Geneticist.owned+numgens));
-        safeBuyJob('Geneticist', numgens);    
-        //debug("3c. Time: " + getBreedTime(true) + " / " + getBreedTime() );
     }
     //if our time remaining to full trimps is still too high, fire some jobs to get-er-done
     //needs option to toggle? advanced options?
@@ -88,7 +82,7 @@ function autoBreedTimer() {
     if(getBreedTime(true) < customVars.breedFireOff) breedFire = false;
 
     //Force Abandon Code (AutoTrimpicide):
-    var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var nextgrouptime = (game.global.lastBreedTime/1000);
     if  (targetBreed > 30) targetBreed = 30; //play nice with custom timers over 30.
     var newstacks = nextgrouptime >= targetBreed ? targetBreed : nextgrouptime;

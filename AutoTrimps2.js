@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.4.2-genbtc-12-19-2016+Modular
+// @version      2.1.4.2b-genbtc-12-19-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.4.2-genbtc-12-19-2016+Modular';
+var ATversion = '2.1.4.2b-genbtc-12-19-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -46,10 +46,10 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>12/19 Turn Skip prestige if >=2 unbought prestiges into a setting in Maps page</b>\
-<br><b>12/19 Bug Fixes.</b>\
-<br><b>12/19 Add Map Bonus Graph</b>\
-<br>fix: dynamic prestige not reverting to dagger after the target zone is reached</b>\
+<br><b>12/19 Turn Skip prestige if >=2 unbought prestiges into an option in Maps settings</b>\
+<br><b>Bug Fixes + redo geneticists buying again.</b>\
+<br><b>Add Map Bonus Graph</b>\
+<br>12/18 - fix: dynamic prestige not reverting to dagger after the target zone is reached</b>\
 <br>Graphs - clear time, removed #2s, (essence graph might be messed up but its fixed now)\
 <br>Change forceAbandonTrimps "sitting around breeding forever when not on full anti stacks" from 60 seconds to 31.\
 <br>Fix BAF2 #4 for players without geneticists.\
