@@ -1,7 +1,6 @@
 MODULES["equipment"] = {};
 //These can be changed (in the console) if you know what you're doing:
 MODULES["equipment"].numHitsSurvived = 8;   //survive X hits in D stance or not enough Health.
-MODULES["equipment"].capEquipto10 = 10;     //cap equip to 10 (or some other number)
 
 var equipmentList = {
     'Dagger': {
@@ -189,11 +188,7 @@ function evaluateEquipmentEfficiency(equipName) {
         Factor = 0;
         Wall = true;
     }
-    if (gameResource.level > 10 - gameResource.prestige && getPageSetting('LimitEquipment')) {
-        Factor = 0;
-        Wall = true;
-    }
-    if (gameResource.level >= MODULES["equipment"].capEquipto10 && getPageSetting('CapEquip')) {
+    if (getPageSetting('CapEquip2') > 0 && gameResource.level >= getPageSetting('CapEquip2')) {
         Factor = 0;
         Wall = true;
     }
