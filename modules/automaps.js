@@ -22,7 +22,6 @@ MODULES["automaps"].preferGardens = true;   //prefer run Garden maps instead of 
 MODULES["automaps"].maxMapBonus = 10;       //
 MODULES["automaps"].shouldFarmCell = 59;
 MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
-MODULES["automaps"].SkipPrestigeIfUnbought = true;   //whether or not to skip prestige mode if we have unbought prestiges (see next var)
 MODULES["automaps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
 
 //Initialize Global Vars (dont mess with these, nothing good can come from it).
@@ -77,7 +76,7 @@ function autoMap() {
     //calculate if we are behind on unlocking prestiges
     needPrestige = prestige != "Off" && game.mapUnlocks[prestige].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
     //dont need prestige if we are caught up, and have (2) unbought prestiges:
-    if (customVars.SkipPrestigeIfUnbought == true) {
+    if (getPageSetting('PrestigeSkipMode')) {
         var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
         var numUnbought = 0;
         for (var i=0,len=prestigeList.length; i < len; i++) {
