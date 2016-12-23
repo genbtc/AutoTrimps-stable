@@ -186,7 +186,7 @@ function autoMap() {
     shouldDoMaps = false;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
     if (ourBaseDamage > 0){
-        shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck || !enoughHealth2enoughDamage2[0];
+        shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck ;
     }
 
     if (mapTimeEstimate == 0) {
