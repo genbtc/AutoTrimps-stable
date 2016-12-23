@@ -13,12 +13,16 @@ var zonePostpone = 0;   //additional postponement of the zone above.
 function autoPortal() {
     if(!game.global.portalActive) return;
     var autoFinishDaily = (game.global.challengeActive == "Daily" && getPageSetting('AutoFinishDaily'));
+    var autoFinishDailyZone = getPageSetting('AutoFinishDailyZone');
+    if (!autoFinishDaily)
+        autoFinishDailyZone = 0;    //dont use stale disabled values
     switch (autoTrimpSettings.AutoPortal.selected) {
         //portal if we have lower He/hr than the previous zone (or buffer)
         case "Helium Per Hour":
             var OKtoPortal = false;
             if (!game.global.challengeActive || autoFinishDaily) {
                 var minZone = getPageSetting('HeHrDontPortalBefore');
+                minZone += autoFinishDailyZone;
                 game.stats.bestHeliumHourThisRun.evaluate();    //normally, evaluate() is only called once per second, but the script runs at 10x a second.
                 var bestHeHr = game.stats.bestHeliumHourThisRun.storedValue;
                 var bestHeHrZone = game.stats.bestHeliumHourThisRun.atZone;
@@ -63,8 +67,8 @@ function autoPortal() {
             }
             break;
         case "Custom":
-            if (game.global.world > getPageSetting('CustomAutoPortal') &&
-                (!game.global.challengeActive || autoFinishDaily) ) {
+            if ((game.global.world > getPageSetting('CustomAutoPortal')+autoFinishDailyZone) &&
+                (!game.global.challengeActive || autoFinishDaily)) {
                 if (autoFinishDaily) {
                     abandonDaily();
                     document.getElementById('finishDailyBtnContainer').style.display = 'none';

@@ -35,6 +35,19 @@ function exitSpireCell() {
         endSpire();
 }
 
+//Auto Dimensional Generator
+function autoDimensionalGenerator() {
+    //prepare vars.
+    var genmode = game.global.generatorMode;
+    var fuel = game.global.magmaFuel;
+    var maxFuel = getGeneratorFuelCap();
+    var storageCap = getGeneratorFuelCap(true);
+    var burnRate = getFuelBurnRate();
+    var tickamt = getGeneratorTickAmount();
+    var ticktime = getGeneratorTickTime();
+    // changeGeneratorState(0 || 1 || 2);
+}
+
 //Auto Magmite spender before portal
 function autoMagmiteSpender() {
     var didSpend = false;
@@ -69,6 +82,7 @@ function autoMagmiteSpender() {
                 var eff = game.generatorUpgrades["Efficiency"];
                 var cap = game.generatorUpgrades["Capacity"];
                 var sup = game.generatorUpgrades["Supply"];
+                var ovclock = game.generatorUpgrades["Overclocker"];
                 if ((typeof eff === 'undefined')||(typeof cap === 'undefined')||(typeof sup === 'undefined'))
                     return; //error-resistant
                 var EffObj = {};

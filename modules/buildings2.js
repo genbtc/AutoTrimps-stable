@@ -75,10 +75,7 @@ function buyFoodEfficientHousing() {
             'name': unlockedHousing[house],
             'ratio': ratio
         });
-        //make any green things from last run white.
-        if (document.getElementById(unlockedHousing[house]).style.border = "1px solid #00CC00") {
-            document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
-        }
+        document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
     }
     buildorder.sort(function (a, b) {
         return a.ratio - b.ratio;
@@ -92,7 +89,7 @@ function buyFoodEfficientHousing() {
     }
     //if we found something make it green and buy it
     if (bestfoodBuilding) {
-        document.getElementById(bestfoodBuilding).style.border = "1px solid #00CC00";
+        document.getElementById(bestfoodBuilding).style.border = "1px solid #00CC01";
         safeBuyBuilding(bestfoodBuilding);
     }
 }
@@ -114,9 +111,7 @@ function buyGemEfficientHousing() {
         if (unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway'))
             continue;
         obj[unlockedHousing[house]] = ratio;
-        if (document.getElementById(unlockedHousing[house]).style.border = "1px solid #00CC00") {
-            document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
-        }
+        document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
     }
     var keysSorted = Object.keys(obj).sort(function (a, b) {
             return obj[a] - obj[b];
@@ -128,6 +123,7 @@ function buyGemEfficientHousing() {
         if (max === false) max = -1;
         if (game.buildings[keysSorted[best]].owned < max || max == -1) {
             bestBuilding = keysSorted[best];
+            document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
             //WarpStation Cap:
             if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
                 //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
@@ -146,7 +142,6 @@ function buyGemEfficientHousing() {
     }
     //if we found something make it green and buy it
     if (bestBuilding) {
-        document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
         safeBuyBuilding(bestBuilding);
     }
 }    
@@ -176,10 +171,10 @@ function buyBuildings() {
         }
         if (getPageSetting('DynamicGyms')) {
             //getBattleStats calculation comes from battlecalc.js and shows the tooltip-table block amount. calcBadGuyDmg is in that file also
-            if (!game.global.preMapsActive && getBattleStats("block", true) > calcBadGuyDmg(getCurrentEnemy(), null, true))
+            if (!game.global.preMapsActive && getBattleStats("block", true) > calcBadGuyDmg(getCurrentEnemy(), null, true,true))
                 skipGym = true;
         }
-        if (!skipGym)
+        if (!skipGym && !needGymystic)
             safeBuyBuilding('Gym');
     }
     //Tributes:

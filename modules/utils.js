@@ -175,12 +175,8 @@ function postBuy2(old) {
 }
 
 function setTitle() {
-    if (aWholeNewWorld) {
+    if (aWholeNewWorld)
         document.title = '(' + game.global.world + ')' + ' Trimps ' + document.getElementById('versionNumber').innerHTML;
-        //for the dummies like me who always forget to turn automaps back on after portaling
-        if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
-            settingChanged("AutoMaps");
-    }
 }
 
 //we copied message function because this was not able to be called from function debug() without getting a weird scope? related "cannot find function" error.

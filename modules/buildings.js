@@ -77,10 +77,7 @@ function highlightHousing() {
             //don't consider Gateway if we can't afford it right now - hopefully to prevent game waiting for fragments to buy gateway when collector could be bought right now
             if(unlockedHousing[house] == "Gateway" && !canAffordBuilding('Gateway')) continue;
             obj[unlockedHousing[house]] = ratio;
-            if (document.getElementById(unlockedHousing[house]).style.border = "1px solid #00CC00") {
-                document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
-                // document.getElementById(unlockedHousing[house]).removeEventListener("click", update);
-            }
+            document.getElementById(unlockedHousing[house]).style.border = "1px solid #FFFFFF";
         }
         var keysSorted = Object.keys(obj).sort(function(a, b) {
             return obj[a] - obj[b];
@@ -92,7 +89,7 @@ function highlightHousing() {
             if (max === false) max = -1;
             if (game.buildings[keysSorted[best]].owned < max || max == -1) {
                 bestBuilding = keysSorted[best];
-
+                document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
                 if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
                     //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
                     if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
@@ -107,10 +104,6 @@ function highlightHousing() {
                 break;
             }
         }
-        if (bestBuilding) {
-            document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
-        }
-        // document.getElementById(bestBuilding).addEventListener('click', update, false);
     } else {
         bestBuilding = null;
     }
@@ -164,10 +157,10 @@ function buyBuildings() {
         }
         if (getPageSetting('DynamicGyms')) {
             //getBattleStats calculation comes from battlecalc.js and shows the tooltip-table block amount. calcBadGuyDmg is in that file also
-            if (!game.global.preMapsActive && getBattleStats("block",true) > calcBadGuyDmg(getCurrentEnemy(),null,true))
+            if (!game.global.preMapsActive && getBattleStats("block",true) > calcBadGuyDmg(getCurrentEnemy(),null,true,true))
                 skipGym = true;
         }
-        if (!skipGym)
+        if (!skipGym && !needGymystic)
             safeBuyBuilding('Gym');
     }
     if (!game.buildings.Tribute.locked && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {

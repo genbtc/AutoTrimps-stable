@@ -9,7 +9,10 @@ function manualLabor() {
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
-    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax() ? true : false;
+    var trapTrimpsOK = getPageSetting('TrapTrimps');
+    var targetBreed = getPageSetting('GeneticistTimer');
+    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax();
+    var watchJumpstartTraps  =  game.global.challengeActive == "Watch" && game.resources.trimps.owned < game.resources.trimps.realMax();
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
@@ -21,14 +24,15 @@ function manualLabor() {
         }
     }
 
-    if(getPageSetting('TrapTrimps') && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
+    if(watchJumpstartTraps || trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
     }
-    else if (getPageSetting('TrapTrimps') && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
+    else if (watchJumpstartTraps || trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
         setGather('trimps');
-        if(trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed) safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
+        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
+            safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
     }
     else if (getPageSetting('ManualGather2') != 2 && game.resources.science.owned < MODULES["gather"].minScienceAmount && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
         setGather('science');
@@ -51,7 +55,7 @@ function manualLabor() {
             setGather('science');
         }
     }
-    else if (getPageSetting('TrapTrimps') && parseInt(getPageSetting('GeneticistTimer')) < getBreedTime(true)){
+    else if (trapTrimpsOK && targetBreed < getBreedTime(true)){
         //combined to optimize code.
         if (game.buildings.Trap.owned < 1 && canAffordBuilding('Trap')) {
             safeBuyBuilding('Trap');
@@ -93,7 +97,6 @@ function manualLabor() {
             }
             // debug('Current Stats ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate+ ' haveworkers ' +haveWorkers);
         }
-
         if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
             if (game.global.turkimpTimer > 0)
                 setGather('metal');
@@ -112,7 +115,7 @@ function manualLabor() {
         //else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
         //    setGather('science');
         //Build more traps if we have TrapTrimps on, and we own less than (100) traps.
-        else if(getPageSetting('TrapTrimps') && game.global.trapBuildToggled == true && game.buildings.Trap.owned < MODULES["gather"].minTraps)
+        else if(trapTrimpsOK && game.global.trapBuildToggled == true && game.buildings.Trap.owned < MODULES["gather"].minTraps)
             setGather('buildings'); //confusing (was always like this, see commits @ 2/23/16).
         else
             setGather(lowestResource);
@@ -125,8 +128,9 @@ function manualLabor2() {
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
     var trapTrimpsOK = getPageSetting('TrapTrimps');
-    var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
-    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax() ? true : false;
+    var targetBreed = getPageSetting('GeneticistTimer');
+    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax();
+    var watchJumpstartTraps  =  game.global.challengeActive == "Watch" && game.resources.trimps.owned < game.resources.trimps.realMax();
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
@@ -141,21 +145,23 @@ function manualLabor2() {
             }
         }
     }
+
     //Traps and Trimps:
-    if (trapTrimpsOK && (breedingTrimps < 5 || targetBreed < getBreedTime(true) || trapperTrapUntilFull)) {
-        if (game.buildings.Trap.owned > 0) {
-            setGather('trimps');//gatherTrimps = true;
-            if(trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed) safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
-            return;
-        }
-        if (game.buildings.Trap.owned == 0 && canAffordBuilding('Trap'))
-            safeBuyBuilding('Trap');//buyTraps = true;
-            //continue to buildings.
+    if(watchJumpstartTraps || trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
+        //safeBuyBuilding returns false if item is already in queue
+        if(!safeBuyBuilding('Trap'))
+            setGather('buildings');
     }
+    else if (watchJumpstartTraps || trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
+        setGather('trimps');
+        if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
+            safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
+    }
+
     //Buildings:
     var manualBuildSpeedAdvantage = getPlayerModifier() / game.global.autoCraftModifier;
         //pre-requisites for all: have something in the build queue, and playerCraftmod does actually speed it up.
-    if ((game.global.buildingsQueue.length && manualBuildSpeedAdvantage > 1) && //AND:    
+    if ((game.global.buildingsQueue.length && manualBuildSpeedAdvantage > 1) && //AND:
     //if we have 2 or more buildings in queue, and playerCraftmod is high enough (>3x autoCraftmod) to speed it up.
     ((game.global.buildingsQueue.length >= 2 && manualBuildSpeedAdvantage > 3) ||
     //Prioritize Storage buildings when they hit the front of the queue (in case they are the only object in the queue).
@@ -165,11 +171,12 @@ function manualLabor2() {
         setGather('buildings');//buildBuildings = true;
         return;
     }
+
     //Sciencey:
     //if we have some upgrades sitting around which we don't have enough science for, gather science
     if (document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
         //if we have less than (100) science or less than a minute of science
-        if (game.resources.science.owned < MODULES["gather"].minScienceAmount || 
+        if (game.resources.science.owned < MODULES["gather"].minScienceAmount ||
            (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds && game.global.turkimpTimer < 1))
             if (getPageSetting('ManualGather2') != 2) {
                 setGather('science');
@@ -185,6 +192,7 @@ function manualLabor2() {
             }
         }
     }
+
     //If we got here, without exiting, gather Normal Resources:
     var manualResourceList = {
         'food': 'Farmer',
@@ -218,7 +226,6 @@ function manualLabor2() {
         }
         // debug('Current Stats ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate+ ' haveworkers ' +haveWorkers);
     }
-
     if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
         if (game.global.turkimpTimer > 0)
             setGather('metal');

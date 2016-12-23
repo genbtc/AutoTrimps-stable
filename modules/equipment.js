@@ -183,7 +183,7 @@ function evaluateEquipmentEfficiency(equipName) {
     //wall (don't buy any more equipment, buy prestige first) is true if the limit equipment option is on and we are past our limit
     //Factor = 0 sets the efficiency to 0 so that it will be disregarded. if not, efficiency will still be somenumber that is cheaper,
     //      and the algorithm will get stuck on whatever equipment we have capped, and not buy other equipment.
-    if (game.jobs[mapresourcetojob[equip.Resource]].locked){
+    if (game.jobs[mapresourcetojob[equip.Resource]].locked && (game.global.challengeActive != 'Metal')){
         //cap any equips that we haven't unlocked metal for (new/fresh game/level1/no helium code)
         Factor = 0;
         Wall = true;
@@ -198,6 +198,19 @@ function evaluateEquipmentEfficiency(equipName) {
     if (gameResource.level < 2 && equip.Stat == 'health' && getPageSetting('AlwaysArmorLvl2')){
         Factor = 9999 - gameResource.prestige;
     }
+    //skip buying shields (w/ shieldblock) if we need gymystics
+    if (equipName == 'Shield' &&
+        getPageSetting('BuyShieldblock') &&
+        getPageSetting('BuyArmorUpgrades') &&
+        game.upgrades['Gymystic'].allowed - game.upgrades['Gymystic'].done > 0)
+        {
+            Factor = 0;
+            Wall = true;
+            needGymystic = true;
+        }
+        else {
+            needGymystic = false;
+        }
 
     return {
         Stat: equip.Stat,
@@ -207,6 +220,7 @@ function evaluateEquipmentEfficiency(equipName) {
         Cost: Cost
     };
 }
+var needGymystic = false;
 
 var resourcesNeeded;
 var Best;
@@ -259,7 +273,6 @@ function autoLevelEquipment() {
     enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
         (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
     enoughDamageE = (baseDamage * FORMATION_MOD_2 > enemyHealth);
-    
 
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];

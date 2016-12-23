@@ -115,9 +115,9 @@ initializeAllTabs();
 //Actually Make the Settings Buttons
 function initializeAllSettings() {
     //START MAKING BUTTONS IN THE TABS:
-    //CORE:
+//CORE:
     createSetting('ManualGather2', ['Gather/Build OFF', 'Auto Gather/Build', 'Science Research OFF', 'Auto Gather/Build #2'], '3-Way Button. Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research. Please test the Auto Gather/Build #2, its experimental but should work.', 'multitoggle', 1, null, "Core");
-    createSetting('BetterAutoFight', ['AutoFight OFF', 'Better Auto Fight 1', 'Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. #2 is the new one, #1 is the old algorithm (if you have any issues). The new BAF#2 does: 3)Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and 4) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle', 1, null, "Core");
+    createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight 1', 'Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. #2 is the new one, #1 is the old algorithm (if you have any issues). The new BAF#2 does: 3)Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and 4) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle', 1, null, "Core");
     createSetting('AutoStance', ['Auto Stance OFF', 'Auto Stance 1', 'Auto Stance 2'], 'Automatically swap stances to avoid death. Please test the Autostance #2, its very experimental, and in beta.', 'multitoggle', 1, null, "Core");
     createSetting('BuyStorage', 'Buy Storage', 'Will buy storage when resource is almost full. (like AutoStorage, even anticipates Jestimp)', 'boolean', true, null, "Core");
     createSetting('BuyBuildings', 'Buy Buildings', 'Will buy non storage buildings as soon as they are available', 'boolean', true, null, "Core");
@@ -131,7 +131,6 @@ function initializeAllSettings() {
     createSetting('WorkerRatios', 'Auto Worker Ratios', 'Automatically changes worker ratios based on current progress. WARNING: overrides worker ratio settings. Settings: 1/1/1 up to 300k trimps, 3/3/5 up to 3mil trimps, then 3/1/4 above 3 mil trimps, then 1/1/10 above 1000 tributes, then 1/2/22 above 1500 tributes, then 1/12/12 above 3000 tributes.', 'boolean', true, null, "Core");
     createSetting('ManageBreedtimer', 'Auto Breed Timer', '<u>Genetecist management is controlled by the Timer setting box to the right, not this.</u><br><b>Explanation: </b><br><U>[ON](Green): </U>All this does is auto-choose the appropriate timer for various challenges (0, 3.5s, 10s, 30s).<br><U>[OFF](Red): </U>You set the Timer yourself! Even if this is red, it still tampers with genetecists if the timer is >= 0.<br><b>Note: </b>Using AutoStance is recommended to survive the full 30 seconds or else Auto will probably be undesirable.', 'boolean', true, null, "Core");
     createSetting('GeneticistTimer', 'Geneticist Timer', 'Manages the breed timer by hiring/firing Geneticists for the purpose of setting the ideal anticpation stacks. Disable with -1 to disable the Hiring/Firing of geneticists. <br><b>Info:</b> Potency and Nursery buying behavior is adjusted dynamically (and disabling no longer disables potency). The Automatic Genetecist Hiring Process can best be summarized by: Buy/Wait/Die,Repeat. (if you do not die, no action is taken). Also self-kills (trimpicide) aka force abandon when your anti-stacks arent maxed out (conservatively).<p><B>Controlled automatically (locked) when Auto Breed Timer is on</B>.', 'value', '30', null, "Core");
-
     createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-portal if you have a challenge active, the challenge setting dictates which challenge it will select for the next run. All challenge settings will portal right after the challenge ends, regardless. Helium Per Hour only <b>portals at cell 1</b> of the first level where your He/Hr went down even slightly compared to the current runs Best He/Hr. Take note, there is a Buffer option, which is like a grace percentage of how low it can dip without triggering. Setting a buffer will portal mid-zone if you exceed 5x of the buffer.  CAUTION: Selecting He/hr may immediately portal you if its lower-(use Pause AutoTrimps button to pause the script first to avoid this)', 'dropdown', 'Off', ['Off', 'Helium Per Hour', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted', 'Custom'], "Core");
     createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Decay', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted'], "Core");
     document.getElementById("HeliumHourChallengeLabel").innerHTML = "Challenge:";
@@ -139,12 +138,14 @@ function initializeAllSettings() {
     createSetting('HeHrDontPortalBefore', 'He/Hr Dont Portal Before', 'Do NOT allow Helium per Hour AutoPortal setting to portal BEFORE this level is reached. It is an additional check that prevents drops in helium/hr from triggering autoportal. Set to 0 or -1 to completely disable this check.', 'value', '200', null, "Core");
     createSetting('HeliumHrBuffer', 'He/Hr Portal Buffer %', 'IMPORTANT SETTING. When using the He/Hr Autoportal, it will portal if your He/Hr drops by this amount of % lower than your best for current run, default is 0% (ie: set to 5 to portal at 95% of your best). Now with stuck protection - Allows portaling midzone if we exceed set buffer amount by 5x. (ie a normal 2% buffer setting would now portal mid-zone you fall below 10% buffer).', 'value', '0', null, 'Core');
     createSetting('AutoFinishDaily', 'Auto Finish Daily', 'With this on, the He/Hr Portal and Custom Auto Portal options will auto-finish the daily <b>whenever they trigger</b> and THEN portal you.', 'boolean', false, null, 'Core');
+    createSetting('AutoFinishDailyZone', 'Finish Daily Zone Mod', 'Finish Daily by this # of zones earlier/later than your regular Custom AutoPortal zone or your Helium Dont Portal Before zone. When Auto Finish Daily is on. Tip: Tune your value of He/HrDontPortalBefore to suit the daily, and then tune this. Can accept negative numbers for earlier, ie: -7 means portal 7 zones earlier than normal. Can also use positive numbers to DELAY portaling for later. <b>Use 0 to disable.</b>', 'valueNegative', -2, null, 'Core');    
     createSetting('AutoStartDaily', 'Auto Start Daily', 'With this on, the Auto Portal options will portal you into and auto-start the daily <b>whenever available</b>. Does Yesterday first, followed by Today. Falls back to selected challenge when both are complete.', 'boolean', false, null, 'Core');
     createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps Script (not including the graphs module)', 'boolean', null, null, 'Core');
     document.getElementById('PauseScript').parentNode.style.setProperty('float','right');
     document.getElementById('PauseScript').parentNode.style.setProperty('margin-right','1vw');
     document.getElementById('PauseScript').parentNode.style.setProperty('margin-left','0');
-    //GEAR:
+    
+//GEAR:
     createSetting('BuyArmor', 'Buy Armor', 'Auto-Buy/Level-Up the most cost efficient armor available. ', 'boolean', true, null, "Gear");
     createSetting('BuyArmorUpgrades', 'Buy Armor Upgrades', '(Prestiges) & Gymystic. Will buy the most efficient armor upgrade available. ', 'boolean', true, null, "Gear");
     createSetting('BuyWeapons', 'Buy Weapons', 'Auto-Buy/Level-Up the most cost efficient weapon available. ', 'boolean', true, null, "Gear");
@@ -170,7 +171,7 @@ function initializeAllSettings() {
         createSetting('CapEquip2', 'Cap Equip to', 'Do not level equipment past this number. Helps for early game when the script wants to level your tier2s to level 40+, or to stop wasting metal. Recommended value: 10, Disable with -1 or 0.', 'value', -1, null, 'Gear');
     }
     
-    //AutoMaps + VoidMaps settings:
+//AutoMaps + VoidMaps settings:
     createSetting('AutoMaps', 'Auto Maps', 'Recommended. Automatically run maps to progress. Very Important. Has multiple modes: <b>Prestige, Voids, Want more Damage, Want more Health, Want Health & Damage, and Farming.</b>Prestige takes precedence and does equal level maps until it gets what is needed as per Autotrimps Prestige dropdown setting. Voids is self explanatory: use the Void Difficulty Check setting to control the amount of farming. If \'want more damage\', it will only do 10 maps for 200% mapbonus damage bonus. If \'Farming\', it does maps beyond 10 if the displayed number is over >16x. \'Want more health[or and damage]\' is basically just a status message telling you need more health, theres not much that can be done besides tell AutoLevelEquipment to keep buying stuff. If you \'want health\' but your damage is OK to continue, invest in more HP perks.', 'boolean', true, null, "Maps");
     createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps. Decides when to run Unique maps. Required for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc) and their AutoPortal. Required to auto-run The Wall and Dimension of Anger. Required for Bionic Before Spire.', 'boolean', true, null, "Maps");
     createSetting('DynamicSiphonology', 'Dynamic Siphonology', 'Recommended Always ON. Use the right level of siphonology based on your damage output. IE: Only uses  siphonology if you are weak. With this OFF it means it ALWAYS uses the lowest siphonology map you can create. Siphonology is a perk you get at level 115-125ish, and means you receive map bonus stacks for running maps below your current zone - Up to 3 zones below (1 per perk level).', 'boolean', true, null, 'Maps');
@@ -188,11 +189,11 @@ function initializeAllSettings() {
     createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'Maps');
     createSetting('DisableFarm', 'Disable Farming', 'Disables the extended farming algorithm of the AutoMaps part of the script. Always returns to the world after reaching 10 map stacks. Use at your own risk. (No need to refresh anymore)', 'boolean', null, null, 'Maps');
 
-    //Settings:
+//Settings:
     createSetting('FarmerRatio', 'Farmer Ratio', '', 'value', '1', null, "Settings");
     createSetting('LumberjackRatio', 'Lumberjack Ratio', '', 'value', '1', null, "Settings");
     createSetting('MinerRatio', 'Miner Ratio', '', 'value', '1', null, "Settings");
-    createSetting('MaxScientists', 'Max Scientists', 'Advanced. Cap your scientists. recommend: -1 ("infinite" still controls itself and caps to around 250k under normal situations)', 'value', '-1', null, "Settings");
+    createSetting('MaxScientists', 'Max Scientists', 'Advanced. Cap your scientists. recommend: -1 (infinite still controls itself)', 'value', '-1', null, "Settings");
     createSetting('MaxExplorers', 'Max Explorers', 'Cap your explorers, most of fragments are gained by looting not gathering. recommend: 150', 'value', '150', null, "Settings");
     createSetting('MaxTrainers', 'Max Trainers', 'Advanced. Cap your trainers. recommend: -1', 'value', '-1', null, "Settings");
     createSetting('MaxHut', 'Max Huts', 'Huts', 'value', '100', null, "Settings");
@@ -208,11 +209,10 @@ function initializeAllSettings() {
     createSetting('MaxGym', 'Max Gyms', 'Advanced. recommend: -1', 'value', '-1', null, "Settings");
     createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1', null, "Settings");
     createSetting('MaxNursery', 'Max Nurseries', 'Advanced. recommend: -1', 'value', '-1', null, "Settings");
-    //Settings advanced settings
     createSetting('BreedFire', 'Breed Fire', 'OPTIONAL. Fire Lumberjacks and Miners to speed up breeding when needed. Basically trades wood/metal to cut the wait between deaths down. Disclaimer: May heavily negatively impact wood-gathering. ', 'boolean', null, null, 'Settings');
     createSetting('AutoMagmamancers', 'Auto Magmamancers', 'OPTIONAL. Auto Magmamancer Management. Hires Magmamancers when the Current Zone time goes over 10 minutes. Does a one-time spend of at most 10% of your resources. Every increment of 10 minutes after that repeats the 10% hiring process. Disclaimer: May negatively impact Gem count.', 'boolean', null, null, 'Settings');
 
-    //genBTC advanced settings - option buttons.
+//genBTC advanced settings - option buttons.
     createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genBTC');
     createSetting('WarpstationWall3', 'Warpstation Wall', 'Conserves Metal. Only buys 1 Warpstation when you can afford <b>X</b> warpstations metal cost (at the first one\'s price, simple math). -1, 0, 1 = disable. In other words, only allows warps that cost less than 1/nth your currently owned metal. (to save metal for prestiges)', 'value', 0, null, 'genBTC');
     createSetting('AutoRoboTrimp', 'AutoRoboTrimp', 'Use RoboTrimps ability starting at this level, and every 5 levels thereafter. (set to 0 to disable. default 60.) 60 is a good choice for mostly everybody.', 'value', '60', null, 'genBTC');
@@ -227,7 +227,7 @@ function initializeAllSettings() {
     createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those will still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');
     createSetting('AutoAllocatePerks', 'Auto Allocate Perks', 'EXPERIMENTAL. Uses the AutoPerks ratio based preset system to automatically allocate your perks to spend whatever helium you have when you AutoPortal. ', 'boolean', false, null, 'genBTC');
     
-    // Scryer settings
+// Scryer settings
     createSetting('UseScryerStance', 'Use Scryer Stance', '<b>MASTER BUTTON</b> Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Get 2x resources or Dark Essence. <u>All other buttons have no effect if this one is off.</u>', 'boolean', true, null, 'Scryer');
     createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. Recommend this be on. NOTE: This being on, and being able to overkill in S will override ALL other settings <u>(Except never use in spire)</u>. This is a boolean logic shortcut that disregards all the other settings including Min and Max Zone. If you ONLY want to use S during Overkill, as a workaround: turn this on and Min zone: to 9999 and everything else off(red). ', 'boolean', true, null, 'Scryer');
     createSetting('ScryerMinZone', 'Min Zone', 'Minimum zone to start using scryer in.(inclusive) Recommend:(60 or 181). This needs to be On & Valid for options other than Overkill to work. Tip: Use 9999 to disable all other Non-Overkill scryer usage.', 'value', '181', null, 'Scryer');
@@ -238,7 +238,7 @@ function initializeAllSettings() {
     createSetting('ScryerSkipBoss2', ['Default on Cell 100', 'Never Use on Cell 100 above VoidLevel', 'Never Use on Cell 100 (ALL Levels)'], 'On cell 100: Default/Never Use(above VoidLevel)/Never Use(ALL Levels). Overkill overrides this setting. Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your VoidMaps set to run at. (or all levels, if set.) Default treats cell 100 like any other cell.', 'multitoggle', 0, null, 'Scryer');
     createSetting('ScryerSkipCorrupteds2', ['Maybe Use S on Corrupteds', 'Dont Use S on Corrupteds'], 'Overkill overrides this setting, even on Dont Use. Turning this Green doesnt use S stance for corrupted cells UNLESS you can overkill them. Red/Maybe just means default (corrupteds are treated like normal cells), so something else has to be ON to trigger Scryer to be used. <b>Magma maps and Corrupted Voidmaps are classified under this box as corrupted</b> and Green-DontUse here will override the ForceMaps/ForceVoidmaps (for now)', 'multitoggle', 0, null, 'Scryer');
     createSetting('ScryerDieToUseS', 'Die To Use S', 'Turning this on will switch you back to S even when doing so would kill you. Happens in scenarios where you used Skip Corrupteds that took you into regular Autostance X/H stance, killed the corrupted and reached a non-corrupted enemy that you wish to use S on, but you havent bred yet and you are too low on health to just switch back to S. So youd rather die, wait to breed, then use S for the full non-corrupted enemy, to maximize DE. This feature was added for 1 person, use at your own risk.', 'boolean', false, null, 'Scryer');
-    //Spam settings:
+//Spam settings:
     createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Spam');
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Spam');
     createSetting('SpamEquipment', 'Equipment Spam', 'Equipment Spam', 'boolean', true, null, 'Spam');
@@ -247,40 +247,15 @@ function initializeAllSettings() {
     createSetting('SpamBuilding', 'Building Spam', 'Building Spam = all buildings, even storage', 'boolean', false, null, 'Spam');
     createSetting('SpamJobs', 'Job Spam', 'Job Spam = All jobs, in scientific notation', 'boolean', false, null, 'Spam');
 
-    // Export/Import/Default settings
+// Export/Import/Default settings
     createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
+    //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables in 1 click (and are saved)', 'infoclick', 'ImportModuleVars', null, 'Import Export');
+    //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');    
 }
 initializeAllSettings();
-
-function loadAutoTrimps() {
-    //try the import
-    try {
-        var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r)/gm, "");
-        var tmpset = JSON.parse(thestring);
-        if (tmpset == null)
-            return;
-    } catch (err) {
-        debug("Error importing, the string is bad." + err.message);
-        return;
-    }
-    ATrunning = false; //stop AT, wait, remove
-    setTimeout(localStorage.removeItem('autoTrimpSettings'), 101);
-    autoTrimpSettings = new Object(); //delete,remake
-    autoTrimpSettings = tmpset; //load the import.
-    //load everything again, anew
-    var settingsrow = document.getElementById("settingsRow");
-    settingsrow.removeChild(document.getElementById("autoSettings"));
-    automationMenuSettingsInit();
-    initializeAllTabs();
-    initializeAllSettings();
-    updateCustomButtons();
-    saveSettings();
-    checkPortalSettings();
-    ATrunning = true; //restart AT.
-}
 
 function AutoTrimpsTooltip(what, isItIn, event) {
     if (game.global.lockTooltip)
@@ -328,7 +303,17 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         cleanupAutoTrimps();
         tooltipText = "Autotrimps saved-settings have been attempted to be cleaned up. If anything broke, refreshing will fix it, but check that your settings are correct! (prestige in particular)";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
-    }
+    } else if (what == "ImportModuleVars") {        
+        //tooltipText = "Autotrimps MODULE variable settings have been loaded, and saved locally for future use between refreshes...";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); importModuleVars();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
+        ondisplay = function() {
+            document.getElementById('importBox').focus();
+        };
+    } else if (what == "ResetModuleVars") {
+        resetModuleVars();
+        tooltipText = "Autotrimps MODULE variable settings have been successfully reset to its defaults!";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
+    }    
     game.global.lockTooltip = true;
     elem.style.left = "33.75%";
     elem.style.top = "25%";
@@ -340,7 +325,42 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         ondisplay();
 }
 
-//remove stale values
+//reset autotrimps to defaults (also handles imports)
+function resetAutoTrimps(imported) {
+    ATrunning = false; //stop AT, wait, remove
+    function waitRemoveLoad(imported) {    
+        localStorage.removeItem('autoTrimpSettings');
+        //delete,remake,init defaults, recreate everything:
+        autoTrimpSettings = imported ? imported : new Object(); //load the import.
+        var settingsrow = document.getElementById("settingsRow");
+        settingsrow.removeChild(document.getElementById("autoSettings"));
+        automationMenuSettingsInit();
+        initializeAllTabs();
+        initializeAllSettings();
+        updateCustomButtons();
+        saveSettings();
+        checkPortalSettings();
+        ATrunning = true; //restart AT.
+    }
+    setTimeout(waitRemoveLoad(imported),101);
+}
+
+//import autotrimps settings from a textbox
+function loadAutoTrimps() {
+    //try the import
+    try {
+        var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r)/gm, "");
+        var tmpset = JSON.parse(thestring);
+        if (tmpset == null)
+            return;
+    } catch (err) {
+        debug("Error importing, the string is bad." + err.message);
+        return;
+    }
+    resetAutoTrimps(tmpset);
+}
+
+//remove stale values from past autotrimps versions
 function cleanupAutoTrimps() {
     for (var setting in autoTrimpSettings) {
         var elem = document.getElementById(autoTrimpSettings[setting].id);
@@ -349,22 +369,34 @@ function cleanupAutoTrimps() {
     }
 }
 
-//reset to defaults
-function resetAutoTrimps() {
-    //stop AT, wait, remove
-    ATrunning = false;
-    setTimeout(localStorage.removeItem('autoTrimpSettings'), 101);
-    //delete,remake,init defaults, recreate everything:
-    autoTrimpSettings = new Object();
-    var settingsrow = document.getElementById("settingsRow");
-    settingsrow.removeChild(document.getElementById("autoSettings"));
-    automationMenuSettingsInit();
-    initializeAllTabs();
-    initializeAllSettings();
-    updateCustomButtons();
-    saveSettings();
-    checkPortalSettings();
-    ATrunning = true; //start AT.
+//import MODULE variables from a textbox
+function importModuleVars() {
+    //try the import
+    try {
+        var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r)/gm, "");
+        var tmpset = JSON.parse(JSON.stringify(thestring));
+        if (tmpset == null)
+            return;
+    } catch (err) {
+        debug("Error importing, the string is bad." + err.message);
+        return;
+    }
+    ATrunning = false; //stop AT, wait, remove
+    function waitRemoveLoad(imported) {    
+        localStorage.removeItem('autoTrimpVariables');
+        MODULES = imported ? imported : new Object(); //load the import.
+        //load everything again, anew
+        var settingsrow = document.getElementById("settingsRow");
+        settingsrow.removeChild(document.getElementById("autoSettings"));
+        automationMenuSettingsInit();
+        initializeAllTabs();
+        initializeAllSettings();
+        updateCustomButtons();
+        saveSettings();
+        checkPortalSettings();
+        ATrunning = true; //restart AT.
+    }
+    setTimeout(waitRemoveLoad(tmpset),101);
 }
 
 function automationMenuInit() {
@@ -490,7 +522,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btnParent.appendChild(btn);
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
-    } else if (type == 'value') {
+    } else if (type == 'value' || type == 'valueNegative') {
         if (autoTrimpSettings[id] === undefined) {
             autoTrimpSettings[id] = {
                 id: id,
@@ -502,7 +534,10 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         }
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn btn-info');
-        btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '")');
+        if (type == 'valueNegative')
+            btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '",true)');
+        else
+            btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '")');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
         btn.textContent = name;
@@ -621,12 +656,16 @@ function settingChanged(id) {
 }
 
 
-function autoSetValueToolTip(id, text) {
+function autoSetValueToolTip(id, text,negative) {
     ranstring = text;
     var elem = document.getElementById("tooltipDiv");
-    var tooltipText = 'Type a number below. You can also use shorthand such as 2e5 or 200k. Put -1 for Infinite.';
-    tooltipText += '<br/><br/><input id="customNumberBox" style="width: 50%" onkeypress="onKeyPressSetting(event, \'' + id + '\')" value=' + autoTrimpSettings[id].value + '></input>';
-    var costText = '<div class="maxCenter"><div class="btn btn-info" onclick="autoSetValue(\'' + id + '\')">Apply</div><div class="btn btn-info" onclick="cancelTooltip()">Cancel</div></div>';
+    var tooltipText = 'Type a number below. You can also use shorthand such as 2e5 or 200k.';
+    if (negative)
+        tooltipText += 'Accepts negative numbers as validated inputs.';
+    else
+        tooltipText += 'Put -1 for Infinite.';
+    tooltipText += '<br/><br/><input id="customNumberBox" style="width: 50%" onkeypress="onKeyPressSetting(event, \'' + id + '\','+negative+')" value=' + autoTrimpSettings[id].value + '></input>';
+    var costText = '<div class="maxCenter"><div class="btn btn-info" onclick="autoSetValue(\'' + id + '\','+negative+')">Apply</div><div class="btn btn-info" onclick="cancelTooltip()">Cancel</div></div>';     
     game.global.lockTooltip = true;
     elem.style.left = '32.5%';
     elem.style.top = '25%';
@@ -643,13 +682,13 @@ function autoSetValueToolTip(id, text) {
     box.focus();
 }
 
-function onKeyPressSetting(event, id) {
+function onKeyPressSetting(event, id,negative) {
     if (event.which == 13 || event.keyCode == 13) {
-        autoSetValue(id);
+        autoSetValue(id,negative);
     }
 }
 
-function autoSetValue(id) {
+function autoSetValue(id,negative) {
     var num = 0;
     unlockTooltip();
     tooltip('hide');
@@ -676,7 +715,7 @@ function autoSetValue(id) {
         }
     } else return;
     autoTrimpSettings[id].value = num;
-    if (num > -1)
+    if (num > -1 || negative)
         document.getElementById(id).textContent = ranstring + ': ' + prettify(num);
     else
     //document.getElementById(id).textContent = ranstring + ': ' + 'Infinite';
@@ -712,6 +751,7 @@ function updateCustomButtons() {
     //auto Daily settings, hide until player has unlocked the Daily challenges
     (game.challenges.Daily.filter()) ? turnOn("AutoStartDaily") : turnOff("AutoStartDaily");
     (game.challenges.Daily.filter()) ? turnOn("AutoFinishDaily") : turnOff("AutoFinishDaily");
+    (game.challenges.Daily.filter() && getPageSetting('AutoFinishDaily')) ? turnOn("AutoFinishDailyZone") : turnOff("AutoFinishDailyZone");    
     //if custom auto portal is not selected, remove the custom value settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("CustomAutoPortal") : turnOff("CustomAutoPortal");
     //if HeHr is not selected, remove HeliumHourChallenge settingsbox
@@ -720,6 +760,7 @@ function updateCustomButtons() {
     (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeHrDontPortalBefore") : turnOff("HeHrDontPortalBefore");
     //if HeHr is not selected, remove HeHr buffer settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeliumHrBuffer") : turnOff("HeliumHrBuffer");
+    
     //update dropdown selections:
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
@@ -736,15 +777,14 @@ function updateCustomButtons() {
     }
     //make sure value buttons are set accurately.
     for (var setting in autoTrimpSettings) {
-        if (autoTrimpSettings[setting].type == 'value') {
+        if (autoTrimpSettings[setting].type == 'value' || autoTrimpSettings[setting].type == 'valueNegative') {
             var elem = document.getElementById(autoTrimpSettings[setting].id);
             if (elem != null) {
-                if (autoTrimpSettings[setting].value > -1)
+                if (autoTrimpSettings[setting].value > -1 || autoTrimpSettings[setting].type == 'valueNegative')
                     elem.textContent = autoTrimpSettings[setting].name + ': ' + prettify(autoTrimpSettings[setting].value);
                 else
                 //elem.textContent = ranstring + ': ' + 'Infinite';
                     elem.innerHTML = autoTrimpSettings[setting].name + ': ' + "<span class='icomoon icon-infinity'></span>";
-                    // elem.textContent = autoTrimpSettings[setting].name + ': ' + ((autoTrimpSettings[setting].value > -1) ? prettify(autoTrimpSettings[setting].value) : 'Infinite');
             }
         }
     }
@@ -820,7 +860,7 @@ var breedbarContainer = document.querySelector('#trimps > div.row');
 var addbreedTimerContainer = document.createElement("DIV");
 addbreedTimerContainer.setAttribute('class', "col-xs-3");
 addbreedTimerContainer.setAttribute('style', 'padding-left: 0;');
-addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now (capped at 30 obv.)\")');
+addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now (capped at 30 obv.) This number is what BetterAutoFight #4 refers to when it says NextGroupBreedTimer.\")');
 addbreedTimerContainer.setAttribute("onmouseout", 'tooltip("hide")');
 var addbreedTimerInside = document.createElement("DIV");
 addbreedTimerInside.id = 'turkimpBuff';

@@ -25,12 +25,13 @@ function safeBuyJob(jobTitle, amount) {
         game.global.firing = false;
         game.global.buyAmt = amount;
         //if can afford, buy what we wanted,
-        result = canAffordJob(jobTitle, false);
+        var freeWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
+        result = canAffordJob(jobTitle, false) && freeWorkers;
         if (!result) {
             game.global.buyAmt = 'Max';
             game.global.maxSplit = 1;
             //if we can't afford it, try to use 'Max' and try again.
-            result = canAffordJob(jobTitle, false);
+            result = canAffordJob(jobTitle, false) && freeWorkers;
         }        
     }
     if (result) {
@@ -259,7 +260,10 @@ function workerRatios() {
     }
     if (game.global.challengeActive == 'Watch'){
         ratioSet = MODULES["jobs"].autoRatio1;
+    } else if (game.global.challengeActive == 'Metal'){
+        ratioSet = [4,5,0]; //needs to be this to split workers half and half between farmers and lumbers (idk why)
     }
+
     setPageSetting('FarmerRatio',ratioSet[0]);
     setPageSetting('LumberjackRatio',ratioSet[1]);
     setPageSetting('MinerRatio',ratioSet[2]);

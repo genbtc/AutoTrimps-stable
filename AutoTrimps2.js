@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.5.0-genbtc-12-20-2016+Modular
+// @version      2.1.5.1-genbtc-12-23-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.0-genbtc-12-20-2016+Modular';
+var ATversion = '2.1.5.1-genbtc-12-23-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
     //Load modules:
-    var modules = ['query', 'heirlooms', 'buildings2', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other', 'upgrades'];
+    var modules = ['query', 'upgrades', 'heirlooms', 'buildings2', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other'];
     for (var i=0,len=modules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
     }
@@ -46,12 +46,13 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>12/20 NEW: Gear tab to Settings UI. Customize your equip level cap.</b>\
+<br><b>12/23 v2.1.5.1 - Whole slew of changes, some small some big, Read commit history</b>\
+<br><b>12/20 Gear tab to Settings UI. Customize your equip level cap.</b>\
 <br><b>Internally Disable Farm mode if we have nothing left to farm for (no prestiges,capped equip) to prevent infinite farming.</b>\
-<br><b>12/19 NEW: Skip prestige if >=2 unbought prestiges (maps settings)</b>\
-<br><b>Bug Fixes + redo geneticists buying again.</b>\
-<br><b>Add Map Bonus Graph</b>\
-<br>12/18 Fixed: dynamic prestige not reverting to dagger after the target zone is reached</b>\
+<br><b>12/19 Skip prestige if >=2 unbought prestiges (maps settings)</b>\
+<br>Bug Fixes + redo geneticists buying again.\
+<br>Add Map Bonus Graph\
+<br>12/18 Fixed: dynamic prestige not reverting to dagger after the target zone is reached\
 <br>Graphs - clear time, removed #2s, (essence graph might be messed up but its fixed now)\
 <br>Change forceAbandonTrimps "sitting around breeding forever when not on full anti stacks" from 60 seconds to 31.\
 <br>Fix BAF2 #4 for players without geneticists.\
@@ -110,7 +111,7 @@ var preBuyFiring;
 var preBuyTooltip;
 var preBuymaxSplit;
 
-var ATrunning = false;
+var ATrunning = true;
 var magmiteSpenderChanged = false;
 var BAFsetting, oldBAFsetting;
 
@@ -127,6 +128,9 @@ function mainCleanup() {
     if (currentworld == 1 && aWholeNewWorld) {
         lastHeliumZone = 0;
         zonePostpone = 0;
+        //for the dummies like me who always forget to turn automaps back on after portaling
+        if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
+            settingChanged("AutoMaps");        
     }
 }
 
@@ -135,12 +139,13 @@ function mainCleanup() {
 ////////////////////////////////////////
 ////////////////////////////////////////
 function mainLoop() {
+    if (ATrunning == false) return;
     ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
     if (armycount.className != "tooltipadded") addToolTipToArmyCount();
     mainCleanup();
-    if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades || ATrunning == false) return;
+    if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades) return;
     game.global.addonUser = true;
     game.global.autotrimps = {
         firstgiga: getPageSetting('FirstGigastation'),
@@ -183,6 +188,7 @@ function mainLoop() {
     if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"  (autofight.js)
     else if (BAFsetting==2) betterAutoFight2();     //"Better Auto Fight2"  (")
     else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight();
+    else if (BAFsetting==0 && game.global.world == 1 && !game.global.autoBattle && game.global.soldierHealth == 0) betterAutoFight();   //just do it anyway for lvl 1.
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
     if (getPageSetting('DynamicPrestige2')>0) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
@@ -198,10 +204,10 @@ function mainLoop() {
     
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
-
-    ATrunning = false;
     //rinse, repeat
+    return;
 }
+
 //GUI Updates happen on this thread, every 1000ms, concurrently
 function guiLoop() {
     updateCustomButtons();

@@ -16,6 +16,8 @@ function prestigeChanging2(){
 
      //find out the last zone
     var lastzone = getPageSetting("DynamicPrestige2");
+    
+    var extra = maxPrestigeIndex > 10 ? maxPrestigeIndex - 10 : 0;
 
     // Find total prestiges needed by determining current prestiges versus the desired prestiges by the end of the run
     var neededPrestige = 0;

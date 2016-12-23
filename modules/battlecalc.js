@@ -177,7 +177,7 @@ function getBattleStats(what,form,crit) {
     return currentCalc;
 }
 
-function calcOurDmg(number,maxormin) { //number = base attack
+function calcOurDmg(number,maxormin,disableStances,disableFlucts) { //number = base attack
     var fluctuation = .2; //%fluctuation
     var maxFluct = -1;
     var minFluct = -1;
@@ -244,24 +244,29 @@ function calcOurDmg(number,maxormin) { //number = base attack
             number *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
         }
     }
-    //Formations
-    if (game.global.formation == 2)
-        number /= 4;
-    else if (game.global.formation != "0")
-        number *= 2;
-
-    if (minFluct > 1) minFluct = 1;
-    if (maxFluct == -1) maxFluct = fluctuation;
-    if (minFluct == -1) minFluct = fluctuation;
-    var min = Math.floor(number * (1 - minFluct));
-    var max = Math.ceil(number + (number * maxFluct));
-    
-    //number = Math.floor(Math.random() * ((max + 1) - min)) + min;
-    return maxormin ? max : min;
+    if (!disableStances) {
+        //Formations
+        if (game.global.formation == 2)
+            number /= 4;
+        else if (game.global.formation != "0")
+            number *= 2;
+    }
+    if (!disableFlucts) {
+        if (minFluct > 1) minFluct = 1;
+        if (maxFluct == -1) maxFluct = fluctuation;
+        if (minFluct == -1) minFluct = fluctuation;
+        var min = Math.floor(number * (1 - minFluct));
+        var max = Math.ceil(number + (number * maxFluct));
+        
+        //number = Math.floor(Math.random() * ((max + 1) - min)) + min;
+        return maxormin ? max : min;
+    }
+    else 
+        return number;
 }
         
 
-function calcBadGuyDmg(enemy,attack,daily) {
+function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     var number;
     if (enemy)
         number = enemy.attack;
@@ -303,14 +308,18 @@ function calcBadGuyDmg(enemy,attack,daily) {
         number *= game.mapUnlocks.roboTrimp.getShriekValue();
     }
 
-    if (minFluct > 1) minFluct = 1;
-    if (maxFluct == -1) maxFluct = fluctuation;
-    if (minFluct == -1) minFluct = fluctuation;
-    var min = Math.floor(number * (1 - minFluct));
-    var max = Math.ceil(number + (number * maxFluct));
-    
-    //number = Math.floor(Math.random() * ((max + 1) - min)) + min;
-    return max;
+    if (!disableFlucts) {
+        if (minFluct > 1) minFluct = 1;
+        if (maxFluct == -1) maxFluct = fluctuation;
+        if (minFluct == -1) minFluct = fluctuation;
+        var min = Math.floor(number * (1 - minFluct));
+        var max = Math.ceil(number + (number * maxFluct));
+        
+        //number = Math.floor(Math.random() * ((max + 1) - min)) + min;
+        return maxormin ? max : min;
+    }
+    else 
+        return number;
 }
 function calcDailyAttackMod(number) {
     if (game.global.challengeActive == "Daily"){

@@ -18,13 +18,14 @@ MODULES["automaps"].MapTier1Sliders = [9,9,4,'Mountain']; //Zone 47-70 (9/9/4 Me
 MODULES["automaps"].MapTier2Sliders = [9,9,0,'Random'];   //Zone 16-47 (9/9/0 Random)
 MODULES["automaps"].MapTier3Sliders = [9,0,0,'Random'];    //Zone 6-16 (9/0/0 Random)
 MODULES["automaps"].preferGardens = true;   //prefer run Garden maps instead of ^^ if we have Decay done
-//These have no reason to be changed, or things may get weird:
-MODULES["automaps"].maxMapBonus = 10;       //
-MODULES["automaps"].shouldFarmCell = 59;
+MODULES["automaps"].maxMapBonus = 10;       //cap how many maps are run during Want More Damage mode
+MODULES["automaps"].SpireFarm199Maps = true;   //this will farm spire on 199 maps instead of 200 maps when Map Reducer is bought
 MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
+MODULES["automaps"].shouldFarmCell = 59;
 MODULES["automaps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
 
-//Initialize Global Vars (dont mess with these, nothing good can come from it).
+
+//Initialize Global Vars (dont mess with these ones, nothing good can come from it).
 var stackingTox = false;
 var doVoids = false;
 var needToVoid = false;
@@ -104,7 +105,7 @@ function autoMap() {
         enemyDamage = getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.2);
         enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
     } else {
-        enemyDamage = calcBadGuyDmg(null,getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.0),true);
+        enemyDamage = calcBadGuyDmg(null,getEnemyMaxAttack(game.global.world + 1, 50, 'Snimp', 1.0),true,true); //(enemy,attack,daily,maxormin,[disableFlucts])
     }
     enemyHealth = getEnemyMaxHealth(game.global.world + 1,50);
     if(game.global.challengeActive == "Toxicity") {
@@ -176,6 +177,7 @@ function autoMap() {
     //Health:Damage ratio: (status)
     HDratio = enemyHealth / ourBaseDamage;
 
+    var enoughHealth2enoughDamage2 = autoStanceCheck(false);
 
 //BEGIN AUTOMAPS DECISIONS:
     //vars
@@ -184,7 +186,7 @@ function autoMap() {
     shouldDoMaps = false;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
     if (ourBaseDamage > 0){
-        shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck;
+        shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck || !enoughHealth2enoughDamage2[0];
     }
 
     if (mapTimeEstimate == 0) {
@@ -418,6 +420,8 @@ function autoMap() {
             var eAttack = getEnemyMaxAttack(game.global.world, theMap.size, 'Voidsnimp', theMap.difficulty);
             if (game.global.world >= 181 || (game.global.challengeActive == "Corrupted" && game.global.world >= 60))
                 eAttack *= (getCorruptScale("attack") / 2).toFixed(1);
+            //TODO: Account for magmated voidmaps. (not /2)
+            //TODO: Account for daily.
             var ourHealth = baseHealth;
             if(game.global.challengeActive == 'Balance') {
                 var stacks = game.challenges.Balance.balanceStacks ? (game.challenges.Balance.balanceStacks > theMap.size) ? theMap.size : game.challenges.Balance.balanceStacks : false;
@@ -462,7 +466,7 @@ function autoMap() {
         if (selectedMap == "world") {
             //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.
             if (needFarmSpire) {
-                var spiremaplvl = game.talents.mapLoot.purchased ? 199 : 200;
+                var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["automaps"].SpireFarm199Maps) ? 199 : 200;
                 if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
@@ -559,51 +563,35 @@ function autoMap() {
             mapsClicked();  //go back
         }
         else if (selectedMap == "create") {
-            if (needPrestige)
-                document.getElementById("mapLevelInput").value = game.global.world;
-            else
-                document.getElementById("mapLevelInput").value = siphlvl;
-
-            //instead of normal map locations, use Plentiful (Gardens) if the Decay challenge has been completed. (for +25% better loot)
-
+            document.getElementById("mapLevelInput").value = needPrestige ? game.global.world : siphlvl;                        
+            var decrement;  //['size','diff','loot']
             if (game.global.world >= customVars.MapTierZone[0]) {
                 //Zone 70+ (9/9/9 Metal):
-                sizeAdvMapsRange.value = customVars.MapTier0Sliders[0];
-                adjustMap('size', customVars.MapTier0Sliders[0]);
-                difficultyAdvMapsRange.value = customVars.MapTier0Sliders[1];
-                adjustMap('difficulty', customVars.MapTier0Sliders[1]);
-                lootAdvMapsRange.value = customVars.MapTier0Sliders[2];
-                adjustMap('loot', customVars.MapTier0Sliders[2]);
+                //instead of normal map locations, use Plentiful (Gardens) if the Decay challenge has been completed. (for +25% better loot)
                 biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];  //metal is the current meta
+                decrement = [];
             } else if (game.global.world >= customVars.MapTierZone[1]) {
                 //Zone 47-70 (9/9/4 Metal):
-                sizeAdvMapsRange.value = customVars.MapTier1Sliders[0];
-                adjustMap('size', customVars.MapTier1Sliders[0]);
-                difficultyAdvMapsRange.value = customVars.MapTier1Sliders[1];
-                adjustMap('difficulty', customVars.MapTier1Sliders[1]);
-                lootAdvMapsRange.value = customVars.MapTier1Sliders[2];
-                adjustMap('loot', customVars.MapTier1Sliders[2]);
-                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];  //metal is the current meta
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier1Sliders[3];  //metal is the current meta
+                decrement = ['loot'];
             } else if (game.global.world >= customVars.MapTierZone[2]) {
                 //Zone 16-47 (9/9/0 Random):
-                sizeAdvMapsRange.value = customVars.MapTier2Sliders[0];
-                adjustMap('size', customVars.MapTier2Sliders[0]);
-                difficultyAdvMapsRange.value = customVars.MapTier2Sliders[1];
-                adjustMap('difficulty', customVars.MapTier2Sliders[1]);
-                lootAdvMapsRange.value = customVars.MapTier2Sliders[2];
-                adjustMap('loot', customVars.MapTier2Sliders[2]);
-                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier2Sliders[3];
+                decrement = ['loot'];
             } else {
                 //Zone 6-16 (9/0/0 Random):
-                sizeAdvMapsRange.value = customVars.MapTier3Sliders[0];
-                adjustMap('size', customVars.MapTier3Sliders[0]);
-                difficultyAdvMapsRange.value = customVars.MapTier3Sliders[1];
-                adjustMap('difficulty', customVars.MapTier3Sliders[1]);
-                lootAdvMapsRange.value = customVars.MapTier3Sliders[2];
-                adjustMap('loot', customVars.MapTier3Sliders[2]);
-                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier0Sliders[3];
+                biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : customVars.MapTier3Sliders[3];
+                decrement = ['diff','loot'];
             }
-            if (needFarmSpire)
+            //start all maps off on 9/9/9 and decrement.
+            sizeAdvMapsRange.value = 9
+            adjustMap('size', 9);
+            difficultyAdvMapsRange.value = 9;
+            adjustMap('difficulty', 9);
+            lootAdvMapsRange.value = 9;
+            adjustMap('loot', 9);
+            //choose spire level 199 or 200
+            if (needFarmSpire && MODULES["automaps"].SpireFarm199Maps)
                 document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
             //recalculate cost.
             updateMapCost();
@@ -611,23 +599,44 @@ function autoMap() {
             if(shouldFarm || !enoughDamage || !enoughHealth || game.global.challengeActive == 'Metal') {
                 biomeAdvMapsSelect.value = (customVars.preferGardens && game.global.decayDone) ? "Plentiful" : "Mountain";
                 updateMapCost();
-            } else {
-                //if we can't afford the map:
-                //Put a priority on small size, and increase the difficulty? for high Helium that just wants prestige = yes.
-                //Really just trying to prevent prestige mapping from getting stuck
-                while (difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
-                    difficultyAdvMapsRange.value -= 1;
-                }
             }
-            //Common:
+            //set up various priorities for various situations
+            if (updateMapCost(true) > game.resources.fragments.owned) {
+                if (needPrestige && HDratio < MODULES["automaps"].enoughDamageCutoff) decrement.push('diff');
+                if (shouldFarm) decrement.push('size');
+                if (HDratio >= MODULES["automaps"].enoughDamageCutoff) decrement.push('loot');                
+            }
+//use priorities first            
+            //if we STILL cant afford the map, lower the loot slider (less loot)
+            while (decrement.indexOf('loot') > -1 && lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
+                lootAdvMapsRange.value -= 1;
+            }
+            //default: if we can't afford the map:
+            //Put a priority on small size, and increase the difficulty? for high Helium that just wants prestige = yes.
+            //Really just trying to prevent prestige mapping from getting stuck            
+            while (decrement.indexOf('diff') > -1 && difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
+                difficultyAdvMapsRange.value -= 1;
+            }
             //if we still cant afford the map, lower the size slider (make it larger) (doesn't matter much for farming.)
-            while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
+            while (decrement.indexOf('size') > -1 && sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
                 sizeAdvMapsRange.value -= 1;
             }
+//Repeat if still too expensive.            
             //if we STILL cant afford the map, lower the loot slider (less loot)
             while (lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
                 lootAdvMapsRange.value -= 1;
             }
+            //default: if we can't afford the map:
+            //Put a priority on small size, and increase the difficulty? for high Helium that just wants prestige = yes.
+            //Really just trying to prevent prestige mapping from getting stuck            
+            while (difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
+                difficultyAdvMapsRange.value -= 1;
+            }
+            //if we still cant afford the map, lower the size slider (make it larger) (doesn't matter much for farming.)
+            while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
+                sizeAdvMapsRange.value -= 1;
+            }            
+
             //if we can't afford the map we designed, pick our highest existing map
             var maplvlpicked = document.getElementById("mapLevelInput").value;
             if (updateMapCost(true) > game.resources.fragments.owned) {
