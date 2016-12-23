@@ -236,8 +236,6 @@ function buyStorage() {
             // debug('Buying ' + B + '(' + Bs[B] + ') at ' + Math.floor(game.resources[Bs[B]].owned / (game.resources[Bs[B]].max * packMod * 0.99) * 100) + '%');
             if (canAffordBuilding(B) && game.triggers[B].done) {
                 safeBuyBuilding(B);
-                if (getPageSetting('ManualGather2'))
-                    setGather('buildings');
             }
         }
     }

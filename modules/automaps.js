@@ -55,9 +55,10 @@ function autoMap() {
     //exit and do nothing if we are prior to zone 6 (maps haven't been unlocked):
     if (!game.global.mapsUnlocked || !(baseDamage > 0)) {   //if we have no damage, why bother running anything? (this fixes weird bugs)
         enoughDamage = true; enoughHealth = true; shouldFarm = false;
+        updateAutoMapsStatus();    //refresh the UI status (10x per second)
         return;
     }
-    updateAutoMapsStatus();    //refresh the UI status (10x per second)
+    
     var AutoStance = getPageSetting('AutoStance');
     //if we are in mapology and we have no credits, exit
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) return;
@@ -90,8 +91,8 @@ function autoMap() {
     }
 
 //START CALCULATING DAMAGES:
-    //calculate crits (baseDamage was calced in function autoStance)    divide by two is because we are taking the average of adding two hits together here (non-crit dmg + crit dmg)
-    ourBaseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()))/2;
+    //calculate crits (baseDamage was calced in function autoStance)    this is a weighted average of nonCrit + Crit. (somewhere in the middle)
+    ourBaseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()));
     //calculate with map bonus
     var mapbonusmulti = 1 + (0.20*game.global.mapBonus);
     //(autostance2 has mapbonusmulti built in)
@@ -176,8 +177,8 @@ function autoMap() {
 
     //Health:Damage ratio: (status)
     HDratio = enemyHealth / ourBaseDamage;
-
-    var enoughHealth2enoughDamage2 = autoStanceCheck(false);
+    updateAutoMapsStatus();    //refresh the UI status (10x per second)
+    //var enoughHealth2enoughDamage2 = autoStanceCheck(false);
 
 //BEGIN AUTOMAPS DECISIONS:
     //vars
@@ -186,7 +187,7 @@ function autoMap() {
     shouldDoMaps = false;
     //prevents map-screen from flickering on and off during startup when base damage is 0.
     if (ourBaseDamage > 0){
-        shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck ;
+        shouldDoMaps = !enoughDamage || shouldFarm || scryerStuck;// || !enoughHealth2enoughDamage2[0];
     }
 
     if (mapTimeEstimate == 0) {
@@ -537,7 +538,7 @@ function autoMap() {
             if (game.global.switchToMaps && !shouldDoWatchMaps &&
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
-                (!enoughDamage && game.global.lastClearedCell < 9) ||
+                (!enoughDamage && enoughHealth && game.global.lastClearedCell < 9) ||
                 (shouldFarm && game.global.lastClearedCell >= customVars.shouldFarmCell) ||
                 (scryerStuck))
                 &&

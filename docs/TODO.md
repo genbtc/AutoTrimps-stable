@@ -1,3 +1,6 @@
+230+ regular maps should really be treated differently from corruption
+they don't have block pierce, and no special abilities
+
             Voidmaps:
             //TODO: Account for magmated voidmaps. (not /2)
             //TODO: Account for daily.
@@ -5,6 +8,10 @@ On Voids Diff:
 if you have enough HP to survive poisonous without genetecists, i guess its easy
 
 poison is really bad before you get geneticists for example
+before you have geneticists poisonous is just awful
+if you block everything, heinous is awful
+if you almost block everything, destructive is awful
+and then the double hit is somewhere in the middle
 
 yeah i think they shift a lot depending on how strong you are
 if you're strong enough that doing voids at 190 is a joke but can't do them later after you finish corrupted for example

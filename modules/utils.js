@@ -58,7 +58,7 @@ function getPageSetting(setting) {
     if (autoTrimpSettings[setting].type == 'boolean') {
         // debug('found a boolean');
         return autoTrimpSettings[setting].enabled;
-    } else if (autoTrimpSettings[setting].type == 'value') {
+    } else if (autoTrimpSettings[setting].type == 'value' || autoTrimpSettings[setting].type == 'valueNegative') {
         // debug('found a value');
         return parseFloat(autoTrimpSettings[setting].value);
     } else if (autoTrimpSettings[setting].type == 'multitoggle') {
@@ -76,7 +76,7 @@ function setPageSetting(setting, value) {
         // debug('found a boolean');
         autoTrimpSettings[setting].enabled = value;
         document.getElementById(setting).setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[setting].enabled);
-    } else if (autoTrimpSettings[setting].type == 'value') {
+    } else if (autoTrimpSettings[setting].type == 'value' || autoTrimpSettings[setting].type == 'valueNegative') {
         // debug('found a value');
         autoTrimpSettings[setting].value = value;
     } else if (autoTrimpSettings[setting].type == 'multitoggle') {

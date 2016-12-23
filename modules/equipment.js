@@ -208,10 +208,6 @@ function evaluateEquipmentEfficiency(equipName) {
             Wall = true;
             needGymystic = true;
         }
-        else {
-            needGymystic = false;
-        }
-
     return {
         Stat: equip.Stat,
         Factor: Factor,

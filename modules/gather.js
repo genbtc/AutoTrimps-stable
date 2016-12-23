@@ -151,11 +151,13 @@ function manualLabor2() {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
+        return;
     }
     else if (watchJumpstartTraps || trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
         setGather('trimps');
         if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
+        return;
     }
 
     //Buildings:
