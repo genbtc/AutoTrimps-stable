@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.5.1-genbtc-12-23-2016+Modular
+// @version      2.1.5.2-genbtc-12-23-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.1-genbtc-12-23-2016+Modular';
+var ATversion = '2.1.5.2-genbtc-12-23-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -46,6 +46,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b>12/23 v2.1.5.2 - BugFixes for 2.1.5.1, Read commit history</b>\
 <br><b>12/23 v2.1.5.1 - Whole slew of changes, some small some big, Read commit history</b>\
 <br><b>12/20 Gear tab to Settings UI. Customize your equip level cap.</b>\
 <br><b>Internally Disable Farm mode if we have nothing left to farm for (no prestiges,capped equip) to prevent infinite farming.</b>\
