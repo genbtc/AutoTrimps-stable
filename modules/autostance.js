@@ -468,7 +468,7 @@ function autoStanceCheck(enemyCrit) {
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var leadChallenge = (game.global.challengeActive == 'Lead');
     if (drainChallenge) {
-        enemyDamage += dHealth/20;
+        enemyDamage += ourHealth/20;
     } else if (leadChallenge) {
         var leadDamage = game.challenges.Lead.stacks * 0.0003;
         enemyDamage += game.global.soldierHealth * leadDamage;
