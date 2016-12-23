@@ -207,6 +207,7 @@ function evaluateEquipmentEfficiency(equipName) {
             Factor = 0;
             Wall = true;
             needGymystic = true;
+            StatusBorder = 'orange';
         }
     return {
         Stat: equip.Stat,
@@ -305,6 +306,12 @@ function autoLevelEquipment() {
             if (evaluation.Wall) {
                 document.getElementById(equipName).style.color = 'yellow';
             }
+            if (equipName == 'Gym' && needGymystic) {
+                document.getElementById(equipName).style.color = 'white';
+                document.getElementById(equipName).style.border = '1px solid white';
+                document.getElementById(equip.Upgrade).style.color = 'red';
+                document.getElementById(equip.Upgrade).style.border = '2px solid red';                
+            }            
             //add up whats needed:
             resourcesNeeded[equip.Resource] += Best[BKey].Cost;
 
@@ -350,11 +357,16 @@ function autoLevelEquipment() {
     preBuy();
     game.global.buyAmt = 1; //needed for buyEquipment()
     for (var stat in Best) {
-        if (Best[stat].Name !== '') {
-            var eqName = Best[stat].Name;
+        var eqName = Best[stat].Name;
+        if (eqName !== '') {            
             var DaThing = equipmentList[eqName];
-            document.getElementById(Best[stat].Name).style.color = Best[stat].Wall ? 'orange' : 'red';
-            document.getElementById(Best[stat].Name).style.border = '2px solid red';
+            if (eqName == 'Gym' && needGymystic) {
+                document.getElementById(eqName).style.color = 'white';
+                document.getElementById(eqName).style.border = '1px solid white';
+            } else {
+                document.getElementById(eqName).style.color = Best[stat].Wall ? 'orange' : 'red';
+                document.getElementById(eqName).style.border = '2px solid red';
+            }
             //If we're considering an attack item, we want to buy weapons if we don't have enough damage, or if we don't need health (so we default to buying some damage)
             if (getPageSetting('BuyWeapons') && DaThing.Stat == 'attack' && (!enoughDamageE || enoughHealthE)) {
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {

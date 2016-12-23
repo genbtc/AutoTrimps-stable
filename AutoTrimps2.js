@@ -133,7 +133,6 @@ function mainCleanup() {
         if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
             settingChanged("AutoMaps");        
     }
-    needGymystic = false;
 }
 
 ////////////////////////////////////////
@@ -169,6 +168,7 @@ function mainLoop() {
     autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (other.js)
     if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"     (buildings.js)
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"   (buildings.js)
+    needGymystic = false;   //reset this after buyBuildings
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"    (jobs.js)
     if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"           (gather.js)
     else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"     (")

@@ -160,7 +160,8 @@ function buyBuildings() {
             if (!game.global.preMapsActive && getBattleStats("block",true) > calcBadGuyDmg(getCurrentEnemy(),null,true,true))
                 skipGym = true;
         }
-        if (!skipGym && !needGymystic)
+        if (needGymystic) skipGym = true;
+        if (!skipGym)
             safeBuyBuilding('Gym');
     }
     if (!game.buildings.Tribute.locked && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {
