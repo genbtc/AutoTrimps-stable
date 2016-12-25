@@ -437,9 +437,10 @@ function autoMap() {
             //break to prevent finishing map to finish a challenge?
             //continue to check for doable map?
             var diff = parseInt(getPageSetting('VoidCheck')) > 0 ? parseInt(getPageSetting('VoidCheck')) : 2;
-            if(ourHealth/diff < eAttack - baseBlock) {
+            var ourBlock = getBattleStats("block", true);   //use block tooltip (after death block) instead of current army block.
+            if(ourHealth/diff < eAttack - ourBlock) {
                 shouldFarm = true;
-                voidCheckPercent = Math.round((ourHealth/diff)/(eAttack-baseBlock)*100);
+                voidCheckPercent = Math.round((ourHealth/diff)/(eAttack-ourBlock)*100);
                 abandonVoidMap();   //exit/restart if below <95% health, we have ForceAbandon on, and its not due to randomly losing anti stacks
                 break;
             }

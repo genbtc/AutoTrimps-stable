@@ -234,8 +234,10 @@ function setScienceNeeded() {
     for (var upgrade in upgradeList) {
         upgrade = upgradeList[upgrade];
         if (game.upgrades[upgrade].allowed > game.upgrades[upgrade].done) { //If the upgrade is available
-            if (game.global.world == 1 && game.global.totalHeliumEarned<=300 && upgrade.startsWith("Speed")) continue;  //skip speed upgrades on fresh game until level 2
+            if (game.global.world == 1 && game.global.totalHeliumEarned<=1000 && upgrade.startsWith("Speed")) continue;  //skip speed upgrades on fresh game until level 2
             scienceNeeded += getScienceCostToUpgrade(upgrade);
         }
     }
+    if (needGymystic)
+        scienceNeeded += getScienceCostToUpgrade('Gymystic');
 }

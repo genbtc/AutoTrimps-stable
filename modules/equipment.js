@@ -1,6 +1,7 @@
 MODULES["equipment"] = {};
 //These can be changed (in the console) if you know what you're doing:
 MODULES["equipment"].numHitsSurvived = 8;   //survive X hits in D stance or not enough Health.
+MODULES["equipment"].enoughDamageCutoff = 4; //above this the game will buy attack equipment
 
 var equipmentList = {
     'Dagger': {
@@ -88,44 +89,43 @@ var equipmentList = {
         Equip: false
     }
 };
+var mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
 
-var mapresourcetojob;
+//Returns the amount of stats that the equipment (or gym) will give when bought.
+function equipEffect(gameResource, equip) {
+    if (equip.Equip) {
+        return gameResource[equip.Stat + 'Calculated'];
+    } else {
+        //That be Gym
+        var oldBlock = gameResource.increase.by * gameResource.owned;
+        var Mod = game.upgrades.Gymystic.done ? (game.upgrades.Gymystic.modifier + (0.01 * (game.upgrades.Gymystic.done - 1))) : 1;
+        var newBlock = gameResource.increase.by * (gameResource.owned + 1) * Mod;
+        return newBlock - oldBlock;
+    }
+}
+//Returns the cost after Artisanistry of a piece of equipment.
+function equipCost(gameResource, equip) {
+    var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
+    if (equip.Equip)
+        price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
+    else
+        price = Math.ceil(price * (Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)));
+    return price;
+}
+//Returns the amount of stats that the prestige will give when bought.
+function PrestigeValue(what) {
+    var name = game.upgrades[what].prestiges;
+    var equipment = game.equipment[name];
+    var stat;
+    if (equipment.blockNow) stat = "block";
+    else stat = (typeof equipment.health !== 'undefined') ? "health" : "attack";
+    var toReturn = Math.round(equipment[stat] * Math.pow(1.19, ((equipment.prestige) * game.global.prestige[stat]) + 1));
+    return toReturn;
+}
+
+
 //evaluateEquipmentEfficiency: Back end function for autoLevelEquipment to determine most cost efficient items, and what color they should be.
 function evaluateEquipmentEfficiency(equipName) {
-    mapresourcetojob = {"food": "Farmer", "wood": "Lumberjack", "metal": "Miner", "science": "Scientist"};  //map of resource to jobs
-
-    //Returns the amount of stats that the equipment (or gym) will give when bought.
-    function equipEffect(gameResource, equip) {
-        if (equip.Equip) {
-            return gameResource[equip.Stat + 'Calculated'];
-        } else {
-            //That be Gym
-            var oldBlock = gameResource.increase.by * gameResource.owned;
-            var Mod = game.upgrades.Gymystic.done ? (game.upgrades.Gymystic.modifier + (0.01 * (game.upgrades.Gymystic.done - 1))) : 1;
-            var newBlock = gameResource.increase.by * (gameResource.owned + 1) * Mod;
-            return newBlock - oldBlock;
-        }
-    }
-    //Returns the cost after Artisanistry of a piece of equipment.
-    function equipCost(gameResource, equip) {
-        var price = parseFloat(getBuildingItemPrice(gameResource, equip.Resource, equip.Equip, 1));
-        if (equip.Equip)
-            price = Math.ceil(price * (Math.pow(1 - game.portal.Artisanistry.modifier, game.portal.Artisanistry.level)));
-        else
-            price = Math.ceil(price * (Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level)));
-        return price;
-    }
-    //Returns the amount of stats that the prestige will give when bought.
-    function PrestigeValue(what) {
-        var name = game.upgrades[what].prestiges;
-        var equipment = game.equipment[name];
-        var stat;
-        if (equipment.blockNow) stat = "block";
-        else stat = (typeof equipment.health !== 'undefined') ? "health" : "attack";
-        var toReturn = Math.round(equipment[stat] * Math.pow(1.19, ((equipment.prestige) * game.global.prestige[stat]) + 1));
-        return toReturn;
-    }
-
     var equip = equipmentList[equipName];
     var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
     if (equipName == 'Shield') {
@@ -199,15 +199,14 @@ function evaluateEquipmentEfficiency(equipName) {
         Factor = 9999 - gameResource.prestige;
     }
     //skip buying shields (w/ shieldblock) if we need gymystics
-    if (equipName == 'Shield' &&
-        getPageSetting('BuyShieldblock') &&
-        getPageSetting('BuyArmorUpgrades') &&
+    //getPageSetting('BuyShieldblock') && getPageSetting('BuyArmorUpgrades') &&
+    if (equipName == 'Shield' && gameResource.blockNow && 
         game.upgrades['Gymystic'].allowed - game.upgrades['Gymystic'].done > 0)
         {
+            needGymystic = true;
             Factor = 0;
             Wall = true;
-            needGymystic = true;
-            StatusBorder = 'orange';
+            StatusBorder = 'orange';                        
         }
     return {
         Stat: equip.Stat,
@@ -217,7 +216,6 @@ function evaluateEquipmentEfficiency(equipName) {
         Cost: Cost
     };
 }
-var needGymystic = false;
 
 var resourcesNeeded;
 var Best;
@@ -264,12 +262,12 @@ function autoLevelEquipment() {
     //change name to make sure these are local to the function
     var enoughHealthE,enoughDamageE;
     const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
-    const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
+    //const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
     var numHits = MODULES["equipment"].numHitsSurvived;    //this can be changed.
     //asks if we can survive x number of hits in either D stance or X stance.
     enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
         (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
-    enoughDamageE = (baseDamage * FORMATION_MOD_2 > enemyHealth);
+    enoughDamageE = (baseDamage * MODULES["equipment"].enoughDamageCutoff > enemyHealth);
 
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];
@@ -365,6 +363,7 @@ function autoLevelEquipment() {
             if (eqName == 'Gym' && needGymystic) {
                 document.getElementById(eqName).style.color = 'white';
                 document.getElementById(eqName).style.border = '1px solid white';
+                continue;
             } else {
                 document.getElementById(eqName).style.color = Best[stat].Wall ? 'orange' : 'red';
                 document.getElementById(eqName).style.border = '2px solid red';

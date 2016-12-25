@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
     //Load modules:
-    var modules = ['query', 'upgrades', 'heirlooms', 'buildings2', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other'];
+    var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other'];
     for (var i=0,len=modules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
     }
@@ -119,6 +119,7 @@ var BAFsetting, oldBAFsetting;
 var currentworld = 0;
 var lastrunworld = 0;
 var aWholeNewWorld = false;
+var needGymystic = true;
 
 //reset stuff that may not have gotten cleaned up on portal
 function mainCleanup() {
