@@ -298,7 +298,9 @@ function autoLevelEquipment() {
 
             document.getElementById(equipName).style.border = '1px solid ' + evaluation.StatusBorder;
             if (evaluation.StatusBorder != 'white' && evaluation.StatusBorder != 'yellow') {
-                document.getElementById(equip.Upgrade).style.color = evaluation.StatusBorder;
+                var elem = document.getElementById(equip.Upgrade);
+                if (elem)
+                    elem.style.color = evaluation.StatusBorder;
             }
             if (evaluation.StatusBorder == 'yellow') {
                 document.getElementById(equip.Upgrade).style.color = 'white';
