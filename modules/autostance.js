@@ -336,7 +336,7 @@ function autoStance2(checkOnly) {
     baseDamage *= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;    //consider mapbonus
 
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
-    var oneshotFast = enemyFast ? enemyHealth <= ourDamage : false;
+    var oneshotFast = enemyFast ? enemyHealth <= baseDamage : false;
     var leadAttackOK = !leadChallenge || oneshotFast || surviveD;
     var drainAttackOK = !drainChallenge || oneshotFast || surviveD;
     var isCritThing = isCritVoidMap || isCritDaily || isCrushed;
