@@ -162,6 +162,7 @@ function buyBuildings() {
     //Buy non-housing buildings:
     //Gyms:
     if (!game.buildings.Gym.locked && (getPageSetting('MaxGym') > game.buildings.Gym.owned || getPageSetting('MaxGym') == -1)) {
+        var skipGym = false;
         if (getPageSetting('DynamicGyms')) {
             //getBattleStats calculation comes from battlecalc.js and shows the tooltip-table block amount. calcBadGuyDmg is in that file also
             if (!game.global.preMapsActive && getBattleStats("block", true) > calcBadGuyDmg(getCurrentEnemy(), null, true,true))
@@ -172,10 +173,16 @@ function buyBuildings() {
             skipGym = false;
         //(unless gymwall; thats why its after. debateable.)
         var gymwallpct = getPageSetting('GymWall');
-        var skipGym = false;
         if (gymwallpct > 1) {
             //Gym Wall - allow only gyms that cost 1/n'th less then current wood (try to save wood for nurseries for new z230+ Magma nursery strategy)
             if (getBuildingItemPrice(game.buildings.Gym, "wood", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.wood.owned / gymwallpct))
+                skipGym = true;
+        }
+        //ShieldBlock cost Effectiveness:
+        if (game.equipment['Shield'].blockNow) {
+            var gymEff = evaluateEquipmentEfficiency('Gym');
+            var shieldEff = evaluateEquipmentEfficiency('Shield');
+            if ((gymEff.Wall) || (gymEff.Factor <= shieldEff.Factor && !gymEff.Wall))
                 skipGym = true;
         }
         if (needGymystic) skipGym = true;

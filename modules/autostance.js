@@ -336,9 +336,9 @@ function autoStance2(checkOnly) {
     baseDamage *= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;    //consider mapbonus
 
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
-    var oneshotFast = (!enemyFast ? enemyHealth <= baseDamage : false);
-    var leadAttackOK = !leadChallenge || oneshotFast;
-    var drainAttackOK = !drainChallenge || oneshotFast;
+    var oneshotFast = enemyFast ? enemyHealth <= ourDamage : false;
+    var leadAttackOK = !leadChallenge || oneshotFast || surviveD;
+    var drainAttackOK = !drainChallenge || oneshotFast || surviveD;
     var isCritThing = isCritVoidMap || isCritDaily || isCrushed;
     var surviveD = ((newSquadRdy && dHealth > dDamage) || (dHealth - missingHealth > dDamage));
     var surviveX = ((newSquadRdy && xHealth > xDamage) || (xHealth - missingHealth > xDamage));
@@ -481,23 +481,22 @@ function autoStanceCheck(enemyCrit) {
     ourDamage *= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;    //consider mapbonus
 
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
-    var oneshotFast = (!enemyFast ? enemyHealth <= ourDamage : false);
-    var leadAttackOK = !leadChallenge || oneshotFast;
-    var drainAttackOK = !drainChallenge || oneshotFast;
-    var isCritThing = isCritVoidMap || isCritDaily || isCrushed;
-    var surviveX = ((newSquadRdy && ourHealth > enemyDamage) || (ourHealth - missingHealth > enemyDamage));
-    var voidCritinXok = !isCritThing || oneshotFast || surviveX;
+    var oneshotFast = enemyFast ? enemyHealth <= ourDamage : false;
+    var survive = ((newSquadRdy && ourHealth > enemyDamage) || (ourHealth - missingHealth > enemyDamage));
+    var leadAttackOK = !leadChallenge || oneshotFast || survive;
+    var drainAttackOK = !drainChallenge || oneshotFast || survive;
+    var isCritThing = isCritVoidMap || isCritDaily || isCrushed;    
+    var voidCritok = !isCritThing || oneshotFast || survive;
 
     if (!game.global.preMapsActive) {
-        var enoughDamage2 = enemyHealth <= ourDamage;
-        var surviveOneShot = enemyFast ? ourHealth > enemyDamage : enoughDamage2;
-        var enoughHealth2 = surviveOneShot && leadAttackOK && drainAttackOK && voidCritinXok;
+        var enoughDamage2 = enemyHealth <= ourDamage;        
+        var enoughHealth2 = survive && leadAttackOK && drainAttackOK && voidCritok;
         // } else {
             // var ourCritMult = getPlayerCritChance() ? getPlayerCritDamageMult() : 1;
             // var ourDmg = (ourDamage)*ourCritMult;
             // var enoughDamage2 = enemyHealth <= ourDmg;
             // var surviveOneShot = enemyFast ? ourHealth > xDamageNoCrit : enemyHealth < ourDmg;
-            // var enoughHealth2 = surviveOneShot && leadAttackOK && drainAttackOK && voidCritinXok;
+            // var enoughHealth2 = surviveOneShot && leadAttackOK && drainAttackOK && voidCritok;
         // }
         ourDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp
         ourDamage /= (!game.global.mapsActive && game.global.mapBonus > 0) ? ((game.global.mapBonus * .2) + 1) : 1;    //unconsider mapbonus

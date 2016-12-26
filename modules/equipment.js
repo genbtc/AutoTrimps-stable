@@ -221,6 +221,7 @@ var resourcesNeeded;
 var Best;
 //autoLevelEquipment = "Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"
 function autoLevelEquipment() {
+    if (!(baseDamage > 0)) return;  //if we have no damage, why bother running anything? (this fixes weird bugs)
     //if((game.jobs.Miner.locked && game.global.challengeActive != 'Metal') || (game.jobs.Scientist.locked && game.global.challengeActive != "Scientist"))
         //return;
     resourcesNeeded = {"food": 0, "wood": 0, "metal": 0, "science": 0, "gems": 0};  //list of amount of resources needed for stuff we want to afford
@@ -382,7 +383,7 @@ function autoLevelEquipment() {
                     buyEquipment(eqName, null, true);
                 }
             }
-            var aalvl2 = getPageSetting('AlwaysArmorLvl2') || (game.global.world == 200 && game.global.spireActive);
+            var aalvl2 = getPageSetting('AlwaysArmorLvl2') || (spirecheck);
             if (getPageSetting('BuyArmor') && (DaThing.Stat == 'health') && aalvl2 && game.equipment[eqName].level < 2){
                 if (DaThing.Equip && !Best[stat].Wall && canAffordBuilding(eqName, null, null, true)) {
                     debug('Leveling equipment ' + eqName + " (AlwaysArmorLvl2)", "equips", '*upload3');
