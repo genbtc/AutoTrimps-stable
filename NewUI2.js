@@ -253,8 +253,9 @@ function initializeAllSettings() {
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
-    //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables in 1 click (and are saved)', 'infoclick', 'ImportModuleVars', null, 'Import Export');
-    //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');    
+    //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
+    //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
+    //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
 }
 initializeAllSettings();
 
@@ -304,8 +305,30 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         cleanupAutoTrimps();
         tooltipText = "Autotrimps saved-settings have been attempted to be cleaned up. If anything broke, refreshing will fix it, but check that your settings are correct! (prestige in particular)";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
+    } else if (what == "ExportModuleVars") {
+        tooltipText = "These are your custom Variables. The defaults have not been included, only what you have set... <br/><br/><textarea id='exportArea' style='width: 100%' rows='5'>" + exportModuleVars() + "</textarea>";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip()'>Got it</div>";
+        if (document.queryCommandSupported('copy')) {
+            costText += "<div id='clipBoardBtn' class='btn btn-success'>Copy to Clipboard</div>";
+            ondisplay = function() {
+                document.getElementById('exportArea').select();
+                document.getElementById('clipBoardBtn').addEventListener('click', function(event) {
+                    document.getElementById('exportArea').select();
+                    try {
+                        document.execCommand('copy');
+                    } catch (err) {
+                        document.getElementById('clipBoardBtn').innerHTML = "Error, not copied";
+                    }
+                });
+            };
+        } else {
+            ondisplay = function() {
+                document.getElementById('exportArea').select();
+            };
+        }
+        costText += "</div>";
     } else if (what == "ImportModuleVars") {        
-        //tooltipText = "Autotrimps MODULE variable settings have been loaded, and saved locally for future use between refreshes...";
+        tooltipText = "Enter your Autotrimps MODULE variable settings to load, and save locally for future use between refreshes:<br/><br/><textarea id='importBox' style='width: 100%' rows='5'></textarea>";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); importModuleVars();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
         ondisplay = function() {
             document.getElementById('importBox').focus();
@@ -370,34 +393,81 @@ function cleanupAutoTrimps() {
     }
 }
 
+//export MODULE variables to a textbox
+function exportModuleVars() {
+    return JSON.stringify(compareModuleVars());
+}
+
+function compareModuleVars() {
+    var diffs = {};
+    var mods = Object.keys(MODULES);
+    for (var i=0,leni=mods.length;i<leni;i++) {
+        var vars = Object.keys(MODULES[mods[i]]);
+        for (var j=0,lenj=vars.length;j<lenj;j++) {
+            var a = MODULES[mods[i]][vars[j]];
+            var b = MODULESdefault[mods[i]][vars[j]];
+            //var isArray = !!a && Array === a.constructor;
+            if (JSON.stringify(a)!=JSON.stringify(b)) {
+            //if ((a != b) || (isArray && JSON.stringify(a)!=JSON.stringify(b))) {
+                if (diffs[mods[i]] === undefined)
+                    diffs[mods[i]] = {};
+                //console.log(vars[j]);
+                diffs[mods[i]][vars[j]] = a;
+            }
+        }
+    }
+    //console.log(diffs);
+    return diffs;
+}
+
 //import MODULE variables from a textbox
 function importModuleVars() {
     //try the import
     try {
-        var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r)/gm, "");
-        var tmpset = JSON.parse(JSON.stringify(thestring));
-        if (tmpset == null)
-            return;
+        //var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r)/gm, "");
+        var thestring = document.getElementById("importBox").value;
+        var strarr = thestring.split(/\n/);
+        for (var line in strarr) {
+            var s = strarr[line];
+            s = s.substring(0, s.indexOf(';')+1); //cut after the ;
+            s = s.replace(/\s/g,'');    //regexp remove ALL(/g) whitespaces(\s)
+            //s = s.split('=');           //split into left / right on the =
+            eval(s);
+            strarr[line] = s;
+        }
+        
+        //var tmpset = JSON.parse(thestring);
+        var tmpset = compareModuleVars();
+        // if (tmpset == null)
+            // return;
     } catch (err) {
         debug("Error importing, the string is bad." + err.message);
         return;
     }
+//    resetModuleVars(tmpset);
+    localStorage.removeItem('autoTrimpVariables');
+    localStorage.setItem('autoTrimpVariables', JSON.stringify(tmpset));
+}
+
+//reset MODULE variables to default, (and/or then import)
+function resetModuleVars(imported) { 
     ATrunning = false; //stop AT, wait, remove
     function waitRemoveLoad(imported) {    
         localStorage.removeItem('autoTrimpVariables');
-        MODULES = imported ? imported : new Object(); //load the import.
+        MODULES = JSON.parse(JSON.stringify(MODULESdefault));
         //load everything again, anew
-        var settingsrow = document.getElementById("settingsRow");
-        settingsrow.removeChild(document.getElementById("autoSettings"));
-        automationMenuSettingsInit();
-        initializeAllTabs();
-        initializeAllSettings();
-        updateCustomButtons();
-        saveSettings();
-        checkPortalSettings();
+        // debug('Saved');
+        try {
+            localStorage.setItem('autoTrimpVariables', JSON.stringify(autoTrimpVariables));
+        } catch(e) {
+          if (e.code == 22) {
+            // Storage full, maybe notify user or do some clean-up
+            debug("Error: LocalStorage is full, or some other error. Try to restart your browser.");
+          }
+        }
         ATrunning = true; //restart AT.
     }
-    setTimeout(waitRemoveLoad(tmpset),101);
+    setTimeout(waitRemoveLoad(imported),101);
 }
 
 function automationMenuInit() {

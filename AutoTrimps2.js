@@ -46,21 +46,10 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>12/23 v2.1.5.2 - BugFixes for 2.1.5.1, Read commit history</b>\
-<br><b>12/23 v2.1.5.1 - Whole slew of changes, some small some big, Read commit history</b>\
-<br><b>12/20 Gear tab to Settings UI. Customize your equip level cap.</b>\
-<br><b>Internally Disable Farm mode if we have nothing left to farm for (no prestiges,capped equip) to prevent infinite farming.</b>\
-<br><b>12/19 Skip prestige if >=2 unbought prestiges (maps settings)</b>\
-<br>Bug Fixes + redo geneticists buying again.\
-<br>Add Map Bonus Graph\
-<br>12/18 Fixed: dynamic prestige not reverting to dagger after the target zone is reached\
-<br>Graphs - clear time, removed #2s, (essence graph might be messed up but its fixed now)\
-<br>Change forceAbandonTrimps "sitting around breeding forever when not on full anti stacks" from 60 seconds to 31.\
-<br>Fix BAF2 #4 for players without geneticists.\
-<br>Buildings cost efficiency + jobs low level fixes\
-<br>Some low level jobs and Buildings fixes.\
+<br>12/23 v2.1.5.2 - BugFixes for 2.1.5.1\
+<br>12/23 v2.1.5.1 - Whole slew of changes, some small some big, Read commit history\
 <br><b><u>Report any bugs/problems please!</u></b>\
-<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-12142016" target="#">Read the 12/14 Changelog Here</a>\
+<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc-up-to-date-as-of-12202016" target="#">Read the 12/20 Changelog Here</a>\
 <br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }
@@ -83,6 +72,9 @@ function delayStartAgain(){
     setInterval(guiLoop, runInterval*10);
     updateCustomButtons();
     document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
+    //MODULESdefault = MODULES;
+    //MODULESdefault = Object.assign({}, MODULES);
+    MODULESdefault = JSON.parse(JSON.stringify(MODULES));
 }
 
 ////////////////////////////////////////
@@ -95,6 +87,8 @@ var enableDebug = true; //Spam console
 var autoTrimpSettings = {};
 
 var MODULES = {};
+var MODULESdefault = {};
+var autoTrimpVariables = {};
 var bestBuilding;
 var scienceNeeded;
 var breedFire = false;
