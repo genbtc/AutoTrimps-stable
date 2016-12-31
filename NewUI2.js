@@ -533,7 +533,7 @@ function automationMenuInit() {
 }
 
 function getDailyHeHrStats() {
-    var words;
+    var words = "";
     if (game.global.challengeActive == "Daily") {
         var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)));
         getPercent *= 100 + getDailyHeliumValue(countDailyWeight());
