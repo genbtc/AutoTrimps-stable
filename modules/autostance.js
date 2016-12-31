@@ -402,12 +402,12 @@ function autoStance2(checkOnly) {
         } else if (game.upgrades.Barrier.done && surviveB) {
             if (game.global.formation != 3) {
                 setFormation(3);    //does this ever run?
-                debug("AutoStance B/3");
+                debug("AutoStance B/3","other");
             }
         } else {
             if (game.global.formation != 1) {
                 setFormation(1);    //the last thing that runs
-                debug("AutoStance H/1");
+                debug("AutoStance H/1","other");
             }
         }
     }

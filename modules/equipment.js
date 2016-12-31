@@ -180,7 +180,7 @@ function evaluateEquipmentEfficiency(equipName) {
         }
     }
     //what this means:
-    //wall (don't buy any more equipment, buy prestige first) is true if the limit equipment option is on and we are past our limit
+    //wall (don't buy any more equipment, buy prestige first)
     //Factor = 0 sets the efficiency to 0 so that it will be disregarded. if not, efficiency will still be somenumber that is cheaper,
     //      and the algorithm will get stuck on whatever equipment we have capped, and not buy other equipment.
     if (game.jobs[mapresourcetojob[equip.Resource]].locked && (game.global.challengeActive != 'Metal')){
@@ -192,7 +192,7 @@ function evaluateEquipmentEfficiency(equipName) {
         Factor = 0;
         Wall = true;
     }
-    if (game.global.world >= 58 && game.global.world < 60 && getPageSetting('WaitTill60')){
+    if (equipName != 'Gym' && game.global.world >= 58 && game.global.world < 60 && getPageSetting('WaitTill60')){
         Wall = true;
     }
     if (gameResource.level < 2 && equip.Stat == 'health' && getPageSetting('AlwaysArmorLvl2')){
@@ -320,7 +320,7 @@ function autoLevelEquipment() {
             resourcesNeeded[equip.Resource] += Best[BKey].Cost;
 
             //Code is Spaced This Way So You Can Read It:
-            if (evaluation.StatusBorder == 'red') {
+            if (evaluation.StatusBorder == 'red' && !(game.global.world >= 58 && game.global.world < 60 && getPageSetting('WaitTill60'))) {
                 if
                 (
                     ( getPageSetting('BuyWeaponUpgrades') && equipmentList[equipName].Stat == 'attack' )

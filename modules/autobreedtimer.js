@@ -96,7 +96,7 @@ function autoBreedTimer() {
             forceAbandonTrimps();
         }
         //if we're sitting around breeding forever and over (5) anti stacks away from target.
-        else if (nextgrouptime >= 31 && newstacks - game.global.antiStacks >= customVars.killTitimpStacks) {
+        else if (newSquadRdy && nextgrouptime >= 31 && newstacks - game.global.antiStacks >= customVars.killTitimpStacks) {
             forceAbandonTrimps();
         }
     }

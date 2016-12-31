@@ -46,7 +46,8 @@ function autoPortal() {
                     //lastHeliumZone = game.global.world;
                     debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  bestHeHrZone, "general");
                     cancelTooltip();
-                    tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Confirm to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
+                    tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Delay Portal to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
+                    document.getElementById("confirmTooltipBtn").innerHTML = "Delay Portal";
                     //set up 2 things to happen after the timeout. close the tooltip:
                     setTimeout(cancelTooltip,MODULES["portal"].timeout);
                     //and check if we hit the confirm to postpone, and if not, portal.
