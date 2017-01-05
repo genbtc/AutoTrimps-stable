@@ -1,12 +1,15 @@
 # AutoTrimps + genBTC
 ![Donate](https://blockchain.info/Resources/buttons/donate_64.png)
-<a href="bitcoin://1genbtcPLjAEk6RnfC66chYniFKfP7vAS">1genbtcPLjAEk6RnfC66chYniFKfP7vAS</a><br />
+<a href="bitcoin:1genbtcPLjAEk6RnfC66chYniFKfP7vAS">1genbtcPLjAEk6RnfC66chYniFKfP7vAS</a><br />
 Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)<br />
 
 [![Join the chat at https://gitter.im/AutoTrimps/Lobby](https://badges.gitter.im/AutoTrimps/Lobby.svg)](https://gitter.im/AutoTrimps/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ## Discussion / Discord Channel
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"><img src="https://pbs.twimg.com/profile_images/568588143226413056/9Lwrixxj.png" width=48></a>
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
+
+## Current Version
+- 12/23 v2.1.5.2-genbtc-12-23-2016+Modular
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
@@ -47,13 +50,15 @@ Notes:
 If you would like to use only the graphs module, replace `AutoTrimps2.js` with `Graphs.js` in the bookmark or your userscript.
 Feel free to submit any bugs/suggestions as issues here on github.
 
-***LowLevel Notes:***
+***LowLevelPlayer Notes:***
 
 ***PSA: AutoTrimps was not designed for  new/low-level players.***
 
 The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned. Happy scripting! -genBTC
 
-## Current feature changes by genBTC (up to date as of 12/20/2016):
+## Current feature changes by genBTC
+- ***12/23***
+- v2.1.5.2-genbtc-12-23-2016+Modular
 - ***12/20***
 - Gear tab to Settings UI. Customize your equip level cap.
 - Internally Disable Farm mode if we have nothing left to farm for (no prestiges,capped equip) to prevent infinite farming.
