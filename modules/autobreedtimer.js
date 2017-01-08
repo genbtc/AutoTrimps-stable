@@ -84,6 +84,7 @@ function autoBreedTimer() {
     if(getBreedTime(true) < customVars.breedFireOff) breedFire = false;
 
     //Force Abandon Code (AutoTrimpicide):
+    targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var nextgrouptime = (game.global.lastBreedTime/1000);
     if  (targetBreed > 30) targetBreed = 30; //play nice with custom timers over 30.
