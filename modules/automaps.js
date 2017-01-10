@@ -170,7 +170,7 @@ function autoMap() {
     } else {
         //enough health if we can pass all the tests in autostance2 under the best of the worst conditions.
         //enough damage if we can one-shot the enemy in S (ourBaseDamage/2)
-        var result = autoStance2(true);
+        var result = autoStanceCheck(true);
         enoughHealth = result[0];
         enoughDamage = result[1];
         scryerStuck = !enoughHealth;

@@ -125,17 +125,49 @@ function buyGemEfficientHousing() {
             bestBuilding = keysSorted[best];
             document.getElementById(bestBuilding).style.border = "1px solid #00CC00";
             //WarpStation Cap:
+            var skipWarp = false;
             if (getPageSetting('WarpstationCap') && bestBuilding == "Warpstation") {
                 //Warpstation Cap - if we are past the basewarp+deltagiga level, "cap" and just wait for next giga.
                 if (game.buildings.Warpstation.owned >= (Math.floor(game.upgrades.Gigastation.done * getPageSetting('DeltaGigastation')) + getPageSetting('FirstGigastation')))
-                    bestBuilding = null;
+                    skipWarp = true;
             }
             //WarpStation Wall:
             var warpwallpct = getPageSetting('WarpstationWall3');
             if (warpwallpct > 1 && bestBuilding == "Warpstation") {
                 //Warpstation Wall - allow only warps that cost 1/n'th less then current metal (try to save metal for next prestige)
                 if (getBuildingItemPrice(game.buildings.Warpstation, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) > (game.resources.metal.owned / warpwallpct))
-                    bestBuilding = null;
+                    skipWarp = true;
+            }
+            if (skipWarp)
+                bestBuilding = null;
+            //'Buy Warp to Hit Coord': (override Cap/Wall)
+            var getcoord = getPageSetting('WarpstationCoordBuy');
+            if (getcoord && skipWarp) {
+                var toTip = game.buildings.Warpstation;
+/*  
+                //calc Cost
+                var warpMetalOK = getBuildingItemPrice(toTip, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) / game.resources.metal.owned;
+                var warpGemsOK = getBuildingItemPrice(toTip, "gems", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) / game.resources.gems.owned;
+                //var afford = Math.floor(Math.min(warpMetalOK,warpGemsOK));
+                if (warpMetalOK <= 1 && warpGemsOK <= 1) { 
+*/
+                if (canAffordBuilding("Warpstation")) {
+                    var howMany = calculateMaxAfford(game.buildings["Warpstation"], true);
+                    //calc trimps needed to next Coord
+                    var needCoord = game.upgrades.Coordination.allowed - game.upgrades.Coordination.done > 0;
+                    var coordReplace = (game.portal.Coordinated.level) ? (25 * Math.pow(game.portal.Coordinated.modifier, game.portal.Coordinated.level)).toFixed(3) : 25;
+                    if (!canAffordCoordinationTrimps()){
+                        var nextCount = (game.portal.Coordinated.level) ? game.portal.Coordinated.currentSend : game.resources.trimps.maxSoldiers;
+                        var amtToGo = ((nextCount * 3) - game.resources.trimps.realMax());
+                        //calc amount of trimps that warpstation increases by
+                        var increase = toTip.increase.by;
+                        if (game.portal.Carpentry.level && toTip.increase.what == "trimps.max") increase *= Math.pow(1.1, game.portal.Carpentry.level);
+                        if (game.portal.Carpentry_II.level && toTip.increase.what == "trimps.max") increase *= (1 + (game.portal.Carpentry_II.modifier * game.portal.Carpentry_II.level));
+                        //do it
+                        if (amtToGo < increase*howMany)
+                            bestBuilding = "Warpstation";
+                    }
+                }
             }
             break;
         }

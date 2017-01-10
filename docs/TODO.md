@@ -1,3 +1,17 @@
+- AUTOMAPS: Decide whether map stacks can help speed you up or not:
+If you're more limited by you being dead and your lack of health, than damage output, its probably more likely to not be worth it.
+also if you don't have the overkill perk increasing damage can get inefficient when damage output is wasted
+so keeping a good "survivability to damage output" ratio is better than optimizing "damage output"
+keep a count of how long you were dead and how long you were doing damage
+if you're never dead, then the damage boost from map stacks is USUALLY worth it. (cant say for sure but im pretty sure)
+I still think you'd have to run 1 full map to know for sure if its worth it. then extrapolate that out times 10
+Summary:
+never dead -> damage boost helps when not "early game when you're ripping through bad guys"
+almost never alive, frequently dead -> if more damage output than damage taken (and enough hp to react to fast guys), go on, otherwise farm
+occasionally dead and dies faster than breeding -> needs more damage
+occasionally dead and dies slower than breeding -> advance
+
+
 230+ regular maps should really be treated differently from corruption
 they don't have block pierce, and no special abilities
 

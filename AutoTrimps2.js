@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.5.2-genbtc-12-23-2016+Modular
+// @version      2.1.5.3-genbtc-1-10-2016+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.2-genbtc-12-23-2016+Modular';
+var ATversion = '2.1.5.3-genbtc-1-10-2016+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -46,8 +46,10 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br>12/23 v2.1.5.2\
-<br><b><u>Report any bugs/problems please!</u></b>\
+<br><b>1/10 v2.1.5.3</b> - new setting Buy Warp to Hit Coord (genbtc page)\
+<br> AutoStance support for Plague/Bogged Daily\
+<br> Update Map Sliders decisions - less loot% reduction\
+<br><u>Report any bugs/problems please!</u>\
 <br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc" target="#">Read the 12/20 Changelog Here</a>\
 <br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
