@@ -16,35 +16,39 @@ function calcBaseDamageinX() {
             baseDamage *= dailyModifiers.rampage.getMult(game.global.dailyChallenge.rampage.strength, game.global.dailyChallenge.rampage.stacks);
         }
     }
-    if (game.global.soldierHealth <= 0) return; //dont calculate stances when dead, cause the "current" numbers are not updated when dead.
+    //baseBlock
+    baseBlock = game.global.soldierCurrentBlock;
+    //baseHealth
+    baseHealth = game.global.soldierHealthMax;
+    
+    //if (game.global.soldierHealth <= 0) return; //dont calculate stances when dead, cause the "current" numbers are not updated when dead.
+    
     //D stance
     if (game.global.formation == 2)
         baseDamage /= 4;
     else if (game.global.formation != "0")
         baseDamage *= 2;
 
-    //baseBlock
-    baseBlock = game.global.soldierCurrentBlock;
     //B stance
     if (game.global.formation == 3)
         baseBlock /= 4;
     else if (game.global.formation != "0")
         baseBlock *= 2;
 
-    //baseHealth
-    baseHealth = game.global.soldierHealthMax;
     //H stance
     if (game.global.formation == 1)
         baseHealth /= 4;
     else if (game.global.formation != "0")
         baseHealth *= 2;
     //S stance is accounted for (combination of all the above's else clauses)
-        
 }
 
 function calcBaseDamageinX2() {
+    if (game.global.soldierHealth > 0)
     //baseDamage
-    baseDamage = calcOurDmg(game.global.soldierCurrentAttack,false);
+        baseDamage = calcOurDmg(game.global.soldierCurrentAttack,false);
+    else
+        baseDamage = calcOurDmg(game.global.soldierCurrentAttack,false,true);
     //baseBlock
     baseBlock = getBattleStats("block");
     //baseHealth
