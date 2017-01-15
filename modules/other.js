@@ -16,6 +16,7 @@ function autoRoboTrimp() {
     }
 }
 
+
 //Version 3.6 Golden Upgrades
 function autoGoldenUpgrades() {
     //get the numerical value of the selected index of the dropdown box
@@ -26,6 +27,16 @@ function autoGoldenUpgrades() {
         if (num == 0) return;       //if we have nothing to buy, exit.
         //buy one upgrade per loop.
         buyGoldenUpgrade(setting);
+        
+        // DZUGAVILI MOD - SMART VOID GUs
+        // Assumption: buyGoldenUpgrades is not an asynchronous operation and resolves completely in function execution.
+        if (setting == "Void") { // we can only buy a few void GUs. We should check if we actually made the buy.
+            num = getAvailableGoldenUpgrades();
+            if (num == 0) return; // we actually bought the upgrade.
+            buyGoldenUpgrade("Helium"); // since we did not buy a "Void", we buy a "Helium" instead.
+        }
+        // END OF DZUGAVILI MOD
+
     } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message); }
 }
 
