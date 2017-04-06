@@ -39,7 +39,7 @@ function getCorruptScale(type) {
 // Serialize automation settings
 function serializeSettings() {
     return JSON.stringify(Object.keys(autoTrimpSettings).reduce((v, k) => {
-            if (k === 'version')
+            if (k === 'ATversion')
                 return v[k] = el, v; // anything else not to be transformed
             const el = autoTrimpSettings[k];
             switch (el.type) {
