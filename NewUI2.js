@@ -17,7 +17,7 @@ automationMenuSettingsInit();
 var link1 = document.createElement('link');
 link1.rel = "stylesheet";
 link1.type = "text/css";
-link1.href = 'https://genbtc.github.io/AutoTrimps/tabs.css';
+link1.href = base + 'tabs.css';
 document.head.appendChild(link1);
 
 //Tab make helperfunctions
@@ -91,6 +91,7 @@ function initializeAllTabs() {
     createTabs("Maps", "AutoMaps + VoidMaps related Settings");
     createTabs("Settings", "Sub Controls for the script");
     createTabs("genBTC", "GenBTC Advanced");
+    createTabs("Uni", "Uni's mods");
     createTabs("Scryer", "Scryer Stance");
     createTabs("Spam", "Controls AutoTrimps message Spam");
     createTabs("Import Export", "Import Export Settings");
@@ -228,7 +229,10 @@ function initializeAllSettings() {
     createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those will still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');
     createSetting('AutoAllocatePerks', 'Auto Allocate Perks', 'EXPERIMENTAL. Uses the AutoPerks ratio based preset system to automatically allocate your perks to spend whatever helium you have when you AutoPortal. ', 'boolean', false, null, 'genBTC');
     createSetting('SpireBreedTimer', 'Spire Breed Timer', 'Set a different breed timer target for the Spire. Use -1 to disable this special setting.', 'value', -1, null, 'genBTC');    
-    
+
+// Uni's mods
+    createSetting('ManualCoords', 'Don\'t buy Coords', 'Enable it if you know what you\'re doing, disable it if you don\'t know what you\'re doing. For when manually handling coords means a lot on challenges like Trapper.', 'boolean', false, null, 'Uni');
+    createSetting('NoChallengeMaps', 'Skip challenge maps', 'A fix for running Challenge2s that wants to run a unique map over and over. Disable when done, or leave it on if you\'ve already cleared all one-time challenges. I don\'t know. Do what you want.', 'boolean', false, null, 'Uni');
 // Scryer settings
     createSetting('UseScryerStance', 'Use Scryer Stance', '<b>MASTER BUTTON</b> Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Get 2x resources or Dark Essence. <u>All other buttons have no effect if this one is off.</u>', 'boolean', true, null, 'Scryer');
     createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. Recommend this be on. NOTE: This being on, and being able to overkill in S will override ALL other settings <u>(Except never use in spire)</u>. This is a boolean logic shortcut that disregards all the other settings including Min and Max Zone. If you ONLY want to use S during Overkill, as a workaround: turn this on and Min zone: to 9999 and everything else off(red). ', 'boolean', true, null, 'Scryer');
@@ -269,7 +273,7 @@ function AutoTrimpsTooltip(what, isItIn, event) {
     var tooltipText;
     var costText = "";
     if (what == "ExportAutoTrimps") {
-        tooltipText = "This is your AUTOTRIMPS save string. There are many like it but this one is yours. Save this save somewhere safe so you can save time next time. <br/><br/><textarea id='exportArea' style='width: 100%' rows='5'>" + JSON.stringify(autoTrimpSettings) + "</textarea>";
+        tooltipText = "This is your AUTOTRIMPS save string. There are many like it but this one is yours. Save this save somewhere safe so you can save time next time. <br/><br/><textarea id='exportArea' style='width: 100%' rows='5'>" + serializeSettings() + "</textarea>";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip()'>Got it</div>";
         if (document.queryCommandSupported('copy')) {
             costText += "<div id='clipBoardBtn' class='btn btn-success'>Copy to Clipboard</div>";
@@ -374,7 +378,7 @@ function resetAutoTrimps(imported) {
 function loadAutoTrimps() {
     //try the import
     try {
-        var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r)/gm, "");
+        var thestring = document.getElementById("importBox").value.replace(/[\n\r])/gm, "");
         var tmpset = JSON.parse(thestring);
         if (tmpset == null)
             return;
@@ -584,16 +588,15 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-bottom: 1vw; width: 13.142vw;');
     var btn = document.createElement("DIV");
     btn.id = id;
+    var loaded = autoTrimpSettings[id];
     if (type == 'boolean') {
-        if (autoTrimpSettings[id] === undefined) {
-            autoTrimpSettings[id] = {
-                id: id,
-                name: name,
-                description: description,
-                type: type,
-                enabled: defaultValue ? defaultValue : false
-            };
-        }
+        autoTrimpSettings[id] = {
+            id: id,
+            name: name,
+            description: description,
+            type: type,
+            enabled: loaded === undefined ? (defaultValue || false) : loaded
+        };
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
@@ -604,15 +607,13 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
     } else if (type == 'value' || type == 'valueNegative') {
-        if (autoTrimpSettings[id] === undefined) {
-            autoTrimpSettings[id] = {
-                id: id,
-                name: name,
-                description: description,
-                type: type,
-                value: defaultValue
-            };
-        }
+        autoTrimpSettings[id] = {
+            id: id,
+            name: name,
+            description: description,
+            type: type,
+            value: loaded === undefined ? defaultValue : loaded
+        };
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn btn-info');
         if (type == 'valueNegative')
@@ -626,16 +627,14 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
     } else if (type == 'dropdown') {
-        if (autoTrimpSettings[id] === undefined) {
-            autoTrimpSettings[id] = {
-                id: id,
-                name: name,
-                description: description,
-                type: type,
-                selected: defaultValue,
-                list: list
-            };
-        }
+        autoTrimpSettings[id] = {
+            id: id,
+            name: name,
+            description: description,
+            type: type,
+            selected: loaded === undefined ? defaultValue : loaded,
+            list: list
+        };
         var btn = document.createElement("select");
         btn.id = id;
         if (game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8; font-size: 1.1vw;");
@@ -676,16 +675,13 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         else document.getElementById("autoSettings").appendChild(btnParent);
         return;
     } else if (type == 'multitoggle') {
-        defaultValue = defaultValue ? defaultValue : 0;
-        if (autoTrimpSettings[id] === undefined || autoTrimpSettings[id].type != 'multitoggle') {
-            autoTrimpSettings[id] = {
-                id: id,
-                name: name,
-                description: description,
-                type: type,
-                value: defaultValue
-            };
-        }
+        autoTrimpSettings[id] = {
+            id: id,
+            name: name,
+            description: description,
+            type: type,
+            value: loaded === undefined ? defaultValue || 0 : loaded
+        };
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].value);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');

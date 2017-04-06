@@ -36,11 +36,32 @@ function getCorruptScale(type) {
     }
 }
 
+// Serialize automation settings
+function serializeSettings() {
+    return JSON.stringify(Object.keys(autoTrimpSettings).reduce((v, k) => {
+            if (k === 'version')
+                return v[k] = el, v; // anything else not to be transformed
+            const el = autoTrimpSettings[k];
+            switch (el.type) {
+            case 'boolean':
+                return v[k] = el.enabled, v;
+            case 'value':
+            case 'valueNegative':
+            case 'multitoggle':
+                return v[k] = el.value, v;
+            case 'dropdown':
+                return v[k] = el.selected, v;
+            case 'infoclick':
+                return v[k] = el, v; // lol idk how else
+            }
+        }), {});
+}
+
 //Saves automation settings to browser cache
 function saveSettings() {
     // debug('Saved');
     try {
-        localStorage.setItem('autoTrimpSettings', JSON.stringify(autoTrimpSettings));
+        localStorage.setItem('autoTrimpSettings', serializeSettings());
     } catch(e) {
       if (e.code == 22) {
         // Storage full, maybe notify user or do some clean-up

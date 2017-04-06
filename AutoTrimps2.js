@@ -1,21 +1,21 @@
 // ==UserScript==
-// @name         AutoTrimpsV2+genBTC
-// @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.5.3-genbtc-1-10-2016+Modular
+// @name         AutoTrimpsV2+unimod
+// @namespace    https://github.com/unihedro/AutoTrimps
+// @version      2.1.5.3u1-unimod-4-06-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3-genbtc-1-10-2016+Modular';
+var ATversion = '2.1.5.3u1-unimod-4-06-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////
 var atscript = document.getElementById('AutoTrimps-script')
-  , base = 'https://genbtc.github.io/AutoTrimps/'
+  , base = 'https://unihedro.github.io/AutoTrimps/'
   , module = 'modules/'
   ;
 if (atscript !== null) {
@@ -46,12 +46,13 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>1/10 v2.1.5.3</b> - new setting Buy Warp to Hit Coord (genbtc page)\
-<br> AutoStance support for Plague/Bogged Daily\
-<br> Update Map Sliders decisions - less loot% reduction\
-<br><u>Report any bugs/problems please!</u>\
-<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc" target="#">Read the 12/20 Changelog Here</a>\
-<br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
+<br><span style="background-color:#277552"><b>4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps</span>\
+<br> Added Spire farming progress as an Auto Maps status.\
+<br><span style="opacity:.8">It will stop saying "advancing"</span>\
+<br> Cleaned up settings storage.\
+<br><span style="opacity:.8">Now only stores relevant values.</span>\
+<br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
+<br><a href="https://github.com/Unihedro/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }
 ////////////////////////////////////////
@@ -127,7 +128,7 @@ function mainCleanup() {
         zonePostpone = 0;
         //for the dummies like me who always forget to turn automaps back on after portaling
         if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
-            settingChanged("AutoMaps");        
+            settingChanged("AutoMaps");
     }
 }
 
@@ -187,12 +188,12 @@ function mainLoop() {
     else if (BAFsetting==2) betterAutoFight2();     //"Better Auto Fight2"  (")
     else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight(); //turn on autofight on once when BAF is toggled off.
     else if (BAFsetting==0 && game.global.world == 1 && game.global.autoBattle && game.global.pauseFight) pauseFight();     //turn on autofight on lvl 1 if its off.
-    else if (BAFsetting==0 && !game.global.autoBattle && game.global.soldierHealth == 0) betterAutoFight();   //use BAF as a backup for pre-Battle situations    
+    else if (BAFsetting==0 && !game.global.autoBattle && game.global.soldierHealth == 0) betterAutoFight();   //use BAF as a backup for pre-Battle situations
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
     if (getPageSetting('DynamicPrestige2')>0) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
-    
+
     //Auto Magmite Spender
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
@@ -200,7 +201,7 @@ function mainLoop() {
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
-    
+
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
     //rinse, repeat

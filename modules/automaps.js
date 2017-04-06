@@ -39,6 +39,8 @@ var scryerStuck = false;
 var shouldDoMaps = false;
 var mapTimeEstimate = 0;
 var lastMapWeWereIn = null;
+var preSpireFarming = false;
+var spireTime = 0;
 
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
@@ -285,7 +287,8 @@ function autoMap() {
     }
     //Farm X Minutes Before Spire:
     var shouldDoSpireMaps = false;
-    var needFarmSpire = game.global.world == 200 && game.global.spireActive && (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire'));
+    var needFarmSpire = preSpireFarming || (game.global.world == 200 && game.global.spireActive);
+    preSpireFarming = needFarmSpire = needFarmSpire && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
     if (needFarmSpire) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
@@ -351,30 +354,33 @@ function autoMap() {
                 selectedMap = theMap.id;
                 break;
             }
-            //run the prison only if we are 'cleared' to run level 80 + 1 level per 200% difficulty. Could do more accurate calc if needed
-            if(theMap.name == 'The Prison' && (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse")) {
-                var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                if(game.global.world < 80 + theMapDifficulty) continue;
-                selectedMap = theMap.id;
-                break;
-            }
-            if(theMap.name == 'The Block' && !game.upgrades.Shieldblock.allowed && (game.global.challengeActive == "Scientist" || game.global.challengeActive == "Trimp" || getPageSetting('BuyShieldblock'))) {
+            var dont = getPageSetting('NoChallengeMaps');
+            if(theMap.name == 'The Block' && !game.upgrades.Shieldblock.allowed && ((game.global.challengeActive == "Scientist" || game.global.challengeActive == "Trimp") && !dont || getPageSetting('BuyShieldblock'))) {
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 11 + theMapDifficulty) continue;
                 selectedMap = theMap.id;
                 break;
             }
-            if(theMap.name == 'Trimple Of Doom' && game.global.challengeActive == "Meditate") {
-                var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                if(game.global.world < 33 + theMapDifficulty) continue;
-                selectedMap = theMap.id;
-                break;
-            }
-            if(theMap.name == 'Bionic Wonderland' && game.global.challengeActive == "Crushed" ) {
-                var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                if(game.global.world < 125 + theMapDifficulty) continue;
-                selectedMap = theMap.id;
-                break;
+            if (!dont) {
+                //run the prison only if we are 'cleared' to run level 80 + 1 level per 200% difficulty. Could do more accurate calc if needed
+                if(theMap.name == 'The Prison' && (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse")) {
+                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
+                    if(game.global.world < 80 + theMapDifficulty) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
+                if(theMap.name == 'Trimple Of Doom' && game.global.challengeActive == "Meditate") {
+                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
+                    if(game.global.world < 33 + theMapDifficulty) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
+                if(theMap.name == 'Bionic Wonderland' && game.global.challengeActive == "Crushed" ) {
+                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
+                    if(game.global.world < 125 + theMapDifficulty) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
             }
             //run Bionics before spire to farm.
             if (getPageSetting('RunBionicBeforeSpire') && (game.global.world == 200) && theMap.name.includes('Bionic Wonderland')){
@@ -691,13 +697,14 @@ function updateAutoMapsStatus() {
     //automaps status
     var status = document.getElementById('autoMapStatus');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
+    else if (preSpireFarming) status.nodeValue = (spireTime >= 60 ? (spireTime / 60).toFixed(2) + 'h' : spireTime + 'm') + ' until spire';
     else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
     else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
     else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
-    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
+    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
+    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0) status.innerHTML = 'Prepping for Voids';
     else if (doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
     else if (shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
-    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
     else if (scryerStuck) status.innerHTML = 'Scryer Got Stuck, Farming';
     else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
     else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
