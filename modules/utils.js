@@ -39,8 +39,6 @@ function getCorruptScale(type) {
 // Serialize automation settings
 function serializeSettings() {
     return JSON.stringify(Object.keys(autoTrimpSettings).reduce((v, k) => {
-            if (k === 'version')
-                return v[k] = el, v; // anything else not to be transformed
             const el = autoTrimpSettings[k];
             switch (el.type) {
             case 'boolean':
@@ -52,6 +50,7 @@ function serializeSettings() {
             case 'dropdown':
                 return v[k] = el.selected, v;
             }
+            return v[k] = el, v; // anything else not to be transformed
         }), {});
 }
 
