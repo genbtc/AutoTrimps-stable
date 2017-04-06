@@ -51,8 +51,6 @@ function serializeSettings() {
                 return v[k] = el.value, v;
             case 'dropdown':
                 return v[k] = el.selected, v;
-            case 'infoclick':
-                return v[k] = el, v; // lol idk how else
             }
         }), {});
 }
