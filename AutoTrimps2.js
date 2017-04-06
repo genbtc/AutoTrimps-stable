@@ -40,15 +40,25 @@ function initializeAutoTrimps() {
         debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
     toggleSettingsMenu();
     toggleSettingsMenu();
+    // dank dark graphs by Unihedron
+    if (game.options.menu.darkTheme.enabled == 2) {
+        const $link = document.createElement('link');
+        $link.rel = "stylesheet";
+        $link.type = "text/css";
+        $link.href = base + 'dark-graph.css';
+        document.head.appendChild($link);
+    }
     //
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');    
 }
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><span style="background-color:#AA8439"><b>4/08 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ</span>\
-<br> Managing Ancient Treasure and Die To Use Z settings.\
-<br><span style="opacity:.8">You can now set a zone to run Trimple of Doom (negative value to disable when done) and configure aggressive Scrying</span>\
+<br><span style="background-color:#AA8439"><b>4/08 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, SkipB</span>\
+<br> Managing Ancient Treasure.\
+<br><span style="opacity:.8">You can now set a zone to run Trimple of Doom but it won\'t work until the next patch is out of beta.</span>\
+<br> Dark theme graphs!\
+<br><span style="opacity:.8">Uses a custom stylesheet by Uni (me) for the graph to look dark and awesome. If you don\'t like it, make one yourself. Loaded by default if you use "Dark Theme". (Until a button is added, refresh after setting Dark Theme)</span>\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
 <br><a href="https://github.com/Unihedro/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
