@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u1-unimod-4-06-2017+Modular
+// @version      2.1.5.3u2-unimod-4-06-2017+Modular
 // @description  try to take over the world!
-// @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
+// @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3u1-unimod-4-06-2017+Modular';
+var ATversion = '2.1.5.3u2-unimod-4-06-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -46,11 +46,9 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><span style="background-color:#277552"><b>4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps</span>\
-<br> Added Spire farming progress as an Auto Maps status.\
-<br><span style="opacity:.8">It will stop saying "advancing"</span>\
-<br> Cleaned up settings storage.\
-<br><span style="opacity:.8">Now only stores relevant values.</span>\
+<br><span style="background-color:#AA8439"><b>4/08 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ</span>\
+<br> Managing Ancient Treasure and Die To Use Z settings.\
+<br><span style="opacity:.8">You can now set a zone to run Trimple of Doom (negative value to disable when done) and configure aggressive Scrying</span>\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
 <br><a href="https://github.com/Unihedro/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
