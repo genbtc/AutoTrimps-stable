@@ -54,7 +54,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><span style="background-color:#AA8439"><b>4/08 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, SkipB</span>\
+<br><span style="background-color:#AA8439"><b>4/08 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, IgnoreCrits</span>\
 <br> Managing Ancient Treasure.\
 <br><span style="opacity:.8">You can now set a zone to run Trimple of Doom but it won\'t work until the next patch is out of beta.</span>\
 <br> Dark theme graphs!\
