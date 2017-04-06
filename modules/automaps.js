@@ -360,10 +360,13 @@ function autoMap() {
                 selectedMap = theMap.id;
                 break;
             }
-            if (theMap.name == 'Trimple Of Doom' && (!dont && (game.global.challengeActive == "Meditate" || game.global.challengeActive == "Trapper") || game.mapUnlocks.AncientTreasure /* <- FIXME delete after update */ && game.mapUnlocks.AncientTreasure.canRunOnce && game.global.world >= getPageSetting('TrimpleZ'))) {
+            var treasure = false;
+            if (theMap.name == 'Trimple Of Doom' && (!dont && (game.global.challengeActive == "Meditate" || game.global.challengeActive == "Trapper") || game.mapUnlocks.AncientTreasure /* <- FIXME delete after update */ && game.mapUnlocks.AncientTreasure.canRunOnce && game.global.world >= (treasure = getPageSetting('TrimpleZ')))) {
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 33 + theMapDifficulty) continue;
                 selectedMap = theMap.id;
+                if (treasure < 0) // need to reset
+                    ;// ???
                 break;
             }
             if (!dont) {
