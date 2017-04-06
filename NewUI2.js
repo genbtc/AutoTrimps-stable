@@ -590,13 +590,14 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     btn.id = id;
     var loaded = autoTrimpSettings[id];
     if (type == 'boolean') {
-        autoTrimpSettings[id] = {
-            id: id,
-            name: name,
-            description: description,
-            type: type,
-            enabled: loaded === undefined ? (defaultValue || false) : loaded
-        };
+        if (!(loaded && id == loaded.id))
+            autoTrimpSettings[id] = {
+                id: id,
+                name: name,
+                description: description,
+                type: type,
+                enabled: loaded === undefined ? (defaultValue || false) : loaded
+            };
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].enabled);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
@@ -607,13 +608,14 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
     } else if (type == 'value' || type == 'valueNegative') {
-        autoTrimpSettings[id] = {
-            id: id,
-            name: name,
-            description: description,
-            type: type,
-            value: loaded === undefined ? defaultValue : loaded
-        };
+        if (!(loaded && id == loaded.id))
+            autoTrimpSettings[id] = {
+                id: id,
+                name: name,
+                description: description,
+                type: type,
+                value: loaded === undefined ? defaultValue : loaded
+            };
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn btn-info');
         if (type == 'valueNegative')
@@ -627,14 +629,15 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
     } else if (type == 'dropdown') {
-        autoTrimpSettings[id] = {
-            id: id,
-            name: name,
-            description: description,
-            type: type,
-            selected: loaded === undefined ? defaultValue : loaded,
-            list: list
-        };
+        if (!(loaded && id == loaded.id))
+            autoTrimpSettings[id] = {
+                id: id,
+                name: name,
+                description: description,
+                type: type,
+                selected: loaded === undefined ? defaultValue : loaded,
+                list: list
+            };
         var btn = document.createElement("select");
         btn.id = id;
         if (game.options.menu.darkTheme.enabled == 2) btn.setAttribute("style", "color: #C8C8C8; font-size: 1.1vw;");
@@ -675,13 +678,14 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         else document.getElementById("autoSettings").appendChild(btnParent);
         return;
     } else if (type == 'multitoggle') {
-        autoTrimpSettings[id] = {
-            id: id,
-            name: name,
-            description: description,
-            type: type,
-            value: loaded === undefined ? defaultValue || 0 : loaded
-        };
+        if (!(loaded && id == loaded.id))
+            autoTrimpSettings[id] = {
+                id: id,
+                name: name,
+                description: description,
+                type: type,
+                value: loaded === undefined ? defaultValue || 0 : loaded
+            };
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtn' + autoTrimpSettings[id].value);
         btn.setAttribute("onclick", 'settingChanged("' + id + '")');
