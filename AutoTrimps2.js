@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u1-unimod-4-06-2017+Modular
+// @version      2.1.5.3u2-unimod-4-07-2017+Modular
 // @description  try to take over the world!
-// @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
+// @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3u1-unimod-4-06-2017+Modular';
+var ATversion = '2.1.5.3u2-unimod-4-07-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -40,17 +40,29 @@ function initializeAutoTrimps() {
         debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
     toggleSettingsMenu();
     toggleSettingsMenu();
+    // dank dark graphs by Unihedron
+    if (game.options.menu.darkTheme.enabled == 2) {
+        const $link = document.createElement('link');
+        $link.rel = "stylesheet";
+        $link.type = "text/css";
+        $link.href = base + 'dark-graph.css';
+        document.head.appendChild($link);
+    }
     //
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');    
 }
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><span style="background-color:#277552"><b>4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps</span>\
+<br><span style="background-color:#552700"><b>4/07 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, IgnoreCrits</span>\
+<br> Managing Ancient Treasure.\
+<br><span style="opacity:.8">You can now set a zone to run Trimple of Doom but it won\'t work until the next patch is out of beta.</span>\
+<br> Dark theme graphs!\
+<br><span style="opacity:.8">Uses a custom stylesheet by Uni (me) for the graph to look dark and awesome. If you don\'t like it, make one yourself. Loaded by default if you use "Dark Theme". (Until a button is added, refresh after setting Dark Theme)</span>\
+<br> Fixed bugs caused by "cleaning up settings storage".\
+<br><span style="background-color:#277552;opacity:.6"><b>4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps\
 <br> Added Spire farming progress as an Auto Maps status.\
-<br><span style="opacity:.8">It will stop saying "advancing"</span>\
-<br> Cleaned up settings storage.\
-<br><span style="opacity:.8">Now only stores relevant values.</span>\
+<br> Cleaned up settings storage.</span>\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
 <br><a href="https://github.com/Unihedro/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);

@@ -40,8 +40,6 @@ function getCorruptScale(type) {
 function serializeSettings() {
     return JSON.stringify(Object.keys(autoTrimpSettings).reduce((v, k) => {
             const el = autoTrimpSettings[k];
-            if (k === 'ATversion')
-                return v[k] = el, v; // anything else not to be transformed
             switch (el.type) {
             case 'boolean':
                 return v[k] = el.enabled, v;
@@ -52,6 +50,7 @@ function serializeSettings() {
             case 'dropdown':
                 return v[k] = el.selected, v;
             }
+            return v[k] = el, v; // ATversion, anything else unhandled by NewUI2
         }, {}));
 }
 

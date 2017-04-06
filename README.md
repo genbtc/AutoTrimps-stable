@@ -23,4 +23,4 @@ javascript:with(document)(head.appendChild(createElement('script')).src='https:/
 
 Notes: https://github.com/genbtc/AutoTrimps/blob/gh-pages/README.md
 
-I don't track detailed change logs, sorry. You can get that information by reading the changelogs.
+I don't track detailed change logs, sorry. You can get that information by reading the commits or update notice in each version.

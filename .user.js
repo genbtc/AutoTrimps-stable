@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         AutoTrimps-unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u1-unimod-4-06-2017+Modular
+// @version      2.1.5.3u2-unimod-4-07-2017+Modular
 // @description  Automate all the trimps!
-// @author       zininzinin, spindrjr, Ishkaru, genBTC
+// @author       zininzinin, spindrjr, Ishkaru, genBTC, Unihedro
 // @include        *trimps.github.io*
 // @include        *kongregate.com/games/GreenSatellite/trimps
 // @grant        none

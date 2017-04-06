@@ -342,7 +342,6 @@ function autoMap() {
         var theMap = game.global.mapsOwnedArray[map];
         if (theMap.noRecycle && getPageSetting('RunUniqueMaps')) {
             if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased) {
-                (theMap.name == 'Trimple Of Doom' && (game.global.challengeActive == "Meditate" || game.global.challengeActive == "Trapper"))
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 15 + theMapDifficulty) continue;
                 selectedMap = theMap.id;
@@ -361,17 +360,20 @@ function autoMap() {
                 selectedMap = theMap.id;
                 break;
             }
+            var treasure = false;
+            if (theMap.name == 'Trimple Of Doom' && (!dont && (game.global.challengeActive == "Meditate" || game.global.challengeActive == "Trapper") || game.mapUnlocks.AncientTreasure /* <- FIXME delete after update */ && game.mapUnlocks.AncientTreasure.canRunOnce && game.global.world >= (treasure = getPageSetting('TrimpleZ')))) {
+                var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
+                if ((game.global.world < 33 + theMapDifficulty) || treasure > -33 && treasure < 33) continue;
+                selectedMap = theMap.id;
+                if (treasure < 0) // need to reset
+                    setPageSetting('TrimpleZ', 0);
+                break;
+            }
             if (!dont) {
                 //run the prison only if we are 'cleared' to run level 80 + 1 level per 200% difficulty. Could do more accurate calc if needed
                 if(theMap.name == 'The Prison' && (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse")) {
                     var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                     if(game.global.world < 80 + theMapDifficulty) continue;
-                    selectedMap = theMap.id;
-                    break;
-                }
-                if(theMap.name == 'Trimple Of Doom' && game.global.challengeActive == "Meditate") {
-                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                    if(game.global.world < 33 + theMapDifficulty) continue;
                     selectedMap = theMap.id;
                     break;
                 }
