@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u2-unimod-4-07-2017+Modular
+// @version      2.1.5.3u3-unimod-4-07-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3u2-unimod-4-07-2017+Modular';
+var ATversion = '2.1.5.3u3-unimod-4-07-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,13 +54,15 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><span style="background-color:#552700"><b>4/07 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, IgnoreCrits</span>\
-<br> Managing Ancient Treasure.\
-<br><span style="opacity:.8">You can now set a zone to run Trimple of Doom but it won\'t work until the next patch is out of beta.</span>\
+<br><span style="background-color:#6E1236"><b>4/07 v2.1.5.3u3</b> - new settings LinearZ, SupplyWall, OneTimeOnly</span>\
+<br> Auto dismiss Magma dialogue\
+<br> Auto magmite spending behaviour changes\
+<br><span style="opacity:.8">First level of overclock considered as a one-and-done upgrade (do it ASAP!). Buys Supply only when it costs <2x of Capacity (instead of <1x Capacity) <b>configurable with SupplyWall</b>, or buy Supply sooner and only buy Capacity when it costs <Nx of Supply (<b>use negative SupplyWall</b>) zero to use previous behaviour for supply evaluation, one to <b>DISABLE BUYING SUPPLY</b>.</span>\
+<br><span style="background-color:#552700;opacity:.6"><b>4/07 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, IgnoreCrits\
+<br> Managing Ancient Treasure. <span style="opacity:.8">(For next patch)</span>\
 <br> Dark theme graphs!\
-<br><span style="opacity:.8">Uses a custom stylesheet by Uni (me) for the graph to look dark and awesome. If you don\'t like it, make one yourself. Loaded by default if you use "Dark Theme". (Until a button is added, refresh after setting Dark Theme)</span>\
-<br> Fixed bugs caused by "cleaning up settings storage".\
-<br><span style="background-color:#277552;opacity:.6"><b>4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps\
+<br> Fixed bugs caused by "cleaning up settings storage".</span>\
+<br><span style="background-color:#277552;opacity:.5"><b>4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps\
 <br> Added Spire farming progress as an Auto Maps status.\
 <br> Cleaned up settings storage.</span>\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
@@ -167,6 +169,8 @@ function mainLoop() {
     if(document.getElementById('tipTitle').innerHTML == 'Corruption') cancelTooltip();
     //auto-close the Spire notification checkbox
     if(document.getElementById('tipTitle').innerHTML == 'Spire') cancelTooltip();
+    //auto-close the Spire notification checkbox
+    if(document.getElementById('tipTitle').innerHTML == 'The Magma') cancelTooltip();
     setTitle();          //set the browser title
     setScienceNeeded();  //determine how much science is needed
 
@@ -203,7 +207,7 @@ function mainLoop() {
     else if (BAFsetting==0 && !game.global.autoBattle && game.global.soldierHealth == 0) betterAutoFight();   //use BAF as a backup for pre-Battle situations
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
-    if (getPageSetting('DynamicPrestige2')>0) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
+    if (getPageSetting('DynamicPrestige2')>0&&(getPageSetting('LinearZ')<0||game.global.world<getPageSetting('LinearZ'))) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 
     //Auto Magmite Spender

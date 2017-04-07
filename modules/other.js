@@ -82,9 +82,16 @@ function autoMagmiteSpender() {
             didSpend = true;
         }
     }
+    // then consider overclocker if we can afford it
+    var hasOv = game.permanentGeneratorUpgrades.Hybridization.owned && game.permanentGeneratorUpgrades.Storage.owned;
+    var ovclock = game.generatorUpgrades.Overclocker;
+    if (hasOv && (game.global.magmite >= ovclock.cost())) {
+        debug("Auto Spending " + ovclock.cost() + " Magmite on: Overclocker" + (ovclock.upgrades ? " #" + (ovclock.upgrades + 1) : ""), "general");
+        buyGeneratorUpgrade('Overclocker');
+    }
     //Part #2
- 
-    var repeat = true;
+
+    var repeat = !getPageSetting('OneTimeOnly');
     while (repeat) {
         try {
             if (MODULES["magmite"].algorithm == 2) {
@@ -93,7 +100,6 @@ function autoMagmiteSpender() {
                 var eff = game.generatorUpgrades["Efficiency"];
                 var cap = game.generatorUpgrades["Capacity"];
                 var sup = game.generatorUpgrades["Supply"];
-                var ovclock = game.generatorUpgrades["Overclocker"];
                 if ((typeof eff === 'undefined')||(typeof cap === 'undefined')||(typeof sup === 'undefined'))
                     return; //error-resistant
                 var EffObj = {};
@@ -116,16 +122,30 @@ function autoMagmiteSpender() {
                 if (EffObj.miCostPerPct <= CapObj.miCostPerPct)
                     item = EffObj.name;
                 //if not, (try to) Buy Capacity if its cheaper than the cost of Supply.
-                else if (CapObj.cost <= sup.cost())
-                    item = CapObj.name;
-                //if not, (try to) Buy Supply.
-                else
-                    item = "Supply"
+                else {
+                    const supCost = sup.cost();
+                    var wall = getPageSetting('SupplyWall');
+                    // If no wall, try to buy Capacity if it's cheaper.
+                    if (!wall)
+                        item = (CapObj.cost <= supCost)
+                            ? CapObj.name : "Supply";
+                    // If 1, disable Supply
+                    else if (wall == 1)
+                        item = "Capacity";
+                    // If negative, prioritize Supply after applying cap.
+                    else if (wall < 0)
+                        item = (supCost <= (CapObj.cost * -wall))
+                            ? "Supply" : "Capacity";
+                    // If positive, throttle Supply after applying cap.
+                    else
+                        item = (CapObj.cost <= (supCost * wall))
+                            ? "Capacity" : "Supply";
+                }
                 upgrade = game.generatorUpgrades[item];
                 //IF we can afford anything, buy it:
                 if (game.global.magmite >= upgrade.cost()) {
                     debug("Auto Spending " + upgrade.cost() + " Magmite on: " + item + " #" + (game.generatorUpgrades[item].upgrades+1), "general");
-                    buyGeneratorUpgrade(item);                
+                    buyGeneratorUpgrade(item);
                     didSpend = true;
                 }
                 //if we can't, exit the loop
