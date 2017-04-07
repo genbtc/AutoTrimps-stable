@@ -156,7 +156,7 @@ function initializeAllSettings() {
     //Make a backup of the prestige setting: backup setting grabs the actual value of the primary setting any time it is changed, (line 412 of the function settingChanged())
     var lastSetting = autoTrimpSettings["PrestigeBackup"];
     autoTrimpSettings["PrestigeBackup"] = {
-        selected: lastSetting === undefined ? autoTrimpSettings["Prestige"] : lastSetting,
+        selected: lastSetting === undefined ? autoTrimpSettings["Prestige"] : lastSetting.selected || lastSetting,
         id: "PrestigeBackup",
         name: "PrestigeBackup"
     };
