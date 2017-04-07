@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u3-unimod-4-07-2017+Modular
+// @version      2.1.5.3u4-unimod-4-07-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3u3-unimod-4-07-2017+Modular';
+var ATversion = '2.1.5.3u4-unimod-4-07-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -55,6 +55,8 @@ function initializeAutoTrimps() {
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
 <br><b style="background-color:#294D00">4/07 v2.1.5.3u4</b> - new settings PreferMetal, PreSpireNurseries\
+<br> Changed changelog format.\
+<br><span style="opacity:.8">Now only the version is highlighted.</span>\
 <br><span style="opacity:.75"><b style="background-color:#6E1236">4/07 v2.1.5.3u3</b> - new settings LinearZ, SupplyWall, OneTimeOnly\
 <br> Auto dismiss Magma dialogue\
 <br> Auto magmite spending behaviour changes\
