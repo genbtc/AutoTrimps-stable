@@ -79,10 +79,15 @@ function autoMap() {
                                  (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids') && (voidsuntil == -1 || game.global.world <= voidsuntil)));
     if(game.global.totalVoidMaps == 0 || !needToVoid)
         doVoids = false;
+    // if force prestige, check if we are behind any first
+    if ((getPageSetting('ForcePresZ') >= 0) || (game.global.world >= getPageSetting('ForcePresZ'))) {
+        var prestigeList = ['Supershield','Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
+        needPrestige = prestigeList.some(prestige => game.mapUnlocks[prestige].last <= game.global.world - 5);
+    } else
     //calculate if we are behind on unlocking prestiges
     needPrestige = prestige != "Off" && game.mapUnlocks[prestige].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
     //dont need prestige if we are caught up, and have (2) unbought prestiges:
-    if (getPageSetting('PrestigeSkipMode')) {
+    if (needPrestige && getPageSetting('PrestigeSkipMode')) {
         var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
         var numUnbought = 0;
         for (var i=0,len=prestigeList.length; i < len; i++) {

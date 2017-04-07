@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u5-unimod-4-07-2017+Modular
+// @version      2.1.5.3u6-unimod-4-08-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3u5-unimod-4-07-2017+Modular';
+var ATversion = '2.1.5.3u6-unimod-4-08-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,8 +54,11 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#294D00">4/07 v2.1.5.3u5</b> - new settings FinishC2, PowerSaving\
-<br><span style="opacity:.75"><b style="background-color:#294D00">4/07 v2.1.5.3u4</b> - new settings PreferMetal, PreSpireNurseries\
+<br><b style="background-color:#162955">4/08 v2.1.5.3u6</b> - new settings ForcePresZ\
+<br> Changed LinearZ to Force Prestige Z.\
+<br><span style="opacity:.8">Force prestiges if there are any unbought on and after Z, overriding both dynamic and linear.</span>\
+<br><span style="opacity:.75"><b style="background-color:#294D00">4/07 v2.1.5.3u5</b> - new settings FinishC2, PowerSaving\
+<br><b style="background-color:#294D00">4/07 v2.1.5.3u4</b> - new settings PreferMetal, PreSpireNurseries\
 <br><b style="background-color:#6E1236">4/07 v2.1.5.3u3</b> - new settings LinearZ, SupplyWall, OneTimeOnly\
 <br> Auto dismiss Magma dialogue\
 <br> Auto magmite spending behaviour changes\
@@ -207,7 +210,7 @@ function mainLoop() {
     else if (BAFsetting==0 && !game.global.autoBattle && game.global.soldierHealth == 0) betterAutoFight();   //use BAF as a backup for pre-Battle situations
     oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
 
-    if (getPageSetting('DynamicPrestige2')>0&&((getPageSetting('LinearZ')<0)||(game.global.world<getPageSetting('LinearZ')))) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
+    if (getPageSetting('DynamicPrestige2')>0&&((getPageSetting('ForcePresZ')<0)||(game.global.world<getPageSetting('ForcePresZ')))) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
 
     //Auto Magmite Spender
