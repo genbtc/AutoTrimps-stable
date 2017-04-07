@@ -134,11 +134,11 @@ function autoMagmiteSpender() {
                         item = "Capacity";
                     // If negative, prioritize Supply after applying cap.
                     else if (wall < 0)
-                        item = (supCost <= CapObj.cost * -wall)
+                        item = (supCost <= (CapObj.cost * -wall))
                             ? "Supply" : "Capacity";
                     // If positive, throttle Supply after applying cap.
                     else
-                        item = (CapObj.cost <= supCost * wall)
+                        item = (CapObj.cost <= (supCost * wall))
                             ? "Capacity" : "Supply";
                 }
                 upgrade = game.generatorUpgrades[item];
