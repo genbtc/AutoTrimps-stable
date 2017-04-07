@@ -1,0 +1,14 @@
+digraph S {
+  onetime [label="one time upgrades\noverclocker lv1\n(if hybrid & storage)"];
+  { rank=same; onetime; Efficiency; }
+  onetime -> Overclocker [label="if affordable"];
+  Overclocker -> Efficiency [label="if better\nthan capacity"];
+  Overclocker:se -> SupplyWall0 -> { Capacity, Supply } [label="cheapest"];
+  Overclocker:s -> SupplyWall1 -> Capacity;
+  Overclocker:w -> { SupplyWallX [color=darkgreen] } [color=darkgreen];
+  SupplyWallX -> Capacity [label="if cap > (N * sup)", color=darkgreen];
+  Capacity -> Supply [label="else", color=darkgreen];
+  Overclocker:e -> { SupplyWallN [color=red] } [color=red];
+  SupplyWallN -> Supply [label="if (cap * N) > sup)", color=red] ;
+  Supply -> Capacity [label="else", color=red];
+}
