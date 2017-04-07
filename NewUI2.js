@@ -666,11 +666,9 @@ function createSetting(id, name, description, type, defaultValue, list, containe
             var option = document.createElement("option");
             option.value = list[item];
             option.text = list[item];
-            if (list[item] == autoTrimpSettings[id].selected)
-                option.selected = true;
             btn.appendChild(option);
         }
-        //btn.value = autoTrimpSettings[id].selected;
+        btn.value = autoTrimpSettings[id].selected;
 
         var dropdownLabel = document.createElement("Label");
         dropdownLabel.id = id + "Label";
@@ -869,7 +867,7 @@ function updateCustomButtons() {
     if (getPageSetting('DisableFarm'))
         shouldFarm = false;
     // handle metal preference
-    MODULES["automaps"].preferGardens = !getPageSetting('PreferMetal');
+    MODULES["automaps"] && (MODULES["automaps"].preferGardens = !getPageSetting('PreferMetal'));
     //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
     if (document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
         document.getElementById('Prestige').selectedIndex = 11;
