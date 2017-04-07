@@ -57,7 +57,7 @@ function printChangelog() {
 <br><span style="background-color:#6E1236"><b>4/07 v2.1.5.3u3</b> - new settings LinearZ, SupplyWall, OneTimeOnly</span>\
 <br> Auto dismiss Magma dialogue\
 <br> Auto magmite spending behaviour changes\
-<br><span style="opacity:.8">First level of overclock considered as a one-and-done upgrade (do it ASAP!). Buys Supply only when it costs <2x of Capacity (instead of <1x Capacity) <b>configurable with SupplyWall</b>, or buy Supply sooner and only buy Capacity when it costs <Nx of Supply (<b>use negative SupplyWall</b>) zero to use previous behaviour for supply evaluation, one to <b>DISABLE BUYING SUPPLY</b>.</span>\
+<br><span style="opacity:.8">First level of overclock considered as a one-and-done upgrade (do it ASAP!). Buys Supply only when its cost x2 < that of Capacity (instead of <Capacity) <b>configurable with SupplyWall</b>, or buy Supply sooner and only buy Capacity when it costs <Nx of Supply (<b>use negative SupplyWall</b>) zero to use previous behaviour for supply evaluation, one to <b>DISABLE BUYING SUPPLY</b>.</span>\
 <br><span style="background-color:#552700;opacity:.6"><b>4/07 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, IgnoreCrits\
 <br> Managing Ancient Treasure. <span style="opacity:.8">(For next patch)</span>\
 <br> Dark theme graphs!\
