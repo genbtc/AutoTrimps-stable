@@ -667,8 +667,10 @@ function createSetting(id, name, description, type, defaultValue, list, containe
             option.value = list[item];
             option.text = list[item];
             btn.appendChild(option);
+            if (list[item] == autoTrimpSettings[id].selected))
+                option.selected = true;
         }
-        btn.value = autoTrimpSettings[id].selected;
+        //btn.value = autoTrimpSettings[id].selected;
 
         var dropdownLabel = document.createElement("Label");
         dropdownLabel.id = id + "Label";
