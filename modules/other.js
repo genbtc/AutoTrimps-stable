@@ -2,6 +2,17 @@ MODULES["magmite"] = {};
 //These can be changed (in the console) if you know what you're doing:
 MODULES["magmite"].algorithm = 2;   //2 is advanced cost/benefit calculation between capacity/efficiency. 1 is buy-cheapest-upgrade.
 
+// Finish Challenge2
+function finishChallengeSquared() {
+    // some checks done before reaching this:
+    // getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared
+    var zone = getPageSetting('FinishC2');
+    if (game.global.world >= zone) {
+        abandonChallenge();
+        debug("Finished challenge2 because we are on zone " + game.global.world, "other", 'oil');
+    }
+}
+
 //Activate Robo Trimp
 function autoRoboTrimp() {
     //exit if the cooldown is active, or we havent unlocked robotrimp.
@@ -15,7 +26,6 @@ function autoRoboTrimp() {
         debug("Activated Robotrimp MagnetoShriek Ability", "other", '*podcast');
     }
 }
-
 
 //Version 3.6 Golden Upgrades
 function autoGoldenUpgrades() {

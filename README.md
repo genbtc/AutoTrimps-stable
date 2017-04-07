@@ -9,6 +9,7 @@ I'm usually on zininzinin's AT chat. If I'm not online there or if you just want
 ## Current Roadmap
 - Implement stuff that I want to see which isn't already in genBTC
 - Implement changes that others have requested and I feel are doable
+- Fix problems that was around in AT but wasn't resolved
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
