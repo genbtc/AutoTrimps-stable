@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u4-unimod-4-07-2017+Modular
+// @version      2.1.5.3u5-unimod-4-07-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3u4-unimod-4-07-2017+Modular';
+var ATversion = '2.1.5.3u5-unimod-4-07-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,13 +54,12 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#294D00">4/07 v2.1.5.3u4</b> - new settings PreferMetal, PreSpireNurseries\
-<br> Changed changelog format.\
-<br><span style="opacity:.8">Now only the version is highlighted.</span>\
-<br><span style="opacity:.75"><b style="background-color:#6E1236">4/07 v2.1.5.3u3</b> - new settings LinearZ, SupplyWall, OneTimeOnly\
+<br><b style="background-color:#294D00">4/07 v2.1.5.3u5</b> - new settings FinishC2, PowerSaving\
+<br><span style="opacity:.75"><b style="background-color:#294D00">4/07 v2.1.5.3u4</b> - new settings PreferMetal, PreSpireNurseries\
+<br><b style="background-color:#6E1236">4/07 v2.1.5.3u3</b> - new settings LinearZ, SupplyWall, OneTimeOnly\
 <br> Auto dismiss Magma dialogue\
 <br> Auto magmite spending behaviour changes\
-<br><span style="opacity:.8">First level of overclock considered as a one-and-done upgrade (do it ASAP!). Buys Supply only when its cost x2 < that of Capacity (instead of <Capacity) <b>configurable with SupplyWall</b>, or buy Supply sooner and only buy Capacity when it costs <Nx of Supply (<b>use negative SupplyWall</b>) zero to use previous behaviour for supply evaluation, one to <b>DISABLE BUYING SUPPLY</b>.</span>\
+<br><span style="opacity:.8">See SupplyWall and diagram.</span>\
 <br><b style="background-color:#552700">4/07 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, IgnoreCrits\
 <br> Managing Ancient Treasure. <span style="opacity:.8">(For next patch)</span> Dark theme graphs!\
 <br><b style="background-color:#277552;">4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps\
@@ -193,6 +192,7 @@ function mainLoop() {
     if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (heirlooms.js)    
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
     if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (other.js)
+    if (getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared) finishChallengeSquared(); // "Finish Challenge2" (other.js)
     autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
 
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
