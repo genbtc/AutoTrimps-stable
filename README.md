@@ -22,6 +22,12 @@ https://github.com/unihedro/AutoTrimps/raw/gh-pages/.user.js
 javascript:with(document)(head.appendChild(createElement('script')).src='https://unihedro.github.io/AutoTrimps/AutoTrimps2.js')._
 ```
 
+## Screenshots
+
+![image](https://cloud.githubusercontent.com/assets/5595067/24824209/ec9923a4-1c39-11e7-95de-eab40cacd597.png)
+
+![image](https://cloud.githubusercontent.com/assets/5595067/24824212/fea2c28a-1c39-11e7-933a-d2475a47ebcd.png)
+
 Notes: https://github.com/genbtc/AutoTrimps/blob/gh-pages/README.md
 
 I don't track detailed change logs, sorry. You can get that information by reading the commits or update notice in each version.
