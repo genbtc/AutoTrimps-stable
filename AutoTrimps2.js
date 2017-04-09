@@ -58,19 +58,7 @@ function printChangelog() {
 <br> Implemented Auto Generator. Please test!\
 <br><span style="opacity:.8">Optional AutoGen2 modes for switching between [Hybrid / Fuel] / Mi based on magma stored until Z / Supply (since zones before Supply have tiny gains and using Mi for them are better after filling out stacks).</span>\
 <br><span style="opacity:.8">Can now configure what to set DimGen for in dailies / challenge2 for more efficient progression (anticipates overclocker; does not actually check for overclocker yet!)</span>\
-<br><b style="background-color:#162955">4/08 v2.1.5.3u6</b> - new settings ForcePresZ\
-<br> Changed LinearZ to Force Prestige Z.\
-<br><span style="opacity:.8">Force prestiges if there are any unbought on and after Z, overriding both dynamic and linear.</span>\
-<br><span style="opacity:.75"><b style="background-color:#294D00">4/07 v2.1.5.3u5</b> - new settings FinishC2, PowerSaving\
-<br><b style="background-color:#294D00">4/07 v2.1.5.3u4</b> - new settings PreferMetal, PreSpireNurseries\
-<br><b style="background-color:#6E1236">4/07 v2.1.5.3u3</b> - new settings LinearZ, SupplyWall, OneTimeOnly\
-<br> Auto dismiss Magma dialogue\
-<br> Auto magmite spending behaviour changes\
-<br><span style="opacity:.8">See SupplyWall and diagram.</span>\
-<br><b style="background-color:#552700">4/07 v2.1.5.3u2</b> - new settings TrimpleZ, ScryerDieZ, IgnoreCrits\
-<br> Managing Ancient Treasure. <span style="opacity:.8">(For next patch)</span> Dark theme graphs!\
-<br><b style="background-color:#277552;">4/06 v2.1.5.3u1</b> - new settings Don\'t buy Coords / Skip challenge maps\
-<br> Added Spire farming progress as an Auto Maps status. Optimized save data.</span>\
+<br><span style="opacity:.75"><b style="background-color:#162955">4/08 v2.1.5.3u6</b> ForcePresZ <b style="background-color:#294D00">4/07 u5</b> FinishC2, PowerSaving <b style="background-color:#294D00">u4</b> PreferMetal, PreSpireNurseries <b style="background-color:#6E1236">u3</b> LinearZ, SupplyWall, OneTimeOnly <b style="background-color:#552700">u2</b> TrimpleZ, ScryerDieZ, IgnoreCrits <b style="background-color:#277552;">4/06 u1</b> Don\'t buy Coords / Skip challenge maps\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
 <br><a href="https://github.com/Unihedro/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
