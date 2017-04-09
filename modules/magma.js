@@ -151,7 +151,7 @@ function autoGenerator() {
     //if (autoGenerator3);
     const overriden = overrides();
     if (overriden)
-      changeGeneratorState(overriden == 1 ? FUEL : HYBRID);
+      changeGeneratorState(overriden);
     else
       changeGeneratorState(getPageSetting('AutoGen3'));
   } else autoGenerator2();
@@ -159,12 +159,12 @@ function autoGenerator() {
 
 /** Early Mode */
 function autoGenerator2() {
-  const FUEL = 0, MI = 1, HYBRID = 2;
+  const MI = 0, FUEL = 1, HYBRID = 2;
   // Respect overrides first.
   if (getPageSetting('AutoGen2Override')) {
     const overriden = overrides();
     if (overriden)
-      return changeGeneratorState(overriden == 1 ? FUEL : HYBRID);
+      return changeGeneratorState(overriden);
   }
   const mode = getPageSetting('AutoGen2'); // None : Microtick : Cap
   if (!mode) // Default: move on
@@ -172,7 +172,7 @@ function autoGenerator2() {
 
   const fuel = game.global.magmaFuel;
   const want = mode == 1 ? getFuelBurnRate() : getGeneratorFuelCap();
-  if (game.global.generatorMode == 1) { // Currently: Gain Mi
+  if (!game.global.generatorMode) { // Currently: Gain Mi
     if (fuel < want)
       changeGeneratorState(game.permanentGeneratorUpgrades.Hybridization.owned ? HYBRID : FUEL);
   } else if (fuel >= want) // Not gaining Mi when we should
