@@ -149,7 +149,11 @@ function autoGenerator() {
   var endEarly = (endZ > 0 && world >= endZ) || (endS && world >= (230 + game.generatorUpgrades.Supply.upgrades));
   if (endEarly) {
     //if (autoGenerator3);
-    changeGeneratorState(getPageSetting('AutoGen3'));
+    const overriden = overrides();
+    if (overriden)
+      changeGeneratorState(overriden == 1 ? FUEL : HYBRID);
+    else
+      changeGeneratorState(getPageSetting('AutoGen3'));
   } else autoGenerator2();
 }
 
