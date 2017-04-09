@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.3u6-unimod-4-08-2017+Modular
+// @version      2.1.5.4u1-unimod-4-09-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3u6-unimod-4-08-2017+Modular';
+var ATversion = '2.1.5.4u1-unimod-4-09-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
     //Load modules:
-    var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other'];
+    var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'magma', 'portal', 'other'];
     for (var i=0,len=modules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
     }
@@ -54,6 +54,10 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#162955">4/09 v2.1.5.4u1</b> - new tab Magma: AutoGen, AutoGen2\
+<br> Implemented Auto Generator. Please test!\
+<br><span style="opacity:.8">Optional AutoGen2 modes for switching between [Hybrid / Fuel] / Mi based on magma stored until Z / Supply (since zones before Supply have tiny gains and using Mi for them are better after filling out stacks).</span>\
+<br><span style="opacity:.8">Can now configure what to set DimGen for in dailies / challenge2 for more efficient progression (anticipates overclocker; does not actually check for overclocker yet!)</span>\
 <br><b style="background-color:#162955">4/08 v2.1.5.3u6</b> - new settings ForcePresZ\
 <br> Changed LinearZ to Force Prestige Z.\
 <br><span style="opacity:.8">Force prestiges if there are any unbought on and after Z, overriding both dynamic and linear.</span>\
@@ -199,6 +203,7 @@ function mainLoop() {
     autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
 
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
+    if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magma.js)
     else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"      (autostance.js)
     else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"       (")
 
