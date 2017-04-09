@@ -221,7 +221,7 @@ function mainLoop() {
     //Auto Magmite Spender
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
-            autoMagmiteSpender();       //(other.js)
+            autoMagmiteSpender(); // magma.js
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
