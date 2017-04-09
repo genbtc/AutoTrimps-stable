@@ -54,7 +54,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#162955">4/09 v2.1.5.4u1</b> - new tab Magma: AutoGen, AutoGen2\
+<br><b style="background-color:#50000D">4/09 v2.1.5.4u1</b> - new tab Magma: AutoGen, AutoGen2\
 <br> Implemented Auto Generator. Please test!\
 <br><span style="opacity:.8">Optional AutoGen2 modes for switching between [Hybrid / Fuel] / Mi based on magma stored until Z / Supply (since zones before Supply have tiny gains and using Mi for them are better after filling out stacks).</span>\
 <br><span style="opacity:.8">Can now configure what to set DimGen for in dailies / challenge2 for more efficient progression (anticipates overclocker; does not actually check for overclocker yet!)</span>\
