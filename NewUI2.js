@@ -406,7 +406,7 @@ function resetAutoTrimps(imported) {
 function loadAutoTrimps() {
     //try the import
     try {
-        var thestring = document.getElementById("importBox").value.replace(/[\n\r])/gm, "");
+        var thestring = document.getElementById("importBox").value.replace(/[\n\r]/gm, "");
         var tmpset = JSON.parse(thestring);
         if (tmpset == null)
             return;
