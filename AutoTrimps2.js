@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.4u1-unimod-4-09-2017+Modular
+// @version      2.1.5.4u2-unimod-4-10-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.4u1-unimod-4-09-2017+Modular';
+var ATversion = '2.1.5.4u2-unimod-4-10-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
