@@ -54,7 +54,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#50000D">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
+<br><b style="background-color:#611047">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
 <br><span style="opacity:.8">PrestigeSkip2 may extend PrestigeSkipMode to only skip when we have few prestiges to run for and we already haven\'t many unbought. On its own it will only not skip when there are more than 2 types to run for.</span>\
 <br> Removed NoChallengeMaps.\
 <br><span style="opacity:.8">Now checks for c2 and no longer runs unique maps in them automatically.</span>\

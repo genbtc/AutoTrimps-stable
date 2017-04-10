@@ -108,7 +108,7 @@ function autoMap() {
         const prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest'];
         const numLeft = prestigeList.filter(prestige => game.mapUnlocks[prestige].last <= game.global.world - 5);
         const shouldSkip = numLeft <= customVars.UnearnedPrestigesRequired;
-        if (shouldSkip != skippedPrestige)) { // not both conditions are met / is met but not already skipped: unskip it / do skip it
+        if (shouldSkip != skippedPrestige) { // not both conditions are met / is met but not already skipped: unskip it / do skip it
           needPrestige = !needPrestige;
           skippedPrestige = !skippedPrestige;
         }
@@ -735,7 +735,7 @@ function updateAutoMapsStatus() {
     else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
 
     if (skippedPrestige) // Show skipping prestiges
-      status.insertAdjacentHTML('afterbegin','<b style="font-size:.8em;color:pink">Prestige Skipped</b><br>')
+      status.insertAdjacentHTML('afterbegin', '<b style="font-size:.8em;color:pink">Prestige Skipped</b><br>');
 
     //hider he/hr% status
     var area51 = document.getElementById('hiderStatus');
