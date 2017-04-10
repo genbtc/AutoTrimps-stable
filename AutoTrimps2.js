@@ -54,10 +54,12 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#50000D">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
+<br><span style="opacity:.8">PrestigeSkip2 may extend PrestigeSkipMode to only skip when we have few prestiges to run for and we already haven\'t many unbought. On its own it will only not skip when there are more than 2 types to run for.</span>\
+<br> Removed NoChallengeMaps.\
+<br><span style="opacity:.8">Now checks for c2 and no longer runs unique maps in them automatically.</span>\
 <br><b style="background-color:#50000D">4/09 v2.1.5.4u1</b> - new tab Magma: AutoGen, AutoGen2\
 <br> Implemented Auto Generator. Please test!\
-<br><span style="opacity:.8">Optional AutoGen2 modes for switching between [Hybrid / Fuel] / Mi based on magma stored until Z / Supply (since zones before Supply have tiny gains and using Mi for them are better after filling out stacks).</span>\
-<br><span style="opacity:.8">Can now configure what to set DimGen for in dailies / challenge2 for more efficient progression (anticipates overclocker; does not actually check for overclocker yet!)</span>\
 <br><span style="opacity:.75"><b style="background-color:#162955">4/08 v2.1.5.3u6</b> ForcePresZ <b style="background-color:#294D00">4/07 u5</b> FinishC2, PowerSaving <b style="background-color:#294D00">u4</b> PreferMetal, PreSpireNurseries <b style="background-color:#6E1236">u3</b> LinearZ, SupplyWall, OneTimeOnly <b style="background-color:#552700">u2</b> TrimpleZ, ScryerDieZ, IgnoreCrits <b style="background-color:#277552;">4/06 u1</b> Don\'t buy Coords / Skip challenge maps</span>\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
 <br><a href="https://github.com/Unihedro/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
