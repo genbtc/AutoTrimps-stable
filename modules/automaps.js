@@ -24,6 +24,7 @@ MODULES["automaps"].SpireFarm199Maps = true;   //this will farm spire on 199 map
 MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
 MODULES["automaps"].shouldFarmCell = 59;
 MODULES["automaps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
+MODULES["automaps"].UnearnedPrestigesRequired = 2;
 
 
 //Initialize Global Vars (dont mess with these ones, nothing good can come from it).
@@ -31,6 +32,7 @@ var stackingTox = false;
 var doVoids = false;
 var needToVoid = false;
 var needPrestige = false;
+var skippedPrestige = false;
 var voidCheckPercent = 0;
 var HDratio = 0;
 var ourBaseDamage = 0;
@@ -81,12 +83,13 @@ function autoMap() {
         doVoids = false;
     // if force prestige, check if we are behind any first
     if ((getPageSetting('ForcePresZ') >= 0) && (game.global.world >= getPageSetting('ForcePresZ'))) {
-        var prestigeList = ['Supershield','Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
+        const prestigeList = ['Supershield','Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
         needPrestige = prestigeList.some(prestige => game.mapUnlocks[prestige].last <= game.global.world - 5);
     } else
     //calculate if we are behind on unlocking prestiges
     needPrestige = prestige != "Off" && game.mapUnlocks[prestige].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
     //dont need prestige if we are caught up, and have (2) unbought prestiges:
+    skippedPrestige = false;
     if (needPrestige && getPageSetting('PrestigeSkipMode')) {
         var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
         var numUnbought = 0;
@@ -95,7 +98,20 @@ function autoMap() {
             if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
                 numUnbought++;
         }
-        if (numUnbought >= customVars.SkipNumUnboughtPrestiges) needPrestige = false;
+        if (numUnbought >= customVars.SkipNumUnboughtPrestiges) {
+          needPrestige = false;
+          skippedPrestige = true;
+        }
+    }
+    // Don't need prestige if there aren't many weapon prestiges left
+    if ((needPrestige || skippedPrestige) && getPageSetting('PrestigeSkip2')) {
+        const prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest'];
+        const numLeft = prestigeList.filter(prestige => game.mapUnlocks[prestige].last <= game.global.world - 5);
+        const shouldSkip = numLeft <= customVars.UnearnedPrestigesRequired;
+        if (shouldSkip != skippedPrestige)) { // not both conditions are met / is met but not already skipped: unskip it / do skip it
+          needPrestige = !needPrestige;
+          skippedPrestige = !skippedPrestige;
+        }
     }
 
 //START CALCULATING DAMAGES:
@@ -358,7 +374,7 @@ function autoMap() {
                 selectedMap = theMap.id;
                 break;
             }
-            var dont = getPageSetting('NoChallengeMaps');
+            var dont = game.global.runningChallengeSquared;
             if(theMap.name == 'The Block' && !game.upgrades.Shieldblock.allowed && ((game.global.challengeActive == "Scientist" || game.global.challengeActive == "Trimp") && !dont || getPageSetting('BuyShieldblock'))) {
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 11 + theMapDifficulty) continue;
@@ -717,6 +733,9 @@ function updateAutoMapsStatus() {
     else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
     else if (!enoughHealth) status.innerHTML = 'Want more health';
     else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
+
+    if (skippedPrestige) // Show skipping prestiges
+      status.insertAdjacentHTML('afterbegin','<b style="font-size:.8em;color:pink">Prestige Skipped</b><br>')
 
     //hider he/hr% status
     var area51 = document.getElementById('hiderStatus');
