@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.4u2-unimod-4-10-2017+Modular
+// @version      2.1.5.4u3-unimod-4-11-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.4u2-unimod-4-10-2017+Modular';
+var ATversion = '2.1.5.4u3-unimod-4-11-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,10 +54,11 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#105E28">4/11 v2.1.5.4u3</b> - fixed spire farming, autogen supply zone calculation\
+<br><span style="background:rgba(255,0,128,.15)">Issues with AT misbehaving e.g. automaps screwing over might be resolved by disabling autogen! I personally haven\'t experienced issues but please send me your scenarios to help narrow down (and fix) the problem!</span>\
 <br><b style="background-color:#611047">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
 <br><span style="opacity:.8">PrestigeSkip2 may extend PrestigeSkipMode to only skip when we have few prestiges to run for and we already haven\'t many unbought. On its own it will only not skip when there are more than 2 types to run for.</span>\
-<br> Removed NoChallengeMaps.\
-<br><span style="opacity:.8">Now checks for c2 and no longer runs unique maps in them automatically.</span>\
+<br> Removed NoChallengeMaps. <span style="opacity:.8">It\'s now automatic.</span>\
 <br><b style="background-color:#50000D">4/09 v2.1.5.4u1</b> - new tab Magma: AutoGen, AutoGen2\
 <br> Implemented Auto Generator. Please test!\
 <br><span style="opacity:.75"><b style="background-color:#162955">4/08 v2.1.5.3u6</b> ForcePresZ <b style="background-color:#294D00">4/07 u5</b> FinishC2, PowerSaving <b style="background-color:#294D00">u4</b> PreferMetal, PreSpireNurseries <b style="background-color:#6E1236">u3</b> LinearZ, SupplyWall, OneTimeOnly <b style="background-color:#552700">u2</b> TrimpleZ, ScryerDieZ, IgnoreCrits <b style="background-color:#277552;">4/06 u1</b> Don\'t buy Coords / Skip challenge maps</span>\

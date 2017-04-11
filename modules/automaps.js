@@ -308,9 +308,8 @@ function autoMap() {
     }
     //Farm X Minutes Before Spire:
     var shouldDoSpireMaps = false;
-    var needFarmSpire = preSpireFarming || (game.global.world == 200 && game.global.spireActive);
-    preSpireFarming = needFarmSpire = needFarmSpire && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
-    if (needFarmSpire) {
+    preSpireFarming = (game.global.world == 200 && game.global.spireActive) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
+    if (preSpireFarming) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
@@ -504,8 +503,8 @@ function autoMap() {
     if (shouldDoMaps || doVoids || needPrestige) {
         //selectedMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
         if (selectedMap == "world") {
-            //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.
-            if (needFarmSpire) {
+            //if preSpireFarming x minutes is true, switch over from wood maps to metal maps.
+            if (preSpireFarming) {
                 var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["automaps"].SpireFarm199Maps) ? 199 : 200;
                 if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
@@ -639,7 +638,7 @@ function autoMap() {
             adjustMap('loot', tier[2]);
             biomeAdvMapsSelect.value = useGardens ? "Plentiful" : tier[3];
             //choose spire level 199 or 200
-            if (needFarmSpire && MODULES["automaps"].SpireFarm199Maps)
+            if (preSpireFarming && MODULES["automaps"].SpireFarm199Maps)
                 document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
             //recalculate cost.
             updateMapCost();

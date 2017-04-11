@@ -146,14 +146,11 @@ function autoGenerator() {
 
   const endZ = getPageSetting('AutoGen2End');
   const endS = getPageSetting('AutoGen2SupplyEnd');
-  var endEarly = (endZ > 0 && world >= endZ) || (endS && world >= (230 + game.generatorUpgrades.Supply.upgrades));
+  var endEarly = (endZ > 0 && world >= endZ) || (endS && world >= (230 + 2 * game.generatorUpgrades.Supply.upgrades));
   if (endEarly) {
     //if (autoGenerator3);
-    const overriden = overrides();
-    if (overriden)
-      changeGeneratorState(overriden);
-    else
-      changeGeneratorState(getPageSetting('AutoGen3'));
+    if (!autoGenOverrides())
+      changeGeneratorState(getPageSetting('AutoGen3');
   } else autoGenerator2();
 }
 
@@ -161,11 +158,9 @@ function autoGenerator() {
 function autoGenerator2() {
   const MI = 0, FUEL = 1, HYBRID = 2;
   // Respect overrides first.
-  if (getPageSetting('AutoGen2Override')) {
-    const overriden = overrides();
-    if (overriden)
-      return changeGeneratorState(overriden);
-  }
+  if (getPageSetting('AutoGen2Override') && autoGenOverrides())
+    return;
+
   const mode = getPageSetting('AutoGen2'); // None : Microtick : Cap
   if (!mode) // Default: move on
     return;
@@ -183,6 +178,9 @@ function autoGenerator2() {
  * Apply the necessary tweaks the user wants.
  * @return false or 0 if unnecessary; 1 fuel; 2 hybrid
  */
-function overrides() {
-  return (game.global.runningChallengeSquared && getPageSetting('AutoGenC2')) || (game.global.dailyChallenge.seed && getPageSetting('AutoGenDC'));
+function autoGenOverrides() {
+  const overriden = (game.global.runningChallengeSquared && getPageSetting('AutoGenC2')) || (game.global.dailyChallenge.seed && getPageSetting('AutoGenDC'));
+  if (overriden && (game.global.generatorMode != overriden))
+    changeGeneratorState(overriden);
+  return overrides;
 }
