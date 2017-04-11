@@ -185,5 +185,5 @@ function autoGenOverrides() {
   const overriden = (game.global.runningChallengeSquared && getPageSetting('AutoGenC2')) || (game.global.dailyChallenge.seed && getPageSetting('AutoGenDC'));
   if (overriden && (game.global.generatorMode != overriden))
     changeGeneratorState(overriden);
-  return overrides;
+  return overriden;
 }
