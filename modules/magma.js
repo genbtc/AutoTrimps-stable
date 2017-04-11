@@ -149,8 +149,11 @@ function autoGenerator() {
   var endEarly = (endZ > 0 && world >= endZ) || (endS && world >= (230 + 2 * game.generatorUpgrades.Supply.upgrades));
   if (endEarly) {
     //if (autoGenerator3);
-    if (!autoGenOverrides())
-      changeGeneratorState(getPageSetting('AutoGen3');
+    if (!autoGenOverrides()) {
+      const lateMode = getPageSetting('AutoGen3');
+      if (game.global.generatorMode != lateMode)
+        changeGeneratorState(lateMode);
+    }
   } else autoGenerator2();
 }
 
