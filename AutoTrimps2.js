@@ -194,9 +194,9 @@ function mainLoop() {
     autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
 
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
-    if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magma.js)
     else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"      (autostance.js)
     else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"       (")
+    if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magma.js)
 
     BAFsetting = getPageSetting('BetterAutoFight');
     if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"  (autofight.js)
