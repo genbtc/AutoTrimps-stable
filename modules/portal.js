@@ -108,6 +108,10 @@ function doPortal(challenge) {
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
     }
+    // From mainLoop
+    if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (heirlooms.js)
+    else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"      (")
+    if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (heirlooms.js)
     //Go into portal screen
     portalClicked();
     //AutoPerks: do this first, because it reflashes the screen.

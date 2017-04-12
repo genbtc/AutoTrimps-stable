@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.4u3-unimod-4-11-2017+Modular
+// @version      2.1.5.4u4-unimod-4-12-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.4u3-unimod-4-11-2017+Modular';
+var ATversion = '2.1.5.4u4-unimod-4-12-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,14 +54,16 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#D8000B">4/12 v2.1.5.4u4</b> - AutoTrimps lifecycle changes\
+<br>Auto Heirlooms / Nu will only run in the portal screen, ONCE pre-autoportal, ONCE on Z1 in a new world, ONCE after your heirloom inventory size changes, or ONCE after you open and close the heirlooms screen manually.\
+<br>Some functionality now only runs when you enter a new zone, as opposed to constantly re-doing everything.\
+<br>I\'ll be pushing some more fixes soon to improve performance, stay tuned and report when things go wrong!\
+<br><span style="opacity:.8">Fixed issue caused by ScryerSuicideZ - should now work properly</span>\
 <br><b style="background-color:#105E28">4/11 v2.1.5.4u3</b> - fixed spire farming, autogen supply zone calculation\
 <br><span style="background:rgba(255,0,128,.15)">Issues with AT misbehaving e.g. automaps screwing over might be resolved by disabling autogen! I personally haven\'t experienced issues but please send me your scenarios to help narrow down (and fix) the problem!</span>\
-<br><b style="background-color:#611047">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
-<br><span style="opacity:.8">PrestigeSkip2 may extend PrestigeSkipMode to only skip when we have few prestiges to run for and we already haven\'t many unbought. On its own it will only not skip when there are more than 2 types to run for.</span>\
-<br> Removed NoChallengeMaps. <span style="opacity:.8">It\'s now automatic.</span>\
+<br><span style="opacity:.75"><b style="background-color:#611047">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
 <br><b style="background-color:#50000D">4/09 v2.1.5.4u1</b> - new tab Magma: AutoGen, AutoGen2\
-<br> Implemented Auto Generator. Please test!\
-<br><span style="opacity:.75"><b style="background-color:#162955">4/08 v2.1.5.3u6</b> ForcePresZ <b style="background-color:#294D00">4/07 u5</b> FinishC2, PowerSaving <b style="background-color:#294D00">u4</b> PreferMetal, PreSpireNurseries <b style="background-color:#6E1236">u3</b> LinearZ, SupplyWall, OneTimeOnly <b style="background-color:#552700">u2</b> TrimpleZ, ScryerDieZ, IgnoreCrits <b style="background-color:#277552;">4/06 u1</b> Don\'t buy Coords / Skip challenge maps</span>\
+<br><b style="background-color:#162955">4/08 v2.1.5.3u6</b> ForcePresZ <b style="background-color:#294D00">4/07 u5</b> FinishC2, PowerSaving <b style="background-color:#294D00">u4</b> PreferMetal, PreSpireNurseries <b style="background-color:#6E1236">u3</b> LinearZ, SupplyWall, OneTimeOnly <b style="background-color:#552700">u2</b> TrimpleZ, ScryerDieZ, IgnoreCrits <b style="background-color:#277552;">4/06 u1</b> Don\'t buy Coords / Skip challenge maps</span>\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
 <br><a href="https://github.com/Unihedro/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
@@ -127,6 +129,8 @@ var currentworld = 0;
 var lastrunworld = 0;
 var aWholeNewWorld = false;
 var needGymystic = true;
+var heirloomFlag = false;
+var heirloomCache = game.global.heirloomsExtra.length;
 
 //reset stuff that may not have gotten cleaned up on portal
 function mainCleanup() {
@@ -140,6 +144,7 @@ function mainCleanup() {
         //for the dummies like me who always forget to turn automaps back on after portaling
         if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
             settingChanged("AutoMaps");
+        return true; // Do other things
     }
 }
 
@@ -153,22 +158,37 @@ function mainLoop() {
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
     if (armycount.className != "tooltipadded") addToolTipToArmyCount();
-    mainCleanup();
+    const newZone = currentworld != game.global.world;
+    if ((newZone && mainCleanup()) // Z1 new world
+            || portalWindowOpen // in the portal screen (for manual portallers)
+            || (!heirloomsShown && heirloomFlag) // closed heirlooms screen
+            || (heirloomCache != game.global.heirloomsExtra.length)) { // inventory size changed (a drop appeared)
+            // also pre-portal: portal.js:111
+        if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (heirlooms.js)
+        else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"      (")
+        if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (heirlooms.js)
+            
+        heirloomCache = game.global.heirloomsExtra.length;
+    }
+    heirloomFlag = heirloomsShown;
+
     if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades) return;
     game.global.addonUser = true;
     game.global.autotrimps = {
         firstgiga: getPageSetting('FirstGigastation'),
         deltagiga: getPageSetting('DeltaGigastation')
     }
-    //auto-close breaking the world textbox
-    if(document.getElementById('tipTitle').innerHTML == 'The Improbability') cancelTooltip();
-    //auto-close the corruption at zone 181 textbox
-    if(document.getElementById('tipTitle').innerHTML == 'Corruption') cancelTooltip();
-    //auto-close the Spire notification checkbox
-    if(document.getElementById('tipTitle').innerHTML == 'Spire') cancelTooltip();
-    //auto-close the magma notification checkbox
-    if(document.getElementById('tipTitle').innerHTML == 'The Magma') cancelTooltip();
-    setTitle();          //set the browser title
+    if (newZone) {
+        // Auto-close dialogues.
+        switch (document.getElementById('tipTitle').innerHTML) {
+            case 'The Improbability':   // Breaking the Planet
+            case 'Corruption':          // Corruption / True Corruption
+            case 'Spire':               // Spire
+            case 'The Magma':           // Magma
+                cancelTooltip();
+        }
+        setTitle(); // Set the browser title
+    }
     setScienceNeeded();  //determine how much science is needed
 
     //EXECUTE CORE LOGIC
@@ -185,12 +205,10 @@ function mainLoop() {
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"   (automaps.js)
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"     (autobreedtimer.js)
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40) (portal.js)
-    if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (heirlooms.js)
-    else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"      (")
-    if (getPageSetting('AutoUpgradeHeirlooms') && !heirloomsShown) autoNull();  //"Auto Upgrade Heirlooms" (heirlooms.js)    
+    
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
-    if (getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (other.js)
-    if (getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared) finishChallengeSquared(); // "Finish Challenge2" (other.js)
+    if (newZone && getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (other.js)
+    if (newZone && getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared) finishChallengeSquared(); // "Finish Challenge2" (other.js)
     autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
 
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
