@@ -313,8 +313,13 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
-    //Run a single map to get nurseries when blacksmithery is purchased
-    if (game.talents.blacksmith.purchased && game.buildings.Nursery.locked && game.global.world >= customVars.NurseryMapLevel) {
+    // Run a single map to get nurseries when 1. it's still locked,
+    // 2. blacksmithery is purchased,
+    // but not when 3A. home detector is purchased, or 3B. we don't need nurseries
+    if (game.buildings.Nursery.locked && game.talents.blacksmith.purchased && !(game.talents.housing.purchased ||
+            (getPageSetting('PreSpireNurseries') < 0 ?
+            !(getPageSetting('MaxNursery') && game.global.world < getPageSetting('NoNurseriesUntil')) :
+            !getPageSetting('PreSpireNurseries'))) && game.global.world >= customVars.NurseryMapLevel) {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }

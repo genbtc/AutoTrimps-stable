@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.4u5-unimod-4-14-2017+Modular
+// @version      2.1.5.4u6-unimod-4-14-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.4u5-unimod-4-14-2017+Modular';
+var ATversion = '2.1.5.4u6-unimod-4-14-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,6 +54,9 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#2c3c8a">4/14 v2.1.5.4u6 - Improved nurseries map and betterautostorage</b>\
+<br>Now only run a single map to get nurseries when 1. it\'s still locked, 2. blacksmithery is purchased, but not when 3A. home detector is purchased, or 3B. we don\'t need nurseries\
+<br>If betterautostorage is unlocked, force Buy Storage off (instead of letting AT handle warehouses)\
 <br><b class="AutoEggs">4/14 v2.1.5.4u5 - Auto Eggs</b>\
 <br>Fix "auto start dailies" to now check for the entire week instead of only the two days!\
 <br>Fix double attack calculation - it now addresses the second hit differently (upon killing it)\
@@ -201,8 +204,9 @@ function mainLoop() {
     if (getPageSetting('ExitSpireCell') >0) exitSpireCell(); //"Exit Spire After Cell" (other.js)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"  (jobs.js)
     if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"       (upgrades.js)
-    autoGoldenUpgradesAT();                               //"AutoGoldenUpgrades" (other.js)
-    if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"     (buildings.js)
+    autoGoldenUpgradesAT();    
+    if (getPageSetting('BuyStorage'))
+        game.global.improvedAutoStorage ? setPageSetting('BuyStorage', false) || game.global.autoStorage || toggleAutoStorage() : buyStorage();     //"Buy Storage"     (buildings.js)
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"   (buildings.js)
     needGymystic = false;   //reset this after buyBuildings
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"    (jobs.js)
