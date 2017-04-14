@@ -54,7 +54,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#2c3c8a">4/14 v2.1.5.4u6 - Improved nurseries map and betterautostorage</b>\
+<br><b style="background-color:#2c3c8a">4/14 v2.1.5.4u6</b> - Improved nurseries map and betterautostorage\
 <br>Now only run a single map to get nurseries when 1. it\'s still locked, 2. blacksmithery is purchased, but not when 3A. home detector is purchased, or 3B. we don\'t need nurseries\
 <br>If betterautostorage is unlocked, force Buy Storage off (instead of letting AT handle warehouses)\
 <br><b class="AutoEggs">4/14 v2.1.5.4u5 - Auto Eggs</b>\
@@ -62,9 +62,6 @@ function printChangelog() {
 <br>Fix double attack calculation - it now addresses the second hit differently (upon killing it)\
 <br>AutoGolden will now no longer conflict with Trimp\'s feature.\
 <br><span style="opacity:.75"><b style="background-color:#D8000B">4/12 v2.1.5.4u4</b> - AutoTrimps lifecycle changes\
-<br>Auto Heirlooms / Nu will only run in the portal screen, ONCE pre-autoportal, ONCE on Z1 in a new world, ONCE after your heirloom inventory size changes, or ONCE after you open and close the heirlooms screen manually.\
-<br>Some functionality now only runs when you enter a new zone, as opposed to constantly re-doing everything.\
-<br>I\'ll be pushing some more fixes soon to improve performance, stay tuned and report when things go wrong!\
 <br><span style="opacity:.8">Fixed issue caused by ScryerSuicideZ - should now work properly</span>\
 <br><b style="background-color:#105E28">4/11 v2.1.5.4u3</b> - fixed spire farming, autogen supply zone calculation\
 <br><b style="background-color:#611047">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
