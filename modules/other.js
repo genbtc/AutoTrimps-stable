@@ -28,7 +28,7 @@ function autoRoboTrimp() {
 }
 
 //Version 3.6 Golden Upgrades
-function autoGoldenUpgrades() {
+function autoGoldenUpgradesAT() {
     //get the numerical value of the selected index of the dropdown box
     try {
         var setting = document.getElementById('AutoGoldenUpgrades').value;

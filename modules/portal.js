@@ -121,19 +121,21 @@ function doPortal(challenge) {
     if (getPageSetting('AutoStartDaily')) {
         selectChallenge('Daily');
         checkCompleteDailies();
-        var yesterdayDone = (game.global.recentDailies.indexOf(getDailyTimeString(-1)) != -1);
-        var todayDone = (game.global.recentDailies.indexOf(getDailyTimeString()) != -1);
-        if (yesterdayDone && todayDone) {
+
+        var lastUndone = -7; // Note: Most previous challenge == -6
+        while (++lastUndone <= 0) {
+            var done = (game.global.recentDailies.indexOf(getDailyTimeString(lastUndone)) != -1);
+            if (!done)
+                break;
+        }
+
+        if (lastUndone == 1) { // None
             debug("All available Dailies already completed.");
-            //Fallback to w/e Regular challenge we picked.
-            if(challenge)
-                selectChallenge(challenge); 
-        } else if (!yesterdayDone) {
-            getDailyChallenge(-1);
-            debug("Portaling into Daily for: " + getDailyTimeString(-1,true) + " now!");
-        } else if (!todayDone) {
-            getDailyChallenge(0);
-            debug("Portaling into Daily for: " + getDailyTimeString(0,true) + " now!");
+            //Fallback to w/e Regular challenge we picked. Or none (unselect)
+            selectChallenge(challenge || 0);
+        } else {
+            getDailyChallenge(lastUndone);
+            debug("Portaling into Daily for: " + getDailyTimeString(lastUndone, true) + " now!");
         }
     }
     //Regular Challenge:

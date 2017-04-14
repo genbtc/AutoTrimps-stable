@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.4u4-unimod-4-12-2017+Modular
+// @version      2.1.5.4u5-unimod-4-14-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.4u4-unimod-4-12-2017+Modular';
+var ATversion = '2.1.5.4u5-unimod-4-14-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,14 +54,17 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#D8000B">4/12 v2.1.5.4u4</b> - AutoTrimps lifecycle changes\
+<br><b class="AutoEggs">4/14 v2.1.5.4u5 - Auto Eggs</b>\
+<br>Fix "auto start dailies" to now check for the entire week instead of only the two days!\
+<br>Fix double attack calculation - it now addresses the second hit differently (upon killing it)\
+<br>AutoGolden will now no longer conflict with Trimp\'s feature.\
+<br><span style="opacity:.75"><b style="background-color:#D8000B">4/12 v2.1.5.4u4</b> - AutoTrimps lifecycle changes\
 <br>Auto Heirlooms / Nu will only run in the portal screen, ONCE pre-autoportal, ONCE on Z1 in a new world, ONCE after your heirloom inventory size changes, or ONCE after you open and close the heirlooms screen manually.\
 <br>Some functionality now only runs when you enter a new zone, as opposed to constantly re-doing everything.\
 <br>I\'ll be pushing some more fixes soon to improve performance, stay tuned and report when things go wrong!\
 <br><span style="opacity:.8">Fixed issue caused by ScryerSuicideZ - should now work properly</span>\
 <br><b style="background-color:#105E28">4/11 v2.1.5.4u3</b> - fixed spire farming, autogen supply zone calculation\
-<br><span style="background:rgba(255,0,128,.15)">Issues with AT misbehaving e.g. automaps screwing over might be resolved by disabling autogen! I personally haven\'t experienced issues but please send me your scenarios to help narrow down (and fix) the problem!</span>\
-<br><span style="opacity:.75"><b style="background-color:#611047">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
+<br><b style="background-color:#611047">4/10 v2.1.5.4u2</b> - new settings PrestigeSkip2\
 <br><b style="background-color:#50000D">4/09 v2.1.5.4u1</b> - new tab Magma: AutoGen, AutoGen2\
 <br><b style="background-color:#162955">4/08 v2.1.5.3u6</b> ForcePresZ <b style="background-color:#294D00">4/07 u5</b> FinishC2, PowerSaving <b style="background-color:#294D00">u4</b> PreferMetal, PreSpireNurseries <b style="background-color:#6E1236">u3</b> LinearZ, SupplyWall, OneTimeOnly <b style="background-color:#552700">u2</b> TrimpleZ, ScryerDieZ, IgnoreCrits <b style="background-color:#277552;">4/06 u1</b> Don\'t buy Coords / Skip challenge maps</span>\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">Uni#8610</span></u>\
@@ -188,6 +191,9 @@ function mainLoop() {
                 cancelTooltip();
         }
         setTitle(); // Set the browser title
+
+        if (getPageSetting('AutoEggs'))
+            easterEggClicked();
     }
     setScienceNeeded();  //determine how much science is needed
 
@@ -195,7 +201,7 @@ function mainLoop() {
     if (getPageSetting('ExitSpireCell') >0) exitSpireCell(); //"Exit Spire After Cell" (other.js)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"  (jobs.js)
     if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"       (upgrades.js)
-    autoGoldenUpgrades();                               //"AutoGoldenUpgrades" (other.js)
+    autoGoldenUpgradesAT();                               //"AutoGoldenUpgrades" (other.js)
     if (getPageSetting('BuyStorage')) buyStorage();     //"Buy Storage"     (buildings.js)
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"   (buildings.js)
     needGymystic = false;   //reset this after buyBuildings
