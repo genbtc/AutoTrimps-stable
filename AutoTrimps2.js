@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
 // @namespace    https://github.com/unihedro/AutoTrimps
-// @version      2.1.5.5u2-unimod-4-16-2017+Modular
+// @version      2.1.5.5u3-unimod-4-17-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.5u2-unimod-4-16-2017+Modular';
+var ATversion = '2.1.5.5u3-unimod-4-17-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -54,6 +54,8 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#002b3b">4/17 v2.1.5.5u3</b> - fix improvedautostorage hijack\
+<br>Fixed a certain specific stupid bug caused by how graph overwrites some functions unnecessarily\
 <br><b style="background-color:#b93e00">4/16 v2.1.5.5u2</b> - do more map stacks if not enoughHealth\
 <br><span style="opacity:.8">No longer forces Buy Storage off</span>\
 <br><b style="background-color:#840036">4/15 v2.1.5.5u1</b> - new settings BuyOvclock\

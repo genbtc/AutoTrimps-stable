@@ -556,6 +556,29 @@ function automationMenuInit() {
     abutton.id = 'hiderStatus';
     newContainer.appendChild(abutton);
     fightButtonCol.appendChild(newContainer);
+    
+
+    //// Create autogen button
+    //var abutton = document.createElement("SPAN");
+    //abutton.appendChild(document.createTextNode("Auto"));
+    //abutton.setAttribute("class", "btn workBtn btn-success");
+    //abutton.setAttribute("id", "autoGenBtn");
+    //abutton.setAttribute("onClick", "settingChanged('UseAutoGen')");
+    //abutton.setAttribute("onmouseover", 'tooltip(\"Auto Generator\", \"customText\", event, \"Toggle automapping on and off.\")');
+    //abutton.setAttribute("onmouseout", 'tooltip("hide")');
+    //var fightButtonCol = document.getElementById("battleBtnsColumn");
+    //newContainer.appendChild(abutton);
+    //fightButtonCol.appendChild(newContainer);
+    //// Create autogen status
+    //// <div style="position:absolute;color: #ffa;z-index: 2;/* left: 0; */background: rgba(0,0,0,.5);width:100%;height:100%">Want more</div>
+    //newContainer = document.createElement("DIV");
+    //newContainer.setAttribute("style", "display: block; font-size: 1.1vw; text-align: center; background-color: rgba(0,0,0,0.3);");
+    //newContainer.setAttribute("onmouseover", 'tooltip(\"Health to Damage ratio\", \"customText\", event, \"This status box displays the current mode Automaps is in. The number usually shown here during Farming or Want more Damage modes is the \'HDratio\' meaning EnemyHealth to YourDamage Ratio (in X stance). Above 16 will trigger farming, above 4 will trigger going for Map bonus up to 10 stacks. If the number is not shown, hovering will display it below.<p><b>enoughHealth: </b>\" + enoughHealth + \"<br><b>enoughDamage: </b>\" + enoughDamage +\"<br><b>shouldFarm: </b>\" + shouldFarm +\"<br><b>H:D ratio = </b>\" + HDratio + \"<br>\")');
+    //newContainer.setAttribute("onmouseout", 'tooltip("hide")');
+    //abutton = document.createElement("SPAN");
+    //abutton.id = 'autoMapStatus';
+    //newContainer.appendChild(abutton);
+    //fightButtonCol.appendChild(newContainer);
 
     //make timer click toggle paused mode
     document.getElementById('portalTimer').setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
