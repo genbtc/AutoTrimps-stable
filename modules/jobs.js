@@ -239,6 +239,15 @@ function buyJobs() {
     else if (stacks2 < tierMagmamancers) {
         tierMagmamancers = 0;
     }
+
+    if ((game.resources.trimps.owned - game.resources.trimps.employed) < 2) {
+        if (game.jobs.Farmer.owned > 2)
+            safeFireJob('Farmer', 2);
+        else if (game.jobs.Lumberjack.owned > 2)
+            safeFireJob('Lumberjack', 2);
+        else if (game.jobs.Miner.owned > 2)
+            safeFireJob('Miner', 2);
+    }
 }
 var tierMagmamancers = 0;
 

@@ -143,10 +143,20 @@ function autoMap() {
         //if the zone is odd:   (skip the +2 calc for the last level.
         if (game.global.world % 2 == 1 && game.global.world != 179){
              //calculate for the next level in advance (since we only farm on odd, and evens are very tough)
-            enemyDamage = getEnemyMaxAttack(game.global.world + 2, 50, 'Chimp', 1.2);
-            enemyHealth = getEnemyMaxHealth(game.global.world + 2, 50);
+            //enemyDamage = getEnemyMaxAttack(game.global.world + 2, 50, 'Chimp', 1.2);
+            //enemyHealth = getEnemyMaxHealth(game.global.world + 2, 50);
+            if (AutoStance <= 1) {
+                enemyDamage = getEnemyMaxAttack(game.global.world + 1, 99, 'Snimp', 1.2);
+                enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
+            } else {
+                enemyDamage = calcBadGuyDmg(null, getEnemyMaxAttack(game.global.world + 1, 99, 'Snimp', 1.0), true, true); //(enemy,attack,daily,maxormin,[disableFlucts])
+            }
+            enemyDamage *= (1 + (100 * 0.04));
             ourBaseDamage /= 1.5; //subtract the odd-zone bonus.
         }
+        if (game.global.world == 179) {
+            ourBaseDamage *= mapbonusmulti;
+        }        
         //let people disable this if they want.
         if(!getPageSetting('DisableFarm')) {
             shouldFarm = enemyHealth > (ourBaseDamage * customVars.LeadfarmingCutoff);
