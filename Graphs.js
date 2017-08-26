@@ -1136,22 +1136,27 @@ function () {
     game.unlocks.impCount.Chronoimp++;
 };
 
-function addResCheckMax(what, number, noStat, fromGather, nonFilteredLoot) {
-    filterLoot(what, number, null, fromGather);
-    var res = game.resources[what];
-    if (res.max == -1) {
-        res.owned += number;
-        if (!noStat && what == "gems") game.stats.gemsCollected.value += number;
-        return;
-    }
-    var newMax = res.max + (res.max * game.portal.Packrat.modifier * game.portal.Packrat.level);
-    newMax = calcHeirloomBonus("Shield", "storageSize", newMax);
-    if (res.owned + number <= newMax) res.owned += number;
-    else res.owned = newMax;
-    if (nonFilteredLoot && game.options.menu.useAverages.enabled){
-        addAvg(what, number);
-    }
-}//END overwriting default game functions!!!!!!!!!!!!!!!!!!!!!!
+(function(){
+  // who even thought copying the code was a good idea?
+  const oldFunction = window.addResCheckMax;
+  window.addResCheckMax = (a, b, c, d, e) => filterLoot(a, b, null, d) || oldFunction(a, b, c, d, e);
+})();
+//function addResCheckMax(what, number, noStat, fromGather, nonFilteredLoot) {
+//    filterLoot(what, number, null, fromGather);
+//    var res = game.resources[what];
+//    if (res.max == -1) {
+//        res.owned += number;
+//        if (!noStat && what == "gems") game.stats.gemsCollected.value += number;
+//        return;
+//    }
+//    var newMax = res.max + (res.max * game.portal.Packrat.modifier * game.portal.Packrat.level);
+//    newMax = calcHeirloomBonus("Shield", "storageSize", newMax);
+//    if (res.owned + number <= newMax) res.owned += number;
+//    else res.owned = newMax;
+//    if (nonFilteredLoot && game.options.menu.useAverages.enabled){
+//        addAvg(what, number);
+//    }
+//}//END overwriting default game functions!!!!!!!!!!!!!!!!!!!!!!
 
 function lookUpZoneData(zone,portal) {
     if (portal == null)

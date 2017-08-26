@@ -25,6 +25,12 @@ function useScryerStance() {
     var form = game.global.formation;
     var oktoswitch = true;
     var die = getPageSetting('ScryerDieToUseS');
+    const willSuicide = getPageSetting('ScryerDieZ');
+    if (die && willSuicide >= 0) {
+        var [dieZ, dieC] = willSuicide.toString().split(".");
+        if (dieC && dieC.length == 1) dieC = dieC + "0";
+        die = game.global.world >= dieZ && (!dieC || (game.global.lastClearedCell + 1 >= dieC));
+    }
     if (form == 0 || form == 1)
         oktoswitch = die || newSquadRdy || (missingHealth < (baseHealth / 2));
 

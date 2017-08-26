@@ -59,6 +59,25 @@ Feel free to submit any bugs/suggestions as issues here on github.
 The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned. Happy scripting! -genBTC
 
 ## Current feature changes by genBTC
+- *** April Unihedro Branch Changes ***
+- 4/17 v2.1.5.5u3</b> - fix improvedautostorage hijack
+- Fixed a certain specific stupid bug caused by how graph overwrites some functions unnecessarily
+- 4/16 v2.1.5.5u2</b> - do more map stacks if not enoughHealth
+- No longer forces Buy Storage off
+- 4/15 v2.1.5.5u1</b> - new settings BuyOvclock
+- 4/14 v2.1.5.4u6</b> - Improved nurseries map and betterautostorage 
+- 4/14 v2.1.5.4u5 - Auto Eggs</b>, some more 4.3 support 
+- 4/12 v2.1.5.4u4</b> AutoTrimps lifecycle changes
+- 4/11 v2.1.5.4u3</b> fixed spire farming, autogen supply zone
+- 4/10 v2.1.5.4u2</b> PrestigeSkip2 
+- 4/09 v2.1.5.4u1</b> Magma: AutoGen, AutoGen2
+- 4/08 v2.1.5.3u6</b> ForcePresZ 
+- 4/07 + 4/06: 
+- U5: FinishC2, PowerSaving 
+- U4: PreferMetal, PreSpireNurseries 
+- U3: LinearZ, SupplyWall, OneTimeOnly 
+- U2: TrimpleZ, ScryerDieZ, IgnoreCrits 
+- U1: Don't buy Coords / Skip challenge maps
 - ***1/10/2017***
 - new setting Buy Warp to Hit Coord (genbtc page)
 - AutoStance support for Plague/Bogged Daily

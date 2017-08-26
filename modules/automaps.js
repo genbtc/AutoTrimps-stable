@@ -17,13 +17,14 @@ MODULES["automaps"].MapTier0Sliders = [9,9,9,'Mountain'];   //Zone 72+ (old: 9/9
 MODULES["automaps"].MapTier1Sliders = [9,9,9,'Depths']; //Zone 47-72 (old: 9/9/4 Metal)
 MODULES["automaps"].MapTier2Sliders = [9,9,9,'Random'];   //Zone 16-47 (old: 9/9/0 Random)
 MODULES["automaps"].MapTier3Sliders = [9,9,9,'Random'];    //Zone 6-16 (old: 9/0/0 Random)
-MODULES["automaps"].preferGardens = true;   //prefer run Garden maps instead of ^^ if we have Decay done
+MODULES["automaps"].preferGardens = !getPageSetting('PreferMetal');   //prefer run Garden maps instead of ^^ if we have Decay done
 MODULES["automaps"].maxMapBonus = 10;       //cap how many maps are run during Want More Damage mode
-MODULES["automaps"].wantHealthMapBonus = 1; //cap how many maps are run during Want More Health mode
+MODULES["automaps"].wantHealthMapBonus = 10;//cap how many maps are run during Want More Health mode
 MODULES["automaps"].SpireFarm199Maps = true;   //this will farm spire on 199 maps instead of 200 maps when Map Reducer is bought
 MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
 MODULES["automaps"].shouldFarmCell = 59;
 MODULES["automaps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
+MODULES["automaps"].UnearnedPrestigesRequired = 2;
 
 
 //Initialize Global Vars (dont mess with these ones, nothing good can come from it).
@@ -31,6 +32,7 @@ var stackingTox = false;
 var doVoids = false;
 var needToVoid = false;
 var needPrestige = false;
+var skippedPrestige = false;
 var voidCheckPercent = 0;
 var HDratio = 0;
 var ourBaseDamage = 0;
@@ -39,6 +41,8 @@ var scryerStuck = false;
 var shouldDoMaps = false;
 var mapTimeEstimate = 0;
 var lastMapWeWereIn = null;
+var preSpireFarming = false;
+var spireTime = 0;
 
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
@@ -77,10 +81,16 @@ function autoMap() {
                                  (game.global.world >= voidMapLevelSettingZone && getPageSetting('RunNewVoids') && (voidsuntil == -1 || game.global.world <= voidsuntil)));
     if(game.global.totalVoidMaps == 0 || !needToVoid)
         doVoids = false;
+    // if force prestige, check if we are behind any first
+    if ((getPageSetting('ForcePresZ') >= 0) && (game.global.world >= getPageSetting('ForcePresZ'))) {
+        const prestigeList = ['Supershield','Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
+        needPrestige = prestigeList.some(prestige => game.mapUnlocks[prestige].last <= game.global.world - 5);
+    } else
     //calculate if we are behind on unlocking prestiges
     needPrestige = prestige != "Off" && game.mapUnlocks[prestige].last <= game.global.world - 5 && game.global.challengeActive != "Frugal";
     //dont need prestige if we are caught up, and have (2) unbought prestiges:
-    if (getPageSetting('PrestigeSkipMode')) {
+    skippedPrestige = false;
+    if (needPrestige && getPageSetting('PrestigeSkipMode')) {
         var prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest','Bootboost','Hellishmet','Pantastic','Smoldershoulder','Bestplate','GambesOP'];
         var numUnbought = 0;
         for (var i=0,len=prestigeList.length; i < len; i++) {
@@ -88,7 +98,20 @@ function autoMap() {
             if (game.upgrades[p].allowed - game.upgrades[p].done > 0)
                 numUnbought++;
         }
-        if (numUnbought >= customVars.SkipNumUnboughtPrestiges) needPrestige = false;
+        if (numUnbought >= customVars.SkipNumUnboughtPrestiges) {
+          needPrestige = false;
+          skippedPrestige = true;
+        }
+    }
+    // Don't need prestige if there aren't many weapon prestiges left
+    if ((needPrestige || skippedPrestige) && getPageSetting('PrestigeSkip2')) {
+        const prestigeList = ['Dagadder','Megamace','Polierarm','Axeidic','Greatersword','Harmbalest'];
+        const numLeft = prestigeList.filter(prestige => game.mapUnlocks[prestige].last <= game.global.world - 5);
+        const shouldSkip = numLeft <= customVars.UnearnedPrestigesRequired;
+        if (shouldSkip != skippedPrestige) { // not both conditions are met / is met but not already skipped: unskip it / do skip it
+          needPrestige = !needPrestige;
+          skippedPrestige = !skippedPrestige;
+        }
     }
 
 //START CALCULATING DAMAGES:
@@ -295,13 +318,18 @@ function autoMap() {
     }
     //Farm X Minutes Before Spire:
     var shouldDoSpireMaps = false;
-    var needFarmSpire = game.global.world == 200 && game.global.spireActive && (((new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire'));
-    if (needFarmSpire) {
+    preSpireFarming = (game.global.world == 200 && game.global.spireActive) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
+    if (preSpireFarming) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
-    //Run a single map to get nurseries when blacksmithery is purchased
-    if (game.talents.blacksmith.purchased && game.buildings.Nursery.locked && game.global.world >= customVars.NurseryMapLevel) {
+    // Run a single map to get nurseries when 1. it's still locked,
+    // 2. blacksmithery is purchased,
+    // but not when 3A. home detector is purchased, or 3B. we don't need nurseries
+    if (game.buildings.Nursery.locked && game.talents.blacksmith.purchased && !(game.talents.housing.purchased ||
+            (getPageSetting('PreSpireNurseries') < 0 ?
+            !(getPageSetting('MaxNursery') && game.global.world >= getPageSetting('NoNurseriesUntil')) :
+            !getPageSetting('PreSpireNurseries'))) && game.global.world >= customVars.NurseryMapLevel) {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
     }
@@ -349,7 +377,6 @@ function autoMap() {
         var theMap = game.global.mapsOwnedArray[map];
         if (theMap.noRecycle && getPageSetting('RunUniqueMaps')) {
             if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased) {
-                (theMap.name == 'Trimple Of Doom' && (game.global.challengeActive == "Meditate" || game.global.challengeActive == "Trapper"))
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 15 + theMapDifficulty) continue;
                 selectedMap = theMap.id;
@@ -361,30 +388,36 @@ function autoMap() {
                 selectedMap = theMap.id;
                 break;
             }
-            //run the prison only if we are 'cleared' to run level 80 + 1 level per 200% difficulty. Could do more accurate calc if needed
-            if(theMap.name == 'The Prison' && (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse")) {
-                var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                if(game.global.world < 80 + theMapDifficulty) continue;
-                selectedMap = theMap.id;
-                break;
-            }
-            if(theMap.name == 'The Block' && !game.upgrades.Shieldblock.allowed && (game.global.challengeActive == "Scientist" || game.global.challengeActive == "Trimp" || getPageSetting('BuyShieldblock'))) {
+            var dont = game.global.runningChallengeSquared;
+            if(theMap.name == 'The Block' && !game.upgrades.Shieldblock.allowed && ((game.global.challengeActive == "Scientist" || game.global.challengeActive == "Trimp") && !dont || getPageSetting('BuyShieldblock'))) {
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 11 + theMapDifficulty) continue;
                 selectedMap = theMap.id;
                 break;
             }
-            if(theMap.name == 'Trimple Of Doom' && game.global.challengeActive == "Meditate") {
+            var treasure = false;
+            if (theMap.name == 'Trimple Of Doom' && (!dont && (game.global.challengeActive == "Meditate" || game.global.challengeActive == "Trapper") || game.mapUnlocks.AncientTreasure /* <- FIXME delete after update */ && game.mapUnlocks.AncientTreasure.canRunOnce && game.global.world >= (treasure = getPageSetting('TrimpleZ')))) {
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                if(game.global.world < 33 + theMapDifficulty) continue;
+                if ((game.global.world < 33 + theMapDifficulty) || treasure > -33 && treasure < 33) continue;
                 selectedMap = theMap.id;
+                if (treasure < 0) // need to reset
+                    setPageSetting('TrimpleZ', 0);
                 break;
             }
-            if(theMap.name == 'Bionic Wonderland' && game.global.challengeActive == "Crushed" ) {
-                var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
-                if(game.global.world < 125 + theMapDifficulty) continue;
-                selectedMap = theMap.id;
-                break;
+            if (!dont) {
+                //run the prison only if we are 'cleared' to run level 80 + 1 level per 200% difficulty. Could do more accurate calc if needed
+                if(theMap.name == 'The Prison' && (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse")) {
+                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
+                    if(game.global.world < 80 + theMapDifficulty) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
+                if(theMap.name == 'Bionic Wonderland' && game.global.challengeActive == "Crushed" ) {
+                    var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
+                    if(game.global.world < 125 + theMapDifficulty) continue;
+                    selectedMap = theMap.id;
+                    break;
+                }
             }
             //run Bionics before spire to farm.
             if (getPageSetting('RunBionicBeforeSpire') && (game.global.world == 200) && theMap.name.includes('Bionic Wonderland')){
@@ -485,8 +518,8 @@ function autoMap() {
     if (shouldDoMaps || doVoids || needPrestige) {
         //selectedMap = world here if we haven't set it to create yet, meaning we found appropriate high level map, or siphon map
         if (selectedMap == "world") {
-            //if needFarmSpire x minutes is true, switch over from wood maps to metal maps.
-            if (needFarmSpire) {
+            //if preSpireFarming x minutes is true, switch over from wood maps to metal maps.
+            if (preSpireFarming) {
                 var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["automaps"].SpireFarm199Maps) ? 199 : 200;
                 if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
@@ -559,7 +592,7 @@ function autoMap() {
                 mapsClicked();
             }
             //Get Impatient/Abandon if: (need prestige / _NEED_ to do void maps / on lead in odd world.) AND (a new army is ready, OR _need_ to void map OR lead farming and we're almost done with the zone) (handle shouldDoWatchMaps elsewhere below)
-            if (game.global.switchToMaps && !shouldDoWatchMaps &&
+            if ((!getPageSetting('PowerSaving') || (getPageSetting('PowerSaving') == 2) && doVoids) && game.global.switchToMaps && !shouldDoWatchMaps &&
                 (needPrestige || doVoids ||
                 (game.global.challengeActive == 'Lead' && game.global.world % 2 == 1) ||
                 (!enoughDamage && enoughHealth && game.global.lastClearedCell < 9) ||
@@ -620,7 +653,7 @@ function autoMap() {
             adjustMap('loot', tier[2]);
             biomeAdvMapsSelect.value = useGardens ? "Plentiful" : tier[3];
             //choose spire level 199 or 200
-            if (needFarmSpire && MODULES["automaps"].SpireFarm199Maps)
+            if (preSpireFarming && MODULES["automaps"].SpireFarm199Maps)
                 document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
             //recalculate cost.
             updateMapCost();
@@ -701,18 +734,22 @@ function updateAutoMapsStatus() {
     //automaps status
     var status = document.getElementById('autoMapStatus');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
+    else if (preSpireFarming) status.innerHTML = 'Spire farming for ' + (spireTime >= 60 ? (spireTime / 60).toFixed(2) + 'h' : spireTime.toFixed(2) + 'm');
     else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
     else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
     else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
-    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0 && !stackingTox) status.innerHTML = 'Prepping for Voids';
+    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
+    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0) status.innerHTML = 'Prepping for Voids';
     else if (doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
     else if (shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
-    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
     else if (scryerStuck) status.innerHTML = 'Scryer Got Stuck, Farming';
     else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
     else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
     else if (!enoughHealth) status.innerHTML = 'Want more health';
     else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
+
+    if (skippedPrestige) // Show skipping prestiges
+      status.insertAdjacentHTML('afterbegin', '<b style="font-size:.8em;color:pink">Prestige Skipped</b><br>');
 
     //hider he/hr% status
     var area51 = document.getElementById('hiderStatus');
