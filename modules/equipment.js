@@ -1,6 +1,7 @@
 MODULES["equipment"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["equipment"].numHitsSurvived = 8;   //survive X hits in D stance or not enough Health.
+MODULES["equipment"].numHitsSurvived = 10;   //survive X hits in D stance or not enough Health.
+MODULES["equipment"].numHitsSurvivedScry = 80;
 MODULES["equipment"].enoughDamageCutoff = 4; //above this the game will buy attack equipment
 
 var equipmentList = {
@@ -268,9 +269,15 @@ function autoLevelEquipment() {
     const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
     //const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
     var numHits = MODULES["equipment"].numHitsSurvived;    //this can be changed.
+    var numHitsScry = MODULES["equipment"].numHitsSurvivedScry;
+    var min_zone = getPageSetting('ScryerMinZone');
+    var max_zone = getPageSetting('ScryerMaxZone');
+    var valid_min = game.global.world >= min_zone;
+    var valid_max = max_zone <= 0 || game.global.world < max_zone;
     //asks if we can survive x number of hits in either D stance or X stance.
     enoughHealthE = !(doVoids && voidCheckPercent > 0) &&
-        (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod));
+        (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod)) &&
+        (!(valid_min && valid_max) || (baseHealth/2 > numHitsScry * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod)));
     enoughDamageE = (baseDamage * MODULES["equipment"].enoughDamageCutoff > enemyHealth);
 
     for (var equipName in equipmentList) {

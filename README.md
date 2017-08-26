@@ -9,7 +9,9 @@ Automation script for the idle incremental game Trimps, based on the zininzinin 
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
 ## Current Version
-- 12/23 v2.1.5.2-genbtc-12-23-2016+Modular
+- v2.1.5.4 - August 26, 2017 = Added AutoDimGen 
+took a break
+- v2.1.5.3 - January 10, 2017 genbtc-1-10-2016+Modular (meant 2017 lol)
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
@@ -57,7 +59,11 @@ Feel free to submit any bugs/suggestions as issues here on github.
 The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned. Happy scripting! -genBTC
 
 ## Current feature changes by genBTC
-- ***12/23***
+- ***1/10/2017***
+- new setting Buy Warp to Hit Coord (genbtc page)
+- AutoStance support for Plague/Bogged Daily
+- Update Map Sliders decisions - less loot% reduction
+- ***12/23/2016***
 - v2.1.5.2-genbtc-12-23-2016+Modular
 - ***12/20***
 - Gear tab to Settings UI. Customize your equip level cap.

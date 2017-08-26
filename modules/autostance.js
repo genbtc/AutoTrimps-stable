@@ -341,7 +341,7 @@ function autoStance2() {
         bDamage += bHealth * hplost;
     } else if (leadChallenge) {
         var leadDamage = game.challenges.Lead.stacks * 0.0003;  //0.03% of their health per enemy stack.
-        var added = game.global.soldierHealth * leadDamage;
+        var added = game.global.soldierHealthMax * leadDamage;
         dDamage += added;
         xDamage += added;
         bDamage += added;
@@ -485,7 +485,7 @@ function autoStanceCheck(enemyCrit) {
         enemyDamage += ourHealth * hplost;        
     } else if (leadChallenge) {
         var leadDamage = game.challenges.Lead.stacks * 0.0003;
-        enemyDamage += game.global.soldierHealth * leadDamage;
+        enemyDamage += game.global.soldierHealthMax * leadDamage;
     }
     //^dont attach^.
     if (game.global.voidBuff == "bleed" || (enemy.corrupted == 'corruptBleed')) {

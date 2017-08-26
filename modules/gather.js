@@ -57,7 +57,7 @@ function manualLabor() {
     }
     else if (trapTrimpsOK && targetBreed < getBreedTime(true)){
         //combined to optimize code.
-        if (game.buildings.Trap.owned < 1 && canAffordBuilding('Trap')) {
+        if (game.buildings.Trap.owned < 100 && canAffordBuilding('Trap')) {
             safeBuyBuilding('Trap');
             setGather('buildings');
         }

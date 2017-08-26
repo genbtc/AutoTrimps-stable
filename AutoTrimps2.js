@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.5.3-genbtc-1-10-2016+Modular
+// @version      2.1.5.4-genbtc-8-26-2017+Modular
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.3-genbtc-1-10-2016+Modular';
+var ATversion = '2.1.5.4-genbtc-8-26-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
     //Load modules:
-    var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other'];
+    var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'portal', 'other', 'autodimgen'];
     for (var i=0,len=modules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
     }
@@ -46,11 +46,9 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b>1/10 v2.1.5.3</b> - new setting Buy Warp to Hit Coord (genbtc page)\
-<br> AutoStance support for Plague/Bogged Daily\
-<br> Update Map Sliders decisions - less loot% reduction\
+<br><b>v2.1.5.4</b> August 26, 2017 = Added AutoDimGen \
 <br><u>Report any bugs/problems please!</u>\
-<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc" target="#">Read the 12/20 Changelog Here</a>\
+<br><a href="https://github.com/genbtc/AutoTrimps#current-feature-changes-by-genbtc" target="#">Read the Changelog Here</a>\
 <br><a href="https://github.com/genbtc/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }
