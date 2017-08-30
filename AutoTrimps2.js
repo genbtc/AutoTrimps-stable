@@ -53,8 +53,10 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#002b3b">8/26 v2.1.5.6</b>  Merge ALL of Unihedro branch into genBTC branch.\
-<br> fix Lead Calc, little fixes. (thanks to FirenX) \
+<br><b style="background-color:#002b3b">8/26 v2.1.5.6</b>  Merge ALL of Unihedro branch back into genBTC branch. (thanks UniHedro)\
+<br> fix Lead Calc, scryer equipment, little fixes. (thanks to FirenX) \
+<br> The UniHedro save format was updated, first load may be weird. \
+<br> Cheap Fixes: Toggling Prestige dropdown, Save Settings, *backup savegame*, *backup AT settings*, Refresh/Restart Browser.  \
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163</span></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
