@@ -201,13 +201,13 @@ function evaluateEquipmentEfficiency(equipName) {
     }
     //skip buying shields (w/ shieldblock) if we need gymystics
     //getPageSetting('BuyShieldblock') && getPageSetting('BuyArmorUpgrades') &&
-    if (equipName == 'Shield' && gameResource.blockNow && 
+    if (equipName == 'Shield' && gameResource.blockNow &&
         game.upgrades['Gymystic'].allowed - game.upgrades['Gymystic'].done > 0)
         {
             needGymystic = true;
             Factor = 0;
             Wall = true;
-            StatusBorder = 'orange';                        
+            StatusBorder = 'orange';
         }
     return {
         Stat: equip.Stat,
@@ -241,7 +241,7 @@ function autoLevelEquipment() {
     enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
-    var spirecheck = (game.global.world == 200 && game.global.spireActive);
+    var spirecheck = (isActiveSpireAT());
     if (spirecheck) {
         var exitcell = getPageSetting('ExitSpireCell');
         var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 50;
@@ -267,7 +267,7 @@ function autoLevelEquipment() {
     //change name to make sure these are local to the function
     var enoughHealthE,enoughDamageE;
     const FORMATION_MOD_1 = game.upgrades.Dominance.done ? 2 : 1;
-    //const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;    
+    //const FORMATION_MOD_2 = game.upgrades.Dominance.done ? 4 : 1;
     var numHits = MODULES["equipment"].numHitsSurvived;    //this can be changed.
     var numHitsScry = MODULES["equipment"].numHitsSurvivedScry;
     var min_zone = getPageSetting('ScryerMinZone');
@@ -321,8 +321,8 @@ function autoLevelEquipment() {
                 document.getElementById(equipName).style.color = 'white';
                 document.getElementById(equipName).style.border = '1px solid white';
                 document.getElementById(equip.Upgrade).style.color = 'red';
-                document.getElementById(equip.Upgrade).style.border = '2px solid red';                
-            }            
+                document.getElementById(equip.Upgrade).style.border = '2px solid red';
+            }
             //add up whats needed:
             resourcesNeeded[equip.Resource] += Best[BKey].Cost;
 
@@ -369,7 +369,7 @@ function autoLevelEquipment() {
     game.global.buyAmt = 1; //needed for buyEquipment()
     for (var stat in Best) {
         var eqName = Best[stat].Name;
-        if (eqName !== '') {            
+        if (eqName !== '') {
             var DaThing = equipmentList[eqName];
             if (eqName == 'Gym' && needGymystic) {
                 document.getElementById(eqName).style.color = 'white';
@@ -417,5 +417,5 @@ function areWeAttackLevelCapped() {
                 attack.push(evaluation);
         }
     }
-    return attack.every(evaluation => (evaluation.Factor == 0 && evaluation.Wall == true));  
+    return attack.every(evaluation => (evaluation.Factor == 0 && evaluation.Wall == true));
 }

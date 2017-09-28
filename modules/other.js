@@ -37,7 +37,7 @@ function autoGoldenUpgradesAT() {
         if (num == 0) return;       //if we have nothing to buy, exit.
         //buy one upgrade per loop.
         buyGoldenUpgrade(setting);
-        
+
         // DZUGAVILI MOD - SMART VOID GUs
         // Assumption: buyGoldenUpgrades is not an asynchronous operation and resolves completely in function execution.
         if (setting == "Void") { // we can only buy a few void GUs. We should check if we actually made the buy.
@@ -50,8 +50,15 @@ function autoGoldenUpgradesAT() {
     } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message); }
 }
 
+//Check if currently in a Spire >= SpireLimit
+function isActiveSpireAT() {
+    var SpireLimit = getPageSetting('SpireLimit') || 1;
+    var SpireWorld = checkIfSpireWorld(true);
+    return SpireWorld && SpireWorld >= SpireLimit && game.global.spireActive;
+}
+
 //Exits the Spire after completing the specified cell.
 function exitSpireCell() {
-    if(game.global.world == 200 && game.global.spireActive && game.global.lastClearedCell >= getPageSetting('ExitSpireCell')-1)
+    if(isActiveSpireAT() && game.global.lastClearedCell >= getPageSetting('ExitSpireCell')-1)
         endSpire();
 }

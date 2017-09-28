@@ -26,7 +26,7 @@ function autoBreedTimer() {
             else
                 setPageSetting('GeneticistTimer',10);
         }
-        else if (getPageSetting('SpireBreedTimer') > -1 && game.global.world == 200 && game.global.spireActive)
+        else if (getPageSetting('SpireBreedTimer') > -1 && isActiveSpireAT())
             setPageSetting('GeneticistTimer',getPageSetting('SpireBreedTimer'));
         else setPageSetting('GeneticistTimer',defaultBreedTimer);
     }
@@ -137,7 +137,7 @@ function forceAbandonTrimps() {
     //dont if were on map-selection screen.
     if (game.global.preMapsActive) return;
     //dont if we are in spire:
-    if (game.global.world == 200 && game.global.spireActive && !game.global.mapsActive) return;
+    if (isActiveSpireAT() && !game.global.mapsActive) return;
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     if (getPageSetting('AutoMaps')) {
         mapsClicked();

@@ -63,7 +63,7 @@ function autoMap() {
         updateAutoMapsStatus();    //refresh the UI status (10x per second)
         return;
     }
-    
+
     var AutoStance = getPageSetting('AutoStance');
     //if we are in mapology and we have no credits, exit
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) return;
@@ -179,7 +179,7 @@ function autoMap() {
         }
         if (game.global.world == 179) {
             ourBaseDamage *= mapbonusmulti;
-        }        
+        }
         //let people disable this if they want.
         if(!getPageSetting('DisableFarm')) {
             shouldFarm = enemyHealth > (ourBaseDamage * customVars.LeadfarmingCutoff);
@@ -265,7 +265,7 @@ function autoMap() {
             restartVoidMap = true;
         }
     }
-    
+
     //Disable Farm mode if we have nothing left to farm for (prevent infinite farming)
     if (shouldFarm && !needPrestige) {
         //check if we have cap to 10 equip on, and we are capped for all attack weapons
@@ -318,7 +318,7 @@ function autoMap() {
     }
     //Farm X Minutes Before Spire:
     var shouldDoSpireMaps = false;
-    preSpireFarming = (game.global.world == 200 && game.global.spireActive) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
+    preSpireFarming = (isActiveSpireAT()) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
     if (preSpireFarming) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
@@ -420,6 +420,7 @@ function autoMap() {
                 }
             }
             //run Bionics before spire to farm.
+            //TODO Spire II+??
             if (getPageSetting('RunBionicBeforeSpire') && (game.global.world == 200) && theMap.name.includes('Bionic Wonderland')){
                 //this is how to check if a bionic is green or not.
                 var bionicnumber = 1 + ((theMap.level - 125) / 15);
@@ -520,7 +521,7 @@ function autoMap() {
         if (selectedMap == "world") {
             //if preSpireFarming x minutes is true, switch over from wood maps to metal maps.
             if (preSpireFarming) {
-                var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["automaps"].SpireFarm199Maps) ? 199 : 200;
+                var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["automaps"].SpireFarm199Maps) ? game.global.world - 1 : game.global.world;
                 if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
@@ -616,17 +617,17 @@ function autoMap() {
         if (shouldDoWatchMaps) {
             mapsClicked();
         }
-//MAPS CREATION pt2:        
+//MAPS CREATION pt2:
     } else if (game.global.preMapsActive) {
         if (selectedMap == "world") {
             mapsClicked();  //go back
         }
         else if (selectedMap == "create") {
-            document.getElementById("mapLevelInput").value = needPrestige ? game.global.world : siphlvl;                        
+            document.getElementById("mapLevelInput").value = needPrestige ? game.global.world : siphlvl;
             var decrement;  //['size','diff','loot']
             var tier;   //taken from MODULES vars at the top of this file.
             //instead of normal map locations, use Plentiful (Gardens) if the Decay challenge has been completed. (for +25% better loot)
-            var useGardens = (customVars.preferGardens && game.global.decayDone);            
+            var useGardens = (customVars.preferGardens && game.global.decayDone);
             if (game.global.world >= customVars.MapTierZone[0]) {
                 //Zone 72+ (old: 9/9/9 Metal):
                 tier = customVars.MapTier0Sliders;
@@ -638,7 +639,7 @@ function autoMap() {
             } else if (game.global.world >= customVars.MapTierZone[2]) {
                 //Zone 16-47 (old: 9/9/0 Random):
                 tier = customVars.MapTier2Sliders;
-                decrement = ['loot'];                
+                decrement = ['loot'];
             } else {
                 //Zone 6-16 (old: 9/0/0 Random):
                 tier = customVars.MapTier3Sliders;
@@ -654,7 +655,7 @@ function autoMap() {
             biomeAdvMapsSelect.value = useGardens ? "Plentiful" : tier[3];
             //choose spire level 199 or 200
             if (preSpireFarming && MODULES["automaps"].SpireFarm199Maps)
-                document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? 199 : 200;
+                document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
             //recalculate cost.
             updateMapCost();
             //if we are "Farming" for resources, make sure it's Plentiful OR metal (and always aim for lowest difficulty)
@@ -674,7 +675,7 @@ function autoMap() {
             }
             //default: if we can't afford the map:
             //Put a priority on small size, and increase the difficulty? for high Helium that just wants prestige = yes.
-            //Really just trying to prevent prestige mapping from getting stuck            
+            //Really just trying to prevent prestige mapping from getting stuck
             while (decrement.indexOf('diff') > -1 && difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
                 difficultyAdvMapsRange.value -= 1;
             }
@@ -689,14 +690,14 @@ function autoMap() {
             }
             //default: if we can't afford the map:
             //Put a priority on small size, and increase the difficulty? for high Helium that just wants prestige = yes.
-            //Really just trying to prevent prestige mapping from getting stuck            
+            //Really just trying to prevent prestige mapping from getting stuck
             while (difficultyAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
                 difficultyAdvMapsRange.value -= 1;
             }
             //if we still cant afford the map, lower the size slider (make it larger) (doesn't matter much for farming.)
             while (sizeAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
                 sizeAdvMapsRange.value -= 1;
-            }            
+            }
 
         //if we can't afford the map we designed, pick our highest existing map
             var maplvlpicked = document.getElementById("mapLevelInput").value;
