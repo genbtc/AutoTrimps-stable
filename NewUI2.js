@@ -249,6 +249,7 @@ function initializeAllSettings() {
 // coderpatsy's mods
     createSetting('UsePatience', 'Add Patience', 'Sets the default breed timer to 45 seconds if you have the Patience mastery.', 'boolean', true, null, 'patsy');
     createSetting('SpireLimit', 'Min. Spire for AT', 'Spires below this value are treated as normal zones. E.G. Set to 3 and most AT Spire-specific settings only take effect on Spire III and later.', 'value', 1, null, 'patsy');
+    createSetting('MaxStacksForSpire', 'Max Map Stacks for Spire', 'Get 10 map stacks before running the Spire.', 'boolean', false, null, 'patsy');
 
 // Scryer settings
     createSetting('UseScryerStance', 'Use Scryer Stance', '<b>MASTER BUTTON</b> Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Get 2x resources or Dark Essence. <u>All other buttons have no effect if this one is off.</u>', 'boolean', true, null, 'Scryer');

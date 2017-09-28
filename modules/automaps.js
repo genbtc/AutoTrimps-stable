@@ -323,6 +323,9 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
+    if (getPageSetting('MaxStacksForSpire') && isActiveSpireAT() && game.global.mapBonus < customVars.maxMapBonus) {
+        shouldDoMaps = true;
+    }
     // Run a single map to get nurseries when 1. it's still locked,
     // 2. blacksmithery is purchased,
     // but not when 3A. home detector is purchased, or 3B. we don't need nurseries
