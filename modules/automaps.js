@@ -42,6 +42,7 @@ var shouldDoMaps = false;
 var mapTimeEstimate = 0;
 var lastMapWeWereIn = null;
 var preSpireFarming = false;
+var spireMapBonusFarming = false;
 var spireTime = 0;
 
 //AutoMap - function originally created by Belaith (in 1971)
@@ -323,7 +324,8 @@ function autoMap() {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
-    if (getPageSetting('MaxStacksForSpire') && isActiveSpireAT() && game.global.mapBonus < customVars.maxMapBonus) {
+    spireMapBonusFarming = getPageSetting('MaxStacksForSpire') && isActiveSpireAT() && game.global.mapBonus < customVars.maxMapBonus;
+    if (spireMapBonusFarming) {
         shouldDoMaps = true;
     }
     // Run a single map to get nurseries when 1. it's still locked,
@@ -739,6 +741,7 @@ function updateAutoMapsStatus() {
     var status = document.getElementById('autoMapStatus');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
     else if (preSpireFarming) status.innerHTML = 'Spire farming for ' + (spireTime >= 60 ? (spireTime / 60).toFixed(2) + 'h' : spireTime.toFixed(2) + 'm');
+    else if (spireMapBonusFarming) status.innerHTML = 'Getting Spire Map Bonus';
     else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
     else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
     else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
