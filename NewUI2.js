@@ -247,8 +247,8 @@ function initializeAllSettings() {
         createSetting('AutoEggs', 'AutoEggs', 'Click easter egg if it exists, upon entering a new zone. Warning: Quite overpowered. Please solemnly swear that you are up to no good.', 'boolean', false, null, 'Uni');
 
 // coderpatsy's mods
-    createSetting('UsePatience', 'Add Patience', 'Sets the default breed timer to 45 seconds if you have the Patience mastery.', 'boolean', true, null, 'patsy');
-    createSetting('SpireLimit', 'Min. Spire for AT', 'Spires below this value are treated as normal zones. E.G. Set to 3 and most AT Spire-specific settings only take effect on Spire III and later.', 'value', 1, null, 'patsy');
+    createSetting('UsePatience', 'Enable Patience', 'Sets the default breed timer to 45 seconds if you have the Patience mastery.', 'boolean', true, null, 'patsy');
+    createSetting('SpireLimit', 'Min. Spire for AT', 'Spires below this value are treated as normal zones. e.g. Set to 3 and most AT Spire-specific settings only take effect on Spire III and later.<br>Does not work with Run Bionic Before Spire or Uni\'s Nurseries pre-Spire settings.', 'value', 1, null, 'patsy');
     createSetting('MaxStacksForSpire', 'Max Map Bonus for Spire', 'Get max map bonus before running the Spire.', 'boolean', false, null, 'patsy');
 
 // Scryer settings
