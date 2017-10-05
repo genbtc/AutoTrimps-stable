@@ -92,7 +92,6 @@ function initializeAllTabs() {
     createTabs("Settings", "Sub Controls for the script");
     createTabs("genBTC", "GenBTC Advanced");
     createTabs("Uni", "Uni's mods");
-    createTabs("patsy", "coderpatsy's mods");
     createTabs("Scryer", "Scryer Stance");
     createTabs("Magma", "Dimensional Generator");
     createTabs("Spam", "Controls AutoTrimps message Spam");
@@ -180,6 +179,7 @@ function initializeAllSettings() {
     createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps. Decides when to run Unique maps. Required for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc) and their AutoPortal. Required to auto-run The Wall and Dimension of Anger. Required for Bionic Before Spire.<p> Maps/Levels: <p>The Block - 12<p>The Wall - 16<p>Dimension of Anger - 21<p>Trimple Of Doom - 34<p>The Prison - 82<p>Bionic Wonderland - 127', 'boolean', true, null, "Maps");
     createSetting('DynamicSiphonology', 'Dynamic Siphonology', 'Recommended Always ON. Use the right level of siphonology based on your damage output. IE: Only uses  siphonology if you are weak. With this OFF it means it ALWAYS uses the lowest siphonology map you can create. Siphonology is a perk you get at level 115-125ish, and means you receive map bonus stacks for running maps below your current zone - Up to 3 zones below (1 per perk level).', 'boolean', true, null, 'Maps');
     createSetting('LowerFarmingZone', 'Lower Farming Zone', 'Lowers the zone used during Farming mode. Uses the dynamic siphonology code, to Find the minimum map level you can successfully one-shot, and uses this level for any maps done after the first 10 map stacks. The difference being it goes LOWER than what Siphonology gives you map-bonus for, but after 10 stacks you dont need bonus, you just want to do maps that you can one-shot. Goes as low as 10 below current zone if your damage is that bad, but this is extreme and indicates you should probably portal.', 'boolean', true, null, 'Maps');
+    createSetting('MaxStacksForSpire', 'Max Map Bonus for Spire', 'Get max map bonus before running the Spire.', 'boolean', false, null, 'Maps');
     createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm level 200/199(or BW) maps for X minutes before continuing onto attempting Spire - No Longer runs 10 maps prior to this countdown, so your timer will likely need to increase. (0 to disable)', 'value', '0', null, 'Maps');
     createSetting('RunBionicBeforeSpire', 'Run Bionic Before Spire', 'CAUTION:  Runs Bionic Wonderlands and repeatedly farms VI(level 200) before attempting Spire, for the purpose of farming. Then attempts the spire. The Minutes-Before-Spire timer runs concurrently to this, and needs to be set. If not set, it will exit without doing any Bionics... You can un-toggle it as desired. WARNING: These 100 square maps take ~3x longer than normal maps. WARNING: If you dont have Bionic Magnet mastery, this will run the pre-requisites and take longer.', 'boolean', null, null, 'Maps');
     createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Optional/Rare. Exits the Spire early, after completing cell X. example: 40 for Row 4. (use 0 or -1 to disable)', 'value', '-1', null, 'Maps');
@@ -231,6 +231,8 @@ function initializeAllSettings() {
     createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those will still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');
     createSetting('AutoAllocatePerks', 'Auto Allocate Perks', 'EXPERIMENTAL. Uses the AutoPerks ratio based preset system to automatically allocate your perks to spend whatever helium you have when you AutoPortal. ', 'boolean', false, null, 'genBTC');
     createSetting('SpireBreedTimer', 'Spire Breed Timer', 'Set a different breed timer target for the Spire. Use -1 to disable this special setting.', 'value', -1, null, 'genBTC');
+    createSetting('UsePatience', 'Enable Patience', 'Sets the default breed timer to 45 seconds if you have the Patience mastery.', 'boolean', true, null, 'genBTC');
+    createSetting('SpireLimit', 'Min Spire for AT', 'Spires below this value are treated as normal zones. e.g. Set to 3 and most AT Spire-specific settings only take effect on Spire III and later.<br>Does not work with Run Bionic Before Spire or Uni\'s Nurseries pre-Spire settings.', 'value', 1, null, 'genBTC');
 
 // Uni's mods
     createSetting('ManualCoords', 'Don\'t buy Coords', 'Enable it if you know what you\'re doing, disable it if you don\'t know what you\'re doing. For when manually handling coords means a lot on challenges like Trapper.', 'boolean', false, null, 'Uni');
@@ -245,11 +247,6 @@ function initializeAllSettings() {
     createSetting('PrestigeSkip2', 'Prestige Skip 2', 'If there are 2 or fewer <b>Unobtained Weapon Prestiges in maps</b>, ie: there are less than 2 types to run for, AutoMaps will not enter Prestige Mode, and/or will exit from it. For users who tends to not need the last few prestiges due to resource gain not keeping up. The amount of unboughts can be configured with MODULES.automaps.UnearnedPrestigesRequired. If PrestigeSkipMode is enabled, both conditions need to be reached before exiting.', 'boolean', false, null, 'Uni');
     if (game.worldUnlocks.easterEgg)
         createSetting('AutoEggs', 'AutoEggs', 'Click easter egg if it exists, upon entering a new zone. Warning: Quite overpowered. Please solemnly swear that you are up to no good.', 'boolean', false, null, 'Uni');
-
-// coderpatsy's mods
-    createSetting('UsePatience', 'Enable Patience', 'Sets the default breed timer to 45 seconds if you have the Patience mastery.', 'boolean', true, null, 'patsy');
-    createSetting('SpireLimit', 'Min. Spire for AT', 'Spires below this value are treated as normal zones. e.g. Set to 3 and most AT Spire-specific settings only take effect on Spire III and later.<br>Does not work with Run Bionic Before Spire or Uni\'s Nurseries pre-Spire settings.', 'value', 1, null, 'patsy');
-    createSetting('MaxStacksForSpire', 'Max Map Bonus for Spire', 'Get max map bonus before running the Spire.', 'boolean', false, null, 'patsy');
 
 // Scryer settings
     createSetting('UseScryerStance', 'Use Scryer Stance', '<b>MASTER BUTTON</b> Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Get 2x resources or Dark Essence. <u>All other buttons have no effect if this one is off.</u>', 'boolean', true, null, 'Scryer');
