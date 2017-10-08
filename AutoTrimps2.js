@@ -14,7 +14,7 @@ var ATversion = '2.1.5.6p1-coderpatsy-10-4-2017+Modular';
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////
 var atscript = document.getElementById('AutoTrimps-script')
-  , base = 'https://genbtc.github.io/AutoTrimps/'
+  , base = 'https://coderpatsy.github.io/AutoTrimps/'
   , module = 'modules/'
   ;
 if (atscript !== null) {
