@@ -50,7 +50,7 @@ var spireTime = 0;
 function autoMap() {
     var customVars = MODULES["automaps"];
     //allow script to handle abandoning
-    if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
+    // if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
     //if we are prestige mapping, force equip first mode
     var prestige = autoTrimpSettings.Prestige.selected;
     if(prestige != "Off" && game.options.menu.mapLoot.enabled != 1) toggleSetting('mapLoot');
