@@ -50,6 +50,55 @@ function autoGoldenUpgradesAT() {
     } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message); }
 }
 
+//auto spend nature tokens
+function autoNatureTokens() {
+    var changed = false;
+    for (var nature in game.empowerments) {
+        var empowerment = game.empowerments[nature];
+        var dropdown = document.getElementById('Auto' + nature);
+        if (!dropdown) continue;
+        var setting = dropdown.value;
+        if (setting == 'Off') continue;
+
+        //buy/convert once per nature per loop
+        if (setting == 'Empowerment') {
+            var cost = getNextNatureCost(nature);
+            if (empowerment.tokens < cost)
+                continue;
+            empowerment.tokens -= cost;
+            empowerment.level++;
+            changed = true;
+            debug('Upgraded Empowerment of ' + nature, 'General');
+        }
+        else if (setting == 'Transfer') {
+            if (empowerment.retainLevel >= 80)
+                continue;
+            var cost = getNextNatureCost(nature, true);
+            if (empowerment.tokens < cost) continue;
+            empowerment.tokens -= cost;
+            empowerment.retainLevel++;
+            changed = true;
+            debug('Upgraded ' + nature + ' transfer rate', 'General');
+        }
+        else {
+            if (empowerment.tokens < 10)
+                continue;
+            var match = setting.match(/Convert to (\w+)/);
+            var targetNature = match ? match[1] : null;
+            //sanity check
+            if (!targetNature || targetNature === nature || !game.empowerments[targetNature]) continue;
+            empowerment.tokens -= 10;
+            var convertRate = (game.talents.nature.purchased) ? ((game.talents.nature2.purchased) ? 8 : 6) : 5;
+            game.empowerments[targetNature].tokens += convertRate;
+            changed = true;
+            debug('Converted ' + nature + ' tokens to ' + targetNature, 'General');
+        }
+    }
+
+    if (changed)
+        updateNatureInfoSpans();
+}
+
 //Check if currently in a Spire >= SpireLimit
 function isActiveSpireAT() {
     var SpireLimit = getPageSetting('SpireLimit') || 1;

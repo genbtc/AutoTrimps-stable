@@ -231,6 +231,8 @@ function mainLoop() {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
 
+    if (getPageSetting('AutoNatureTokens')) autoNatureTokens();
+
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
     //rinse, repeat
