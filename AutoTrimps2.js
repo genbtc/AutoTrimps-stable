@@ -53,6 +53,9 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#002b3b">10/31 v2.1.5.6p2</b>  Auto Nature\
+<br> Add settings to automatically spend/convert nature tokens\
+<br> Stop AT from forcing game setting "Wait to travel", allows "Auto Abandon"\
 <br><b style="background-color:#002b3b">10/4 v2.1.5.6p1</b>  Combat fixes, new masteries, and spires\
 <br> Added new masteries\' attack bonuses and fixed challenge<sup>2</sup> combat bonus. \
 <br> Added settings: Enable Patience, Min Spire for AT, Max Map Bonus for Spire. \

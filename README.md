@@ -9,7 +9,7 @@ Automation script for the idle incremental game Trimps, based on the zininzinin 
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
 ## Current Version
-- v2.1.5.6p1 - October 4, 2017
+- v2.1.5.6p2 - October 31, 2017
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
