@@ -37,7 +37,7 @@ function useScryerStance() {
     var useoverkill = getPageSetting('ScryerUseWhenOverkill');
     if (useoverkill && game.portal.Overkill.level == 0)
         setPageSetting('ScryerUseWhenOverkill', false);
-    if (useoverkill && !game.global.mapsActive && game.global.world == 200 && game.global.spireActive && getPageSetting('ScryerUseinSpire2')==2)
+    if (useoverkill && !game.global.mapsActive && game.global.world >= getPageSetting('IgnoreSpiresUntil') && (game.global.world == 200 || game.global.world == 300 || game.global.world == 400 || game.global.world == 500 || game.global.world == 600) && game.global.spireActive && getPageSetting('ScryerUseinSpire2')==2)
         useoverkill = false;
     //Overkill button being on and being able to overkill in S will override any other setting, regardless.
     if (useoverkill && game.portal.Overkill.level > 0) {
