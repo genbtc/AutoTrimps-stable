@@ -53,14 +53,11 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#002b3b">11/1 v2.1.5.6p3</b>  Nurseries pre-Spire\
+<br> Uni\'s Nurseries pre-Spire now works on Spires 2+\
 <br><b style="background-color:#002b3b">10/31 v2.1.5.6p2</b>  Auto Nature\
 <br> Add settings to automatically spend/convert nature tokens\
 <br> Stop AT from forcing game setting "Wait to travel", allows "Auto Abandon"\
-<br><b style="background-color:#002b3b">10/4 v2.1.5.6p1</b>  Combat fixes, new masteries, and spires\
-<br> Added new masteries\' attack bonuses and fixed challenge<sup>2</sup> combat bonus. \
-<br> Added settings: Enable Patience, Min Spire for AT, Max Map Bonus for Spire. \
-<br> Fixed problem with He/Hr AutoPortal delay tooltip.  \
-<br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163</span></u>\
 <br><a href="https://github.com/coderpatsy/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
 }
