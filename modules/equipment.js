@@ -241,7 +241,7 @@ function autoLevelEquipment() {
     enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
-    var spirecheck = (game.global.world == 200 && game.global.spireActive);
+    var spirecheck = (game.global.world >= getPageSetting('IgnoreSpiresUntil') && (game.global.world == 200 || game.global.world == 300 || game.global.world == 400 || game.global.world == 500 || game.global.world == 600) && game.global.spireActive);
     if (spirecheck) {
         var exitcell = getPageSetting('ExitSpireCell');
         var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 50;
