@@ -65,9 +65,12 @@ function autoMap() {
         return;
     }
 
-    var AutoStance = getPageSetting('AutoStance');
     //if we are in mapology and we have no credits, exit
-    if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) return;
+    if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) {
+        updateAutoMapsStatus();
+        return;
+    }
+    var AutoStance = getPageSetting('AutoStance');
     //FIND VOID MAPS LEVEL:
     var voidMapLevelSetting = getPageSetting('VoidMaps');
     //decimal void maps are possible, using string function to avoid false float precision (0.29999999992). javascript can compare ints to strings anyway.
@@ -443,35 +446,35 @@ function autoMap() {
         }
     }
 //VOIDMAPS:
-    //voidArray: make an array with all our voidmaps, so we can sort them by real-world difficulty level
-    var voidArray = [];
-    //values are easiest to hardest. (hardest has the highest value)
-    var prefixlist = {'Deadly':10, 'Heinous':11, 'Poisonous':20, 'Destructive':30};
-    var prefixkeys = Object.keys(prefixlist);
-    var suffixlist = {'Descent':7.077, 'Void':8.822, 'Nightmare':9.436, 'Pit':10.6};
-    var suffixkeys = Object.keys(suffixlist);
-    for (var map in game.global.mapsOwnedArray) {
-        var theMap = game.global.mapsOwnedArray[map];
-        if(theMap.location == 'Void') {
-            for (var pre in prefixkeys) {
-                if (theMap.name.includes(prefixkeys[pre]))
-                    theMap.sortByDiff = 1 * prefixlist[prefixkeys[pre]];
+    //Only proceed if we needToVoid right now, and if we have all prestiges.
+    if (needToVoid && !needPrestige) {
+        //voidArray: make an array with all our voidmaps, so we can sort them by real-world difficulty level
+        var voidArray = [];
+        //values are easiest to hardest. (hardest has the highest value)
+        var prefixlist = {'Deadly':10, 'Heinous':11, 'Poisonous':20, 'Destructive':30};
+        var prefixkeys = Object.keys(prefixlist);
+        var suffixlist = {'Descent':7.077, 'Void':8.822, 'Nightmare':9.436, 'Pit':10.6};
+        var suffixkeys = Object.keys(suffixlist);
+        for (var map in game.global.mapsOwnedArray) {
+            var theMap = game.global.mapsOwnedArray[map];
+            if(theMap.location == 'Void') {
+                for (var pre in prefixkeys) {
+                    if (theMap.name.includes(prefixkeys[pre]))
+                        theMap.sortByDiff = 1 * prefixlist[prefixkeys[pre]];
+                }
+                for (var suf in suffixkeys) {
+                    if (theMap.name.includes(suffixkeys[suf]))
+                        theMap.sortByDiff += 1 * suffixlist[suffixkeys[suf]];
+                }
+                voidArray.push(theMap);
             }
-            for (var suf in suffixkeys) {
-                if (theMap.name.includes(suffixkeys[suf]))
-                    theMap.sortByDiff += 1 * suffixlist[suffixkeys[suf]];
-            }
-            voidArray.push(theMap);
         }
-    }
-    //sort the array (harder/highvalue last):
-    var voidArraySorted = voidArray.sort(function(a, b) {
-        return a.sortByDiff - b.sortByDiff;
-    });
-    for (var map in voidArraySorted) {
-        var theMap = voidArraySorted[map];
-        //Only proceed if we needToVoid right now.
-        if(needToVoid) {
+        //sort the array (harder/highvalue last):
+        var voidArraySorted = voidArray.sort(function(a, b) {
+            return a.sortByDiff - b.sortByDiff;
+        });
+        for (var map in voidArraySorted) {
+            var theMap = voidArraySorted[map];
             //if we are on toxicity, don't clear until we will have max stacks at the last cell.
             if(game.global.challengeActive == 'Toxicity' && game.challenges.Toxicity.stacks < (1500 - theMap.size)) break;
             doVoids = true;
@@ -740,6 +743,7 @@ function updateAutoMapsStatus() {
     //automaps status
     var status = document.getElementById('autoMapStatus');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
+    else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status.innerHTML = 'Out of Map Credits';
     else if (preSpireFarming) status.innerHTML = 'Spire farming for ' + (spireTime >= 60 ? (spireTime / 60).toFixed(2) + 'h' : spireTime.toFixed(2) + 'm');
     else if (spireMapBonusFarming) status.innerHTML = 'Getting Spire Map Bonus';
     else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
