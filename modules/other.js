@@ -52,6 +52,6 @@ function autoGoldenUpgradesAT() {
 
 //Exits the Spire after completing the specified cell.
 function exitSpireCell() {
-    if(game.global.world == 200 && game.global.spireActive && game.global.lastClearedCell >= getPageSetting('ExitSpireCell')-1)
+    if(game.global.world >= getPageSetting('IgnoreSpiresUntil') && (game.global.world == 200 || game.global.world == 300 || game.global.world == 400 || game.global.world == 500 || game.global.world == 600) && game.global.spireActive && game.global.lastClearedCell >= getPageSetting('ExitSpireCell')-1)
         endSpire();
 }

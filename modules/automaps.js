@@ -318,7 +318,7 @@ function autoMap() {
     }
     //Farm X Minutes Before Spire:
     var shouldDoSpireMaps = false;
-    preSpireFarming = (game.global.world == 200 && game.global.spireActive) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
+    preSpireFarming = (game.global.world >= getPageSetting('IgnoreSpiresUntil') && (game.global.world == 200 || game.global.world == 300 || game.global.world == 400 || game.global.world == 500 || game.global.world == 600) && game.global.spireActive) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
     if (preSpireFarming) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;

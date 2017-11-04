@@ -25,7 +25,7 @@ function autoBreedTimer() {
             else
                 setPageSetting('GeneticistTimer',10);
         }
-        else if (getPageSetting('SpireBreedTimer') > -1 && game.global.world == 200 && game.global.spireActive)
+        else if (getPageSetting('SpireBreedTimer') > -1 && game.global.world >= getPageSetting('IgnoreSpiresUntil') && (game.global.world == 200 || game.global.world == 300 || game.global.world == 400 || game.global.world == 500 || game.global.world == 600) && game.global.spireActive)
             setPageSetting('GeneticistTimer',getPageSetting('SpireBreedTimer'));
         else setPageSetting('GeneticistTimer',30);
     }
