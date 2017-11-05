@@ -53,6 +53,8 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#002b3b">11/5/2017 v2.1.5.6p5</b>\
+<br>Quick fix Golden Helium being autobought before Golden Void is maxed\
 <br><b style="background-color:#002b3b">11/4/2017 v2.1.5.6p4</b>  Fixes\
 <br>Fix Auto Gather and Turkimp Tamer IV\
 <br>Fix Auto Magmamancer and Magmamancermancy\
