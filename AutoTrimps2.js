@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
-// @version      2.1.5.6p6-coderpatsy-11-5-2017+UniMod
+// @version      2.1.5.6p7-coderpatsy-11-6-2017+UniMod
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderpatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.6p6-coderpatsy-11-5-2017+Modular';
+var ATversion = '2.1.5.6p7-coderpatsy-11-6-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -53,6 +53,8 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#002b3b">11/6/2017 v2.1.5.6p7</b>\
+<br>Fix Auto Gather 2 (whoops)\
 <br><b style="background-color:#002b3b">11/5/2017 v2.1.5.6p6</b>\
 <br>Revert grabbing prestige before running void maps\
 <br><b style="background-color:#002b3b">11/5/2017 v2.1.5.6p5</b>\

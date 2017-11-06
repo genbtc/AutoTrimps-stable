@@ -132,6 +132,7 @@ function manualLabor2() {
     var targetBreed = getPageSetting('GeneticistTimer');
     var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax();
     var watchJumpstartTraps  =  game.global.challengeActive == "Watch" && game.resources.trimps.owned < game.resources.trimps.realMax();
+    var hasTurkimp = game.talents.turkimp4.purchased || game.global.turkimpTimer > 0;
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
