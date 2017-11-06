@@ -5,7 +5,7 @@ Automation script for the idle incremental game Trimps, based on the zininzinin 
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/kSpNHte (the official Trimps server)
 
 ## Current Version
-- v2.1.5.6p5 - November 5, 2017
+- v2.1.5.6p6 - November 5, 2017
 
 ## Script Installation
 **Please backup your game via export before and during use to prevent losing your save due to corruption!**
@@ -19,7 +19,9 @@ javascript:with(document)(head.appendChild(createElement('script')).src='https:/
 Notes: https://github.com/genbtc/AutoTrimps/blob/gh-pages/README.md
 
 ## Current feature changes by coderpatsy
-**11/5/2017 v2.1.5.6p5**
+**11/5/2017 v2.1.5.6p6**
+<br>Revert grabbing prestige before running void maps
+<br>**11/5/2017 v2.1.5.6p5**
 <br>Quick fix Golden Helium being autobought before Golden Void is maxed
 <br>**11/4/2017 v2.1.5.6p4**
 <br>Fix Auto Gather and Turkimp Tamer IV

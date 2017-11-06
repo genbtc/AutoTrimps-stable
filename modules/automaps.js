@@ -446,8 +446,8 @@ function autoMap() {
         }
     }
 //VOIDMAPS:
-    //Only proceed if we needToVoid right now, and if we have all prestiges.
-    if (needToVoid && !needPrestige) {
+    //Only proceed if we needToVoid right now.
+    if (needToVoid) {
         //voidArray: make an array with all our voidmaps, so we can sort them by real-world difficulty level
         var voidArray = [];
         //values are easiest to hardest. (hardest has the highest value)

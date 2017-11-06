@@ -53,6 +53,8 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
+<br><b style="background-color:#002b3b">11/5/2017 v2.1.5.6p6</b>\
+<br>Revert grabbing prestige before running void maps\
 <br><b style="background-color:#002b3b">11/5/2017 v2.1.5.6p5</b>\
 <br>Quick fix Golden Helium being autobought before Golden Void is maxed\
 <br><b style="background-color:#002b3b">11/4/2017 v2.1.5.6p4</b>  Fixes\
@@ -61,8 +63,6 @@ function printChangelog() {
 <br>Auto Maps displays "Off" and "Out of Map Credits" and updates He/Hr %\
 <br>Auto Maps grabs prestige before doing void maps\
 <br>Optimization with checking void maps\
-<br><b style="background-color:#002b3b">11/1/2017 v2.1.5.6p3</b>  Nurseries pre-Spire\
-<br> Uni\'s Nurseries pre-Spire now works on Spires 2+\
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">patsy#5684</span></u>\
 <br><a href="https://github.com/coderpatsy/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
