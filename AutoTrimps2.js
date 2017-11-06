@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
-// @version      2.1.5.6p1-coderpatsy-10-4-2017+UniMod
+// @version      2.1.5.6p6-coderpatsy-11-5-2017+UniMod
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderpatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.6p1-coderpatsy-10-4-2017+Modular';
+var ATversion = '2.1.5.6p6-coderpatsy-11-5-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
