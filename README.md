@@ -8,8 +8,9 @@ Automation script for the idle incremental game Trimps, based on the zininzinin 
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"><img src="https://pbs.twimg.com/profile_images/568588143226413056/9Lwrixxj.png" width=48></a>
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
-## Current Version
-- v2.1.5.6 - August 26, 2016 = Merge ALL of Unihedro branch back into genBTC branch. (thanks UniHedro)
+## Current Version (full changes below)
+- v2.1.5.7 - November 7,2017 = Merge in DerSkagg's GoldenUpgrades Mod (Pull request #90) (thanks Derskagg)
+- v2.1.5.6 - August 26, 2017 = Merge ALL of Unihedro branch back into genBTC branch. (thanks UniHedro)
 - v2.1.5.4 - August 26, 2017 = Added AutoDimGen + little fixes (FirenX)
 took a break
 - v2.1.5.3 - January 10, 2017 genbtc-1-10-2016+Modular (meant 2017 lol)
@@ -61,21 +62,25 @@ The fact that it works at all is misleading new players into thinking its perfec
 
 ## Current feature changes by genBTC
 - Current as of :
+- *** 11/7/2017, v2.1.5.7 Merge DerSkagg PullRequest In*** 
+- New AutoGoldenUpgrades - After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at.
 - *** 8/26/2017, v2.1.5.6 Merge Unihedro Branch In*** 
+- Uni changes include: Dont buy Coords, Trimple Z#, Scryer Suicide Z#, Safety First, Forced Prestige Z#, Prefer Metal Maps, Nursery Count Pre-Spire, Finish Challenge2, DontCare/PowerSaving/DontRushVoids, Prestige Skip 2, Auto Eggs.
+- See his branch here @  https://github.com/Unihedro/AutoTrimps
 - Past Changes: 
 - *** April Unihedro Branch Changes ***
-- 4/17 v2.1.5.5u3</b> - fix improvedautostorage hijack
+- 4/17 v2.1.5.5u3 - fix improvedautostorage hijack
 - Fixed a certain specific stupid bug caused by how graph overwrites some functions unnecessarily
-- 4/16 v2.1.5.5u2</b> - do more map stacks if not enoughHealth
+- 4/16 v2.1.5.5u2 - do more map stacks if not enoughHealth
 - No longer forces Buy Storage off
-- 4/15 v2.1.5.5u1</b> - new settings BuyOvclock
-- 4/14 v2.1.5.4u6</b> - Improved nurseries map and betterautostorage 
+- 4/15 v2.1.5.5u1 - new settings BuyOvclock
+- 4/14 v2.1.5.4u6 - Improved nurseries map and betterautostorage 
 - 4/14 v2.1.5.4u5 - Auto Eggs</b>, some more 4.3 support 
-- 4/12 v2.1.5.4u4</b> AutoTrimps lifecycle changes
-- 4/11 v2.1.5.4u3</b> fixed spire farming, autogen supply zone
-- 4/10 v2.1.5.4u2</b> PrestigeSkip2 
-- 4/09 v2.1.5.4u1</b> Magma: AutoGen, AutoGen2
-- 4/08 v2.1.5.3u6</b> ForcePresZ 
+- 4/12 v2.1.5.4u4 - AutoTrimps lifecycle changes
+- 4/11 v2.1.5.4u3 - fixed spire farming, autogen supply zone
+- 4/10 v2.1.5.4u2 - PrestigeSkip2 
+- 4/09 v2.1.5.4u1 - Magma: AutoGen, AutoGen2
+- 4/08 v2.1.5.3u6 - ForcePresZ 
 - 4/07 + 4/06: 
 - U5: FinishC2, PowerSaving 
 - U4: PreferMetal, PreSpireNurseries 

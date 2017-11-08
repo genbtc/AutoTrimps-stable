@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+unimod
-// @version      2.1.5.6-genbtc-8-26-2017+UniMod
+// @version      2.1.5.7-genbtc-11-7-2017+UniMod
 // @description  try to take over the world!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.6-genbtc-8-26-2017+Modular';
+var ATversion = '2.1.5.7-genbtc-11-7-2017+Modular';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -53,10 +53,11 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b style="background-color:#002b3b">8/26 v2.1.5.6</b>  Merge ALL of Unihedro branch back into genBTC branch. (thanks UniHedro)\
-<br> fix Lead Calc, scryer equipment, little fixes. (thanks to FirenX) \
-<br> The UniHedro save format was updated, first load may be weird. \
-<br> Cheap Fixes: Toggling Prestige dropdown, Save Settings, *backup savegame*, *backup AT settings*, Refresh/Restart Browser.  \
+<br><b class="AutoEggs">11/7 v2.1.5.7</b>  Merge ALL of DerSkagg\'s changes into genBTC branch. (thanks DerSkagg) for:\
+<br><b style="background-color:#FFD700">New AutoGoldenUpgrades</b> strats in "Golden" menu. (Alternating/Zone) \
+<br> After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at. \
+<br><b style="background-color:#b93e00">8/26 v2.1.5.6</b> UniHedro backport (settings in Uni Menu) \
+<br> Uni changes include: Dont buy Coords, Trimple Z#, Scryer Suicide Z#, Safety First, Forced Prestige Z#, Prefer Metal Maps, Nursery Count Pre-Spire, Finish Challenge2, DontCare/PowerSaving/DontRushVoids, Prestige Skip 2, Auto Eggs \
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163</span></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
 ', 'cancelTooltip()', 'Script Update Notice ' + ATversion);

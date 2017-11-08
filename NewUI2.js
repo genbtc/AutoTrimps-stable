@@ -222,7 +222,6 @@ function initializeAllSettings() {
     createSetting('WarpstationWall3', 'Warpstation Wall', 'Conserves Metal. Only buys 1 Warpstation when you can afford <b>X</b> warpstations metal cost (at the first one\'s price, simple math). -1, 0, 1 = disable. In other words, only allows warps that cost less than 1/nth your currently owned metal. (to save metal for prestiges)', 'value', -1, null, 'genBTC');
     createSetting('WarpstationCoordBuy', 'Buy Warp to Hit Coord', 'If we are very close to hitting the next coordination, and we can afford the warpstations it takes to do it, Do it! (even if we are over the Cap/Wall). Recommended with WarpCap/WarpWall. (has no point otherwise) ', 'boolean', true, null, 'genBTC');
     createSetting('AutoRoboTrimp', 'AutoRoboTrimp', 'Use RoboTrimps ability starting at this level, and every 5 levels thereafter. (set to 0 to disable. default 60.) 60 is a good choice for mostly everybody.', 'value', '60', null, 'genBTC');
-    createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available.', 'dropdown', 'Off', ["Off", "Helium", "Battle", "Void"], 'genBTC');
     createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'IMPORTANT SETTING. New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'genBTC');
     createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buys the upgrades the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null, 'genBTC');
     createSetting('TrainerCaptoTributes', 'Cap Trainers to a % of Tributes', 'Only Buy a Trainer when its cost is LESS than X% of cost of a tribute. This setting can work in combination with the other one, or set the other one to -1 and this will take full control. Default: -1 (Disabled). 50% is close to the point where the cap does nothing. You can go as low as you want but recommended is 10% to 1%. (example: Trainer cost of 5001, Tribute cost of 100000, @ 5%, it would NOT buy the trainer.)', 'value', '-1', null, 'genBTC');
@@ -276,9 +275,10 @@ function initializeAllSettings() {
     createSetting('BuyOvclock', 'Buy Overclock', 'Turn this off to not buy anymore overclocks. Will still buy the first level if you don\'t already own it.', 'boolean', true, null, 'Magma');
 
 //Golden Upgrade Strategies:
-    createSetting('goldStrat', 'goldStrat', 'This setting will after max void golden upgrades alternate between buying helium and battle upgrades', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
-    createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', '2', 'Golden'); 
-    createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone, then buy battle upgrades', 'value', '200', '200', 'Golden'); 
+    createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available.', 'dropdown', 'Off', ["Off", "Helium", "Battle", "Void"], 'Golden');
+    createSetting('goldStrat', 'goldStrat', 'After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at.', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
+    createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', null, 'Golden'); 
+    createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone X, then buy battle upgrades.', 'value', '200', null, 'Golden'); 
     
 //Spam settings:
     createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Spam');
@@ -564,29 +564,6 @@ function automationMenuInit() {
     abutton.id = 'hiderStatus';
     newContainer.appendChild(abutton);
     fightButtonCol.appendChild(newContainer);
-    
-
-    //// Create autogen button
-    //var abutton = document.createElement("SPAN");
-    //abutton.appendChild(document.createTextNode("Auto"));
-    //abutton.setAttribute("class", "btn workBtn btn-success");
-    //abutton.setAttribute("id", "autoGenBtn");
-    //abutton.setAttribute("onClick", "settingChanged('UseAutoGen')");
-    //abutton.setAttribute("onmouseover", 'tooltip(\"Auto Generator\", \"customText\", event, \"Toggle automapping on and off.\")');
-    //abutton.setAttribute("onmouseout", 'tooltip("hide")');
-    //var fightButtonCol = document.getElementById("battleBtnsColumn");
-    //newContainer.appendChild(abutton);
-    //fightButtonCol.appendChild(newContainer);
-    //// Create autogen status
-    //// <div style="position:absolute;color: #ffa;z-index: 2;/* left: 0; */background: rgba(0,0,0,.5);width:100%;height:100%">Want more</div>
-    //newContainer = document.createElement("DIV");
-    //newContainer.setAttribute("style", "display: block; font-size: 1.1vw; text-align: center; background-color: rgba(0,0,0,0.3);");
-    //newContainer.setAttribute("onmouseover", 'tooltip(\"Health to Damage ratio\", \"customText\", event, \"This status box displays the current mode Automaps is in. The number usually shown here during Farming or Want more Damage modes is the \'HDratio\' meaning EnemyHealth to YourDamage Ratio (in X stance). Above 16 will trigger farming, above 4 will trigger going for Map bonus up to 10 stacks. If the number is not shown, hovering will display it below.<p><b>enoughHealth: </b>\" + enoughHealth + \"<br><b>enoughDamage: </b>\" + enoughDamage +\"<br><b>shouldFarm: </b>\" + shouldFarm +\"<br><b>H:D ratio = </b>\" + HDratio + \"<br>\")');
-    //newContainer.setAttribute("onmouseout", 'tooltip("hide")');
-    //abutton = document.createElement("SPAN");
-    //abutton.id = 'autoMapStatus';
-    //newContainer.appendChild(abutton);
-    //fightButtonCol.appendChild(newContainer);
 
     //make timer click toggle paused mode
     document.getElementById('portalTimer').setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
@@ -906,10 +883,25 @@ function updateCustomButtons() {
     //if HeHr is not selected, remove HeHr buffer settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeliumHrBuffer") : turnOff("HeliumHrBuffer");
     
-    //update dropdown selections:
+    //update dropdown selections: (ALL DROPDOWNS REQUIRE THIS BIT TO BE UPDATEY)
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
+    //DerSkagg Mod: Golden Upgrade Settings. (Toggles relevant ones on/off)
+    if (autoTrimpSettings.AutoGoldenUpgrades.selected != "Off") {
+        turnOn("goldStrat");
+        document.getElementById('goldStrat').value = autoTrimpSettings.goldStrat.selected;
+        if (autoTrimpSettings.goldStrat.selected == "Alternating") {
+            document.getElementById('goldAlternating').value = autoTrimpSettings.goldAlternating.selected;
+            turnOn("goldAlternating") 
+        } else 
+            turnOff("goldAlternating");
+        (autoTrimpSettings.goldStrat.selected == "Zone") ? turnOn("goldZone") : turnOff("goldZone");
+    } else {
+        turnOff("goldStrat");
+        turnOff("goldAlternating");
+        turnOff("goldZone");
+    }
     //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected; //dont update this, dynamic prestige takes it over and is handled elsewhere.
 
     //stop disable farming from needing a refresh
