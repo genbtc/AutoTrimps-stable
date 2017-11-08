@@ -32,7 +32,7 @@ function safeBuyJob(jobTitle, amount) {
             game.global.maxSplit = 1;
             //if we can't afford it, try to use 'Max' and try again.
             result = canAffordJob(jobTitle, false) && freeWorkers;
-        }        
+        }
     }
     if (result) {
         debug((game.global.firing ? 'Firing ' : 'Hiring ') + prettify(game.global.buyAmt) + ' ' + jobTitle + 's', "jobs", "*users");
