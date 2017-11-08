@@ -82,6 +82,9 @@ function getPageSetting(setting) {
     } else if (autoTrimpSettings[setting].type == 'multitoggle') {
         // debug('found a multitoggle');
         return parseInt(autoTrimpSettings[setting].value);
+    } else if (autoTrimpSettings[setting].type == 'dropdown') {
+        // debug('found a dropdown')
+        return autoTrimpSettings[setting].selected;
     }
 }
 
