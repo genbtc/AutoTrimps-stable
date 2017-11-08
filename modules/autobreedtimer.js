@@ -13,6 +13,7 @@ function autoBreedTimer() {
     var customVars = MODULES["autobreedtimer"];
     var fWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
+    var defaultBreedTimer = game.talents.patience.purchased && getPageSetting('UsePatience') ? 45 : 30;
     if(getPageSetting('ManageBreedtimer')) {
         if(game.portal.Anticipation.level == 0) setPageSetting('GeneticistTimer',0);
         else if(game.global.challengeActive == 'Electricity' || game.global.challengeActive == 'Mapocalypse') setPageSetting('GeneticistTimer',3.5);
@@ -20,14 +21,14 @@ function autoBreedTimer() {
 
             if(getPageSetting('FarmWhenNomStacks7') && game.global.gridArray[99].nomStacks >= 5 && !game.global.mapsActive) {
                 //if Improbability already has 5 nomstacks, do 30 antistacks.
-                setPageSetting('GeneticistTimer',30);
+                setPageSetting('GeneticistTimer',defaultBreedTimer);
             }
             else
                 setPageSetting('GeneticistTimer',10);
         }
-        else if (getPageSetting('SpireBreedTimer') > -1 && game.global.world >= getPageSetting('IgnoreSpiresUntil') && (game.global.world == 200 || game.global.world == 300 || game.global.world == 400 || game.global.world == 500 || game.global.world == 600) && game.global.spireActive)
+        else if (getPageSetting('SpireBreedTimer') > -1 && isActiveSpireAT())
             setPageSetting('GeneticistTimer',getPageSetting('SpireBreedTimer'));
-        else setPageSetting('GeneticistTimer',30);
+        else setPageSetting('GeneticistTimer',defaultBreedTimer);
     }
     var inDamageStance = game.upgrades.Dominance.done ? game.global.formation == 2 : game.global.formation == 0;
     var inScryerStance = (game.global.world >= 60 && game.global.highestLevelCleared >= 180) && game.global.formation == 4;
@@ -87,7 +88,7 @@ function autoBreedTimer() {
     targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var nextgrouptime = (game.global.lastBreedTime/1000);
-    if  (targetBreed > 30) targetBreed = 30; //play nice with custom timers over 30.
+    if (targetBreed > defaultBreedTimer) targetBreed = defaultBreedTimer; //play nice with custom timers over default.
     var newstacks = nextgrouptime >= targetBreed ? targetBreed : nextgrouptime;
     //kill titimp if theres less than (5) seconds left on it or, we stand to gain more than (5) antistacks.
     var killTitimp = (game.global.titimpLeft < customVars.killTitimpStacks || (game.global.titimpLeft >= customVars.killTitimpStacks && newstacks - game.global.antiStacks >= customVars.killTitimpStacks))
@@ -136,7 +137,7 @@ function forceAbandonTrimps() {
     //dont if were on map-selection screen.
     if (game.global.preMapsActive) return;
     //dont if we are in spire:
-    if (game.global.world == 200 && game.global.spireActive && !game.global.mapsActive) return;
+    if (isActiveSpireAT() && !game.global.mapsActive) return;
     var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
     if (getPageSetting('AutoMaps')) {
         mapsClicked();

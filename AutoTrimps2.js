@@ -152,8 +152,7 @@ function mainLoop() {
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
     if (armycount.className != "tooltipadded") addToolTipToArmyCount();
-    const newZone = currentworld != game.global.world;
-    if ((newZone && mainCleanup()) // Z1 new world
+    if (mainCleanup() // Z1 new world
             || portalWindowOpen // in the portal screen (for manual portallers)
             || (!heirloomsShown && heirloomFlag) // closed heirlooms screen
             || (heirloomCache != game.global.heirloomsExtra.length)) { // inventory size changed (a drop appeared)
@@ -172,7 +171,7 @@ function mainLoop() {
         firstgiga: getPageSetting('FirstGigastation'),
         deltagiga: getPageSetting('DeltaGigastation')
     }
-    if (newZone) {
+    if (aWholeNewWorld) {
         // Auto-close dialogues.
         switch (document.getElementById('tipTitle').innerHTML) {
             case 'The Improbability':   // Breaking the Planet
@@ -201,12 +200,13 @@ function mainLoop() {
     if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"           (gather.js)
     else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"     (")
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"   (automaps.js)
+    else updateAutoMapsStatus();
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"     (autobreedtimer.js)
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40) (portal.js)
 
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
-    if (newZone && getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (other.js)
-    if (newZone && getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared) finishChallengeSquared(); // "Finish Challenge2" (other.js)
+    if (aWholeNewWorld && getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (other.js)
+    if (aWholeNewWorld && getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared) finishChallengeSquared(); // "Finish Challenge2" (other.js)
     autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
 
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
@@ -232,6 +232,8 @@ function mainLoop() {
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
+
+    if (getPageSetting('AutoNatureTokens')) autoNatureTokens();
 
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();

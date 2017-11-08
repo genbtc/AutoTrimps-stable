@@ -13,6 +13,7 @@ function manualLabor() {
     var targetBreed = getPageSetting('GeneticistTimer');
     var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax();
     var watchJumpstartTraps  =  game.global.challengeActive == "Watch" && game.resources.trimps.owned < game.resources.trimps.realMax();
+    var hasTurkimp = game.talents.turkimp4.purchased || game.global.turkimpTimer > 0;
 
     //FRESH GAME NO HELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
@@ -47,7 +48,7 @@ function manualLabor() {
     //if we have some upgrades sitting around which we don't have enough science for, gather science
     else if (game.resources.science.owned < scienceNeeded && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
         // debug('Science needed ' + scienceNeeded);
-        if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && game.global.turkimpTimer > 0)||getPageSetting('ManualGather2') == 2){
+        if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && hasTurkimp)||getPageSetting('ManualGather2') == 2){
             //if manual is less than science production, switch on turkimp
             setGather('metal');
         }
@@ -98,7 +99,7 @@ function manualLabor() {
             // debug('Current Stats ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate+ ' haveworkers ' +haveWorkers);
         }
         if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
-            if (game.global.turkimpTimer > 0)
+            if (hasTurkimp)
                 setGather('metal');
             else
                 setGather(lowestResource);//gather the lowest resource
@@ -106,7 +107,7 @@ function manualLabor() {
         } else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden') {
             if (game.resources.science.owned < getPsString('science', true) * MODULES["gather"].minScienceSeconds && game.global.turkimpTimer < 1 && haveWorkers)
                 setGather('science');
-            else if (game.global.turkimpTimer > 0)
+            else if (hasTurkimp)
                 setGather('metal');
             else
                 setGather(lowestResource);
@@ -131,6 +132,7 @@ function manualLabor2() {
     var targetBreed = getPageSetting('GeneticistTimer');
     var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax();
     var watchJumpstartTraps  =  game.global.challengeActive == "Watch" && game.resources.trimps.owned < game.resources.trimps.realMax();
+    var hasTurkimp = game.talents.turkimp4.purchased || game.global.turkimpTimer > 0;
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
     if (game.global.world <=3 && game.global.totalHeliumEarned<=5000) {
@@ -186,7 +188,7 @@ function manualLabor2() {
             }
         if (game.resources.science.owned < scienceNeeded) {
             //if manual is less than science production and turkimp, metal. (or science is set as disallowed)
-            if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && game.global.turkimpTimer > 0) || getPageSetting('ManualGather2') == 2)
+            if ((getPlayerModifier() < getPerSecBeforeManual('Scientist') && hasTurkimp) || getPageSetting('ManualGather2') == 2)
                 setGather('metal');
             else if (getPageSetting('ManualGather2') != 2) {
                 setGather('science');
@@ -229,11 +231,11 @@ function manualLabor2() {
         // debug('Current Stats ' + resource + ' is ' + currentRate + ' lowest ' + lowestResource + lowestResourceRate+ ' haveworkers ' +haveWorkers);
     }
     if (game.global.playerGathering != lowestResource && !haveWorkers && !breedFire) {
-        if (game.global.turkimpTimer > 0)
+        if (hasTurkimp)
             setGather('metal');
         else
             setGather(lowestResource);//gather the lowest resource
-    } else if (game.global.turkimpTimer > 0)
+    } else if (hasTurkimp)
         setGather('metal');
     else
         setGather(lowestResource);
