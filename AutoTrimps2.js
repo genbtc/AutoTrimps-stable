@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         AutoTrimpsV2+unimod
-// @version      2.1.5.7-genbtc-11-7-2017+UniMod
-// @description  try to take over the world!
-// @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron
+// @name         AutoTrimpsV2
+// @version      2.1.5.8-genbtc-11-8-2017+Mod+Uni+coderpatsy
+// @description  Automate all the trimps!
+// @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.7-genbtc-11-7-2017+Modular';
+var ATversion = '2.1.5.8-genbtc-11-8-2017+Mod+Uni+coderpatsy';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -53,14 +53,22 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">11/7 v2.1.5.7</b>  Merge ALL of DerSkagg\'s changes into genBTC branch. (thanks DerSkagg) for:\
-<br><b style="background-color:#FFD700">New AutoGoldenUpgrades</b> strats in "Golden" menu. (Alternating/Zone) \
-<br> After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at. \
-<br><b style="background-color:#b93e00">8/26 v2.1.5.6</b> UniHedro backport (settings in Uni Menu) \
+<br><b class="AutoEggs">11/8 v2.1.5.8</b> Merge coderPatsy\'s v2.1.5.6p7 changes (thanks coderPatsy):\
+<br><b style="background-color:#32CD32">New Features:</b> Enable Patience, AutoNatureTokens, MaxMapBonusForSpire.\
+<br><b style="background-color:#A3C00F">Fixes:</b> Turkimp Tamer IV, Optimize checking void maps, \
+Add Challenge^2 and 4.5 mastery damage bonuses to Auto Stance 2 damage calcs, \
+Uni\'s PreSpireNurseries setting now works for higher spires 2+, \
+AT now doesn\'t force Wait to Travel game setting, \
+Auto Maps now displays Off when off, and still updates He/Hr %, \
+Add Auto Maps status display for out of Mapology map tokens \
+<br><b class="AutoEggs">11/7 v2.1.5.7</b> Merge all of DerSkagg\'s changes, including: \
+<br><b style="background-color:#32CD32">New AutoGoldenUpgrades</b> strats in "Golden" menu. (Alternating/Zone) \
+<br> After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at. (thanks DerSkagg) \
+<br><b style="background-color:#83ddd6">8/26 v2.1.5.6</b> UniHedro backport (settings in Uni Menu) \
 <br> Uni changes include: Dont buy Coords, Trimple Z#, Scryer Suicide Z#, Safety First, Forced Prestige Z#, Prefer Metal Maps, Nursery Count Pre-Spire, Finish Challenge2, DontCare/PowerSaving/DontRushVoids, Prestige Skip 2, Auto Eggs \
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163</span></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
-', 'cancelTooltip()', 'Script Update Notice ' + ATversion);
+', 'cancelTooltip()', 'Script Update Notice<br>' + ATversion);
 }
 ////////////////////////////////////////
 //Main DELAY Loop///////////////////////
