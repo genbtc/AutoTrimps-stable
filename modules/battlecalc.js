@@ -74,7 +74,7 @@ function getBattleStats(what,form,crit) {
     if (game.portal[perk] && game.portal[perk].level > 0){
         var PerkStrength = (game.portal[perk].level * game.portal[perk].modifier);
         currentCalc  *= (PerkStrength + 1);
-    }   
+    }
     //Add resilience
     if (what == "health" && game.portal.Resilience.level > 0){
         var resStrength = Math.pow(game.portal.Resilience.modifier + 1, game.portal.Resilience.level);
@@ -257,14 +257,14 @@ function calcOurDmg(number,maxormin,disableStances,disableFlucts) { //number = b
         if (minFluct == -1) minFluct = fluctuation;
         var min = Math.floor(number * (1 - minFluct));
         var max = Math.ceil(number + (number * maxFluct));
-        
+
         //number = Math.floor(Math.random() * ((max + 1) - min)) + min;
         return maxormin ? max : min;
     }
-    else 
+    else
         return number;
 }
-        
+
 
 function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
     var number;
@@ -272,7 +272,7 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         number = enemy.attack;
     else
         number = attack;
-    
+
     var fluctuation = .2; //%fluctuation
     var maxFluct = -1;
     var minFluct = -1;
@@ -314,11 +314,11 @@ function calcBadGuyDmg(enemy,attack,daily,maxormin,disableFlucts) {
         if (minFluct == -1) minFluct = fluctuation;
         var min = Math.floor(number * (1 - minFluct));
         var max = Math.ceil(number + (number * maxFluct));
-        
+
         //number = Math.floor(Math.random() * ((max + 1) - min)) + min;
         return maxormin ? max : min;
     }
-    else 
+    else
         return number;
 }
 function calcDailyAttackMod(number) {

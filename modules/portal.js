@@ -64,7 +64,7 @@ function autoPortal() {
                         else
                             doPortal();
                     },MODULES["portal"].timeout+100);
-                }                
+                }
             }
             break;
         case "Custom":
@@ -142,7 +142,7 @@ function doPortal(challenge) {
     else if(challenge) {
         selectChallenge(challenge);
     }
-    //Push He Data: 
+    //Push He Data:
     pushData();
     //Actually Portal.
     activateClicked();

@@ -141,13 +141,13 @@ function initializeAllSettings() {
     createSetting('HeHrDontPortalBefore', 'He/Hr Dont Portal Before', 'Do NOT allow Helium per Hour AutoPortal setting to portal BEFORE this level is reached. It is an additional check that prevents drops in helium/hr from triggering autoportal. Set to 0 or -1 to completely disable this check.', 'value', '200', null, "Core");
     createSetting('HeliumHrBuffer', 'He/Hr Portal Buffer %', 'IMPORTANT SETTING. When using the He/Hr Autoportal, it will portal if your He/Hr drops by this amount of % lower than your best for current run, default is 0% (ie: set to 5 to portal at 95% of your best). Now with stuck protection - Allows portaling midzone if we exceed set buffer amount by 5x. (ie a normal 2% buffer setting would now portal mid-zone you fall below 10% buffer).', 'value', '0', null, 'Core');
     createSetting('AutoFinishDaily', 'Auto Finish Daily', 'With this on, the He/Hr Portal and Custom Auto Portal options will auto-finish the daily <b>whenever they trigger</b> and THEN portal you.', 'boolean', false, null, 'Core');
-    createSetting('AutoFinishDailyZone', 'Finish Daily Zone Mod', 'Finish Daily by this # of zones earlier/later than your regular Custom AutoPortal zone or your Helium Dont Portal Before zone. When Auto Finish Daily is on. Tip: Tune your value of He/HrDontPortalBefore to suit the daily, and then tune this. Can accept negative numbers for earlier, ie: -7 means portal 7 zones earlier than normal. Can also use positive numbers to DELAY portaling for later. When used with He/Hr AutoPortal, the number of zones early does not FORCE end the daily at that zone, only ALLOW it to end that early: it will Always end when your HE/hr drops enough to trigger the portal. <b>Use 0 to disable.</b>', 'valueNegative', -2, null, 'Core');    
+    createSetting('AutoFinishDailyZone', 'Finish Daily Zone Mod', 'Finish Daily by this # of zones earlier/later than your regular Custom AutoPortal zone or your Helium Dont Portal Before zone. When Auto Finish Daily is on. Tip: Tune your value of He/HrDontPortalBefore to suit the daily, and then tune this. Can accept negative numbers for earlier, ie: -7 means portal 7 zones earlier than normal. Can also use positive numbers to DELAY portaling for later. When used with He/Hr AutoPortal, the number of zones early does not FORCE end the daily at that zone, only ALLOW it to end that early: it will Always end when your HE/hr drops enough to trigger the portal. <b>Use 0 to disable.</b>', 'valueNegative', -2, null, 'Core');
     createSetting('AutoStartDaily', 'Auto Start Daily', 'With this on, the Auto Portal options will portal you into and auto-start the daily <b>whenever available</b>. Does Yesterday first, followed by Today. Falls back to selected challenge when both are complete.', 'boolean', false, null, 'Core');
     createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps Script (not including the graphs module)', 'boolean', null, null, 'Core');
     document.getElementById('PauseScript').parentNode.style.setProperty('float','right');
     document.getElementById('PauseScript').parentNode.style.setProperty('margin-right','1vw');
     document.getElementById('PauseScript').parentNode.style.setProperty('margin-left','0');
-    
+
 //GEAR:
     createSetting('BuyArmor', 'Buy Armor', 'Auto-Buy/Level-Up the most cost efficient armor available. ', 'boolean', true, null, "Gear");
     createSetting('BuyArmorUpgrades', 'Buy Armor Upgrades', '(Prestiges) & Gymystic. Will buy the most efficient armor upgrade available. ', 'boolean', true, null, "Gear");
@@ -174,7 +174,7 @@ function initializeAllSettings() {
     } else {
         createSetting('CapEquip2', 'Cap Equip to', 'Do not level equipment past this number. Helps for early game when the script wants to level your tier2s to level 40+, or to stop wasting metal. Recommended value: 10, Disable with -1 or 0.', 'value', -1, null, 'Gear');
     }
-    
+
 //AutoMaps + VoidMaps settings:
     createSetting('AutoMaps', 'Auto Maps', 'Recommended. Automatically run maps to progress. Very Important. Has multiple modes: <b>Prestige, Voids, Want more Damage, Want more Health, Want Health & Damage, and Farming.</b>Prestige takes precedence and does equal level maps until it gets what is needed as per Autotrimps Prestige dropdown setting. Voids is self explanatory: use the Void Difficulty Check setting to control the amount of farming. If \'want more damage\', it will only do 10 maps for 200% mapbonus damage bonus. If \'Farming\', it does maps beyond 10 if the displayed number is over >16x. \'Want more health[or and damage]\' is basically just a status message telling you need more health, theres not much that can be done besides tell AutoLevelEquipment to keep buying stuff. If you \'want health\' but your damage is OK to continue, invest in more HP perks.', 'boolean', true, null, "Maps");
     createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps. Decides when to run Unique maps. Required for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc) and their AutoPortal. Required to auto-run The Wall and Dimension of Anger. Required for Bionic Before Spire.<p> Maps/Levels: <p>The Block - 12<p>The Wall - 16<p>Dimension of Anger - 21<p>Trimple Of Doom - 34<p>The Prison - 82<p>Bionic Wonderland - 127', 'boolean', true, null, "Maps");
@@ -230,7 +230,7 @@ function initializeAllSettings() {
     createSetting('GymWall', 'Gym Wall', 'Conserves Wood. Only buys 1 Gym when you can afford <b>X</b> gyms wood cost (at the first one\'s price, simple math). -1 or 0 to disable. In other words, only allows gyms that cost less than 1/nth your currently owned wood. (to save wood for nurseries for new z230+ Magma nursery strategy). Takes decimal numbers. (Identical to the Warpstation wall setting which is why its called that). Setting to 1 does nothing besides stopping gyms from being bought 2 at a time due to the mastery.', 'value', -1, null, 'genBTC');
     createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those will still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. EXPERIMENTAL.', 'boolean', false, null, 'genBTC');
     createSetting('AutoAllocatePerks', 'Auto Allocate Perks', 'EXPERIMENTAL. Uses the AutoPerks ratio based preset system to automatically allocate your perks to spend whatever helium you have when you AutoPortal. ', 'boolean', false, null, 'genBTC');
-    createSetting('SpireBreedTimer', 'Spire Breed Timer', 'Set a different breed timer target for the Spire. Use -1 to disable this special setting.', 'value', -1, null, 'genBTC');    
+    createSetting('SpireBreedTimer', 'Spire Breed Timer', 'Set a different breed timer target for the Spire. Use -1 to disable this special setting.', 'value', -1, null, 'genBTC');
 
 // Uni's mods
     createSetting('ManualCoords', 'Don\'t buy Coords', 'Enable it if you know what you\'re doing, disable it if you don\'t know what you\'re doing. For when manually handling coords means a lot on challenges like Trapper.', 'boolean', false, null, 'Uni');
@@ -277,9 +277,9 @@ function initializeAllSettings() {
 //Golden Upgrade Strategies:
     createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available.', 'dropdown', 'Off', ["Off", "Helium", "Battle", "Void"], 'Golden');
     createSetting('goldStrat', 'goldStrat', 'After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at.', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
-    createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', null, 'Golden'); 
-    createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone X, then buy battle upgrades.', 'value', '200', null, 'Golden'); 
-    
+    createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', null, 'Golden');
+    createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone X, then buy battle upgrades.', 'value', '200', null, 'Golden');
+
 //Spam settings:
     createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Spam');
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Spam');
@@ -368,7 +368,7 @@ function AutoTrimpsTooltip(what, isItIn, event) {
             };
         }
         costText += "</div>";
-    } else if (what == "ImportModuleVars") {        
+    } else if (what == "ImportModuleVars") {
         tooltipText = "Enter your Autotrimps MODULE variable settings to load, and save locally for future use between refreshes:<br/><br/><textarea id='importBox' style='width: 100%' rows='5'></textarea>";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); importModuleVars();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
         ondisplay = function() {
@@ -396,7 +396,7 @@ function AutoTrimpsTooltip(what, isItIn, event) {
 //reset autotrimps to defaults (also handles imports)
 function resetAutoTrimps(imported) {
     ATrunning = false; //stop AT, wait, remove
-    function waitRemoveLoad(imported) {    
+    function waitRemoveLoad(imported) {
         localStorage.removeItem('autoTrimpSettings');
         //delete,remake,init defaults, recreate everything:
         autoTrimpSettings = imported ? imported : new Object(); //load the import.
@@ -479,7 +479,7 @@ function importModuleVars() {
             eval(s);
             strarr[line] = s;
         }
-        
+
         //var tmpset = JSON.parse(thestring);
         var tmpset = compareModuleVars();
         // if (tmpset == null)
@@ -494,9 +494,9 @@ function importModuleVars() {
 }
 
 //reset MODULE variables to default, (and/or then import)
-function resetModuleVars(imported) { 
+function resetModuleVars(imported) {
     ATrunning = false; //stop AT, wait, remove
-    function waitRemoveLoad(imported) {    
+    function waitRemoveLoad(imported) {
         localStorage.removeItem('autoTrimpVariables');
         MODULES = JSON.parse(JSON.stringify(MODULESdefault));
         //load everything again, anew
@@ -582,7 +582,7 @@ function getDailyHeHrStats() {
         var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)));
         getPercent *= 100 + getDailyHeliumValue(countDailyWeight());
         words = "<b>After Daily He/Hr: " + getPercent.toFixed(3) +'%';
-    }    
+    }
     return words;
 }
 
@@ -787,7 +787,7 @@ function autoSetValueToolTip(id, text,negative) {
     else
         tooltipText += 'Put -1 for Infinite.';
     tooltipText += '<br/><br/><input id="customNumberBox" style="width: 50%" onkeypress="onKeyPressSetting(event, \'' + id + '\','+negative+')" value=' + autoTrimpSettings[id].value + '></input>';
-    var costText = '<div class="maxCenter"><div class="btn btn-info" onclick="autoSetValue(\'' + id + '\','+negative+')">Apply</div><div class="btn btn-info" onclick="cancelTooltip()">Cancel</div></div>';     
+    var costText = '<div class="maxCenter"><div class="btn btn-info" onclick="autoSetValue(\'' + id + '\','+negative+')">Apply</div><div class="btn btn-info" onclick="cancelTooltip()">Cancel</div></div>';
     game.global.lockTooltip = true;
     elem.style.left = '32.5%';
     elem.style.top = '25%';
@@ -873,7 +873,7 @@ function updateCustomButtons() {
     //auto Daily settings, hide until player has unlocked the Daily challenges
     (game.challenges.Daily.filter()) ? turnOn("AutoStartDaily") : turnOff("AutoStartDaily");
     (game.challenges.Daily.filter()) ? turnOn("AutoFinishDaily") : turnOff("AutoFinishDaily");
-    (game.challenges.Daily.filter() && getPageSetting('AutoFinishDaily')) ? turnOn("AutoFinishDailyZone") : turnOff("AutoFinishDailyZone");    
+    (game.challenges.Daily.filter() && getPageSetting('AutoFinishDaily')) ? turnOn("AutoFinishDailyZone") : turnOff("AutoFinishDailyZone");
     //if custom auto portal is not selected, remove the custom value settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("CustomAutoPortal") : turnOff("CustomAutoPortal");
     //if HeHr is not selected, remove HeliumHourChallenge settingsbox
@@ -882,7 +882,7 @@ function updateCustomButtons() {
     (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeHrDontPortalBefore") : turnOff("HeHrDontPortalBefore");
     //if HeHr is not selected, remove HeHr buffer settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeliumHrBuffer") : turnOff("HeliumHrBuffer");
-    
+
     //update dropdown selections: (ALL DROPDOWNS REQUIRE THIS BIT TO BE UPDATEY)
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
@@ -893,8 +893,8 @@ function updateCustomButtons() {
         document.getElementById('goldStrat').value = autoTrimpSettings.goldStrat.selected;
         if (autoTrimpSettings.goldStrat.selected == "Alternating") {
             document.getElementById('goldAlternating').value = autoTrimpSettings.goldAlternating.selected;
-            turnOn("goldAlternating") 
-        } else 
+            turnOn("goldAlternating")
+        } else
             turnOff("goldAlternating");
         (autoTrimpSettings.goldStrat.selected == "Zone") ? turnOn("goldZone") : turnOff("goldZone");
     } else {

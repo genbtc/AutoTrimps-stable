@@ -64,7 +64,7 @@ function saveSettings() {
         // Storage full, maybe notify user or do some clean-up
         debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
       }
-    }        
+    }
 }
 
 //Grabs the automation settings from the page
@@ -182,7 +182,7 @@ function postBuy() {
     game.global.lockTooltip = preBuyTooltip;
     game.global.maxSplit = preBuymaxSplit;
 }
-//#2 Called before buying things that can be purchased in bulk 
+//#2 Called before buying things that can be purchased in bulk
 function preBuy2() {
     return [game.global.buyAmt,game.global.firing,game.global.lockTooltip,game.global.maxSplit];
 }

@@ -35,7 +35,7 @@ function autoBreedTimer() {
     var targetBreed = getPageSetting('GeneticistTimer');
     //if we need to hire geneticists
     //Don't hire geneticists if total breed time remaining is greater than our target breed time
-    //Don't hire geneticists if we have already reached 30 anti stacks (put off further delay to next trimp group) //&& (game.global.lastBreedTime/1000 + getBreedTime(true) < targetBreed) 
+    //Don't hire geneticists if we have already reached 30 anti stacks (put off further delay to next trimp group) //&& (game.global.lastBreedTime/1000 + getBreedTime(true) < targetBreed)
     if ((newSquadRdy || (game.global.lastBreedTime/1000 + getBreedTime(true) < targetBreed)) && targetBreed > getBreedTime() && !game.jobs.Geneticist.locked && targetBreed > getBreedTime(true) && game.resources.trimps.soldiers > 0 && !breedFire) {
         var time = getBreedTime();
         var timeOK = time > 0 ? time : 0.1;
@@ -49,16 +49,16 @@ function autoBreedTimer() {
         if (numgens > 0 && canAffordJob('Geneticist', false, numgens)) {
             //debug("1a. Time: " + getBreedTime(true) + " / " + getBreedTime() );
             //debug("1b. " + numgens + " Genes.. / " + game.jobs.Geneticist.owned + " -> " + (game.jobs.Geneticist.owned+numgens));
-            safeBuyJob('Geneticist', numgens);            
+            safeBuyJob('Geneticist', numgens);
             //debug("1c. Time: " + getBreedTime(true) + " / " + getBreedTime() );
         }
         //if all else fails, hire geneticists slowly (not likely)
-        else            
+        else
             safeBuyJob('Geneticist', customVars.buyGensIncrement);
     }
     var fire1 = targetBreed*1.02 < getBreedTime();
     var fire2 = targetBreed*1.02 < getBreedTime(true);
-    var fireobj = fire1 ? getBreedTime() : getBreedTime(true);    
+    var fireobj = fire1 ? getBreedTime() : getBreedTime(true);
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
     if ((targetBreed < getBreedTime() || !game.jobs.Geneticist.locked || !getPageSetting('ManageBreedtimer') || game.global.challengeActive == 'Watch') && game.upgrades.Potency.allowed > game.upgrades.Potency.done && canAffordTwoLevel('Potency') && getPageSetting('BuyUpgrades')) {
@@ -71,7 +71,7 @@ function autoBreedTimer() {
         var numgens = Math.trunc(Math.log(targetBreed / timeOK ) / Math.log(1.02)) - 1;
         //debug("2a. Time: " + getBreedTime(true) + " / " + getBreedTime() );
         //debug("2b. " + numgens + " Genes.. / " + game.jobs.Geneticist.owned + " -> " + (game.jobs.Geneticist.owned+numgens));
-        safeBuyJob('Geneticist', numgens);    
+        safeBuyJob('Geneticist', numgens);
         //debug("2c. Time: " + getBreedTime(true) + " / " + getBreedTime() );
     }
     //if our time remaining to full trimps is still too high, fire some jobs to get-er-done
@@ -109,7 +109,7 @@ function abandonVoidMap() {
     //do nothing if the button isnt set to on.
     if (!getPageSetting('ForceAbandon')) return;
     //exit out of the voidmap if we go back into void-farm-for-health mode (less than 95%, account for some leeway during equipment buying.)
-    if (game.global.mapsActive && getCurrentMapObject().location == "Void") {        
+    if (game.global.mapsActive && getCurrentMapObject().location == "Void") {
         var targetBreed = parseInt(getPageSetting('GeneticistTimer'));
         if(voidCheckPercent < customVars.voidCheckPercent) {
             //only exit if it happened for reasons other than random losses of anti-stacks.

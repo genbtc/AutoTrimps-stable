@@ -144,12 +144,12 @@ function buyGemEfficientHousing() {
             var getcoord = getPageSetting('WarpstationCoordBuy');
             if (getcoord && skipWarp) {
                 var toTip = game.buildings.Warpstation;
-/*  
+/*
                 //calc Cost
                 var warpMetalOK = getBuildingItemPrice(toTip, "metal", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) / game.resources.metal.owned;
                 var warpGemsOK = getBuildingItemPrice(toTip, "gems", false, 1) * Math.pow(1 - game.portal.Resourceful.modifier, game.portal.Resourceful.level) / game.resources.gems.owned;
                 //var afford = Math.floor(Math.min(warpMetalOK,warpGemsOK));
-                if (warpMetalOK <= 1 && warpGemsOK <= 1) { 
+                if (warpMetalOK <= 1 && warpGemsOK <= 1) {
 */
                 if (canAffordBuilding("Warpstation")) {
                     var howMany = calculateMaxAfford(game.buildings["Warpstation"], true);
@@ -176,7 +176,7 @@ function buyGemEfficientHousing() {
     if (bestBuilding) {
         safeBuyBuilding(bestBuilding);
     }
-}    
+}
 
 //Main Decision Function that determines cost efficiency and Buys all housing (gems), or calls buyFoodEfficientHousing, and also non-storage buildings (Gym,Tribute,Nursery)s
 function buyBuildings() {
