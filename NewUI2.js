@@ -94,6 +94,7 @@ function initializeAllTabs() {
     createTabs("Uni", "Uni's mods");
     createTabs("Scryer", "Scryer Stance");
     createTabs("Magma", "Dimensional Generator");
+    createTabs("Golden", "Golden Upgrade Strategies");
     createTabs("Spam", "Controls AutoTrimps message Spam");
     createTabs("Import Export", "Import Export Settings");
     //add a minimize button:
@@ -273,6 +274,12 @@ function initializeAllSettings() {
     createSetting('SupplyWall', 'Throttle Supply (or Capacity)', 'Positive number NOT 1 e.g. 2.5: Consider Supply when its cost * 2.5 is < Capacity, instead of immediately when < Cap. Effectively throttles supply for when you don\'t need too many.<br><br>Negative number (-1 is ok) e.g. -2.5: Consider Supply if it costs < Capacity * 2.5, buy more supplys! Effectively throttling capacity instead.<br><br><b>Set to 1: DISABLE SUPPLY only spend magmite on Efficiency, Capacity and Overclocker. (For some end game players, supply is worth probably figuratively nothing.)<br>Set to 0: IGNORE SETTING and use old behaviour (will still try to buy overclocker)</b>', 'valueNegative', 2, null, 'Magma');
     createSetting('OneTimeOnly', 'One Time / Overclock Only', 'Makes the magmite spending sequence only buy one time upgrades and overclock, ignoring Efficiency, Capacity and Supply. Intended for manual use. Does not disable itself.', 'boolean', false, null, 'Magma');
     createSetting('BuyOvclock', 'Buy Overclock', 'Turn this off to not buy anymore overclocks. Will still buy the first level if you don\'t already own it.', 'boolean', true, null, 'Magma');
+
+//Golden Upgrade Strategies:
+    createSetting('goldStrat', 'goldStrat', 'This setting will after max void golden upgrades alternate between buying helium and battle upgrades', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
+    createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', '2', 'Golden'); 
+    createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone, then buy battle upgrades', 'value', '200', '200', 'Golden'); 
+    
 //Spam settings:
     createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Spam');
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Spam');

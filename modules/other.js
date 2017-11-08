@@ -29,21 +29,45 @@ function autoRoboTrimp() {
 
 //Version 3.6 Golden Upgrades
 function autoGoldenUpgradesAT() {
+    var setting = document.getElementById('AutoGoldenUpgrades').value;
     //get the numerical value of the selected index of the dropdown box
     try {
-        var setting = document.getElementById('AutoGoldenUpgrades').value;
         if (setting == "Off") return;   //if disabled, exit.
         var num = getAvailableGoldenUpgrades();
         if (num == 0) return;       //if we have nothing to buy, exit.
         //buy one upgrade per loop.
         buyGoldenUpgrade(setting);
         
+            //createSetting('goldStrat', 'goldStrat', 'This setting will after max void golden upgrades alternate between buying helium and battle upgrades', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
+            //createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', '2', 'Golden'); 
+            //createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone, then buy battle upgrades', 'value', '200', '200', 'Golden'); 
+    
+        
         // DZUGAVILI MOD - SMART VOID GUs
         // Assumption: buyGoldenUpgrades is not an asynchronous operation and resolves completely in function execution.
         if (setting == "Void") { // we can only buy a few void GUs. We should check if we actually made the buy.
             num = getAvailableGoldenUpgrades();
             if (num == 0) return; // we actually bought the upgrade.
-            buyGoldenUpgrade("Helium"); // since we did not buy a "Void", we buy a "Helium" instead.
+            // DerSkagg Mod - For every Helium upgrade buy X-1 battle upgrades to maintain speed runs
+            var goldStrat = document.getElementById('goldStrat').value;
+            if (goldStrat == "Alternating"){
+                var goldAlternating = getPageSetting('goldAlternating');
+                if (game.global.goldenUpgrades%goldAlternating == 0){
+                    buyGoldenUpgrade("Helium");
+                }else{
+                    buyGoldenUpgrade("Battle");
+                }
+            }else if(goldStrat == "Zone"){
+                var zone = game.global.world;
+                var goldZone = getPageSetting('goldZone');
+                if (zone <= goldZone){
+                    buyGoldenUpgrade("Helium");
+                }else{
+                    buyGoldenUpgrade("Battle");
+                }
+            }else{
+                buyGoldenUpgrade("Helium");
+            }
         }
         // END OF DZUGAVILI MOD
 
