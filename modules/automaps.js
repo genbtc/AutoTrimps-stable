@@ -65,6 +65,8 @@ function autoMap() {
         return;
     }
 
+    var AutoStance = getPageSetting('AutoStance');
+
     //if we are in mapology and we have no credits, exit
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) {
         updateAutoMapsStatus();

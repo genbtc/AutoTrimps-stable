@@ -43,7 +43,9 @@ function betterAutoFight2() {
     var addTime = adjustedMax / tps;
     //if armySend is less than half of what you have breeding, and what you have breeding is more than 10% of your total trimps. (when scientist I is incompleted)
     var lowLevelFight = game.resources.trimps.maxSoldiers < 0.5*breeding && breeding > 0.1*game.resources.trimps.realMax() && game.global.world <= 6 && game.global.sLevel < 1;
+
     var breedTimerLimit = game.talents.patience.purchased && getPageSetting('UsePatience') ? 46 : 31;
+
     //Manually fight if:     //game.global.soldierHealth > 0 //just fight if we're alive,or if == 0; we're dead, and also fight :P
     if (!game.global.fighting) {
         if (game.global.soldierHealth > 0)

@@ -20,9 +20,9 @@ function calcBaseDamageinX() {
     baseBlock = game.global.soldierCurrentBlock;
     //baseHealth
     baseHealth = game.global.soldierHealthMax;
-    
+
     //if (game.global.soldierHealth <= 0) return; //dont calculate stances when dead, cause the "current" numbers are not updated when dead.
-    
+
     //D stance
     if (game.global.formation == 2)
         baseDamage /= 4;
@@ -59,7 +59,7 @@ function autoStance() {
     calcBaseDamageinX();
     //no need to continue
     if (game.global.gridArray.length === 0) return;
-    if (game.global.soldierHealth <= 0) return; //dont calculate stances when dead, cause the "current" numbers are not updated when dead.    
+    if (game.global.soldierHealth <= 0) return; //dont calculate stances when dead, cause the "current" numbers are not updated when dead.
     if (!getPageSetting('AutoStance')) return;
     if (!game.upgrades.Formations.done) return;
 
@@ -148,7 +148,7 @@ function autoStance() {
     var drainChallenge = game.global.challengeActive == 'Nom' || game.global.challengeActive == "Toxicity";
     var dailyPlague = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.plague !== 'undefined');
     var dailyBogged = game.global.challengeActive == 'Daily' && (typeof game.global.dailyChallenge.bogged !== 'undefined');
-    
+
     if (game.global.challengeActive == "Electricity" || game.global.challengeActive == "Mapocalypse") {
         dDamage+= dHealth * game.global.radioStacks * 0.1;
         xDamage+= xHealth * game.global.radioStacks * 0.1;
@@ -301,7 +301,7 @@ function autoStance2() {
     var xDamageNoCrit = (enemyDamage/critMulti - baseBlock);
     var pierce = 0;
     if (game.global.brokenPlanet && !game.global.mapsActive) {
-        pierce = getPierceAmt();    
+        pierce = getPierceAmt();
         var atkPierce = pierce * enemyDamage;
         var atkPierceNoCrit = pierce * (enemyDamage/critMulti);
         if (xDamage < atkPierce) xDamage = atkPierce;
@@ -433,7 +433,7 @@ function autoStanceCheck(enemyCrit) {
     var ourBlock = game.global.soldierCurrentBlock;
     //baseHealth
     var ourHealth = game.global.soldierHealthMax;
-    
+
     //start analyzing autostance
     var missingHealth = game.global.soldierHealthMax - game.global.soldierHealth;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
@@ -467,12 +467,12 @@ function autoStanceCheck(enemyCrit) {
     if (enemy.corrupted == 'corruptStrong')
         enemyDamage *= 2;
     if (enemy.corrupted == 'corruptTough')
-        enemyHealth *= 5;    
+        enemyHealth *= 5;
     //calc X,D,B:
     enemyDamage -= ourBlock;
     var pierce = 0;
     if (game.global.brokenPlanet && !game.global.mapsActive) {
-        pierce = getPierceAmt();    
+        pierce = getPierceAmt();
         var atkPierce = pierce * enemyDamage;
         if (enemyDamage < atkPierce) enemyDamage = atkPierce;
     }
@@ -495,7 +495,7 @@ function autoStanceCheck(enemyCrit) {
         drainChallenge = true;
         var hplost = dailyModifiers.bogged.getMult(game.global.dailyChallenge.bogged.strength);
         //x% of TOTAL health;
-        enemyDamage += ourHealth * hplost;        
+        enemyDamage += ourHealth * hplost;
     } else if (leadChallenge) {
         var leadDamage = game.challenges.Lead.stacks * 0.0003;
         enemyDamage += game.global.soldierHealthMax * leadDamage;
@@ -512,11 +512,11 @@ function autoStanceCheck(enemyCrit) {
     var survive = ((newSquadRdy && ourHealth > enemyDamage) || (ourHealth - missingHealth > enemyDamage));
     var leadAttackOK = !leadChallenge || oneshotFast || survive;
     var drainAttackOK = !drainChallenge || oneshotFast || survive;
-    var isCritThing = isCritVoidMap || isCritDaily || isCrushed;    
+    var isCritThing = isCritVoidMap || isCritDaily || isCrushed;
     var voidCritok = !isCritThing || oneshotFast || survive;
 
     if (!game.global.preMapsActive) {
-        var enoughDamage2 = enemyHealth <= ourDamage;        
+        var enoughDamage2 = enemyHealth <= ourDamage;
         var enoughHealth2 = survive && leadAttackOK && drainAttackOK && voidCritok;
         // } else {
             // var ourCritMult = getPlayerCritChance() ? getPlayerCritDamageMult() : 1;
