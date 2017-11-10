@@ -63,7 +63,7 @@ Auto Maps now displays Off when off, and still updates He/Hr %, \
 Add Auto Maps status display for out of Mapology map tokens \
 <br><b class="AutoEggs">11/7 v2.1.5.7</b> Merge all of DerSkagg\'s changes, including: \
 <br><b style="background-color:#32CD32">New AutoGoldenUpgrades</b> strats in "Golden" menu. (Alternating/Zone) \
-<br> After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at. (thanks DerSkagg) \
+<br> For <b>VOID</b> golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at. (thanks DerSkagg) \
 <br><b style="background-color:#83ddd6">8/26 v2.1.5.6</b> UniHedro backport (settings in Uni Menu) \
 <br> Uni changes include: Dont buy Coords, Trimple Z#, Scryer Suicide Z#, Safety First, Forced Prestige Z#, Prefer Metal Maps, Nursery Count Pre-Spire, Finish Challenge2, DontCare/PowerSaving/DontRushVoids, Prestige Skip 2, Auto Eggs \
 <br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163</span></u>\

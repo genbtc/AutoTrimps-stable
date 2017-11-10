@@ -262,7 +262,7 @@ function initializeAllSettings() {
     createSetting('ScryerDieToUseS', 'Die To Use S', 'Turning this on will switch you back to S even when doing so would kill you. Happens in scenarios where you used Skip Corrupteds that took you into regular Autostance X/H stance, killed the corrupted and reached a non-corrupted enemy that you wish to use S on, but you havent bred yet and you are too low on health to just switch back to S. So youd rather die, wait to breed, then use S for the full non-corrupted enemy, to maximize DE. This feature was added for 1 person, use at your own risk.', 'boolean', false, null, 'Scryer');
 
 // Dimensional Generator settings:
-    createSetting('UseAutoGen', ['Auto Generator OFF', 'Auto Generator ON'], '<b>MASTER BUTTON</b> Dynamically switch generator modes. Note that there are three modes - you may need to click more than once to deactivate this. Required for the following mode management configurations to work. The Dimensional Generator is a building unlocked in The Magma, from z230.', 'multitoggle', 0, null, 'Magma');
+    createSetting('UseAutoGen', ['Auto Generator OFF', 'Auto Generator ON'], '<b>MASTER BUTTON</b> Dynamically switch generator modes. Required for the following mode management configurations to work. The Dimensional Generator is a building unlocked in The Magma, from z230.', 'multitoggle', 0, null, 'Magma');
     createSetting('AutoGen2', ['Default', 'Microtick', 'Max Cap', 'Overclock'], 'Before Z is reached, Microtick and Max Cap will switch between [Hybrid / Gain Fuel] to get EXACTLY one / FULL stacks of Capacity (not Storage) before using [Gain Mi]. Default will respect whatever you set it to and won\'t fiddle with it unless challenge overriding is on. Overclock will Gain Fuel until Z.', 'multitoggle', 2, null, 'Magma');
     createSetting('AutoGen2End', 'End Early Mode Z', 'On and after Z, be done with the mode we start with and switch to the final mode. -1 to disable.', 'value', 300, null, 'Magma');
     createSetting('AutoGen2SupplyEnd', 'End at Supply', 'On and after the zone for gathering the most magma by Supply, end Early Mode. Works alongside AutoGen2End and will end when either condition is met.', 'boolean', false, null, 'Magma');
@@ -279,8 +279,8 @@ function initializeAllSettings() {
     createSetting('BuyOvclock', 'Buy Overclock', 'Turn this off to not buy anymore overclocks. Will still buy the first level if you don\'t already own it.', 'boolean', true, null, 'Magma');
 
 //Golden Upgrade Strategies:
-    createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available.', 'dropdown', 'Off', ["Off", "Helium", "Battle", "Void"], 'Golden');
-    createSetting('goldStrat', 'goldStrat', 'After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at.', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
+    createSetting('AutoGoldenUpgrades', 'AutoGoldenUpgrades', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available. <b>Void</b> unlocks some intelligent settings from Dzugavili Mod and Derskagg Mod.', 'dropdown', 'Off', ["Off", "Helium", "Battle", "Void"], 'Golden');
+    createSetting('goldStrat', 'goldStrat', 'VOID ONLY: After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at.', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
     createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', null, 'Golden');
     createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone X, then buy battle upgrades.', 'value', '200', null, 'Golden');
 
@@ -901,7 +901,7 @@ function updateCustomButtons() {
     document.getElementById('AutoWind').value = autoTrimpSettings.AutoWind.selected;
     document.getElementById('AutoIce').value = autoTrimpSettings.AutoIce.selected;
     //DerSkagg Mod: Golden Upgrade Settings. (Toggles relevant ones on/off)
-    if (autoTrimpSettings.AutoGoldenUpgrades.selected != "Off") {
+    if (autoTrimpSettings.AutoGoldenUpgrades.selected == "Void") {
         turnOn("goldStrat");
         document.getElementById('goldStrat').value = autoTrimpSettings.goldStrat.selected;
         if (autoTrimpSettings.goldStrat.selected == "Alternating") {
