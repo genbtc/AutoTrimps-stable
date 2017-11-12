@@ -1,7 +1,3 @@
-MODULES["magmite"] = {};
-//These can be changed (in the console) if you know what you're doing:
-MODULES["magmite"].algorithm = 2;   //2 is advanced cost/benefit calculation between capacity/efficiency. 1 is buy-cheapest-upgrade.
-
 // Finish Challenge2
 function finishChallengeSquared() {
     // some checks done before reaching this:
