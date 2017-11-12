@@ -744,9 +744,13 @@ function autoMap() {
 function updateAutoMapsStatus() {
     //automaps status
     var status = document.getElementById('autoMapStatus');
+    var minSp = getPageSetting('MinutestoFarmBeforeSpire');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
     else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status.innerHTML = 'Out of Map Credits';
-    else if (preSpireFarming) status.innerHTML = 'Spire farming for ' + (spireTime >= 60 ? (spireTime / 60).toFixed(2) + 'h' : spireTime.toFixed(2) + 'm');
+    else if (preSpireFarming) status.innerHTML = 'Farming for Spire ' + 
+        (spireTime >= 60 ? 
+        (minSp - (spireTime / 60).toFixed(2) + 'h') : 
+        (minSp - spireTime.toFixed(0) + 'm:' + (60 - (spireTime.toFixed(2)*60)%60).toFixed(0)+ 's')) + ' left';
     else if (spireMapBonusFarming) status.innerHTML = 'Getting Spire Map Bonus';
     else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
     else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
