@@ -25,6 +25,8 @@ MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' cha
 MODULES["automaps"].shouldFarmCell = 59;
 MODULES["automaps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
 MODULES["automaps"].UnearnedPrestigesRequired = 2;
+MODULES["automaps"].maxMapBonusAfterZ = MODULES["automaps"].maxMapBonus;   //Max Map Bonus After Zone uses this many stacks 
+                                                                 //- init as default value (10). user can set if they want.
 
 
 //Initialize Global Vars (dont mess with these ones, nothing good can come from it).
@@ -44,6 +46,7 @@ var lastMapWeWereIn = null;
 var preSpireFarming = false;
 var spireMapBonusFarming = false;
 var spireTime = 0;
+var doMaxMapBonus = false;
 
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
@@ -332,6 +335,7 @@ function autoMap() {
     spireMapBonusFarming = getPageSetting('MaxStacksForSpire') && isActiveSpireAT() && game.global.mapBonus < customVars.maxMapBonus;
     if (spireMapBonusFarming) {
         shouldDoMaps = true;
+        shouldDoSpireMaps = true;
     }
     // Run a single map to get nurseries when 1. it's still locked,
     // 2. blacksmithery is purchased,
@@ -342,6 +346,13 @@ function autoMap() {
             !getPageSetting('PreSpireNurseries'))) && game.global.world >= customVars.NurseryMapLevel) {
         shouldDoMaps = true;
         shouldDoWatchMaps = true;
+    }
+    //MaxMapBonusAfterZone (idea from awnv)
+    var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
+    doMaxMapBonus = false;
+    if (maxMapBonusZ >= 0 && game.global.mapBonus < customVars.maxMapBonusAfterZ && game.global.world >= maxMapBonusZ) {
+        shouldDoMaps = true;
+        doMaxMapBonus = true;
     }
 
     //Dynamic Siphonology section (when necessary)
@@ -565,7 +576,7 @@ function autoMap() {
         var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 6;
         //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
         //or repeatbionics is true and there are still prestige items available to get
-        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < customVars.maxMapBonus-1 || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps) || repeatBionics)) {
+        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < customVars.maxMapBonus-1 || doMaxMapBonus || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps) || repeatBionics)) {
             var targetPrestige = autoTrimpSettings.Prestige.selected;
             //make sure repeat map is on
             if (!game.global.repeatMap) {
@@ -747,11 +758,16 @@ function updateAutoMapsStatus() {
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
     if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
     else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status.innerHTML = 'Out of Map Credits';
-    else if (preSpireFarming) status.innerHTML = 'Farming for Spire ' + 
-        (spireTime >= 60 ? 
-        (minSp - (spireTime / 60).toFixed(2) + 'h') : 
-        (Math.floor(minSp - spireTime).toFixed(0) + 'm:' + Math.floor(60 - (spireTime*60)%60).toFixed(0)+ 's')) + ' left';
+    else if (preSpireFarming) {
+        var secs = Math.floor(60 - (spireTime*60)%60).toFixed(0)
+        var mins = Math.floor(minSp - spireTime).toFixed(0);
+        var hours = minSp - (spireTime / 60).toFixed(2);
+        var spiretimeStr = (spireTime>=60) ? 
+            (hours + 'h') : (mins + 'm:' + (secs>=10 ? secs : ('0'+secs)) + 's');
+        status.innerHTML = 'Farming for Spire ' + spiretimeStr + ' left';
+    }
     else if (spireMapBonusFarming) status.innerHTML = 'Getting Spire Map Bonus';
+    else if (doMaxMapBonus) status.innerHTML = 'Max Map Bonus After Zone';
     else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
     else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
     else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
