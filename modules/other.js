@@ -41,31 +41,22 @@ function autoGoldenUpgradesAT() {
         // DZUGAVILI MOD - SMART VOID GUs
         // Assumption: buyGoldenUpgrades is not an asynchronous operation and resolves completely in function execution.
         // Assumption: "Locking" game option is not set or does not prevent buying Golden Void
-        if (setting == "Void" && !success || doDerskaggChallSQ) {
+        if (!success && setting == "Void" || doDerskaggChallSQ) {
             num = getAvailableGoldenUpgrades(); //recheck availables.
             if (num == 0) return;  //we already bought the upgrade...(unreachable)
             // DerSkagg Mod - Instead of Voids, For every Helium upgrade buy X-1 battle upgrades to maintain speed runs
             var goldStrat = getPageSetting('goldStrat');
-            if (goldStrat == "Alternating"){
+            if (goldStrat == "Alternating") {
                 var goldAlternating = getPageSetting('goldAlternating');
-                if (game.global.goldenUpgrades%goldAlternating == 0){
-                    buyGoldenUpgrade("Helium");
-                }else{
-                    buyGoldenUpgrade("Battle");
-                }
-            }else if(goldStrat == "Zone"){
+                setting = (game.global.goldenUpgrades%goldAlternating == 0) ? "Helium" : "Battle";
+            } else if (goldStrat == "Zone") {
                 var goldZone = getPageSetting('goldZone');
-                if (game.global.world <= goldZone){
-                    buyGoldenUpgrade("Helium");
-                }else{
-                    buyGoldenUpgrade("Battle");
-                }
-            }else{
-                buyGoldenUpgrade("Helium");
-            }
+                setting = (game.global.world <= goldZone) ? "Helium" : "Battle";
+            } else
+                setting = (!challSQ) ? "Helium" : "Battle";
+            buyGoldenUpgrade(setting);
         }
         // END OF DerSkagg & DZUGAVILI MOD
-
     } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message); }
 }
 
@@ -111,7 +102,6 @@ function autoNatureTokens() {
             debug('Converted ' + nature + ' tokens to ' + targetNature, 'other');
         }
     }
-
     if (changed)
         updateNatureInfoSpans();
 }
