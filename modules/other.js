@@ -33,13 +33,18 @@ function autoGoldenUpgradesAT() {
         if (num == 0) return;       //if we have nothing to buy, exit.
         //buy one upgrade per loop.
         var success = buyGoldenUpgrade(setting);
+        //Challenge^2 cant Get/Buy Helium, so adapt - do Derskagg mod.
+        var challSQ = game.global.runningChallengeSquared;        
+        var doDerskaggChallSQ = false;
+        if (setting == "Helium" && challSQ && !success)
+            doDerskaggChallSQ = true;
         // DZUGAVILI MOD - SMART VOID GUs
         // Assumption: buyGoldenUpgrades is not an asynchronous operation and resolves completely in function execution.
         // Assumption: "Locking" game option is not set or does not prevent buying Golden Void
-        if (setting == "Void" && !success) { // we can only buy a few void GUs. We should check if we actually made the buy.
-            num = getAvailableGoldenUpgrades();
-            if (num == 0) return; // we actually bought the upgrade.
-            // DerSkagg Mod - For every Helium upgrade buy X-1 battle upgrades to maintain speed runs
+        if (setting == "Void" && !success || doDerskaggChallSQ) {
+            num = getAvailableGoldenUpgrades(); //recheck availables.
+            if (num == 0) return;  //we already bought the upgrade...(unreachable)
+            // DerSkagg Mod - Instead of Voids, For every Helium upgrade buy X-1 battle upgrades to maintain speed runs
             var goldStrat = getPageSetting('goldStrat');
             if (goldStrat == "Alternating"){
                 var goldAlternating = getPageSetting('goldAlternating');
@@ -49,9 +54,8 @@ function autoGoldenUpgradesAT() {
                     buyGoldenUpgrade("Battle");
                 }
             }else if(goldStrat == "Zone"){
-                var zone = game.global.world;
                 var goldZone = getPageSetting('goldZone');
-                if (zone <= goldZone){
+                if (game.global.world <= goldZone){
                     buyGoldenUpgrade("Helium");
                 }else{
                     buyGoldenUpgrade("Battle");

@@ -328,16 +328,12 @@ function autoMap() {
     //Farm X Minutes Before Spire:
     var shouldDoSpireMaps = false;
     preSpireFarming = (isActiveSpireAT()) && (spireTime = (new Date().getTime() - game.global.zoneStarted) / 1000 / 60) < getPageSetting('MinutestoFarmBeforeSpire');
-    if (preSpireFarming) {
+    spireMapBonusFarming = getPageSetting('MaxStacksForSpire') && isActiveSpireAT() && game.global.mapBonus < customVars.maxMapBonus;    
+    if (preSpireFarming || spireMapBonusFarming) {
         shouldDoMaps = true;
         shouldDoSpireMaps = true;
     }
-    spireMapBonusFarming = getPageSetting('MaxStacksForSpire') && isActiveSpireAT() && game.global.mapBonus < customVars.maxMapBonus;
-    if (spireMapBonusFarming) {
-        shouldDoMaps = true;
-        shouldDoSpireMaps = true;
-    }
-    // Run a single map to get nurseries when 1. it's still locked,
+    //Run a single map to get nurseries when 1. it's still locked,
     // 2. blacksmithery is purchased,
     // but not when 3A. home detector is purchased, or 3B. we don't need nurseries
     if (game.buildings.Nursery.locked && game.talents.blacksmith.purchased && !(game.talents.housing.purchased ||
@@ -345,7 +341,7 @@ function autoMap() {
             !(getPageSetting('MaxNursery') && game.global.world >= getPageSetting('NoNurseriesUntil')) :
             !getPageSetting('PreSpireNurseries'))) && game.global.world >= customVars.NurseryMapLevel) {
         shouldDoMaps = true;
-        shouldDoWatchMaps = true;
+        shouldDoWatchMaps = true; //TODO coding: this is overloaded - not ideal.
     }
     //MaxMapBonusAfterZone (idea from awnv)
     var maxMapBonusZ = getPageSetting('MaxMapBonusAfterZone');
@@ -576,7 +572,8 @@ function autoMap() {
         var repeatBionics = getPageSetting('RunBionicBeforeSpire') && game.global.bionicOwned >= 6;
         //if we are doing the right map, and it's not a norecycle (unique) map, and we aren't going to hit max map bonus
         //or repeatbionics is true and there are still prestige items available to get
-        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (game.global.mapBonus < customVars.maxMapBonus-1 || doMaxMapBonus || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps) || repeatBionics)) {
+        var doDefaultMapBonus = game.global.mapBonus < customVars.maxMapBonus-1;
+        if (selectedMap == game.global.currentMapId && (!getCurrentMapObject().noRecycle && (doDefaultMapBonus || doMaxMapBonus || shouldFarm || stackingTox || needPrestige || shouldDoSpireMaps) || repeatBionics)) {
             var targetPrestige = autoTrimpSettings.Prestige.selected;
             //make sure repeat map is on
             if (!game.global.repeatMap) {
@@ -594,8 +591,15 @@ function autoMap() {
             if (shouldDoWatchMaps)
                 repeatClicked();
             //turn repeat off on the last WantHealth map.
-            if (shouldDoHealthMaps && game.global.mapBonus >= customVars.wantHealthMapBonus - 1)
+            if (shouldDoHealthMaps && game.global.mapBonus >= customVars.wantHealthMapBonus - 1) { 
                 repeatClicked();
+                shouldDoHealthMaps = false;
+            }
+            //turn repeat off on the last maxMapBonusAfterZ map.
+            if (doMaxMapBonus && game.global.mapBonus >= customVars.maxMapBonusAfterZ - 1) {
+                repeatClicked();
+                doMaxMapBonus = false;
+            }
         } else {
             //otherwise, make sure repeat map is off
             if (game.global.repeatMap) {
