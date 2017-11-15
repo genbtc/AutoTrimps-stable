@@ -754,7 +754,7 @@ function setGraphData(graph) {
                     function specialCalc(e1,e2) {
                         return Math.round(e1.zonetime/1000);
                     });
-            title = 'Time to Clear Zone #2 (new/experimental time tracking system that supports pauses. new data needs to accumulate)';
+            title = '(#2) Time to Clear Zone';
             xTitle = 'Zone';
             yTitle = 'Clear Time';
             yType = 'Linear';
@@ -765,7 +765,7 @@ function setGraphData(graph) {
                     function specialCalc(e1,e2) {
                         return Math.round(((e1.currentTime - e2.currentTime)-(e1.portalTime - e2.portalTime)) / 1000);
                     });
-            title = 'Time to clear zone (fixed, supports Pauses)';
+            title = 'Time to clear zone';
             xTitle = 'Zone';
             yTitle = 'Clear Time';
             yType = 'Linear';
@@ -776,7 +776,7 @@ function setGraphData(graph) {
                     function specialCalc(e1,e2) {
                         return Math.round(e1.zonetime);
                     },true);
-            title = '#2 Cumulative Time at END of zone# (new/experimental time tracking system that supports pauses. new data needs to accumulate)';
+            title = '(#2) Cumulative Time at END of zone#';
             xTitle = 'Zone';
             yTitle = 'Cumulative Clear Time';
             yType = 'datetime';
@@ -793,7 +793,7 @@ function setGraphData(graph) {
                     function specialCalc(e1,e2) {
                         return Math.round((e1.currentTime - e2.currentTime)-(e1.portalTime - e2.portalTime));
                     },true);
-            title = 'Cumulative Time at END of zone# (fixed, supports Pauses)';
+            title = 'Cumulative Time at END of zone#';
             xTitle = 'Zone';
             yTitle = 'Cumulative Clear Time';
             yType = 'datetime';

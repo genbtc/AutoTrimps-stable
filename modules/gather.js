@@ -9,10 +9,12 @@ function manualLabor() {
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
+    var lowOnTraps = game.buildings.Trap.owned < MODULES["gather"].minTraps;
+    var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = getPageSetting('GeneticistTimer');
-    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax();
-    var watchJumpstartTraps  =  game.global.challengeActive == "Watch" && game.resources.trimps.owned < game.resources.trimps.realMax();
+    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
+    var watchJumpstartTraps  = game.global.challengeActive == "Watch"  && notFullPop;    
     var hasTurkimp = game.talents.turkimp4.purchased || game.global.turkimpTimer > 0;
 
     //FRESH GAME NO HELIUM CODE.
@@ -112,12 +114,9 @@ function manualLabor() {
             else
                 setGather(lowestResource);
         }
-        //refactored into the if else block above:
-        //else if (getPageSetting('ManualGather2') != 2 && document.getElementById('scienceCollectBtn').style.display != 'none' && document.getElementById('science').style.visibility != 'hidden')
-        //    setGather('science');
         //Build more traps if we have TrapTrimps on, and we own less than (100) traps.
-        else if(trapTrimpsOK && game.global.trapBuildToggled == true && game.buildings.Trap.owned < MODULES["gather"].minTraps)
-            setGather('buildings'); //confusing (was always like this, see commits @ 2/23/16).
+        else if(trapTrimpsOK && game.global.trapBuildToggled == true && lowOnTraps)
+            setGather('buildings');
         else
             setGather(lowestResource);
     }
@@ -128,10 +127,12 @@ function manualLabor2() {
     if (getPageSetting('ManualGather2')==0) return;
     //vars
     var breedingTrimps = game.resources.trimps.owned - game.resources.trimps.employed;
+    var lowOnTraps = game.buildings.Trap.owned < MODULES["gather"].minTraps;
+    var notFullPop = game.resources.trimps.owned < game.resources.trimps.realMax();
     var trapTrimpsOK = getPageSetting('TrapTrimps');
     var targetBreed = getPageSetting('GeneticistTimer');
-    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && game.resources.trimps.owned < game.resources.trimps.realMax();
-    var watchJumpstartTraps  =  game.global.challengeActive == "Watch" && game.resources.trimps.owned < game.resources.trimps.realMax();
+    var trapperTrapUntilFull = game.global.challengeActive == "Trapper" && notFullPop;
+    var watchJumpstartTraps  = game.global.challengeActive == "Watch"  && notFullPop;
     var hasTurkimp = game.talents.turkimp4.purchased || game.global.turkimpTimer > 0;
 
     //FRESH GAME LOWLEVEL NOHELIUM CODE.
@@ -149,13 +150,13 @@ function manualLabor2() {
     }
 
     //Traps and Trimps:
-    if(watchJumpstartTraps || trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
+    if(trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull || watchJumpstartTraps) && game.buildings.Trap.owned == 0 && canAffordBuilding('Trap')) {
         //safeBuyBuilding returns false if item is already in queue
         if(!safeBuyBuilding('Trap'))
             setGather('buildings');
         return;
     }
-    else if (watchJumpstartTraps || trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull) && game.buildings.Trap.owned > 0) {
+    else if (trapTrimpsOK && (breedingTrimps < 5 || trapperTrapUntilFull || watchJumpstartTraps) && game.buildings.Trap.owned > 0) {
         setGather('trimps');
         if (trapperTrapUntilFull && (game.global.buildingsQueue.length == 0 || game.buildings.Trap.owned == 1) && !game.global.trapBuildAllowed  && canAffordBuilding('Trap'))
             safeBuyBuilding('Trap'); //get ahead on trap building since it is always needed for Trapper
@@ -171,7 +172,7 @@ function manualLabor2() {
     //Prioritize Storage buildings when they hit the front of the queue (in case they are the only object in the queue).
     (game.global.buildingsQueue[0] == 'Barn.1' || game.global.buildingsQueue[0] == 'Shed.1' || game.global.buildingsQueue[0] == 'Forge.1') ||
     //manualBuild traps if we have TrapTrimps on, AutoTraps on, and we own less than (100) traps.
-    (trapTrimpsOK && game.global.trapBuildAllowed && game.global.trapBuildToggled && game.buildings.Trap.owned < MODULES["gather"].minTraps))) {
+    (trapTrimpsOK && game.global.trapBuildAllowed && game.global.trapBuildToggled && lowOnTraps))) {
         setGather('buildings');//buildBuildings = true;
         return;
     }
