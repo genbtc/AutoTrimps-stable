@@ -238,7 +238,7 @@ function autoToggleGraph() {
     if (game.options.displayed) toggleSettingsMenu();
     var aset = document.getElementById('autoSettings');
     if (aset) {
-        if (aset.style.display === 'block') aset.style.display = 'none';
+    if (aset.style.display === 'block') aset.style.display = 'none';
     }
     var item = document.getElementById('graphParent');
     if (item.style.display === 'block') item.style.display = 'none';
@@ -254,6 +254,20 @@ function autoPlusGraphMenu() {
     if (item.style.display === 'block') item.style.display = 'none';
     toggleSettingsMenu();
 }
+function escapeATWindows() {
+    //Turn off "Settings"/"AutoTrimpsSettings"/"Graphs" Menu on escape.
+    if (game.options.displayed) toggleSettingsMenu();
+    var aset = document.getElementById('autoSettings');
+    if (aset.style.display === 'block') aset.style.display = 'none';
+    var graph = document.getElementById('graphParent');
+    if (graph.style.display === 'block') graph.style.display = 'none';
+}
+document.addEventListener("keydown",function (event) {
+    //Hotkeys have to be enabled, and all these conditions have to be met or else we cant use the hotkey.
+	if (game.options.menu.hotkeys.enabled == 1 && !game.global.preMapsActive && !game.global.lockTooltip && !ctrlPressed && !heirloomsShown && event.keyCode == 27) //27 == escape
+        escapeATWindows();
+    //Turn off "Settings"/"AutoTrimpsSettings"/"Graphs" Menu on escape.
+}, true);
 
 var chart1;
 function setGraph(title, xTitle, yTitle, valueSuffix, formatter, series, yType) {
@@ -1138,9 +1152,9 @@ setInterval(getLootData, 15000);
         return toReturn;
     };
 
-    // who even thought copying the code was a good idea?
-    const oldFunction = window.addResCheckMax;
-    window.addResCheckMax = (a, b, c, d, e) => filterLoot(a, b, null, d) || oldFunction(a, b, c, d, e);
+  // who even thought copying the code was a good idea?
+  const oldFunction = window.addResCheckMax;
+  window.addResCheckMax = (a, b, c, d, e) => filterLoot(a, b, null, d) || oldFunction(a, b, c, d, e);
 })();
 //END overwriting default game functions!!!!!!!!!!!!!!!!!!!!!!
 
