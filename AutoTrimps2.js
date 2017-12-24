@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
-// @version      2.1.5.9-genbtc-11-13-2017+Mod+Uni+coderpatsy
+// @version      2.1.6.0-genbtc-12-23-2017+Mod+Uni+coderpatsy
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.5.9-genbtc-11-13-2017+Mod+Uni+coderpatsy';
+var ATversion = '2.1.6.0-genbtc-12-23-2017+Mod+Uni+coderpatsy';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -53,21 +53,10 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">11/13 v2.1.5.9 </b><b style="background-color:#32CD32"> New:</B> Max Map Bonus After Zone setting (in \"Maps\"), Reverse \"Farming for Spire\" timer so it counts down. Disable Max Tox after autoportal. \
-<br><b class="AutoEggs">11/8 v2.1.5.8</b> Merge all coderPatsy\'s existing v2.1.5.6p7 changes:\
-<br><b style="background-color:#32CD32">New Features:</b> Enable Patience, AutoNatureTokens, MaxMapBonusForSpire.\
-<br><b style="background-color:#A3C00F">Fixes:</b> Turkimp Tamer IV, Optimize checking void maps, \
-Add Challenge^2 and 4.5 mastery damage bonuses to AutoStance 2 damage calcs, \
-Uni\'s PreSpireNurseries setting now works for higher spires 2+, \
-AT now doesn\'t force Wait to Travel game setting, \
-AutoMaps now displays Off when off, and still updates He/Hr %, \
-Add Status display for out of Mapology map tokens \
-<br><b class="AutoEggs">11/7 v2.1.5.7</b> Merge all of DerSkagg\'s changes, including: \
-<br><b style="background-color:#32CD32">New AutoGoldenUpgrades</b> strats for <b>VOID</b>in "Golden" menu.  \
-When Void costs too much: Choose Alternating Helium/Battle or Zone Cutoff for Helium(pre)/Battle(post) \
-<br><b style="background-color:#83ddd6">8/26 v2.1.5.6</b> Merge UniHedro fork (settings in Uni Menu) \
-<br><u>Report any bugs/problems please! You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163</span></u>\
-<br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you care)\
+<br><b class="AutoEggs">12/23 v2.1.6.0 </b><b style="background-color:#32CD32"> New:</B> SpeedExplorer upgrade, ScryerInVoids can choose Never, Wont try to hire anymore if job is still locked (should help early game), Removed the "enoughHealth" condition from the "Purchase Weapon" check. (caused it to buy weapons when not required).  Escape Button can now be pressed when Graphs is open to close it. \
+<br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
+<a href="https://discord.gg/0VbWe0dxB9kIfV2C"> @ AT Discord Channel</a></u>\
+<br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
 ', 'cancelTooltip()', 'Script Update Notice<br>' + ATversion);
 }
 ////////////////////////////////////////

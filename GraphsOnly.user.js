@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2+genBTC-GraphsOnly
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.5.9-genbtc-11-13-2017+Mod+Uni+coderpatsy
+// @version      2.1.6.0-genbtc-12-23-2017+Mod+Uni+coderpatsy
 // @description  Graphs Module (only) from AutoTrimps
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC
 // @include      *trimps.github.io*
