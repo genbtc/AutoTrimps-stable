@@ -53,7 +53,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">12/23 v2.1.6.0 </b><b style="background-color:#32CD32"> New:</B> SpeedExplorer upgrade, ScryerInVoids can choose Never, Removed the "enoughHealth" condition from the "Purchase Weapon" check. (caused it to buy weapons when not required).  Escape Button can now be pressed when Graphs is open to close it. \
+<br><b class="AutoEggs">12/23 v2.1.6.0 </b><b style="background-color:#32CD32"> New:</B> SpeedExplorer upgrade, ScryerInVoids can choose Never. Escape Button can now be pressed when Graphs is open to close it. \
 <br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"> @ AT Discord Channel</a></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
