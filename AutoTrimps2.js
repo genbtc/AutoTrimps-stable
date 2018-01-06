@@ -77,9 +77,10 @@ function delayStartAgain(){
     setInterval(mainLoop, runInterval);
     setInterval(guiLoop, runInterval*10);
     updateCustomButtons();
-    document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
-    //MODULESdefault = MODULES;
-    //MODULESdefault = Object.assign({}, MODULES);
+    if (autoTrimpSettings.PrestigeBackup !== undefined && autoTrimpSettings.PrestigeBackup.selected != "")
+        document.getElementById('Prestige').value = autoTrimpSettings.PrestigeBackup.selected;
+    if (document.getElementById('Prestige').value === "")
+        document.getElementById('Prestige').value = "Off";
     MODULESdefault = JSON.parse(JSON.stringify(MODULES));
 }
 
