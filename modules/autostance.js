@@ -369,8 +369,7 @@ function autoStance2() {
     var xExplosionOK = true;
     var dExplosionOK = true;
     if (typeof game.global.dailyChallenge['explosive'] !== 'undefined') {
-        var dExplosion = 0;
-        var xExplosion = 0;
+        var explosionDmg = 0;
         var explosiveDamage = 1 + game.global.dailyChallenge['explosive'].strength;
         
         var playerCritMult = getPlayerCritChance() ? getPlayerCritDamageMult() : 1;
@@ -378,10 +377,9 @@ function autoStance2() {
         var playerXCritDmg = (baseDamage) * playerCritMult;
   
         // I don't know if I have to use x or d damage or just the base damage multiplier for this calculation.
-        xExplosion = xDamage * explosiveDamage;
-        dExplosion = dDamage * explosiveDamage;
-        xExplosionOK = ((xHealth - missingHealth > xExplosion) || (enemyHealth > playerXCritDmg));
-        dExplosionOK = ((dHealth - missingHealth > dExplosion) || (enemyHealth > playerDCritDmg));
+        explosionDmg = calcBadGuyDmg(enemy,null,true,true) * explosiveDamage;
+        xExplosionOK = ((xHealth - missingHealth > explosionDmg) || (enemyHealth > playerXCritDmg));
+        dExplosionOK = (newSquadRdy || (dHealth - missingHealth > explosionDmg) || (enemyHealth > playerDCritDmg));
     }
     
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage
