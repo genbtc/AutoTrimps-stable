@@ -1,5 +1,5 @@
 //AutoTrimps GUI - Current Version 2.1.5.8
-//maintained by genBTC, November 2017
+//maintained by genBTC, November 2017 (current as of 3/1/2018)
 
 (function () {
     //create the Automation icon in the game bar

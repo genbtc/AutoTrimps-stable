@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
-// @version      2.1.6.0-genbtc-12-23-2017+Mod+Uni+coderpatsy
+// @version      2.1.6.1-genbtc-3-1-2018+Mod+Uni+coderpatsy
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.6.0-genbtc-12-23-2017+Mod+Uni+coderpatsy';
+var ATversion = '2.1.6.1-genbtc-3-1-2018+Mod+Uni+coderpatsy';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -53,7 +53,7 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">12/23 v2.1.6.0 </b><b style="background-color:#32CD32"> New:</B> SpeedExplorer upgrade, ScryerInVoids can choose Never. Escape Button can now be pressed when Graphs is open to close it. \
+<br><b class="AutoEggs">3/1 v2.1.6.1 </b><b style="background-color:#32CD32"> New:</B> AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer \
 <br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"> @ AT Discord Channel</a></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
