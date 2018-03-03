@@ -276,6 +276,7 @@ AutoPerks.getHelium = function() {
 }
 
 AutoPerks.calculatePrice = function(perk, level) { // Calculate price of buying *next* level
+    if(perk.fluffy) return Math.ceil(perk.base * Math.pow(10,level));
     if(perk.type == 'exponential') return Math.ceil(level/2 + perk.base * Math.pow(1.3, level));
     else if(perk.type == 'linear') return Math.ceil(perk.base + perk.increase * level);
 }
@@ -472,7 +473,8 @@ AutoPerks.lowercaseFirst = function(str) {
     return str.substr(0, 1).toLowerCase() + str.substr(1);
 }
 
-AutoPerks.FixedPerk = function(name, base, level, max) {
+
+AutoPerks.FixedPerk = function(name, base, level, max, fluffy) {
     this.id = -1;
     this.name = name;
     this.base = base;
@@ -481,6 +483,11 @@ AutoPerks.FixedPerk = function(name, base, level, max) {
     this.level = level || 0;
     this.spent = 0;
     this.max = max || Number.MAX_VALUE;
+    if (fluffy == "fluffy") {
+       this.fluffy = true; 
+       this.type = "linear";
+       this.increase = 10;
+   }
 }
 
 AutoPerks.VariablePerk = function(name, base, compounding, value, baseIncrease, max, level) {
@@ -537,7 +544,7 @@ var agility = new AutoPerks.FixedPerk("agility", 4, 20, 20);
 var bait = new AutoPerks.FixedPerk("bait", 4, 30);
 var trumps = new AutoPerks.FixedPerk("trumps", 3, 30);
 var packrat = new AutoPerks.FixedPerk("packrat", 3, 30);
-var capable = new AutoPerks.FixedPerk("capable", 100000000, 10, 10);
+var capable = new AutoPerks.FixedPerk("capable", 100000000, 10, undefined, "fluffy");
 //Ratio Presets:
 //      (perk order): [looting,toughness,power,motivation,pheromones,artisanistry,carpentry,resilience,coordinated,resourceful,overkill,cunning,curious];
 var preset_ZXV = [20, 0.5, 1, 1.5, 0.5, 1.5, 8, 1, 25, 2, 3, 1, 1];
@@ -552,7 +559,7 @@ var preset_HiderBalance = [75, 4, 8, 4, 1, 4, 24, 1, 75, 0.5, 3, 1, 1];
 var preset_HiderMore = [20, 4, 10, 12, 1, 8, 8, 1, 40, 0.1, 0.5, 1, 1];
 var preset_genBTC = [100, 8, 8, 4, 4, 5, 18, 8, 14, 1, 1, 1, 1];
 var preset_genBTC2 = [96, 19, 15.4, 8, 8, 7, 14, 19, 11, 1, 1, 1, 1];
-var preset_Zek450 = [300, 1, 30, 2, 4, 2, 9, 8, 17, 0.1, 1, 320, 1];
+var preset_Zek450 = [300, 1, 30, 2, 4, 2, 9, 8, 17, 0.1, 1, 1, 1];
 var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_TruthLate,preset_nsheetz,preset_nsheetzNew,preset_HiderHehr,preset_HiderBalance,preset_HiderMore,preset_genBTC,preset_genBTC2,preset_Zek450];
 //ratio was replaced by position, value will be pulled from ratios above later.
 var looting = new AutoPerks.VariablePerk("looting", 1, false,             0, 0.05);
@@ -572,9 +579,9 @@ var power_II = new AutoPerks.ArithmeticPerk("power_II", 20000, 500, 0.01, power)
 var motivation_II = new AutoPerks.ArithmeticPerk("motivation_II", 50000, 1000, 0.01, motivation);
 var carpentry_II = new AutoPerks.ArithmeticPerk("carpentry_II", 100000, 10000, 0.0025, carpentry);
 var looting_II = new AutoPerks.ArithmeticPerk("looting_II", 100000, 10000, 0.0025, looting);
-//fluffy perks please fix as required, pretty sure base values are right though
-var cunning = new AutoPerks.VariablePerk("cunning", 100000000000, false,      11, 0.05);
-var curious = new AutoPerks.VariablePerk("curious", 100000000000000, false,   12, 0.05);
+//fluffy perks
+var cunning = new AutoPerks.VariablePerk("cunning", 100000000000, false,      12, 0.05);
+var curious = new AutoPerks.VariablePerk("curious", 100000000000000, false,   13, 0.05);
 //gather these into an array of objects
 AutoPerks.perkHolder = [siphonology, anticipation, meditation, relentlessness, range, agility, bait, trumps, packrat, looting, toughness, power, motivation, pheromones, artisanistry, carpentry, resilience, coordinated, resourceful, overkill, capable, cunning, curious, toughness_II, power_II, motivation_II, carpentry_II, looting_II];
 
@@ -584,7 +591,7 @@ AutoPerks.getTierIIPerks = function() {
         var name = AutoPerks.capitaliseFirstLetter(AutoPerks.perkHolder[i].name);
         var perk = game.portal[name];
         if(perk.locked || (typeof perk.level === 'undefined')) continue;
-        if(AutoPerks.perkHolder[i].type == "linear") {
+        if(AutoPerks.perkHolder[i].type == "linear" && !AutoPerks.perkHolder[i].fluffy) {
             perks.push(AutoPerks.perkHolder[i]);
         }
     }
