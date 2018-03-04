@@ -1,7 +1,7 @@
 var ATServer = 
 {
 	//SERVER_IP: '207.246.77.188',
-    SERVER_HOSTNAME: 'autotrimps.site'
+    SERVER_HOSTNAME: 'autotrimps.site/ATendpoint.php'
 }
 
 ATServer.GetID = function(callback)
