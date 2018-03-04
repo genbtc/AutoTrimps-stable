@@ -59,7 +59,7 @@ function autoGoldenUpgradesAT() {
             buyGoldenUpgrade(setting);
         }
         // END OF DerSkagg & DZUGAVILI MOD
-    } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message); }
+    } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message, "other"); }
 }
 
 //auto spend nature tokens
