@@ -1,7 +1,8 @@
-
+//MODULES["utils"] = {};
 ////////////////////////////////////////
 //Utility Functions/////////////////////
 ////////////////////////////////////////
+
 //polyfill for includes function
 if (!String.prototype.includes) {
     String.prototype.includes = function(search, start) {

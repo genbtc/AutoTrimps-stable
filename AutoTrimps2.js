@@ -14,27 +14,28 @@ var ATversion = '2.1.6.4-genbtc-3-4-2018+Mod+Uni+coderpatsy';
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////
 var atscript = document.getElementById('AutoTrimps-script')
-  , base = 'https://genbtc.github.io/AutoTrimps/'
-  , module = 'modules/'
+  , basepath = 'https://genbtc.github.io/AutoTrimps/'
+  , modulepath = 'modules/'
   ;
+//This should redirect the script to wherever its being mirrored from.
 if (atscript !== null) {
-    base = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
+    basepath = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
 }
 //Load stuff needed to load other stuff:
-document.head.appendChild(document.createElement('script')).src = base + module + 'utils.js';
+document.head.appendChild(document.createElement('script')).src = basepath + modulepath + 'utils.js';
 
 function initializeAutoTrimps() {
     loadPageVariables();
-    document.head.appendChild(document.createElement('script')).src = base + 'SettingsGUI.js';
-    document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
-    //Load modules:
-    var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'magma', 'portal', 'other', 'client-server'];
-    for (var i=0,len=modules.length; i<len; i++) {
-        document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
+    document.head.appendChild(document.createElement('script')).src = basepath + 'SettingsGUI.js';
+    document.head.appendChild(document.createElement('script')).src = basepath + 'Graphs.js';
+    //Load modulepaths:
+    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server'];
+    for (var i=0,len=ATmodules.length; i<len; i++) {
+        document.head.appendChild(document.createElement('script')).src = basepath + modulepath + ATmodules[i] + '.js';
     }
     //Autoperks
     if (typeof(AutoPerks) === 'undefined')
-        document.head.appendChild(document.createElement('script')).src = base + module + 'autoperks.js';
+        document.head.appendChild(document.createElement('script')).src = basepath + modulepath + 'perks.js';
     else
         debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
     toggleSettingsMenu();
@@ -44,7 +45,7 @@ function initializeAutoTrimps() {
         const $link = document.createElement('link');
         $link.rel = "stylesheet";
         $link.type = "text/css";
-        $link.href = base + 'dark-graph.css';
+        $link.href = basepath + 'dark-graph.css';
         document.head.appendChild($link);
     }
     //

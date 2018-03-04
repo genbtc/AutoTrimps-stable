@@ -10,6 +10,7 @@
 // ==/UserScript==
 
 //Create blank AutoPerks object
+//MODULES["perks"] = {};
 if (typeof(AutoPerks) === 'undefined')
     var AutoPerks = {};
 else {

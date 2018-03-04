@@ -1,3 +1,4 @@
+//MODULES["battlecalc"] = {};
 //what is either "health" or "attack" or "block"
 // function ripped from Trimps "updates.js" line 1009
 function getBattleStats(what,form,crit) {

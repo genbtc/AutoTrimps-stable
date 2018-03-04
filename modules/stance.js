@@ -1,3 +1,4 @@
+//MODULES["stance"] = {};
 
 function calcBaseDamageinX() {
     //baseDamage

@@ -1,4 +1,4 @@
-// MODULES["dynprestige"] = {};
+//MODULES["dynprestige"] = {};
 //These can be changed (in the console) if you know what you're doing:
 // MODULES["dynprestige"]
 

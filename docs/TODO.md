@@ -60,7 +60,7 @@ TODO LIST: 8/17/2016
 
 Near Future:
 ------------
-TODO: Add notes to graph runs. 
+TODO: Add notes or labels to graph runs.  (to indicate which settings we used)
  it doesnt go into the map bonus mode soon enough because of the fact that its gauging the zone on non-corrupted enemies
   //we will get at least 85 toxstacks from the 1st voidmap UNLESS we have overkill, then we dont get enough.
 if a new fight group is available and anticipation stacks aren't 30, abandon and grab a new group
@@ -77,6 +77,9 @@ Theoretically the graphs database can be used as a pro-active future prediction 
 Example: If Helium per/hour is ABOUT to go down based on previous cached runs (during the ambiguity period of about a few zones), portal earlier.
          Think like Grace %% setting but automatic.
 Done: Add autotrimps.site data json upload capability (thanks to Swiffy)
+New far fetched Idea: Cloud distributed graphs. Show similar users graphs? Long shot.
+Cloud management of Save Files
+Analysis of the Userbase and custom settings, even make queries to ask server for better decision making based on global multi-client probability state
 
 Bugs To Fix:
 ----------------

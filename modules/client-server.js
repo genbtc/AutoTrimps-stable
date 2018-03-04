@@ -54,7 +54,8 @@ ATServer.Upload = function(data)
 // note to newbs: typing in autoTrimpSettings into console and expanding the arrow will show you what is all in here.
 var ulData = {
     version: autoTrimpSettings.ATversion,
-    settings: autoTrimpSettings
+    settings: autoTrimpSettings,
+    modules: MODULES
 }
 
 ATServer.UploadSettings = function() {

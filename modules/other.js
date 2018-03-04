@@ -1,3 +1,5 @@
+//MODULES["other"] = {};
+
 // Finish Challenge2
 function finishChallengeSquared() {
     // some checks done before reaching this:

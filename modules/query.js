@@ -1,3 +1,4 @@
+//MODULES["query"] = {};
 
 function getPerSecBeforeManual(job) {
     var perSec = 0;
