@@ -60,14 +60,22 @@ ATServer.SaveData = function(id, data, callback)
 	req.send(JSON.stringify(data));
 }
 
-ATServer.UploadSettings = function(data)
+var ulData = {
+    version: autoTrimpSettings.ATversion,
+    settings: autoTrimpSettings
+}
+
+ATServer.Upload = function(data)
 {
     ATServer.GetID(function(id) 
     { 
         ATServer.SaveData(id, data, function(response) 
         { 
-            console.log("AutoTrimps Settings File was Uploaded for analytics/usage!");
             console.log(response);
         });
     });
-}({[autoTrimpSettings.ATversion,autoTrimpSettings]})
+}
+ATServer.UploadSettings = function() {
+    ATServer.Upload(ulData);
+    console.log("AutoTrimps Settings File was Uploaded for analytics/usage!");
+}();
