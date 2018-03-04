@@ -302,6 +302,8 @@ function initializeAllSettings() {
     createSetting('SpamOther', 'Other Spam', 'Other Spam = Better Auto Fight, Trimpicide, Robotrimp, AutoMagmamancers', 'boolean', true, null, 'Spam');
     createSetting('SpamBuilding', 'Building Spam', 'Building Spam = all buildings, even storage', 'boolean', false, null, 'Spam');
     createSetting('SpamJobs', 'Job Spam', 'Job Spam = All jobs, in scientific notation', 'boolean', false, null, 'Spam');
+    createSetting('SpamGraphs', 'Starting Zone Spam', 'Disables \'Starting new Zone ###\' and any future Graph Spam that comes from graph logs.', 'boolean', true, null, 'Spam');
+    
 
 // Export/Import/Default settings
     createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');

@@ -356,7 +356,7 @@ function getTotalDarkEssenceCount() {
 }
 
 function pushData() {
-    debug('Starting Zone ' + game.global.world,"general");
+    debug('Starting Zone ' + game.global.world, "graph");
     //helium/hour % of totalHE, and currentRun/totalLifetime HE
     var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
     var lifetime = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
@@ -391,7 +391,7 @@ function pushData() {
     } catch(e) {
       if (e.code == 22) {
         // Storage full, maybe notify user or do some clean-up
-        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
+        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.","graph");
       }
     }
 }

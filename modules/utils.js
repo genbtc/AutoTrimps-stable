@@ -113,22 +113,20 @@ function setPageSetting(setting, value) {
 
 //Global debug message
 function debug(message, type, lootIcon) {
-    var buildings = getPageSetting('SpamBuilding');
-    var jobs = getPageSetting('SpamJobs');
+    var general = getPageSetting('SpamGeneral');
     var upgrades = getPageSetting('SpamUpgrades');
     var equips = getPageSetting('SpamEquipment');
     var maps = getPageSetting('SpamMaps');
     var other = getPageSetting('SpamOther');
-    var general = getPageSetting('SpamGeneral');
+    var buildings = getPageSetting('SpamBuilding');
+    var jobs = getPageSetting('SpamJobs');    
+    var graphs = getPageSetting('SpamGraphs');
     var output = true;
     switch (type) {
         case null:
             break;
-        case "buildings":
-            output = buildings;
-            break;
-        case "jobs":
-            output = jobs;
+        case "general":
+            output = general;
             break;
         case "upgrades":
             output = upgrades;
@@ -136,18 +134,25 @@ function debug(message, type, lootIcon) {
         case "equips":
             output = equips;
             break;
+        case "buildings":
+            output = buildings;
+            break;
+        case "jobs":
+            output = jobs;
+            break;
         case "maps":
             output = maps;
             break;
         case "other":
             output = other;
             break;
-        case "general":
-            output = general;
+        case "graphs":
+            output = graphs;
             break;
     }
-    if (enableDebug && output) {
-        console.log(timeStamp() + ' ' + message);
+    if (output) {
+        if (enableDebug)
+            console.log(timeStamp() + ' ' + message);
         message2(message, "AutoTrimps", lootIcon, type);
     }
 }
