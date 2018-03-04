@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimps-genBTC
 // @namespace    https://github.com/genbtc/AutoTrimps
-// @version      2.1.6.2-genbtc-3-1-2018+Mod+Uni+coderpatsy
+// @version      2.1.6.3-genbtc-3-4-2018+Mod+Uni+coderpatsy
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, Ishkaru, genBTC
 // @include        *trimps.github.io*
