@@ -455,10 +455,14 @@ function gatherInfo() {
 
     //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
     if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
-    GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
+        GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
+    //Detecting the liquification through liquimp - Crude attempt at this, need to store/track more data.
+    if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && game.global.gridArray[0].name == "Liquimp")
+        GraphsVars.OVKcellsInWorld = 100;
+        //if (game.stats.zonesLiquified.value > oldzonesLiquified)    //may come in handy; goes up by 1 each zone you liqui-kill.
     //track time in each zone for better graphs
     GraphsVars.ZoneStartTime = new Date().getTime() - game.global.zoneStarted;
-    //track mapbonus
+    //track MapBonus
     GraphsVars.MapBonus = game.global.mapBonus;
 }
 
