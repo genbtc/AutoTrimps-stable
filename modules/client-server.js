@@ -1,19 +1,8 @@
 var ATServer = 
 {
-	SERVER_IP: '207.246.77.188',
+	//SERVER_IP: '207.246.77.188',
     SERVER_HOSTNAME: 'autotrimps.site'
 }
-
-
-/*
-	Usage-example (NOTE: ASYNCHRONOUS): 
-
-	ATServer.GetID(function(id) 
-	{ 
-		console.log(id); 
-	});
-
-*/
 
 ATServer.GetID = function(callback)
 {
@@ -31,16 +20,6 @@ ATServer.GetID = function(callback)
 	req.setRequestHeader('req', 'get_id');
 	req.send();
 }
-
-/*
-	Usage-example (NOTE: ASYNCHRONOUS): 
-
-	ATServer.SaveData('ff6e3508-cb6a-4042-8170-8ea1178d3175', {"test": 123}, function(response) 
-	{ 
-		console.log(response); 
-	});
-
-*/
 
 ATServer.SaveData = function(id, data, callback)
 {
@@ -60,11 +39,6 @@ ATServer.SaveData = function(id, data, callback)
 	req.send(JSON.stringify(data));
 }
 
-var ulData = {
-    version: autoTrimpSettings.ATversion,
-    settings: autoTrimpSettings
-}
-
 ATServer.Upload = function(data)
 {
     ATServer.GetID(function(id) 
@@ -75,7 +49,18 @@ ATServer.Upload = function(data)
         });
     });
 }
+
+//Data to be uploaded: The version of AutoTrimps and the list of your settings file.
+// note to newbs: typing in autoTrimpSettings into console and expanding the arrow will show you what is all in here.
+var ulData = {
+    version: autoTrimpSettings.ATversion,
+    settings: autoTrimpSettings
+}
+
 ATServer.UploadSettings = function() {
     ATServer.Upload(ulData);
-    console.log("AutoTrimps Settings File was Uploaded for analytics/usage!");
-}();
+    console.log("AutoTrimps Settings File was Uploaded for analytics/usage! This is controlled with a new button on AT's Import/Export tab.");
+}
+if (autoTrimpSettings.allowSettingsUpload) {
+    ATServer.UploadSettings();
+}

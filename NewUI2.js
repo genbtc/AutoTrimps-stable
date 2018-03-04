@@ -1,5 +1,5 @@
-//AutoTrimps GUI - Current Version 2.1.5.8
-//maintained by genBTC, November 2017 (current as of 3/1/2018)
+//AutoTrimps GUI - Current Version 2.1.6.4
+//maintained by genBTC, current as of 3/4/2018
 
 (function () {
     //create the Automation icon in the game bar
@@ -308,6 +308,7 @@ function initializeAllSettings() {
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
+    createSetting('allowSettingsUpload', 'Allow Settings Upload for Analytics', 'Uploads your current AUTOTRIMPS settings file (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately 44KB uncompressed text for the time being, and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source. In the future, I will have to make a more fine-grained data-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, your helium amount, and magma/DE amounts. ', 'boolean', true, null, 'Import Export');
     //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
     //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
