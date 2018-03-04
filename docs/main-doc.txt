@@ -1,4 +1,4 @@
-Detailed Documentation (2016):
+Detailed Function Documentation (from 2016):
 ========================
 The main loop consists of the following subroutines, all of which are enable-able/disable-able by their buttons.:
     workerRatios();         //"Auto Worker Ratios"
@@ -19,7 +19,6 @@ The main loop consists of the following subroutines, all of which are enable-abl
     autoStance();           //"Auto Stance"
     betterAutoFight();      //"Better Auto Fight"
     prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
-    
     userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
 
 MODULES (2018):
@@ -47,7 +46,7 @@ utils.js
 
 GUI:
 =====
-Consists of NewUI2.js is the Settings section + styles of tabs.css + dark-graph.css (maybe need to darkify the css on the perks too window)
+Consists of SettingsGUI.js is the Settings section + styles of tabs.css + dark-graph.css (maybe need to darkify the css on the perks too window)
 Graphs.js is the graphs section.
 
 HTTPS Localhost Self serve - With Python 2:

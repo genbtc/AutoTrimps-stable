@@ -1,8 +1,9 @@
 Structuring:
 Module names: Some stuff is named auto, some stuff isnt. Its AutoTrimps so isn't everything auto? Redundant? 
-NewUI2 - needs new name, some love.
+SettingsGUI - needs new name, some love.
 
 -    createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight 1', 'Better Auto Fight 2'], '3-Way Button, Recommended [ON], or Advised to use [OFF] for low level players under 1 million HE.  Will automatically handle fighting. #2 is the new one (benefits higher level players), #1 is the old algorithm (if you have any issues).<br>BAF#1 does: (1)Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time:(&lt;2 sec). (2) Send Trimps to fight now if it takes less than 0.5 seconds to create a new group of soldiers, if we havent bred fully yet. <br>The new BAF#2 additionally does: (3) Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator (z230+) and we can get away with adding time to it(although can happen at any zone) Pseudocode:(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and (4) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. <br>OFF: Can now be used as to use the in-game AutoFight with no downsides.(will autofight after portal), Recommended OFF for lowlevel. ', 'multitoggle', 1, null, "Core");
+
 - a toggle that can let AT do Bionic Wonderland maps if they haven't ever been done before?
   (in the same vein, check for "Speed" achievements for unique maps and do them if they're not done yet and possible)
 
@@ -59,8 +60,7 @@ TODO LIST: 8/17/2016
 
 Near Future:
 ------------
-Essence graph
-Add notes to graph runs.
+TODO: Add notes to graph runs. 
  it doesnt go into the map bonus mode soon enough because of the fact that its gauging the zone on non-corrupted enemies
   //we will get at least 85 toxstacks from the 1st voidmap UNLESS we have overkill, then we dont get enough.
 if a new fight group is available and anticipation stacks aren't 30, abandon and grab a new group
@@ -71,17 +71,18 @@ New Features To Add:
 Documentation (started)
 Update README (always do this)
 Code Comments (getting better)
+
 TODO LIST: 3/3/2018
 Theoretically the graphs database can be used as a pro-active future prediction model and conditions can be inferred from past runs.
 Example: If Helium per/hour is ABOUT to go down based on previous cached runs (during the ambiguity period of about a few zones), portal earlier.
          Think like Grace %% setting but automatic.
-Add autotrimps.site data json upload capability (thanks to Swiffy)
+Done: Add autotrimps.site data json upload capability (thanks to Swiffy)
 
 Bugs To Fix:
 ----------------
-Auto-Skip-tons-of-zones-in-beginning causes overkill graph to be off by a LOT.
-
-Bone Portal messes with graphs / Importing a savedgame in progress produces bad graphs
+BUG 1: Liquification - the Auto-Skip-tons-of-zones-in-beginning - causes overkill graph to be off by a LOT.
+BUG 2: Bone Portal messes with graphs / Importing a savedgame in progress produces bad graphs
+BUG 3: highlighted on github.
 
 
 Other Improvements:
@@ -91,10 +92,11 @@ Void Map Farming
 
 Programming/CodeWise:
 ----------------------
-Rewrite the automaps way of deciding/picking/buying/running maps.
+Rewrite the automaps way of deciding/picking/buying/running maps. (convo above)
 Also while doing this, determine more refined rules for entering the 3 modes: want dmg/want health/farming
 
 
-Done:
+Old Done:
 ------
 Visible Version Status Number in UI (startup popup message)
+Done: Essence graph

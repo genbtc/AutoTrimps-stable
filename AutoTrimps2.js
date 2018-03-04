@@ -25,7 +25,7 @@ document.head.appendChild(document.createElement('script')).src = base + module 
 
 function initializeAutoTrimps() {
     loadPageVariables();
-    document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
+    document.head.appendChild(document.createElement('script')).src = base + 'SettingsGUI.js';
     document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
     //Load modules:
     var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'magma', 'portal', 'other', 'client-server'];

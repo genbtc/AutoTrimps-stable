@@ -50,7 +50,7 @@ function serializeSettings() {
             case 'dropdown':
                 return v[k] = el.selected, v;
             }
-            return v[k] = el, v; // ATversion, anything else unhandled by NewUI2
+            return v[k] = el, v; // ATversion, anything else unhandled by SettingsGUI
         }, {}));
 }
 
