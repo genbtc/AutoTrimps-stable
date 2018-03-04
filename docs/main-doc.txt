@@ -1,0 +1,84 @@
+Detailed Documentation (2016):
+========================
+The main loop consists of the following subroutines, all of which are enable-able/disable-able by their buttons.:
+    workerRatios();         //"Auto Worker Ratios"
+    buyUpgrades();          //"Buy Upgrades"
+    autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
+    buyStorage();           //"Buy Storage"
+    buyBuildings();         //"Buy Buildings"
+    buyJobs();              //"Buy Jobs"    
+    manualLabor();          //"Auto Gather/Build"
+    autoMap();              //"Auto Maps"    
+    manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
+    autoPortal();           //"Auto Portal" (hidden until level 60)
+    autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
+    toggleAutoTrap();       //"Trap Trimps"
+    autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
+    autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
+    autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
+    autoStance();           //"Auto Stance"
+    betterAutoFight();      //"Better Auto Fight"
+    prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
+    
+    userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
+
+MODULES (2018):
+===============    
+autobreedtimer.js
+autodimgen.js
+autofight.js
+automaps.js
+autoperks.js
+autostance.js
+battlecalc.js
+buildings.js
+dynprestige.js
+equipment.js
+gather.js
+heirlooms.js
+jobs.js
+magma.js
+other.js
+portal.js
+query.js
+scryer.js
+upgrades.js
+utils.js
+
+GUI:
+=====
+Consists of NewUI2.js is the Settings section + styles of tabs.css + dark-graph.css (maybe need to darkify the css on the perks too window)
+Graphs.js is the graphs section.
+
+HTTPS Localhost Self serve - With Python 2:
+==========================
+import BaseHTTPServer, SimpleHTTPServer
+import ssl
+
+httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), SimpleHTTPServer.SimpleHTTPRequestHandler)
+httpd.socket = ssl.wrap_socket (httpd.socket, certfile='./server.pem', server_side=True)
+httpd.serve_forever()
+
+HTTPS Localhost Self serve - With Python 3:
+==========================
+import logging
+import os
+import sys
+import http.server
+import socketserver
+import ssl
+
+logging.info('Server running...')
+httpd = socketserver.TCPServer(('localhost', 4443), http.server.SimpleHTTPRequestHandler)
+httpd.socket = ssl.wrap_socket(httpd.socket, certfile='./AutoTrimps.pem', server_side=True)
+httpd.serve_forever()
+
+//(make sure you generate a self-signed .PEM cert to serve.)
+
+Version Numbered Files (files needing version string during minor upgrades):
+=================
+.user.js
+user.js
+install.user.js
+AutoTrimps2.js
+Graphs.js
