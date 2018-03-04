@@ -73,3 +73,12 @@ ul.tab li a:hover {background-color: #ddd;}
   75% { background-color: #f6f297; }
   100% { background-color: #83ddd6; }
 }
+
+/* stop the additional breed timer we added from pushing down the whole Breeding area and pushing Traps out */
+#trapArea {
+    border: 1px solid white;
+    display: inline-block;
+    margin-bottom: 2%;
+    margin-top: 0;
+    padding: 0;
+}

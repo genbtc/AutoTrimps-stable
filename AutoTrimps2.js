@@ -92,7 +92,7 @@ function delayStartAgain(){
 ////////////////////////////////////////
 
 var AutoTrimpsDebugTabVisible = true;
-var enableDebug = true; //Spam console
+var enableDebug = true; //Spam with console.log
 var autoTrimpSettings = {};
 
 var MODULES = {};
