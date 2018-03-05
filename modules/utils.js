@@ -115,6 +115,7 @@ function setPageSetting(setting, value) {
 }
 
 //Global debug message
+//type: general, upgrades, equips, buildings, jobs, maps, other, graphs
 function debug(message, type, lootIcon) {
     var general = getPageSetting('SpamGeneral');
     var upgrades = getPageSetting('SpamUpgrades');

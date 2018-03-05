@@ -356,7 +356,7 @@ function getTotalDarkEssenceCount() {
 }
 
 function pushData() {
-    debug('Starting Zone ' + game.global.world, "graph");
+    debug('Starting Zone ' + game.global.world, "graphs");
     //helium/hour % of totalHE, and currentRun/totalLifetime HE
     var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
     var lifetime = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
