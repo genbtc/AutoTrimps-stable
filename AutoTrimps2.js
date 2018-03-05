@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = basepath + 'SettingsGUI.js';
     document.head.appendChild(document.createElement('script')).src = basepath + 'Graphs.js';
     //Load modulepaths:
-    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
+    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks', 'fight-info'];
     for (var i=0,len=ATmodules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = basepath + modulepath + ATmodules[i] + '.js';
     }
@@ -239,6 +239,7 @@ function mainLoop() {
 //GUI Updates happen on this thread, every 1000ms, concurrently
 function guiLoop() {
     updateCustomButtons();
+    MODULES["fightinfo"].Update();
 }
 
 // Userscript loader. write your own!
