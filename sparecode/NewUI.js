@@ -3,11 +3,9 @@ if (autoTrimpSettings === undefined) {
     var autoTrimpSettings = new Object();
 }
 
-
 automationMenuInit();
 
 //Booleans//
-
 createSetting('ManualGather', 'Auto Gather/Build', 'Automatically gathers resources (and uses Turkimp on metal). Auto speed-builds your build queue and auto-researches science on demand.', 'boolean',true);
 createSetting('AutoFight', 'Better Auto Fight', 'Will automatically handle fighting. It gives you autofight before you get the Battle upgrade in Zone 1.. .CAUTION: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'boolean',true);
 createSetting('AutoStance', 'Auto Stance', 'Automatically swap stances to avoid death.', 'boolean',true);
@@ -27,9 +25,8 @@ createSetting('AutoHeirlooms', 'Auto Heirlooms', 'Automatically evaluate and car
 createSetting('HireScientists', 'Hire Scientists', 'Enable or disable hiring of scientists. Math: ScientistRatio=(FarmerRatio+LumberjackRatio+MinerRatio)/25 and stops hiring scientists after 250k Farmers.', 'boolean',true);
 createSetting('WorkerRatios', 'Auto Worker Ratios', 'Automatically changes worker ratios based on current progress. WARNING: overrides worker ratio settings. Settings: 1/1/1 up to 300k trimps, 3/3/5 up to 3mil trimps, then 3/1/4 above 3 mil trimps, then 1/1/10 above 1000 tributes, then 1/2/22 above 1500 tributes. Uses 1/40/8 in Spire since we get plenty of metal from that.', 'boolean',true);
 createSetting('ManageBreedtimer', 'Manage Breed Timer', 'Automatically manage the breed timer by purchasing Geneticists. Sets ideal anticpation stacks. If not using AutoStance, this will probably be undesirable... Picks appropriate times for various challenges (3.5s,11s,30s). Delays purchasing potency and nurseries if trying to raise the timer. EFFECTIVELY LOCKS THE BREED TIMER', 'boolean',true);
-//
-// createSetting('', '', '', 'boolean');
-//Values
+
+//Values//
 createSetting('GeneticistTimer', 'Geneticist Timer', 'Breed time in seconds to shoot for using geneticists. Disable with -1 (and Disable ManageBreedTimer) to disable the Hiring/Firing of geneticists (and potency upgrades). CANNOT CHANGE WITH MANAGE BREED TIMER OPTION ON', 'value', '30');
 createSetting('FarmerRatio', 'Farmer Ratio', '', 'value', '1');
 createSetting('LumberjackRatio', 'Lumberjack Ratio', '', 'value', '1');
@@ -50,8 +47,7 @@ createSetting('MaxGym', 'Max Gyms', '', 'value', '-1');
 createSetting('MaxTribute', 'Max Tributes', '', 'value', '-1');
 createSetting('MaxNursery', 'Max Nurseries', '', 'value', '-1');
 createSetting('VoidMaps', 'Void Maps', 'The zone at which you want all your void maps to be cleared (Cell 96).  0 is off', 'value', '0');
-// createSetting('', '', '', 'value', '30');
-//Dropdown + context sensitive
+//Prestige Dropdown (special - managed internally)
 createSetting('Prestige', 'Prestige', 'Acquire prestiges through the selected item (inclusive) as soon as they are available in maps. Forces equip first mode. Automap must be enabled. THIS IS AN IMPORTANT SETTING related to speed climbing and should probably always be on something. If you find the script getting stuck somewhere, particularly where you should easily be able to kill stuff, setting this to an option lower down in the list will help ensure you are more powerful at all times, but will spend more time acquiring the prestiges in maps.', 'dropdown', 'Polierarm', ['Off', 'Supershield', 'Dagadder', 'Bootboost', 'Megamace', 'Hellishmet', 'Polierarm', 'Pantastic', 'Axeidic', 'Smoldershoulder', 'Greatersword', 'Bestplate', 'Harmbalest', 'GambesOP']);
 //Make a backup of the prestige setting: backup setting grabs the actual value of the primary setting any time it is changed, (line 412 of the function settingChanged())
 if (autoTrimpSettings["PrestigeBackup"] === undefined) {
@@ -63,8 +59,7 @@ createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-
 createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Electricity', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead','Corrupted']);
 createSetting('CustomAutoPortal', 'Custom Portal', 'Automatically portal AFTER clearing this level.(ie: setting to 200 would portal when you first reach level 201)', 'value', '200');
 
-//advanced settings
-
+//advanced settings (GUI)//
 var advHeader = document.createElement("DIV");
 var advBtn = document.createElement("DIV");
 advBtn.setAttribute('class', 'btn btn-default');
@@ -75,14 +70,14 @@ advBtn.setAttribute("onmouseout", 'tooltip("hide")');
 advBtn.setAttribute('style', 'margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; font-size: 0.8vw;');
 advBtn.id='advancedSettingsBTN';
 advHeader.appendChild(advBtn);
-
+//
 document.getElementById("autoSettings").appendChild(advHeader);
 var adv = document.createElement("DIV");
 adv.id = 'advancedSettings';
 adv.style.display = 'none';
 document.getElementById("autoSettings").appendChild(adv);
 
-//advanced settings
+//advanced settings buttons//
 createSetting('LimitEquipment', 'Limit Equipment', 'Limit levels of equipment bought to:(level 11 - the prestige level). At or Above Prestige X (10), your equipment will remain at level 1. In other words, do not level equipment after ~level ~51, and only buy Prestiges. CAUTION: may reduce He/hr performance in many cases.', 'boolean', null, null, 'advancedSettings');
 createSetting('BreedFire', 'Breed Fire', 'Fire Lumberjacks and Miners to speed up breeding when needed. (Not geneticists).', 'boolean', null, null, 'advancedSettings');
 createSetting('MaxTox', 'Max Toxicity Stacks', 'Get maximum toxicity stacks before killing the improbability in each zone 60 and above. Generally only recommended for 1 run to maximize bone portal value. This setting will revert to disabled after a successful Max-Tox run + Toxicity Autoportal.', 'boolean', null, null, 'advancedSettings');
@@ -91,7 +86,7 @@ createSetting('RunNewVoidsUntil', 'Run New Voids Until', 'Put a cap on what zone
 createSetting('VoidCheck', 'Void Difficulty Check', 'How many hits to be able to take from a void map boss in dominance stance before we attempt the map. Higher values will get you stronger (by farming for health) before attempting. 2 should be fine.', 'value', '2', null, 'advancedSettings');
 createSetting('DisableFarm', 'Disable Farming', 'Disables the farming section of the automaps algorithm. This will cause it to always return to the zone upon reaching 10 map stacks. TROUBLESHOOTING: Save and Refresh when you toggle this, if necessary. INFO: The new Trimps 3.22 map-buttons greatly eliminate the usefulness of this. ALSO: NO LONGER DISABLES SIPHONOLOGY. ', 'boolean', null, null, 'advancedSettings');
 
-//genBTC advanced settings - Create button.
+//genBTC advanced settings (GUI)//
 var genbtcBtn = document.createElement("DIV");
 genbtcBtn.setAttribute('class', 'btn btn-default');
 genbtcBtn.setAttribute('onclick', 'autoToggle(\'genbtcadvancedSettings\')');
@@ -107,7 +102,7 @@ genbtcadv.id = 'genbtcadvancedSettings';
 genbtcadv.style.display = 'none';
 document.getElementById("autoSettings").appendChild(genbtcadv);
 
-//genBTC advanced settings - option buttons.
+//genBTC advanced settings buttons.//
 createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('WarpstationWall', 'Warpstation Wall', 'Do not level Warpstations if it costs over 1/4th of the current metal we own. (Experimental) ', 'boolean', null, null, 'genbtcadvancedSettings');
 createSetting('CapEquip', 'Cap Equip to 10', 'Do not level equipment past 10. Similar to LimitEquipment, Helps for early game when the script wants to level your tier2s to 40+, but unlike LimitEquipment, does not impact Zone 60+.', 'boolean', null, null, 'genbtcadvancedSettings');
@@ -133,7 +128,7 @@ createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm 
 createSetting('ExitSpireCell', 'Exit Spire After Cell', 'Exits the Spire after completing cell X. example: 40 for Row 4. (0 to disable)', 'value', '0', null, 'genbtcadvancedSettings');
 createSetting('CorruptionCalc', 'Corruption Farm Mode', 'Enabling this will cause the Automaps routine to take amount of corruption in a zone into account, to decide whether it should do maps first for map bonus. ONLY in Zone 181+. ', 'boolean', false, null, 'genbtcadvancedSettings');
 
-//Manage importexport Settings - Create button.
+//Manage import-export Settings (GUI)
 var importexportBtn = document.createElement("DIV");
 importexportBtn.setAttribute('class', 'btn btn-default');
 importexportBtn.setAttribute('onclick', 'autoToggle(\'importexportSettings\')');
@@ -148,12 +143,12 @@ var importexportadv = document.createElement("DIV");
 importexportadv.id = 'importexportSettings';
 importexportadv.style.display = 'none';
 document.getElementById("autoSettings").appendChild(importexportadv);
-//Manage settings - option buttons - Export/Import/Default
+//Manage Export/Import/Default buttons
 createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'importexportSettings');
 createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'importexportSettings');
 createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'importexportSettings');
 
-//Manage Scryer Stance Settings - Create button.
+//Manage Scryer Stance Settings (GUI)
 var scryerSettingsBtn = document.createElement("DIV");
 scryerSettingsBtn.setAttribute('class', 'btn btn-default');
 scryerSettingsBtn.setAttribute('onclick', 'autoToggle(\'scryerSettings\')');
@@ -168,7 +163,7 @@ var scryerSettingsadv = document.createElement("DIV");
 scryerSettingsadv.id = 'scryerSettings';
 scryerSettingsadv.style.display = 'none';
 document.getElementById("autoSettings").appendChild(scryerSettingsadv);
-//Manage settings - option buttons - Scryer settings
+//Manage settings - Scryer settings - buttons
 createSetting('UseScryerStance', 'Use Scryer Stance', 'Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Current point is to get Dark Essence. EXPERIMENTAL. This is the Master button. All other buttons have no effect if this one is off.', 'boolean',true,null,'scryerSettings');
 createSetting('ScryerMinZone', 'Min Zone', 'Minimum zone to start using scryer in.(inclusive) rec:(60 or 181)', 'value', '181', null, 'scryerSettings');
 createSetting('ScryerMaxZone', 'Max Zone', 'Zone to STOP using scryer at.(not inclusive) Use at your own discretion. rec: (0 or -1 to disable.)', 'value', '-1',null, 'scryerSettings');
@@ -178,29 +173,13 @@ createSetting('ScryerUseinVoidMaps2', ['Maybe Use in VoidMaps','Force Use in Voi
 createSetting('ScryerUseinSpire2', ['Maybe Use in Spire','Force Use in Spire'],'Maybe/Force Use in Spire. Does not have to be on for Overkill Button to use S in Spire. ', 'multitoggle', 0,null, 'scryerSettings');
 createSetting('ScryerSkipBoss2', ['Use on Cell 100 (Default)','Never Use on Cell 100 above VoidLevel','Never Use on Cell 100 (ALL Levels)'], 'Use=Default, Never Use: Above VoidLevel, or Never Use: ALL Levels(cell 100). Doesnt use Scrying stance for world Improbabilities/Bosses (cell 100) if you are past the level you have your voidmaps set to run at. (or all levels, if set.)', 'multitoggle', 0,null, 'scryerSettings');
 createSetting('ScryerSkipCorrupteds2', ['Default behavior on Corrupteds','Dont Use S on Corrupteds'], 'UNLESS you can overkill them. (Turning this on doesnt use S stance for corrupted cells UNLESS you can overkill them.) Off just means default (corrupteds are treated like normal cells), SO something else has to be ON to trigger Scryer to be used on normal as well as any corrupted cells.', 'multitoggle', 0,null, 'scryerSettings');
-//migrate old buttons. once.
-if (autoTrimpSettings["MigratedOldScryer1"] === undefined && (autoTrimpSettings["ScryerUseinMaps"])) {
-    autoTrimpSettings["ScryerUseinMaps2"].value = 1 * autoTrimpSettings["ScryerUseinMaps"].enabled;
-    settingChanged("ScryerUseinMaps2");settingChanged("ScryerUseinMaps2");
-    autoTrimpSettings["ScryerUseinVoidMaps2"].value = 1 * autoTrimpSettings["ScryerUseinVoidMaps"].enabled;
-    settingChanged("ScryerUseinVoidMaps2");settingChanged("ScryerUseinVoidMaps2");
-    autoTrimpSettings["ScryerUseinSpire2"].value = 1 * autoTrimpSettings["ScryerUseinSpire"].enabled;
-    settingChanged("ScryerUseinSpire2");settingChanged("ScryerUseinSpire2");
-    autoTrimpSettings["ScryerSkipBoss2"].value = 1 * autoTrimpSettings["ScryerSkipBossPastVoids"].enabled;
-    settingChanged("ScryerSkipBoss2");settingChanged("ScryerSkipBoss2");settingChanged("ScryerSkipBoss2");
-    autoTrimpSettings["ScryerSkipCorrupteds2"].value = 1 * autoTrimpSettings["ScryerSkipCorrupteds"].enabled;
-    settingChanged("ScryerSkipCorrupteds2");settingChanged("ScryerSkipCorrupteds2");settingChanged("ScryerSkipCorrupteds2");
-    createSetting('MigratedOldScryer1', 'Buttons have New Behavior', 'Migrated old scryer stance buttons (one time and onetime only). Will Disappear on refresh. The new buttons are multi-way toggle buttons. The buttons needed to be modified, and your settings migrated over.', 'boolean',true,null,'scryerSettings');    
-    saveSettings();
-}
-//createSetting('ScryerUseinSpireSafes', 'Use in Spire(Safes)', 'Use on Spire cells marked with the safe icons - high loot *50 metal reward.', 'boolean', false,null, 'scryerSettings');
-
-
+//Example:
 //createSetting('TEMPvarMultiToggle', ['TEMPvarMultiToggle0','TEMPvarMultiToggle1','TEMPvarMultiToggle2'], 'Master description for all 3 settings', 'multitoggle', 0, null, 'scryerSettings');
-
+//Pause Button:
 //moved pause-button to be more visible. has its own logic down in createSetting.
 createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps (not including the graphs module)', 'boolean', null, null, 'pause');
 
+//For importing a new AT Config on the fly and reloading/applying all the settings.
 function loadAutoTrimps() {
     var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r|\s)/gm,"");
     var tmpset = JSON.parse(thestring);
@@ -219,6 +198,7 @@ function loadAutoTrimps() {
     }
 }
 
+//Handler for the popup/tooltip window for Import/Export/Default
 function AutoTrimpsTooltip(what, isItIn, event) {
     if (game.global.lockTooltip) 
         return;
@@ -274,8 +254,8 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         ondisplay();
 }
 
+//This creates the entire DOM-structure for this page.
 function automationMenuInit() {
-
     var settingBtnSrch = document.getElementsByClassName("btn btn-default");
     for (var i = 0; i < settingBtnSrch.length; i++) {
         if (settingBtnSrch[i].getAttribute("onclick") === "toggleSettingsMenu()")
@@ -316,17 +296,14 @@ function automationMenuInit() {
     document.getElementById('portalTimer').setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
     document.getElementById('portalTimer').setAttribute('style', 'cursor: default');
 
-
     //create container for settings buttons
     document.getElementById("settingsRow").innerHTML += '<div id="autoSettings" style="display: none;margin-bottom: 2vw;margin-top: 2vw;"></div>';
    //shrink padding for fight buttons to help fit automaps button/status
     var btns = document.getElementsByClassName("fightBtn");
-        for (var x = 0; x < btns.length; x++){
-            btns[x].style.padding = "0.01vw 0.01vw";
-        }
-
+    for (var x = 0; x < btns.length; x++){
+        btns[x].style.padding = "0.01vw 0.01vw";
+    }
 }
-
 
 //toggles the display of the settings menu.
 function autoToggle(what){ 
@@ -364,11 +341,11 @@ function autoPlusSettingsMenu() {
     toggleSettingsMenu();
 }
     
-  
+//Universal function that creates sets up the Settings database, structures and associated graphic elements
 function createSetting(id, name, description, type, defaultValue, list, container) {
     var btnParent = document.createElement("DIV");
-   // btnParent.setAttribute('class', 'optionContainer');
-   btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; width: 14.5vw;');
+    // btnParent.setAttribute('class', 'optionContainer');
+    btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 1vw; margin-right: 1vw; margin-bottom: 1vw; width: 14.5vw;');
     var btn = document.createElement("DIV");
     btn.id = id;
     if (type == 'boolean') {
@@ -485,6 +462,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         autoTrimpSettings[id].description = description;    
 }
 
+//Default Toggler handler for any setting of the 3 special types (boolean, multitoggle, dropdown, and handle PrestigeBackup)
 function settingChanged(id) {
     var btn = autoTrimpSettings[id];
     if (btn.type == 'boolean') {
@@ -511,9 +489,7 @@ function settingChanged(id) {
     checkSettings();
 }
 
-
-
-
+//Popup Tooltip - ask them to enter some numerical input. (STANDARDIZED)
 function autoSetValueToolTip(id, text) {
     ranstring = text;
     var elem = document.getElementById("tooltipDiv");
@@ -535,13 +511,13 @@ function autoSetValueToolTip(id, text) {
     }
     box.focus();
 }
-
+//enter handler for popup
 function onKeyPressSetting(event, id) {
     if (event.which == 13 || event.keyCode == 13) {
         autoSetValue(id);
     }
 }
-
+//Custom Numer Box - Suffix handler for numerical to string values in the prompted popup
 function autoSetValue(id) {
     var num = 0;
     unlockTooltip();
@@ -599,7 +575,6 @@ function updateValueFields() {
 
 function updateCustomButtons() {
     //automaps button
-    
     if (autoTrimpSettings.AutoMaps.enabled) document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-success");
     else document.getElementById("autoMapBtn").setAttribute("class", "btn fightBtn btn-danger");
     //auto portal setting, hide until player has cleared zone 59
@@ -617,13 +592,4 @@ function updateCustomButtons() {
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('CustomAutoPortal').value = autoTrimpSettings.CustomAutoPortal.selected;
     document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
-    
-    //eliminate any prestige toggling due to function prestigeChanging() being called & modifying the internal setting and the line below making the UI setting reflect it .
-    //we want there to be a mismatch between the prestige settings in this case, but i have not figured out all the ramifications of skipping this check.
-    //hopefully nothing breaks.
-    //The check was manually inserted into the function delayStartAgain() in the main script, so it can grab the value at startup, and nothing more. From then on out its allowed to be mismatched, but only the Dynamic Prestige would allow it to be mismatched so thats fine. Sinec reloading the script will load the dynamic value instead of the user's set value, this alone was not ideal, and a way to "back up" the user setting was needed, and as such is now the method being used, as you can see from lines 56-61 in this file and instead, the BACKUP is loaded during the script's initial load.
-    
-    //document.getElementById('Prestige').value = autoTrimpSettings.Prestige.selected;
 }
-
-

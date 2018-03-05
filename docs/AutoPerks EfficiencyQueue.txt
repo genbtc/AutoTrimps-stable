@@ -1,3 +1,5 @@
+How AutoPerks Works:
+----------------------
 Get list of Ratio'ed Perks. 
 Create an Efficiency queue of each of the 16 perks. 
  - Current Level
