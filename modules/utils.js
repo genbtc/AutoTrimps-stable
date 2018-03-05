@@ -37,22 +37,22 @@ function getCorruptScale(type) {
     }
 }
 
-// Serialize automation settings
+// Serialize automation settings, reduce description of autoTrimpSettings and only keep valid data.
 function serializeSettings() {
     return JSON.stringify(Object.keys(autoTrimpSettings).reduce((v, k) => {
-            const el = autoTrimpSettings[k];
-            switch (el.type) {
-            case 'boolean':
-                return v[k] = el.enabled, v;
-            case 'value':
-            case 'valueNegative':
-            case 'multitoggle':
-                return v[k] = el.value, v;
-            case 'dropdown':
-                return v[k] = el.selected, v;
-            }
-            return v[k] = el, v; // ATversion, anything else unhandled by SettingsGUI
-        }, {}));
+        const el = autoTrimpSettings[k];
+        switch (el.type) {
+        case 'boolean':
+            return v[k] = el.enabled, v;
+        case 'value':
+        case 'valueNegative':
+        case 'multitoggle':
+            return v[k] = el.value, v;
+        case 'dropdown':
+            return v[k] = el.selected, v;
+        }
+        return v[k] = el, v; // ATversion, anything else unhandled by SettingsGUI
+    }, {}));
 }
 
 //Safe Set generic items (

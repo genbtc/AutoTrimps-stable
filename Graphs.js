@@ -448,7 +448,7 @@ function gatherInfo() {
     //Overkill cell tracking:
     if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
     //Detecting the liquification through liquimp - Crude attempt at this, need to store/track more data.
-    if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && game.global.gridArray && game.global.gridArray[0].name == "Liquimp")
+    if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp")
         GraphsVars.OVKcellsInWorld = 100;
         //if (game.stats.zonesLiquified.value > oldzonesLiquified)    //may come in handy; goes up by 1 each zone you liqui-kill.
     else
