@@ -153,17 +153,6 @@ var presetList = [preset_ZXV,preset_ZXVnew,preset_ZXV3,preset_TruthEarly,preset_
 //
 //BEGIN AUTOPERKS SCRIPT CODE:>>>>>>>>>>>>>>
 
-function safeSetItems(name,data) {
-    try {
-        localStorage.setItem(name, data);
-    } catch(e) {
-      if (e.code == 22) {
-        // Storage full, maybe notify user or do some clean-up
-        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
-      }
-    }
-}
-
 AutoPerks.saveDumpPerk = function() {
     var dumpIndex = document.getElementById("dumpPerk").selectedIndex;
     safeSetItems('AutoperkSelectedDumpPresetID', dumpIndex);

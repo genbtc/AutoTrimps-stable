@@ -55,11 +55,10 @@ function serializeSettings() {
         }, {}));
 }
 
-//Saves automation settings to browser cache
-function saveSettings() {
-    // debug('Saved');
+//Safe Set generic items (
+function safeSetItems(name,data) {
     try {
-        localStorage.setItem('autoTrimpSettings', serializeSettings());
+        localStorage.setItem(name, data);
     } catch(e) {
       if (e.code == 22) {
         // Storage full, maybe notify user or do some clean-up
@@ -68,8 +67,12 @@ function saveSettings() {
     }
 }
 
-//Grabs the automation settings from the page
+//Saves automation settings to browser cache
+function saveSettings() {
+    safeSetItems('autoTrimpSettings', serializeSettings());
+}
 
+//Grabs the automation settings from the page
 function getPageSetting(setting) {
     if (autoTrimpSettings.hasOwnProperty(setting) == false) {
         return false;

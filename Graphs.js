@@ -386,14 +386,7 @@ function pushData() {
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
-    try {
-        localStorage.setItem('allSaveData', JSON.stringify(allSaveData));
-    } catch(e) {
-      if (e.code == 22) {
-        // Storage full, maybe notify user or do some clean-up
-        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.","graph");
-      }
-    }
+    safeSetItems('allSaveData', JSON.stringify(allSaveData));
 }
 
 function initializeData() {
