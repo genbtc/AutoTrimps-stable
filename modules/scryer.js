@@ -1,3 +1,4 @@
+//MODULES["scryer"] = {};
 
 var wantToScry = false;
 //use S stance

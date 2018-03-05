@@ -1,42 +1,38 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
-// @version      2.1.6.0-genbtc-12-23-2017+Mod+Uni+coderpatsy
+// @version      2.1.6.4-genbtc-3-4-2018+Mod+Uni+coderpatsy
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.6.0-genbtc-12-23-2017+Mod+Uni+coderpatsy';
+var ATversion = '2.1.6.4-genbtc-3-4-2018+Mod+Uni+coderpatsy';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////
 var atscript = document.getElementById('AutoTrimps-script')
-  , base = 'https://genbtc.github.io/AutoTrimps/'
-  , module = 'modules/'
+  , basepath = 'https://genbtc.github.io/AutoTrimps/'
+  , modulepath = 'modules/'
   ;
+//This should redirect the script to wherever its being mirrored from.
 if (atscript !== null) {
-    base = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
+    basepath = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
 }
 //Load stuff needed to load other stuff:
-document.head.appendChild(document.createElement('script')).src = base + module + 'utils.js';
+document.head.appendChild(document.createElement('script')).src = basepath + modulepath + 'utils.js';
 
 function initializeAutoTrimps() {
     loadPageVariables();
-    document.head.appendChild(document.createElement('script')).src = base + 'NewUI2.js';
-    document.head.appendChild(document.createElement('script')).src = base + 'Graphs.js';
-    //Load modules:
-    var modules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'autostance', 'battlecalc', 'automaps', 'autobreedtimer', 'dynprestige', 'autofight', 'scryer', 'magma', 'portal', 'other'];
-    for (var i=0,len=modules.length; i<len; i++) {
-        document.head.appendChild(document.createElement('script')).src = base + module + modules[i] + '.js';
+    document.head.appendChild(document.createElement('script')).src = basepath + 'SettingsGUI.js';
+    document.head.appendChild(document.createElement('script')).src = basepath + 'Graphs.js';
+    //Load modulepaths:
+    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
+    for (var i=0,len=ATmodules.length; i<len; i++) {
+        document.head.appendChild(document.createElement('script')).src = basepath + modulepath + ATmodules[i] + '.js';
     }
-    //Autoperks
-    if (typeof(AutoPerks) === 'undefined')
-        document.head.appendChild(document.createElement('script')).src = base + module + 'autoperks.js';
-    else
-        debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!', '*spinner3');
     toggleSettingsMenu();
     toggleSettingsMenu();
     // dank dark graphs by Unihedron
@@ -44,7 +40,7 @@ function initializeAutoTrimps() {
         const $link = document.createElement('link');
         $link.rel = "stylesheet";
         $link.type = "text/css";
-        $link.href = base + 'dark-graph.css';
+        $link.href = basepath + 'dark-graph.css';
         document.head.appendChild($link);
     }
     //
@@ -53,7 +49,8 @@ function initializeAutoTrimps() {
 
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">12/23 v2.1.6.0 </b><b style="background-color:#32CD32"> New:</B> SpeedExplorer upgrade, ScryerInVoids can choose Never. Escape Button can now be pressed when Graphs is open to close it. \
+<br><b class="AutoEggs">3/4 v2.1.6.4 </b><b style="background-color:#32CD32"> New:</B> Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.\
+<br><b>3/1 v2.1.6.3 </b><b style="background-color:#32CD32"> New:</B> AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer - Fix bugs in autoperks around capable/fluffy allocating looting + more bugs\
 <br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"> @ AT Discord Channel</a></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
@@ -90,7 +87,7 @@ function delayStartAgain(){
 ////////////////////////////////////////
 
 var AutoTrimpsDebugTabVisible = true;
-var enableDebug = true; //Spam console
+var enableDebug = true; //Spam with console.log
 var autoTrimpSettings = {};
 
 var MODULES = {};

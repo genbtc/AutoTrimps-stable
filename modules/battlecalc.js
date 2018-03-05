@@ -1,3 +1,4 @@
+//MODULES["battlecalc"] = {};
 //what is either "health" or "attack" or "block"
 // function ripped from Trimps "updates.js" line 1009
 function getBattleStats(what,form,crit) {
@@ -236,6 +237,10 @@ function calcOurDmg(number,maxormin,disableStances,disableFlucts) { //number = b
     if (game.talents.healthStrength.purchased && mutations.Healthy.active()){
         number *= ((0.15 * mutations.Healthy.cellCount()) + 1);
     }
+    if (Fluffy.isActive()){
+        number *= Fluffy.getDamageModifier();
+    }
+    number *= (1 + (1 - game.empowerments.Ice.getCombatModifier()));
 
     if (game.global.challengeActive == "Daily"){
         if (typeof game.global.dailyChallenge.minDamage !== 'undefined'){

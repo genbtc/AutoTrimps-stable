@@ -1,5 +1,5 @@
-//AutoTrimps GUI - Current Version 2.1.5.8
-//maintained by genBTC, November 2017
+//AutoTrimps GUI - Current Version 2.1.6.4
+//maintained by genBTC, current as of 3/4/2018
 
 (function () {
     //create the Automation icon in the game bar
@@ -20,7 +20,7 @@ automationMenuSettingsInit();
 var link1 = document.createElement('link');
 link1.rel = "stylesheet";
 link1.type = "text/css";
-link1.href = base + 'tabs.css';
+link1.href = basepath + 'tabs.css';
 document.head.appendChild(link1);
 
 //Tab make helperfunctions
@@ -205,7 +205,7 @@ function initializeAllSettings() {
     createSetting('LumberjackRatio', 'Lumberjack Ratio', '', 'value', '1', null, "Settings");
     createSetting('MinerRatio', 'Miner Ratio', '', 'value', '1', null, "Settings");
     createSetting('MaxScientists', 'Max Scientists', 'Advanced. Cap your scientists. recommend: -1 (infinite still controls itself)', 'value', '-1', null, "Settings");
-    createSetting('MaxExplorers', 'Max Explorers', 'Cap your explorers, most of fragments are gained by looting not gathering. recommend: 150', 'value', '150', null, "Settings");
+    createSetting('MaxExplorers', 'Max Explorers', 'Advanced. Cap your explorers. recommend: -1', 'value', '-1', null, "Settings");
     createSetting('MaxTrainers', 'Max Trainers', 'Advanced. Cap your trainers. recommend: -1', 'value', '-1', null, "Settings");
     createSetting('MaxHut', 'Max Huts', 'Huts', 'value', '100', null, "Settings");
     createSetting('MaxHouse', 'Max Houses', 'Houses', 'value', '100', null, "Settings");
@@ -290,9 +290,9 @@ function initializeAllSettings() {
 
 // Nature settings:
     createSetting('AutoNatureTokens', 'Spend Nature Tokens', '<b>MASTER BUTTON</b> Automatically spend or convert nature tokens.', 'boolean', false, null, 'Nature');
-    createSetting('AutoPoison', 'Poison', 'Spend/convert Poison tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Wind', 'Convert to Ice'], 'Nature');
-    createSetting('AutoWind', 'Wind', 'Spend/convert Wind tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Poison', 'Convert to Ice'], 'Nature');
-    createSetting('AutoIce', 'Ice', 'Spend/convert Ice tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Poison', 'Convert to Wind'], 'Nature');
+    createSetting('AutoPoison', 'Poison', 'Spend/convert Poison tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Wind', 'Convert to Ice', 'Convert to Both'], 'Nature');
+    createSetting('AutoWind', 'Wind', 'Spend/convert Wind tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Poison', 'Convert to Ice', 'Convert to Both'], 'Nature');
+    createSetting('AutoIce', 'Ice', 'Spend/convert Ice tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Poison', 'Convert to Wind', 'Convert to Both'], 'Nature');
 
 //Spam settings:
     createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Spam');
@@ -302,12 +302,15 @@ function initializeAllSettings() {
     createSetting('SpamOther', 'Other Spam', 'Other Spam = Better Auto Fight, Trimpicide, Robotrimp, AutoMagmamancers', 'boolean', true, null, 'Spam');
     createSetting('SpamBuilding', 'Building Spam', 'Building Spam = all buildings, even storage', 'boolean', false, null, 'Spam');
     createSetting('SpamJobs', 'Job Spam', 'Job Spam = All jobs, in scientific notation', 'boolean', false, null, 'Spam');
+    createSetting('SpamGraphs', 'Starting Zone Spam', 'Disables \'Starting new Zone ###\' and any future Graph Spam that comes from graph logs.', 'boolean', true, null, 'Spam');
+    
 
 // Export/Import/Default settings
     createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
+    createSetting('allowSettingsUpload', 'Allow Settings Upload for Analytics', 'Uploads your current AUTOTRIMPS settings file (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 3KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, your helium amount, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
     //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
     //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
@@ -1017,12 +1020,11 @@ function checkPortalSettings() {
 //Add breeding box:
 var breedbarContainer = document.querySelector('#trimps > div.row');
 var addbreedTimerContainer = document.createElement("DIV");
-addbreedTimerContainer.setAttribute('class', "col-xs-3");
-addbreedTimerContainer.setAttribute('style', 'padding-left: 0;');
-addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now (capped at 30 obv.) This number is what BetterAutoFight #4 refers to when it says NextGroupBreedTimer.\")');
+addbreedTimerContainer.setAttribute('class', "col-xs-11");
+addbreedTimerContainer.setAttribute('style', 'padding-right: 0;');
+addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now. This number is what BetterAutoFight #4 refers to when it says NextGroupBreedTimer.\")');
 addbreedTimerContainer.setAttribute("onmouseout", 'tooltip("hide")');
 var addbreedTimerInside = document.createElement("DIV");
-addbreedTimerInside.id = 'turkimpBuff';
 addbreedTimerInside.setAttribute('style', 'display: block;');
 var addbreedTimerInsideIcon = document.createElement("SPAN");
 addbreedTimerInsideIcon.setAttribute('class', "icomoon icon-clock");
@@ -1032,7 +1034,6 @@ addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
 addbreedTimerInside.appendChild(addbreedTimerInsideText);
 addbreedTimerContainer.appendChild(addbreedTimerInside);
 breedbarContainer.appendChild(addbreedTimerContainer);
-//Add tooltip to current army count
 var armycount = document.getElementById('trimpsFighting');
 
 function addToolTipToArmyCount() {

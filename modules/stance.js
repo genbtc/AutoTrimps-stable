@@ -1,7 +1,8 @@
+//MODULES["stance"] = {};
 
 function calcBaseDamageinX() {
     //baseDamage
-    baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2));
+    baseDamage = game.global.soldierCurrentAttack * (1 + (game.global.achievementBonus / 100)) * ((game.global.antiStacks * game.portal.Anticipation.level * game.portal.Anticipation.modifier) + 1) * (1 + (game.global.roboTrimpLevel * 0.2)) * (1 + (game.global.totalSquaredReward / 100)) * (game.talents.stillRowing2.purchased ? (1 + (0.06 * game.global.spireRows)) : 1) * (game.talents.healthStrength.purchased ? (1 + (0.15 * mutations.Healthy.cellCount())) : 1) * (Fluffy.isActive() ? Fluffy.getDamageModifier() : 1) * (1 + (1 - game.empowerments.Ice.getCombatModifier())) * (game.talents.magmamancer.purchased ? game.jobs.Magmamancer.getBonusPercent() : 1);
     if (game.global.challengeActive == "Daily"){
         if (typeof game.global.dailyChallenge.weakness !== 'undefined'){
             baseDamage *= dailyModifiers.weakness.getMult(game.global.dailyChallenge.weakness.strength, game.global.dailyChallenge.weakness.stacks);
@@ -369,8 +370,7 @@ function autoStance2() {
     var xExplosionOK = true;
     var dExplosionOK = true;
     if (typeof game.global.dailyChallenge['explosive'] !== 'undefined') {
-        var dExplosion = 0;
-        var xExplosion = 0;
+        var explosionDmg = 0;
         var explosiveDamage = 1 + game.global.dailyChallenge['explosive'].strength;
         
         var playerCritMult = getPlayerCritChance() ? getPlayerCritDamageMult() : 1;
@@ -378,10 +378,9 @@ function autoStance2() {
         var playerXCritDmg = (baseDamage) * playerCritMult;
   
         // I don't know if I have to use x or d damage or just the base damage multiplier for this calculation.
-        xExplosion = xDamage * explosiveDamage;
-        dExplosion = dDamage * explosiveDamage;
-        xExplosionOK = ((xHealth - missingHealth > xExplosion) || (enemyHealth > playerXCritDmg));
-        dExplosionOK = ((dHealth - missingHealth > dExplosion) || (enemyHealth > playerDCritDmg));
+        explosionDmg = calcBadGuyDmg(enemy,null,true,true) * explosiveDamage;
+        xExplosionOK = ((xHealth - missingHealth > explosionDmg) || (enemyHealth > playerXCritDmg));
+        dExplosionOK = (newSquadRdy || (dHealth - missingHealth > explosionDmg) || (enemyHealth > playerDCritDmg));
     }
     
     //lead attack ok if challenge isn't lead, or we are going to one shot them, or we can survive the lead damage

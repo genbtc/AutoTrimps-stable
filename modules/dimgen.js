@@ -1,8 +1,10 @@
-MODULES["autodimgen"] = {};
-MODULES["autodimgen"].FuelOnlyZone = 250;
-MODULES["autodimgen"].HybridZone = 250;
-MODULES["autodimgen"].MagmiteZone = 400;
-MODULES["autodimgen"].FuelOnlyOverclock = false;
+MODULES["dimgen"] = {};
+//This Dimensional Generator has likely been ==DEPRECATED== in favor of Magmite.js which is a complete Magma management system. 
+// If you choose to enable the simpler one, replace 'magmite' with 'dimgen' on line 32 of AutoTrimps2.js - var ATmodules = [...]
+MODULES["dimgen"].FuelOnlyZone = 250;
+MODULES["dimgen"].HybridZone = 250;
+MODULES["dimgen"].MagmiteZone = 400;
+MODULES["dimgen"].FuelOnlyOverclock = false;
 
 //Initialize Global Vars (dont mess with these ones, nothing good can come from it).
 var mapsForFuel = false;
@@ -12,7 +14,7 @@ function autodimgen() {
     if (game.global.word < 230) {
         return;
     }
-    var customVars = MODULES["autodimgen"];
+    var customVars = MODULES["dimgen"];
     var fuelCap = getGeneratorFuelCap();
     var autoCurrentFuel = game.global.magmaFuel;
     var fuelPerCurrentCell = Math.min(game.generatorUpgrades.Supply.modifier, 0.2 + ((game.global.world - 230) * 0.01))

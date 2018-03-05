@@ -9,6 +9,11 @@ Automation script for the idle incremental game Trimps, based on the zininzinin 
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
 ## Current Version (full changes below)
+- v2.1.6.4 - March 4, 2018
+- v2.1.6.3 - March 3, 2018
+- v2.1.6.2 - March 2, 2018
+- v2.1.6.1 - March 1, 2018
+- v2.1.6.0 - December 23, 2018
 - v2.1.5.7 - November 7,2017 = Merge in DerSkagg's GoldenUpgrades Mod (Pull request #90) (thanks Derskagg)
 - v2.1.5.6 - August 26, 2017 = Merge ALL of Unihedro branch back into genBTC branch. (thanks UniHedro)
 - v2.1.5.4 - August 26, 2017 = Added AutoDimGen + little fixes (FirenX)

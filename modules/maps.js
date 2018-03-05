@@ -1,31 +1,31 @@
-MODULES["automaps"] = {};
+MODULES["maps"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["automaps"].enoughDamageCutoff = 4; //above this the game will do maps for map bonus stacks
-MODULES["automaps"].farmingCutoff = 16;     //above this the game will farm.
-MODULES["automaps"].numHitsSurvived = 8;    //survive X hits in D stance or not enough Health.
-MODULES["automaps"].LeadfarmingCutoff = 10; //lead has its own farmingCutoff
-MODULES["automaps"].NomfarmingCutoff = 10;  //nom has its own farmingCutoff
-MODULES["automaps"].NurseryMapLevel = 50;   //with blacksmithery, run map for nursery on this level
+MODULES["maps"].enoughDamageCutoff = 4; //above this the game will do maps for map bonus stacks
+MODULES["maps"].farmingCutoff = 16;     //above this the game will farm.
+MODULES["maps"].numHitsSurvived = 8;    //survive X hits in D stance or not enough Health.
+MODULES["maps"].LeadfarmingCutoff = 10; //lead has its own farmingCutoff
+MODULES["maps"].NomfarmingCutoff = 10;  //nom has its own farmingCutoff
+MODULES["maps"].NurseryMapLevel = 50;   //with blacksmithery, run map for nursery on this level
 //if FarmWhenNomStacks7 setting is on   = [x, y, z];
-MODULES["automaps"].NomFarmStacksCutoff = [7,30,100];
+MODULES["maps"].NomFarmStacksCutoff = [7,30,100];
 //[x] get maxMapBonus (10) if we go above (7) stacks on Improbability (boss)
 //[y] go into maps on (30) stacks on Improbability (boss), farm until we fall under the 'NomfarmingCutoff' (10)
 //[z] restarts your voidmap if you hit (100) stacks
-MODULES["automaps"].MapTierZone = [72,47,16];    //descending order for these.
+MODULES["maps"].MapTierZone = [72,47,16];    //descending order for these.
 //                 .MapTier?Sliders = [size,difficulty,loot,biome];
-MODULES["automaps"].MapTier0Sliders = [9,9,9,'Mountain'];   //Zone 72+ (old: 9/9/9 Metal)
-MODULES["automaps"].MapTier1Sliders = [9,9,9,'Depths']; //Zone 47-72 (old: 9/9/4 Metal)
-MODULES["automaps"].MapTier2Sliders = [9,9,9,'Random'];   //Zone 16-47 (old: 9/9/0 Random)
-MODULES["automaps"].MapTier3Sliders = [9,9,9,'Random'];    //Zone 6-16 (old: 9/0/0 Random)
-MODULES["automaps"].preferGardens = !getPageSetting('PreferMetal');   //prefer run Garden maps instead of ^^ if we have Decay done
-MODULES["automaps"].maxMapBonus = 10;       //cap how many maps are run during Want More Damage mode
-MODULES["automaps"].wantHealthMapBonus = 10;//cap how many maps are run during Want More Health mode
-MODULES["automaps"].SpireFarm199Maps = true;   //this will farm spire on 199 maps instead of 200 maps when Map Reducer is bought
-MODULES["automaps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
-MODULES["automaps"].shouldFarmCell = 59;
-MODULES["automaps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
-MODULES["automaps"].UnearnedPrestigesRequired = 2;
-MODULES["automaps"].maxMapBonusAfterZ = MODULES["automaps"].maxMapBonus;   //Max Map Bonus After Zone uses this many stacks 
+MODULES["maps"].MapTier0Sliders = [9,9,9,'Mountain'];   //Zone 72+ (old: 9/9/9 Metal)
+MODULES["maps"].MapTier1Sliders = [9,9,9,'Depths']; //Zone 47-72 (old: 9/9/4 Metal)
+MODULES["maps"].MapTier2Sliders = [9,9,9,'Random'];   //Zone 16-47 (old: 9/9/0 Random)
+MODULES["maps"].MapTier3Sliders = [9,9,9,'Random'];    //Zone 6-16 (old: 9/0/0 Random)
+MODULES["maps"].preferGardens = !getPageSetting('PreferMetal');   //prefer run Garden maps instead of ^^ if we have Decay done
+MODULES["maps"].maxMapBonus = 10;       //cap how many maps are run during Want More Damage mode
+MODULES["maps"].wantHealthMapBonus = 10;//cap how many maps are run during Want More Health mode
+MODULES["maps"].SpireFarm199Maps = true;   //this will farm spire on 199 maps instead of 200 maps when Map Reducer is bought
+MODULES["maps"].watchChallengeMaps = [15, 25, 35, 50];  //during 'watch' challenge, run maps on these levels:
+MODULES["maps"].shouldFarmCell = 59;
+MODULES["maps"].SkipNumUnboughtPrestiges = 2;   //exceeding this number of unbought prestiges will trigger a skip of prestige mode.
+MODULES["maps"].UnearnedPrestigesRequired = 2;
+MODULES["maps"].maxMapBonusAfterZ = MODULES["maps"].maxMapBonus;   //Max Map Bonus After Zone uses this many stacks 
                                                                  //- init as default value (10). user can set if they want.
 
 
@@ -51,7 +51,7 @@ var doMaxMapBonus = false;
 //AutoMap - function originally created by Belaith (in 1971)
 //anything/everything to do with maps.
 function autoMap() {
-    var customVars = MODULES["automaps"];
+    var customVars = MODULES["maps"];
     //allow script to handle abandoning
     // if(game.options.menu.alwaysAbandon.enabled == 1) toggleSetting('alwaysAbandon');
     //if we are prestige mapping, force equip first mode
@@ -538,7 +538,7 @@ function autoMap() {
         if (selectedMap == "world") {
             //if preSpireFarming x minutes is true, switch over from wood maps to metal maps.
             if (preSpireFarming) {
-                var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["automaps"].SpireFarm199Maps) ? game.global.world - 1 : game.global.world;
+                var spiremaplvl = (game.talents.mapLoot.purchased && MODULES["maps"].SpireFarm199Maps) ? game.global.world - 1 : game.global.world;
                 if (game.global.mapsOwnedArray[highestMap].level >= spiremaplvl && game.global.mapsOwnedArray[highestMap].location == ((customVars.preferGardens && game.global.decayDone) ? 'Plentiful' : 'Mountain'))
                     selectedMap = game.global.mapsOwnedArray[highestMap].id;
                 else
@@ -679,7 +679,7 @@ function autoMap() {
             adjustMap('loot', tier[2]);
             biomeAdvMapsSelect.value = useGardens ? "Plentiful" : tier[3];
             //choose spire level 199 or 200
-            if (preSpireFarming && MODULES["automaps"].SpireFarm199Maps)
+            if (preSpireFarming && MODULES["maps"].SpireFarm199Maps)
                 document.getElementById("mapLevelInput").value = game.talents.mapLoot.purchased ? game.global.world - 1 : game.global.world;
             //recalculate cost.
             updateMapCost();

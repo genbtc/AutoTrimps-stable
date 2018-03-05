@@ -1,16 +1,16 @@
-MODULES["autobreedtimer"] = {};
+MODULES["breedtimer"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["autobreedtimer"].buyGensIncrement = 1;     //Buy this many geneticists at a time   (not needed much with new gen. code)
-MODULES["autobreedtimer"].fireGensIncrement = 10;   //Fire this many geneticists at a time  (not needed much with new gen. code)
-MODULES["autobreedtimer"].fireGensFloor = 10;       //Dont FIRE below this number (nothing to do with hiring up to it)(maybe is disregarded?)
-MODULES["autobreedtimer"].breedFireOn = 6;          //turn breedfire on at X seconds (if BreedFire)
-MODULES["autobreedtimer"].breedFireOff = 2;         //turn breedfire off at X seconds(if BreedFire)
-MODULES["autobreedtimer"].killTitimpStacks = 5;     //number of titimp stacks difference that must exist to Force Abandon
-MODULES["autobreedtimer"].voidCheckPercent = 95;    //Void Check health %, for force-Abandon during voidmap, if it dips below this during the Void  (maybe this should be in automaps module)
+MODULES["breedtimer"].buyGensIncrement = 1;     //Buy this many geneticists at a time   (not needed much with new gen. code)
+MODULES["breedtimer"].fireGensIncrement = 10;   //Fire this many geneticists at a time  (not needed much with new gen. code)
+MODULES["breedtimer"].fireGensFloor = 10;       //Dont FIRE below this number (nothing to do with hiring up to it)(maybe is disregarded?)
+MODULES["breedtimer"].breedFireOn = 6;          //turn breedfire on at X seconds (if BreedFire)
+MODULES["breedtimer"].breedFireOff = 2;         //turn breedfire off at X seconds(if BreedFire)
+MODULES["breedtimer"].killTitimpStacks = 5;     //number of titimp stacks difference that must exist to Force Abandon
+MODULES["breedtimer"].voidCheckPercent = 95;    //Void Check health %, for force-Abandon during voidmap, if it dips below this during the Void  (maybe this should be in automaps module)
 
 //Controls "Auto Breed Timer" and "Geneticist Timer" - adjust geneticists to reach desired breed timer
 function autoBreedTimer() {
-    var customVars = MODULES["autobreedtimer"];
+    var customVars = MODULES["breedtimer"];
     var fWorkers = Math.ceil(game.resources.trimps.realMax() / 2) - game.resources.trimps.employed;
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var defaultBreedTimer = game.talents.patience.purchased && getPageSetting('UsePatience') ? 45 : 30;
@@ -106,7 +106,7 @@ function autoBreedTimer() {
 
 //Abandon trimps function that should handle all special cases.
 function abandonVoidMap() {
-    var customVars = MODULES["autobreedtimer"];
+    var customVars = MODULES["breedtimer"];
     //do nothing if the button isnt set to on.
     if (!getPageSetting('ForceAbandon')) return;
     //exit out of the voidmap if we go back into void-farm-for-health mode (less than 95%, account for some leeway during equipment buying.)

@@ -1,11 +1,11 @@
-MODULES["autofight"] = {};
+MODULES["fight"] = {};
 //These can be changed (in the console) if you know what you're doing:
-MODULES["autofight"].breedTimerCutoff1 = 2;
-MODULES["autofight"].breedTimerCutoff2 = 0.5;
+MODULES["fight"].breedTimerCutoff1 = 2;
+MODULES["fight"].breedTimerCutoff2 = 0.5;
 
 //old: Handles manual fighting automatically, in a different way.
 function betterAutoFight() {
-    var customVars = MODULES["autofight"];
+    var customVars = MODULES["fight"];
     if (game.global.autoBattle && !game.global.pauseFight)
         pauseFight(); //Disable built-in autofight
     if (game.global.gridArray.length === 0 || game.global.preMapsActive || !game.upgrades.Battle.done) return;  //sanity check. stops error message on z1 right after portal
@@ -29,7 +29,7 @@ function betterAutoFight() {
 
 //NEW:: 2nd algorithm for Better Auto Fight
 function betterAutoFight2() {
-    var customVars = MODULES["autofight"];
+    var customVars = MODULES["fight"];
     if (game.global.autoBattle && !game.global.pauseFight)
         pauseFight();   //Disable built-in autofight
     if (game.global.gridArray.length === 0 || game.global.preMapsActive || !game.upgrades.Battle.done || game.global.fighting)
