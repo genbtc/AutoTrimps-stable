@@ -3,7 +3,7 @@ var allSaveData = [];
 var graphData = [];
 var tmpGraphData = JSON.parse(localStorage.getItem('allSaveData'));
 if (tmpGraphData !== null) {
-    console.log('Got allSaveData. Yay!');
+    console.log('Graphs: Found allSaveData (portal runs data). Yay!');
     allSaveData = tmpGraphData;
 }
 
@@ -452,14 +452,15 @@ function gatherInfo() {
         GraphsVars.ZoneStartTime = 0;
         GraphsVars.MapBonus = 0;
     }
-
-    //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
+    //Overkill cell tracking:
     if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
-        GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
     //Detecting the liquification through liquimp - Crude attempt at this, need to store/track more data.
     if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && game.global.gridArray && game.global.gridArray[0].name == "Liquimp")
         GraphsVars.OVKcellsInWorld = 100;
         //if (game.stats.zonesLiquified.value > oldzonesLiquified)    //may come in handy; goes up by 1 each zone you liqui-kill.
+    else
+        //track how many overkill world cells we have beaten in the current level. (game.stats.cellsOverkilled.value for the entire run)
+        GraphsVars.OVKcellsInWorld = document.getElementById("grid").getElementsByClassName("cellColorOverkill").length;
     //track time in each zone for better graphs
     GraphsVars.ZoneStartTime = new Date().getTime() - game.global.zoneStarted;
     //track MapBonus
@@ -979,11 +980,7 @@ function setGraphData(graph) {
                     }
                 }
                 if(currentZone < allSaveData[i].world && currentZone != -1) {
-                    var num;
-                    if (typeof allSaveData[i].overkill == "object")
-                        num = allSaveData[i].overkill[1];
-                    else if (typeof allSaveData[i].overkill == "number")
-                        num = allSaveData[i].overkill;
+                    var num = allSaveData[i].overkill;
                     if (num)
                         graphData[graphData.length - 1].data.push(num);
                 }
