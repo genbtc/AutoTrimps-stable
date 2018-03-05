@@ -25,7 +25,7 @@ document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style
 document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;font-size: 1em;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
 //Create the buttons in the graph Footer:
 //Create the dropdown for what graph to show    (these correspond to headings in setGraph() and have to match)
-var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells', 'Magmite'];
+var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells', 'Magmite', 'Magmamancers'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 //btn.setAttribute("style", "");
@@ -382,7 +382,8 @@ function pushData() {
         overkill: GraphsVars.OVKcellsInWorld,
         zonetime: GraphsVars.ZoneStartTime,
         mapbonus: GraphsVars.MapBonus,
-        magmite: game.global.magmite
+        magmite: game.global.magmite,
+        magmamancers: game.jobs.Magmamancer.owned
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
@@ -904,6 +905,13 @@ function setGraphData(graph) {
             break;
         case 'Magmite':
             graphData = allPurposeGraph('magmite',true,"number");
+            title = 'Total Magmite Owned';
+            xTitle = 'Zone';
+            yTitle = 'Magmite';
+            yType = 'Linear';
+            break;
+        case 'Magmamancers':
+            graphData = allPurposeGraph('magmamancers',true,"number");
             title = 'Total Magmite Owned';
             xTitle = 'Zone';
             yTitle = 'Magmite';
