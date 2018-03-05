@@ -1,5 +1,3 @@
-
-
 (function(M)
 {
 	M["fightinfo"] = {};
@@ -125,14 +123,8 @@
 				$cell.style.color = M["fightinfo"].colors.powerful;
 				$cell.style.textShadow = '0px 0px 5px rgba(255, 255, 255, 1)';
 			}		
-
-			//console.log($cell, cell)
 		}
-
-
 	}
 
 	M["fightinfo"].Update = Update;
 })(MODULES)
-
-//game.badGuys
