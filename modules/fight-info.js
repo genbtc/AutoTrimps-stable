@@ -48,10 +48,11 @@
 		if(game.global.mapsActive)
 		{
 			// Check if current map already infoed
-			if(M["fightinfo"].lastProcessedMap === null || M["fightinfo"].lastProcessedMap !== game.global.lookingAtMap)
+			// Can't do this because of map repeating
+			/*if(M["fightinfo"].lastProcessedMap === null || M["fightinfo"].lastProcessedMap !== game.global.lookingAtMap)
 				M["fightinfo"].lastProcessedMap = game.global.lookingAtMap;
 			else
-				return;
+				return;*/
 
 			// Cell data
 			var cells = game.global.mapGridArray;
