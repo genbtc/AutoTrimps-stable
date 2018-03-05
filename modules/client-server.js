@@ -74,6 +74,6 @@ ATServer.UploadSettings = function() {
     ATServer.Upload(ulData);
     console.log("AutoTrimps Settings File was Uploaded for analytics/usage! This is controlled with a new button on AT's Import/Export tab.");
 }
-if (autoTrimpSettings.allowSettingsUpload) {
+if (getPageSetting('allowSettingsUpload')) {
     ATServer.UploadSettings();
 }
