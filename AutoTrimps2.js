@@ -239,7 +239,9 @@ function mainLoop() {
 //GUI Updates happen on this thread, every 1000ms, concurrently
 function guiLoop() {
     updateCustomButtons();
-    MODULES["fightinfo"].Update();
+
+    if(autoTrimpSettings['EnhanceGrids'].enabled)
+        MODULES["fightinfo"].Update();
 }
 
 // Userscript loader. write your own!
