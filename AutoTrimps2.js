@@ -56,7 +56,7 @@ function initializeAutoTrimps() {
 //Other function should be made to create a DOM element for this, scrape the API data into it, and then print tooltip with header/footer.
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">3/7 v2.1.6.5 </b><b style="background-color:#32CD32"> New:</B> Minor Changes. Magmamancer graph. Continue Development on long TODO list... \
+<br><b class="AutoEggs">3/7 v2.1.6.5 </b><b style="background-color:#32CD32"> New:</B> Minor Changes. Magmamancer graph. Magmite/Magma Spam disableable. Continue Development on long TODO list... \
 <br><b>3/4 v2.1.6.4 </b> Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.\
 <br><b>3/1 v2.1.6.3 </b> AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer - Fix bugs in autoperks around capable/fluffy allocating looting + more bugs\
 <br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
@@ -68,10 +68,11 @@ function printChangelog() {
 //Main DELAY Loop///////////////////////
 ////////////////////////////////////////
 
-//Magic Numbers/////////////////////////
+//Magic Numbers
 var runInterval = 100;      //How often to loop through logic
 var startupDelay = 2000;    //How long to wait for everything to load
 
+//Start Loops
 setTimeout(delayStart, startupDelay);
 function delayStart() {
     initializeAutoTrimps();
@@ -93,14 +94,15 @@ function delayStartAgain(){
 //Global Main vars /////////////////////
 ////////////////////////////////////////
 ////////////////////////////////////////
+var ATrunning = true;   //status var
+var ATmessageLogTabVisible = true;    //show an AutoTrimps tab after Story/Loot/Unlocks/Combat message Log Container
+var enableDebug = true; //Spam console.log with debug info
 
-var AutoTrimpsDebugTabVisible = true;
-var enableDebug = true; //Spam with console.log
 var autoTrimpSettings = {};
-
 var MODULES = {};
 var MODULESdefault = {};
-var autoTrimpVariables = {};
+var ATMODULES = {};
+
 var bestBuilding;
 var scienceNeeded;
 var breedFire = false;
@@ -118,15 +120,13 @@ var preBuyFiring;
 var preBuyTooltip;
 var preBuymaxSplit;
 
-var ATrunning = true;
-var magmiteSpenderChanged = false;
-
 var currentworld = 0;
 var lastrunworld = 0;
 var aWholeNewWorld = false;
 var needGymystic = true;
 var heirloomFlag = false;
 var heirloomCache = game.global.heirloomsExtra.length;
+var magmiteSpenderChanged = false;
 
 //reset stuff that may not have gotten cleaned up on portal
 function mainCleanup() {

@@ -219,7 +219,7 @@ var lastmessagecount = 1;
 function message2(messageString, type, lootIcon, extraClass) {
     var log = document.getElementById("log");
     var needsScroll = ((log.scrollTop + 10) > (log.scrollHeight - log.clientHeight));
-    var displayType = (AutoTrimpsDebugTabVisible) ? "block" : "none";
+    var displayType = (ATmessageLogTabVisible) ? "block" : "none";
     var prefix = "";
     if (lootIcon && lootIcon.charAt(0) == "*") {
         lootIcon = lootIcon.replace("*", "");
@@ -275,8 +275,8 @@ document.getElementById('logBtnGroup').appendChild(tab);
 function filterMessage2(what){
     var log = document.getElementById("log");
 
-    displayed = (AutoTrimpsDebugTabVisible) ? false : true;
-    AutoTrimpsDebugTabVisible = displayed;
+    displayed = (ATmessageLogTabVisible) ? false : true;
+    ATmessageLogTabVisible = displayed;
 
     var toChange = document.getElementsByClassName(what + "Message");
     var btnText = (displayed) ? what : what + " off";

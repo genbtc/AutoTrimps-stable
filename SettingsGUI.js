@@ -499,20 +499,20 @@ function importModuleVars() {
         return;
     }
 //    resetModuleVars(tmpset);
-    localStorage.removeItem('autoTrimpVariables');
-    localStorage.setItem('autoTrimpVariables', JSON.stringify(tmpset));
+    localStorage.removeItem('ATMODULES');
+    localStorage.setItem('ATMODULES', JSON.stringify(tmpset));
 }
 
 //reset MODULE variables to default, (and/or then import)
 function resetModuleVars(imported) {
     ATrunning = false; //stop AT, wait, remove
     function waitRemoveLoad(imported) {
-        localStorage.removeItem('autoTrimpVariables');
+        localStorage.removeItem('ATMODULES');
         MODULES = JSON.parse(JSON.stringify(MODULESdefault));
         //load everything again, anew
         // debug('Saved');
         try {
-            localStorage.setItem('autoTrimpVariables', JSON.stringify(autoTrimpVariables));
+            localStorage.setItem('ATMODULES', JSON.stringify(ATMODULES));
         } catch(e) {
           if (e.code == 22) {
             // Storage full, maybe notify user or do some clean-up
