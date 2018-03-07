@@ -1,4 +1,4 @@
-(function(M)
+;(function(M)
 {
 	M["fightinfo"] = {};
 	M["fightinfo"].$worldGrid = document.getElementById('grid');
@@ -128,4 +128,4 @@
 	}
 
 	M["fightinfo"].Update = Update;
-})(MODULES)
+})(MODULES);

@@ -298,6 +298,9 @@ function initializeAllSettings() {
 
 //UI settings:
     createSetting('EnhanceGrids', 'Enhance Grids', 'Apply visual enhancements to world and map grids', 'boolean', false, null, 'UI');
+    console.log(MODULES)
+    createSetting('EnableAFK', 'Enable AFK', 'Enables CPU and RAM saving AFK-mode', 'action', MODULES["performance"].EnableAFKMode, null, 'UI');
+
 //Spam settings:
     createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Spam');
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Spam');
@@ -756,6 +759,26 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
     }
+    else if(type === 'action')
+    {
+        btn.setAttribute("style", "font-size: 1.1vw;");
+        btn.setAttribute('class', 'noselect settingsBtn settingBtntrue');
+
+        btn.addEventListener('click', function()
+        {
+            if(typeof defaultValue !== 'undefined' && typeof defaultValue === 'function')
+                defaultValue();
+        });
+
+        btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
+        btn.setAttribute("onmouseout", 'tooltip("hide")');
+        btn.textContent = name;
+        btnParent.appendChild(btn);
+        if (container) document.getElementById(container).appendChild(btnParent);
+        else document.getElementById("autoSettings").appendChild(btnParent);
+
+        
+    }
     //make sure names/descriptions match what we have stored.
     if (autoTrimpSettings[id].name != name)
         autoTrimpSettings[id].name = name;
@@ -797,7 +820,6 @@ function settingChanged(id) {
     if ((autoTrimpSettings.AutoGen2.value == 3) && game.generatorUpgrades["Overclocker"].upgrades <= 0)
         tooltip('confirm', null, 'update', 'WARNING: You are set to Overclock but do not have any Overclocker upgrades. AutoGen2 will default to \'Max Cap\' in this case. If this is not desired, please fix your AutoGen2 setting.', 'cancelTooltip()', 'Cannot Overclock');
 }
-
 
 function autoSetValueToolTip(id, text,negative) {
     ranstring = text;
