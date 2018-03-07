@@ -56,8 +56,9 @@ function initializeAutoTrimps() {
 //Other function should be made to create a DOM element for this, scrape the API data into it, and then print tooltip with header/footer.
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">3/4 v2.1.6.4 </b><b style="background-color:#32CD32"> New:</B> Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.\
-<br><b>3/1 v2.1.6.3 </b><b style="background-color:#32CD32"> New:</B> AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer - Fix bugs in autoperks around capable/fluffy allocating looting + more bugs\
+<br><b class="AutoEggs">3/7 v2.1.6.5 </b><b style="background-color:#32CD32"> New:</B> Minor Changes. Magmamancer graph. Continue Development on long TODO list... \
+<br><b>3/4 v2.1.6.4 </b> Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.\
+<br><b>3/1 v2.1.6.3 </b> AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer - Fix bugs in autoperks around capable/fluffy allocating looting + more bugs\
 <br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"> @ AT Discord Channel</a></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
@@ -119,7 +120,6 @@ var preBuymaxSplit;
 
 var ATrunning = true;
 var magmiteSpenderChanged = false;
-var BAFsetting, oldBAFsetting;
 
 var currentworld = 0;
 var lastrunworld = 0;
@@ -169,10 +169,7 @@ function mainLoop() {
 
     if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades) return;
     game.global.addonUser = true;
-    game.global.autotrimps = {
-        firstgiga: getPageSetting('FirstGigastation'),
-        deltagiga: getPageSetting('DeltaGigastation')
-    }
+    game.global.autotrimps = true;
     if (aWholeNewWorld) {
         // Auto-close dialogues.
         switch (document.getElementById('tipTitle').innerHTML) {
@@ -216,13 +213,7 @@ function mainLoop() {
     else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"       (")
     if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magma.js)
 
-    BAFsetting = getPageSetting('BetterAutoFight');
-    if (BAFsetting==1) betterAutoFight();        //"Better Auto Fight"  (autofight.js)
-    else if (BAFsetting==2) betterAutoFight2();     //"Better Auto Fight2"  (")
-    else if (BAFsetting==0 && BAFsetting!=oldBAFsetting && game.global.autoBattle && game.global.pauseFight)  pauseFight(); //turn on autofight on once when BAF is toggled off.
-    else if (BAFsetting==0 && game.global.world == 1 && game.global.autoBattle && game.global.pauseFight) pauseFight();     //turn on autofight on lvl 1 if its off.
-    else if (BAFsetting==0 && !game.global.autoBattle && game.global.soldierHealth == 0) betterAutoFight();   //use BAF as a backup for pre-Battle situations
-    oldBAFsetting = BAFsetting;                                            //enables built-in autofight once when disabled
+    ATselectAutoFight();  //  pick the right version of Fight/AutoFight/BetterAutoFight/BAF2 (fight.js)
 
     if (getPageSetting('DynamicPrestige2')>0&&((getPageSetting('ForcePresZ')<0)||(game.global.world<getPageSetting('ForcePresZ')))) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
@@ -230,7 +221,7 @@ function mainLoop() {
     //Auto Magmite Spender
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
-            autoMagmiteSpender(); // magma.js
+            autoMagmiteSpender(); // magmite.js
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
