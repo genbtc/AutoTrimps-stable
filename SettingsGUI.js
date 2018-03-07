@@ -387,7 +387,7 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         tooltipText = "Autotrimps MODULE variable settings have been successfully reset to its defaults!";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
     } else if (what == 'MagmiteExplain') {
-        tooltipText = "<img src='" + base + "mi.png'>";
+        tooltipText = "<img src='" + basepath + "mi.png'>";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>I don't get it at all</div></div>";
     }
     game.global.lockTooltip = true;

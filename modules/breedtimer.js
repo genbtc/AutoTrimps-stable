@@ -57,23 +57,10 @@ function autoBreedTimer() {
         else
             safeBuyJob('Geneticist', customVars.buyGensIncrement);
     }
-    var fire1 = targetBreed*1.02 < getBreedTime();
-    var fire2 = targetBreed*1.02 < getBreedTime(true);
-    var fireobj = fire1 ? getBreedTime() : getBreedTime(true);
     //if we need to speed up our breeding
     //if we have potency upgrades available, buy them. If geneticists are unlocked, or we aren't managing the breed timer, just buy them
     if ((targetBreed < getBreedTime() || !game.jobs.Geneticist.locked || !getPageSetting('ManageBreedtimer') || game.global.challengeActive == 'Watch') && game.upgrades.Potency.allowed > game.upgrades.Potency.done && canAffordTwoLevel('Potency') && getPageSetting('BuyUpgrades')) {
         buyUpgrade('Potency');
-    }
-    //otherwise, if we have too many geneticists, (total time) - start firing them #1
-    //otherwise, if we have too many geneticists, (remaining time) - start firing them #2
-    else if ((fire1 || fire2) && !game.jobs.Geneticist.locked && game.jobs.Geneticist.owned > customVars.fireGensFloor) {
-        var timeOK = fireobj > 0 ? fireobj : 0.1;
-        var numgens = Math.trunc(Math.log(targetBreed / timeOK ) / Math.log(1.02)) - 1;
-        //debug("2a. Time: " + getBreedTime(true) + " / " + getBreedTime() );
-        //debug("2b. " + numgens + " Genes.. / " + game.jobs.Geneticist.owned + " -> " + (game.jobs.Geneticist.owned+numgens));
-        safeBuyJob('Geneticist', numgens);
-        //debug("2c. Time: " + getBreedTime(true) + " / " + getBreedTime() );
     }
     //if our time remaining to full trimps is still too high, fire some jobs to get-er-done
     //needs option to toggle? advanced options?
