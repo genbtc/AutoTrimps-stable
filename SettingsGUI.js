@@ -288,7 +288,6 @@ function initializeAllSettings() {
 
 //UI settings:
     createSetting('EnhanceGrids', 'Enhance Grids', 'Apply visual enhancements to world and map grids', 'boolean', false, null, 'UI');
-    console.log(MODULES)
     createSetting('EnableAFK', 'Enable AFK', 'Enables CPU and RAM saving AFK-mode', 'action', MODULES["performance"].EnableAFKMode, null, 'UI');
 
 //Spam settings:
@@ -762,14 +761,27 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     }
     else if(type === 'action')
     {
+        if (!(loaded && id == loaded.id))
+            autoTrimpSettings[id] = 
+            {
+                id: id,
+                name: name,
+                description: description,
+                type: type,
+                value: 1
+            };
+
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtntrue');
-
-        btn.addEventListener('click', function()
+        (function(button, func)
         {
-            if(typeof defaultValue !== 'undefined' && typeof defaultValue === 'function')
-                defaultValue();
-        });
+            btn.addEventListener('click', function()
+            {
+                if(typeof defaultValue !== 'undefined' && typeof defaultValue === 'function')
+                    defaultValue();
+            });
+        })(btn, defaultValue);
+        
 
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
