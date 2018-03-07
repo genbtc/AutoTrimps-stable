@@ -125,6 +125,7 @@ function debug(message, type, lootIcon) {
     var buildings = getPageSetting('SpamBuilding');
     var jobs = getPageSetting('SpamJobs');    
     var graphs = getPageSetting('SpamGraphs');
+    var magmite = getPageSetting('SpamMagmite');
     var output = true;
     switch (type) {
         case null:
@@ -152,6 +153,9 @@ function debug(message, type, lootIcon) {
             break;
         case "graphs":
             output = graphs;
+            break;
+        case "magmite":
+            output = magmite;
             break;
     }
     if (output) {

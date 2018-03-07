@@ -289,10 +289,11 @@ function initializeAllSettings() {
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Spam');
     createSetting('SpamEquipment', 'Equipment Spam', 'Equipment Spam', 'boolean', true, null, 'Spam');
     createSetting('SpamMaps', 'Maps Spam', 'Maps Spam = Buy,Pick,Run Maps,Recycle,CantAfford', 'boolean', true, null, 'Spam');
-    createSetting('SpamOther', 'Other Spam', 'Other Spam = Better Auto Fight, Trimpicide, Robotrimp, AutoMagmamancers', 'boolean', true, null, 'Spam');
+    createSetting('SpamOther', 'Other Spam', 'Other Spam = Better Auto Fight, Trimpicide, Robotrimp ', 'boolean', true, null, 'Spam');
     createSetting('SpamBuilding', 'Building Spam', 'Building Spam = all buildings, even storage', 'boolean', false, null, 'Spam');
     createSetting('SpamJobs', 'Job Spam', 'Job Spam = All jobs, in scientific notation', 'boolean', false, null, 'Spam');
     createSetting('SpamGraphs', 'Starting Zone Spam', 'Disables \'Starting new Zone ###\' and any future Graph Spam that comes from graph logs.', 'boolean', true, null, 'Spam');
+    createSetting('SpamMagmite', 'Magmite/Magma Spam', 'Everything in Magmite Module and Magmamancers', 'boolean', true, null, 'Spam');
     
 
 // Export/Import/Default settings
@@ -1035,11 +1036,13 @@ addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
 addbreedTimerInside.appendChild(addbreedTimerInsideText);
 addbreedTimerContainer.appendChild(addbreedTimerInside);
 breedbarContainer.appendChild(addbreedTimerContainer);
-var armycount = document.getElementById('trimpsFighting');
 
 //hover over the army group size to get a popup that translates to breeding time
 function addToolTipToArmyCount() {
-    armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
-    armycount.setAttribute("onmouseout", 'tooltip("hide")');
-    armycount.setAttribute("class", 'tooltipadded');
+    var $armycount = document.getElementById('trimpsFighting');
+    if ($armycount.className != "tooltipadded") {
+        $armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
+        $armycount.setAttribute("onmouseout", 'tooltip("hide")');
+        $armycount.setAttribute("class", 'tooltipadded');
+    }
 }

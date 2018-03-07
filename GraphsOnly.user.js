@@ -8,6 +8,7 @@
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
+//this comes from AutoTrimps/modules/utils.js , then we dont need to load everything from that file.
 function safeSetItems(name,data) {
     try {
         localStorage.setItem(name, data);
@@ -20,5 +21,6 @@ function safeSetItems(name,data) {
 }
 var script = document.createElement('script');
 script.id = 'AutoTrimps-script';
+//This can be edited to point to your own Github Repository URL.
 script.src = 'https://genbtc.github.io/AutoTrimps/Graphs.js';
 document.head.appendChild(script);

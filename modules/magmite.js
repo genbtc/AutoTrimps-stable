@@ -21,7 +21,7 @@ function autoMagmiteSpender() {
         //if we can afford anything, buy it:
         if (game.global.magmite >= cost) {
             buyPermanentGeneratorUpgrade(item);
-            debug("Auto Spending " + cost + " Magmite on: " + item, "general");
+            debug("Auto Spending " + cost + " Magmite on: " + item, "magmite");
             didSpend = true;
         }
     }
@@ -29,7 +29,7 @@ function autoMagmiteSpender() {
     var hasOv = game.permanentGeneratorUpgrades.Hybridization.owned && game.permanentGeneratorUpgrades.Storage.owned;
     var ovclock = game.generatorUpgrades.Overclocker;
     if (hasOv && (getPageSetting('BuyOvclock') || !ovclock.upgrades) && (game.global.magmite >= ovclock.cost())) {
-        debug("Auto Spending " + ovclock.cost() + " Magmite on: Overclocker" + (ovclock.upgrades ? " #" + (ovclock.upgrades + 1) : ""), "general");
+        debug("Auto Spending " + ovclock.cost() + " Magmite on: Overclocker" + (ovclock.upgrades ? " #" + (ovclock.upgrades + 1) : ""), "magmite");
         buyGeneratorUpgrade('Overclocker');
     }
     //Part #2
@@ -87,7 +87,7 @@ function autoMagmiteSpender() {
                 upgrade = game.generatorUpgrades[item];
                 //IF we can afford anything, buy it:
                 if (game.global.magmite >= upgrade.cost()) {
-                    debug("Auto Spending " + upgrade.cost() + " Magmite on: " + item + " #" + (game.generatorUpgrades[item].upgrades+1), "general");
+                    debug("Auto Spending " + upgrade.cost() + " Magmite on: " + item + " #" + (game.generatorUpgrades[item].upgrades+1), "magmite");
                     buyGeneratorUpgrade(item);
                     didSpend = true;
                 }
@@ -117,7 +117,7 @@ function autoMagmiteSpender() {
                 //if we can afford anything, buy it:
                 if (game.global.magmite >= lowest[1]) {
                     buyGeneratorUpgrade(lowest[0]);
-                    debug("Auto Spending " + lowest[1] + " Magmite on: " + lowest[0] + " #" + game.generatorUpgrades[lowest[0]].upgrades, "general");
+                    debug("Auto Spending " + lowest[1] + " Magmite on: " + lowest[0] + " #" + game.generatorUpgrades[lowest[0]].upgrades, "magmite");
                     didSpend = true;
                 }
                 //if we can't, exit the loop
@@ -127,13 +127,13 @@ function autoMagmiteSpender() {
         }
         //dont get trapped in a while loop cause something stupid happened.
         catch (err) {
-            debug("AutoSpendMagmite Error encountered: " + err.message,"general");
+            debug("AutoSpendMagmite Error encountered: " + err.message,"magmite");
             repeat = false;
         }
     }
     //print the result
     if (didSpend)
-        debug("Leftover magmite: " + game.global.magmite,"general");
+        debug("Leftover magmite: " + game.global.magmite,"magmite");
     return;
 }
 

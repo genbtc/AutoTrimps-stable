@@ -11,6 +11,7 @@
 
 var script = document.createElement('script');
 script.id = 'AutoTrimps-script';
+//This can be edited to point to your own Github Repository URL.
 script.src = 'https://genbtc.github.io/AutoTrimps/AutoTrimps2.js';
 document.head.appendChild(script);
 

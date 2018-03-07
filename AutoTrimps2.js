@@ -153,7 +153,7 @@ function mainLoop() {
     ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
-    if (armycount.className != "tooltipadded") addToolTipToArmyCount(); //this doesnt work anymore - element var is there but not in DOM.
+    addToolTipToArmyCount(); //Add hidden tooltip for army count (SettingsGUI.js @ end)
     if (mainCleanup() // Z1 new world
             || portalWindowOpen // in the portal screen (for manual portallers)
             || (!heirloomsShown && heirloomFlag) // closed heirlooms screen
