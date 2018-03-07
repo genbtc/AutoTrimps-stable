@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
-// @version      2.1.6.4-genbtc-3-4-2018+Mod+Uni+coderpatsy
+// @version      2.1.6.5-genbtc-3-7-2018+Mod+Uni+coderpatsy
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.6.4-genbtc-3-4-2018+Mod+Uni+coderpatsy';
+var ATversion = '2.1.6.5-genbtc-3-7-2018+Mod+Uni+coderpatsy';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -47,6 +47,13 @@ function initializeAutoTrimps() {
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
 }
 
+//print changelog function should be refactored:
+// arguments: Line #/
+//          : Date
+//          : Version #
+//          : New?
+//          : Description
+//Other function should be made to create a DOM element for this, scrape the API data into it, and then print tooltip with header/footer.
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
 <br><b class="AutoEggs">3/4 v2.1.6.4 </b><b style="background-color:#32CD32"> New:</B> Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.\
@@ -146,7 +153,7 @@ function mainLoop() {
     ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
     addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; //add hidden next group breed timer;
-    if (armycount.className != "tooltipadded") addToolTipToArmyCount();
+    if (armycount.className != "tooltipadded") addToolTipToArmyCount(); //this doesnt work anymore - element var is there but not in DOM.
     if (mainCleanup() // Z1 new world
             || portalWindowOpen // in the portal screen (for manual portallers)
             || (!heirloomsShown && heirloomFlag) // closed heirlooms screen
