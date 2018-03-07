@@ -52,10 +52,10 @@ utils.js
 
 EXTERNAL FILES:
 ================
-FastPriorityQueue.js - AutoPerks
-HighCharts.js - Graphs
-tabs.css - user interface / mandatory css styles
-dark-graph.css - Graphs
+FastPriorityQueue.js - AutoPerks - uses a 3rd party library for data queues
+HighCharts.js - Graphs - uses a 3rd party library to draw the graphs...
+tabs.css - User Interface - mandatory css styles for the settings tab or to rewrite or style the UI
+dark-graph.css - Graphs - needed some tweaks to work for dark theme.
 
 GUI:
 =====
@@ -179,18 +179,41 @@ user.js
 install.user.js
 AutoTrimps2.js
 Graphs.js
-TODO: Should invent a tool/script to plug in the version numbers, changelogs, docs.
+TODO: Should invent a tool/script to advance the version numbers, generate changelogs, auto-link docs.
 
-HTTPS Localhost Self serve - With Python 2:
-==========================
+How to become an AutoTrimps developer
+=====================================
+The script is setup to be able to be bootstrapped from Tampermonkey/Greasemonkey. 
+If you paste the AutoTrimps2.js into your Tampermonkey window directly, you can attempt to run a local developer copy and edit it in the tampermonkey edit window. This pulls from a repo and loads all the sub-modules .js files.
+The point to understand is HTTPS and SSL is required. It has to be served over an actual HTTPS web-server so chrome can successfully load the secure content resources since https://trimps.github.io is technically the origin and any non-secure javascript resources will be flagged,denied and not-executed...
+Simply, You can fork the project on github, find&replace my github URL with yours and upload all your changes to your own repo. And every time you make a change you will have to re-upload / defeat caching / reload to host the file. But this is non-ideal from a "agile" or "live" developer POV.
+A better way is to set up a local HTTPS server, mirror my github repo to a local folder, and tell the webserver to run out of that folder, serving it up on https://localhost:4443 or some port number. 
+So instead of downloading Apache or a full complicated webserver or something, download python - or most computers these days have Python installed. You can use python to be a simple HTTP server with the following scripts, applicable to either Python2.x or Python3.x.
+There are multiple ways to achieve the webserver, but this is the best way i've found (if it doesnt do HTTPS it wont work). 
+These scripts let you open a folder, double click the script, and start serving files out of that local dir instantly over HTTPS.
+//(make sure you generate a self-signed .PEM cert to serve.) - this Cert is what provides the necessary SSL functionality
+
+# generate the cert with the following command (should be an openssl binary exe somewhere on the system)
+#    openssl req -new -x509 -keyout AutoTrimps.pem -out AutoTrimps.pem -days 365 -nodes
+# run as follows:
+#    python https.py
+# then in your browser, visit:
+#    https://localhost:4443
+#
+
+Choose the right version of https.py for your System:
+----------------------------------------
+https.py = HTTPS Localhost Self serve - With Python 2:
+----------------------------------------
 import BaseHTTPServer, SimpleHTTPServer
 import ssl
 httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), SimpleHTTPServer.SimpleHTTPRequestHandler)
-httpd.socket = ssl.wrap_socket (httpd.socket, certfile='./server.pem', server_side=True)
+httpd.socket = ssl.wrap_socket (httpd.socket, certfile='./AutoTrimps.pem', server_side=True)
 httpd.serve_forever()
 
-HTTPS Localhost Self serve - With Python 3:
-==========================
+----------------------------------------
+https.py = HTTPS Localhost Self serve - With Python 3:
+----------------------------------------
 import logging
 import os
 import sys
@@ -202,6 +225,18 @@ httpd = socketserver.TCPServer(('localhost', 4443), http.server.SimpleHTTPReques
 httpd.socket = ssl.wrap_socket(httpd.socket, certfile='./AutoTrimps.pem', server_side=True)
 httpd.serve_forever()
 
-//(make sure you generate a self-signed .PEM cert to serve.)
+//(make sure you generate a self-signed .PEM cert to serve.) - this Cert is what provides the necessary SSL functionality
+
+Make this batch script to double click to easily run the .py file from windows explorer without going to command line (mac/linux make a .sh file im sure you know how):
+--------------------
+SIMPLEHTTPSERVER.BAT
+--------------------
+@echo off
+cd C:\Users\EOFL\Documents\GitHub\AutoTrimps
+rem Infinite loop, counting from 1 to 10 with increment of 0. (just makes it restart on errors)
+for /L %%n in (1,0,10) do (
+    C:\Python36\python.exe https.py
+)
+
 
 Some Files contain/require game-code overwrites that need to be periodically checked and maintained. These are undocumented. Some are for the GUI and some are in utils.js maybe some for the heirlooms, and also graph loot...

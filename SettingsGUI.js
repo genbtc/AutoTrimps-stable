@@ -1,20 +1,10 @@
-//AutoTrimps GUI - Current Version 2.1.6.4
+//AutoTrimps Settings GUI - Current Version 2.1.6.4
 //maintained by genBTC, current as of 3/4/2018
 
 (function () {
-    //create the Automation icon in the game bar
+    //create the Automation icon in the game bar (self-executing)
     automationMenuInit();
 }());
-
-//create container for settings buttons
-function automationMenuSettingsInit() {
-    var settingsrow = document.getElementById("settingsRow");
-    var autoSettings = document.createElement("DIV");
-    autoSettings.id = "autoSettings";
-    autoSettings.setAttribute("style", "display: none; max-height: 96vh;overflow: auto;");
-    settingsrow.appendChild(autoSettings);
-}
-automationMenuSettingsInit();
 
 //prepare CSS for new Tab interface
 var link1 = document.createElement('link');
@@ -223,7 +213,7 @@ function initializeAllSettings() {
     createSetting('MaxTribute', 'Max Tributes', 'Advanced. recommend: -1 ', 'value', '-1', null, "Settings");
     createSetting('MaxNursery', 'Max Nurseries', 'Advanced. recommend: -1', 'value', '-1', null, "Settings");
     createSetting('BreedFire', 'Breed Fire', 'OPTIONAL. Fire Lumberjacks and Miners to speed up breeding when needed. Basically trades wood/metal to cut the wait between deaths down. Disclaimer: May heavily negatively impact wood-gathering. ', 'boolean', null, null, 'Settings');
-    createSetting('AutoMagmamancers', 'Auto Magmamancers', 'OPTIONAL. Auto Magmamancer Management. Hires Magmamancers when the Current Zone time goes over 10 minutes. Does a one-time spend of at most 10% of your resources. Every increment of 10 minutes after that repeats the 10% hiring process. Disclaimer: May negatively impact Gem count.', 'boolean', null, null, 'Settings');
+    createSetting('AutoMagmamancers', 'Auto Magmamancers', 'Auto Magmamancer Management. Hires Magmamancers when the Current Zone time goes over 10 minutes. Does a one-time spend of at most 10% of your gem resources. Every increment of 10 minutes after that repeats the 10% hiring process. Magmamancery mastery is accounted for, with that it hires them at 5 minutes instead of 10. Disclaimer: May negatively impact Gem count.', 'boolean', true, null, 'Settings');
 
 //genBTC advanced settings - option buttons.
     createSetting('WarpstationCap', 'Warpstation Cap', 'Do not level Warpstations past Basewarp+DeltaGiga **. Without this, if a Giga wasnt available, it would level infinitely (wastes metal better spent on prestiges instead.) **The script bypasses this cap each time a new giga is bought, when it insta-buys as many as it can afford (since AT keeps available metal/gems to a low, overbuying beyond the cap to what is affordable at that first moment is not a bad thing). ', 'boolean', true, null, 'genBTC');
@@ -322,8 +312,9 @@ function initializeAllSettings() {
     //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
 }
-initializeAllSettings();
+initializeAllSettings(); //EXECUTE
 
+//Handler for the popup/tooltip window for Import/Export/Default
 function AutoTrimpsTooltip(what, isItIn, event) {
     if (game.global.lockTooltip)
         return;
@@ -438,6 +429,7 @@ function resetAutoTrimps(imported) {
 }
 
 //import autotrimps settings from a textbox
+//For importing a new AT Config on the fly and reloading/applying all the settings.
 function loadAutoTrimps() {
     //try the import
     try {
@@ -538,14 +530,21 @@ function resetModuleVars(imported) {
     setTimeout(waitRemoveLoad(imported),101);
 }
 
+//This creates the entire DOM-structure for this page.
 function automationMenuInit() {
-
+    //create container for settings buttons (bottom toolbar)
+    var settingsrow = document.getElementById("settingsRow");
+    var autoSettings = document.createElement("DIV");
+    autoSettings.id = "autoSettings";
+    autoSettings.setAttribute("style", "display: none; max-height: 96vh;overflow: auto;");
+    settingsrow.appendChild(autoSettings);
     var settingBtnSrch = document.getElementsByClassName("btn btn-default");
+    //Change Settings button handler to go through AutoTrimps Settings
     for (var i = 0; i < settingBtnSrch.length; i++) {
         if (settingBtnSrch[i].getAttribute("onclick") === "toggleSettingsMenu()")
             settingBtnSrch[i].setAttribute("onclick", "autoPlusSettingsMenu()");
     }
-    //create the AutoTrimps Script button
+    //create the AutoTrimps Script button (bottom toolbar)
     var newItem = document.createElement("TD");
     newItem.appendChild(document.createTextNode("AutoTrimps"));
     newItem.setAttribute("class", "btn btn-default");
@@ -553,7 +552,7 @@ function automationMenuInit() {
     var settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
     settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 
-    //create automaps button
+    //create automaps button (in the world sidebar) 
     var newContainer = document.createElement("DIV");
     newContainer.setAttribute("class", "battleSideBtnContainer");
     newContainer.setAttribute("style", "display: block;");
@@ -569,7 +568,7 @@ function automationMenuInit() {
     newContainer.appendChild(abutton);
     fightButtonCol.appendChild(newContainer);
 
-    //create automaps status
+    //create automaps status (in the world sidebar)
     newContainer = document.createElement("DIV");
     newContainer.setAttribute("style", "display: block; font-size: 1.1vw; text-align: center; background-color: rgba(0,0,0,0.3);");
     newContainer.setAttribute("onmouseover", 'tooltip(\"Health to Damage ratio\", \"customText\", event, \"This status box displays the current mode Automaps is in. The number usually shown here during Farming or Want more Damage modes is the \'HDratio\' meaning EnemyHealth to YourDamage Ratio (in X stance). Above 16 will trigger farming, above 4 will trigger going for Map bonus up to 10 stacks. If the number is not shown, hovering will display it below.<p><b>enoughHealth: </b>\" + enoughHealth + \"<br><b>enoughDamage: </b>\" + enoughDamage +\"<br><b>shouldFarm: </b>\" + shouldFarm +\"<br><b>H:D ratio = </b>\" + HDratio + \"<br>\")');
@@ -579,7 +578,7 @@ function automationMenuInit() {
     newContainer.appendChild(abutton);
     fightButtonCol.appendChild(newContainer);
 
-    //create hiderStatus - He/hr percent
+    //create hiderStatus - He/hr percent (in world sidebar)
     newContainer = document.createElement("DIV");
     newContainer.setAttribute("style", "display: block; font-size: 1vw; text-align: center; margin-top: 2px; background-color: rgba(0,0,0,0.3);");
     newContainer.setAttribute("onmouseover", 'tooltip(\"Helium/Hr Info\", \"customText\", event, \"1st is Current He/hr % out of Lifetime He(not including current+unspent).<br> 0.5% is an ideal peak target. This can tell you when to portal... <br>2nd is Current run Total He earned / Lifetime He(not including current)<br>\" + getDailyHeHrStats())');
@@ -589,7 +588,7 @@ function automationMenuInit() {
     newContainer.appendChild(abutton);
     fightButtonCol.appendChild(newContainer);
 
-    //make timer click toggle paused mode
+    //make timer clock toggle paused mode when clicked (bottom right)
     document.getElementById('portalTimer').setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
     document.getElementById('portalTimer').setAttribute('style', 'cursor: default');
 
@@ -600,6 +599,7 @@ function automationMenuInit() {
     }
 }
 
+//Hider's He/Hr Info stats (in world sidebar)
 function getDailyHeHrStats() {
     var words = "";
     if (game.global.challengeActive == "Daily") {
@@ -610,7 +610,7 @@ function getDailyHeHrStats() {
     return words;
 }
 
-//toggles the display of the settings menu.
+//toggles the display of the settings menu. 1
 function autoToggle(what) {
     if (what) {
         whatobj = document.getElementById(what);
@@ -633,7 +633,8 @@ function autoToggle(what) {
     }
 }
 
-//overloads the settings menu button to include hiding the auto menu settings.
+//toggles the display of the original settings menu button,
+// when clicked, hiding the AT settings and graph.
 function autoPlusSettingsMenu() {
     var item = document.getElementById('autoSettings');
     if (item.style.display === 'block')
@@ -644,7 +645,7 @@ function autoPlusSettingsMenu() {
     toggleSettingsMenu();
 }
 
-
+//Universal function that creates sets up the Settings database, structures and associated graphic elements
 function createSetting(id, name, description, type, defaultValue, list, container) {
     var btnParent = document.createElement("DIV");
     // btnParent.setAttribute('class', 'optionContainer');
@@ -787,6 +788,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     autoTrimpSettings["ATversion"] = ATversion;
 }
 
+//Default Toggler handler for any setting of the 3 special types (boolean, multitoggle, dropdown, and handle PrestigeBackup) - not value type.
 function settingChanged(id) {
     var btn = autoTrimpSettings[id];
     if (btn.type == 'boolean') {
@@ -821,6 +823,7 @@ function settingChanged(id) {
         tooltip('confirm', null, 'update', 'WARNING: You are set to Overclock but do not have any Overclocker upgrades. AutoGen2 will default to \'Max Cap\' in this case. If this is not desired, please fix your AutoGen2 setting.', 'cancelTooltip()', 'Cannot Overclock');
 }
 
+//Popup Tooltip - ask them to enter some numerical input. (STANDARDIZED)
 function autoSetValueToolTip(id, text,negative) {
     ranstring = text;
     var elem = document.getElementById("tooltipDiv");
@@ -846,13 +849,13 @@ function autoSetValueToolTip(id, text,negative) {
     }
     box.focus();
 }
-
+//enter handler for popup
 function onKeyPressSetting(event, id,negative) {
     if (event.which == 13 || event.keyCode == 13) {
         autoSetValue(id,negative);
     }
 }
-
+//Custom Number Box - Suffix handler for numerical to string values in the prompted popup
 function autoSetValue(id,negative) {
     var num = 0;
     unlockTooltip();
@@ -993,7 +996,7 @@ for (var setting in autoTrimpSettings) {
 }
 */
 
-//Checks portal related UI settings (TODO: split into two, and move the validation check to NewUI)
+//Checks portal related UI settings (TODO: split into two, and move the validation check to SettingsGUI)
 function checkPortalSettings() {
     var portalLevel = -1;
     var leadCheck = false;
@@ -1041,8 +1044,7 @@ function checkPortalSettings() {
     return portalLevel;
 }
 
-
-//UI startup:
+//on UI startup:
 //Add breeding box:
 var breedbarContainer = document.querySelector('#trimps > div.row');
 var addbreedTimerContainer = document.createElement("DIV");
@@ -1062,6 +1064,7 @@ addbreedTimerContainer.appendChild(addbreedTimerInside);
 breedbarContainer.appendChild(addbreedTimerContainer);
 var armycount = document.getElementById('trimpsFighting');
 
+//hover over the army group size to get a popup that translates to breeding time
 function addToolTipToArmyCount() {
     armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
     armycount.setAttribute("onmouseout", 'tooltip("hide")');

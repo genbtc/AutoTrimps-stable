@@ -25,7 +25,7 @@ document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style
 document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;font-size: 1em;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
 //Create the buttons in the graph Footer:
 //Create the dropdown for what graph to show    (these correspond to headings in setGraph() and have to match)
-var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells', 'Magmite'];
+var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells', 'Magmite', 'Magmamancers'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 //btn.setAttribute("style", "");
@@ -356,7 +356,7 @@ function getTotalDarkEssenceCount() {
 }
 
 function pushData() {
-    debug('Starting Zone ' + game.global.world, "graph");
+    debug('Starting Zone ' + game.global.world, "graphs");
     //helium/hour % of totalHE, and currentRun/totalLifetime HE
     var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
     var lifetime = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
@@ -382,7 +382,8 @@ function pushData() {
         overkill: GraphsVars.OVKcellsInWorld,
         zonetime: GraphsVars.ZoneStartTime,
         mapbonus: GraphsVars.MapBonus,
-        magmite: game.global.magmite
+        magmite: game.global.magmite,
+        magmamancers: game.jobs.Magmamancer.owned
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
@@ -448,7 +449,7 @@ function gatherInfo() {
     //Overkill cell tracking:
     if (game.options.menu.overkillColor.enabled == 0) toggleSetting('overkillColor');   //make sure the setting is on.
     //Detecting the liquification through liquimp - Crude attempt at this, need to store/track more data.
-    if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && game.global.gridArray && game.global.gridArray[0].name == "Liquimp")
+    if (game.options.menu.liquification.enabled && game.talents.liquification.purchased && !game.global.mapsActive && game.global.gridArray && game.global.gridArray[0] && game.global.gridArray[0].name == "Liquimp")
         GraphsVars.OVKcellsInWorld = 100;
         //if (game.stats.zonesLiquified.value > oldzonesLiquified)    //may come in handy; goes up by 1 each zone you liqui-kill.
     else
@@ -907,6 +908,13 @@ function setGraphData(graph) {
             title = 'Total Magmite Owned';
             xTitle = 'Zone';
             yTitle = 'Magmite';
+            yType = 'Linear';
+            break;
+        case 'Magmamancers':
+            graphData = allPurposeGraph('magmamancers',true,"number");
+            title = 'Total Magmamancers Owned';
+            xTitle = 'Zone';
+            yTitle = 'Magmamancers';
             yType = 'Linear';
             break;
         case 'DarkEssence':

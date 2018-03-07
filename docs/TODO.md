@@ -63,6 +63,7 @@ Code Comments (getting better)
 new TODO LIST: 3/3/2018 and 3/4/2018
 TODO: Perks - background thread / web worker    
 TODO: Perks - allocate speed improvement, shortcuts, (36 million iterations and 15 seconds @ 720Qa HE)
+            - maybe slow due to OO structure and repeated resolutions for pass2.
 FAR TODO: Theoretically the graphs database can be used as a pro-active future prediction model and conditions can be inferred from past runs.
     Example: If Helium per/hour is ABOUT to go down based on previous cached runs (during the ambiguity period of about a few zones), portal earlier.
     Think like Grace %% setting but automatic.
