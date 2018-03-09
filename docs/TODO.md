@@ -11,7 +11,7 @@ old TODO LIST: from 8/17/2016
 
 get to in Near Future:
 ------------------------
-WORKING ON NOW - TODO 1: TODO: AutoTrimps Presets dropdown list to name, save, reload different profiles
+
 TODO 2: Add notes or labels to graph runs.  (to indicate which settings we used)
 TODO 2: HighCharts annotations module for "notes" comments to indicate which graph runs were what.
 
@@ -66,6 +66,7 @@ Done: Add autotrimps.site data json upload capability (thanks to Swiffy)
 Done: BUG 1: Liquification - the Auto-Skip-tons-of-zones-in-beginning - causes overkill graph to be off by a LOT.
 Not actually a thing: "Max Magmamancers By Zone #" so we can buy them at the start, to gain 5% attack for the first 10 minutes, usually for cases when the void zone which is the same as the portal zone, and you want to stack that level up with all you've got. 
     -5% Attack is only given after 5 minutes. Misunderstanding.
+Done: WORKING ON NOW - TODO 1: TODO: AutoTrimps Presets dropdown list to name, save, reload different profiles    
     
 Other Improvements:
 ------------------

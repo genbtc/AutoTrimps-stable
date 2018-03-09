@@ -54,7 +54,7 @@ ATServer.Upload = function(data)
     ATServer.GetID(function(id) 
     { 
         autoTrimpSettings.analyticsID = autoTrimpSettings.analyticsID || id;
-        debug("Server generated ID: " + autoTrimpSettings.analyticsID, "other");
+        //debug("Server generated ID: " + autoTrimpSettings.analyticsID, "other");
         ATServer.SaveData(autoTrimpSettings.analyticsID, data, function(response) 
         { 
             debug("Submitted analytics data w/ ID: " + autoTrimpSettings.analyticsID, "other");
@@ -62,17 +62,20 @@ ATServer.Upload = function(data)
     });
 }
 
-//Data to be uploaded: The version of AutoTrimps and the list of your settings file.
+//Data to be uploaded: The version of AutoTrimps and the list of your settings file. Also list of saved/named profiles.
 // note to newbs: typing in autoTrimpSettings into console and expanding the arrow will show you what is all in here.
 //-------------------------------------------------------------------------------------------------------------------
 //TODO: This is part of the ATsettings variable management:, it might make sense to move to that file, splitting here
 //-------------------------------------------------------------------------------------------------------------------
-var ulData = {
-    settings: JSON.parse(serializeSettings()),  //Line 41 utils.js - grabs fresh autoTrimpSettings from localstorage, reduces the length and parses it.
-    modules: MODULES
-}
 
 ATServer.UploadSettings = function() {
+    var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
+    var allProfiles = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
+    var ulData = {
+        settings: JSON.parse(serializeSettings()),  //Line 41 utils.js - grabs fresh autoTrimpSettings from localstorage, reduces the length and parses it.
+        profiles: allProfiles,  //every saved profile.
+        modules: MODULES
+    };
     ATServer.Upload(ulData);
     debug("AutoTrimps Settings File was Uploaded for analytics/usage! This is controlled with a new button on AT's Import/Export tab.","general");
 }
