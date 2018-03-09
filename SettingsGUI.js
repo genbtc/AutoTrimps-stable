@@ -461,6 +461,7 @@ function resetAutoTrimps(imported,profname) {
         automationMenuSettingsInit();
         initializeAllTabs();
         initializeAllSettings();
+        initializeSettingsProfiles();
         updateCustomButtons();
         saveSettings();
         checkPortalSettings();
@@ -1098,23 +1099,21 @@ function settingsProfileDropdownHandler() {
     //Save new...: asks a name and saves new profile
     else if (id == 'customProfileNew')
     {
-        AutoTrimpsTooltip('NameSettingsProfiles');
+        AutoTrimpsTooltip('NameSettingsProfiles');  //calls nameAndSaveNewProfile() below
     }
     //Reads the existing profile name and switches into it.
     // TODO: validation?
     else if (id == 'customProfileRead') {
         var profname = sp.options[sp.selectedIndex].text;
-        //load the last ratio used
-        var loadLastPreset = JSON.parse(localStorage.getItem('ATSelectedSettingsProfile'));
-        if (loadLastPreset != null) {
-            var result = loadLastPreset.filter(function(elem,i){
+        //load the stored profiles from browser
+        var loadLastProfiles = JSON.parse(localStorage.getItem('ATSelectedSettingsProfile'));
+        if (loadLastProfiles != null) {
+            var results = loadLastProfiles.filter(function(elem,i){
                 return elem.name == profname;
             });
-            if (result.length > 0) {
-                console.log(profname)
-                //sp.selectedIndex = box.index;
-                //console.log(result[0].data);
-                resetAutoTrimps(result[0].data,profname);
+            if (results.length > 0) {
+                resetAutoTrimps(results[0].data,profname);
+                debug("Successfully loaded existing profile: " + profname);
             }
         }
     }
@@ -1141,8 +1140,8 @@ function nameAndSaveNewProfile() {
         data: JSON.parse(serializeSettings())
     }
     //load the old data in,
-    var loadLastPreset = localStorage.getItem('ATSelectedSettingsProfile');
-    var oldpresets = loadLastPreset ? JSON.parse(loadLastPreset) : new Array(); //load the import.
+    var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
+    var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
     //rewrite the updated array in
     var presetlists = [prof];
     //add the two arrays together, string them, and store them.
@@ -1156,3 +1155,17 @@ function nameAndSaveNewProfile() {
     sp.add(optionElementReference);
     sp.selectedIndex = sp.length-1;
 }
+
+function initializeSettingsProfiles() {
+    var sp = document.getElementById("settingsProfiles");
+    //load the old data in,
+    var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
+    var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
+    oldpresets.forEach(function(elem){
+        //Update dropdown menu to reflect new name:
+        let optionElementReference = new Option(elem.name);
+        optionElementReference.id = 'customProfileRead';
+        sp.add(optionElementReference);
+    });
+}
+initializeSettingsProfiles();
