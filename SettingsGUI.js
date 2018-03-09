@@ -183,7 +183,7 @@ function initializeAllSettings() {
     createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps. Decides when to run Unique maps. <b>Required to auto-run The Wall and Dimension of Anger.</b> Also Required for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc) to complete their AutoPortal. <p> Maps/Levels: <br>The Block - 12<br>The Wall - 16<br>Dimension of Anger - 21<br>Trimple Of Doom - 34<br>The Prison - 82<br>Bionic Wonderland (only during Crushed) @ 127<br><b>NOTE:</b> This should generally be on.<br><B>NOTE:</B> Disable Run Bionic Before Spire to be able to disable this. <br><b>NOTICE:</b> This does <b>NOT</b> auto-run all your Bionics according to your lack of Robotrimp status or whether you pass a certain level (yet).', 'boolean', true, null, "Maps");
     createSetting('DynamicSiphonology', 'Dynamic Siphonology', 'Recommended Always ON. Use the right level of siphonology based on your damage output. IE: Only uses  siphonology if you are weak. With this OFF it means it ALWAYS uses the lowest siphonology map you can create. Siphonology is a perk you get at level 115-125ish, and means you receive map bonus stacks for running maps below your current zone - Up to 3 zones below (1 per perk level).', 'boolean', true, null, 'Maps');
     createSetting('LowerFarmingZone', 'Lower Farming Zone', 'Lowers the zone used during Farming mode. Uses the dynamic siphonology code, to Find the minimum map level you can successfully one-shot, and uses this level for any maps done after the first 10 map stacks. The difference being it goes LOWER than what Siphonology gives you map-bonus for, but after 10 stacks you dont need bonus, you just want to do maps that you can one-shot. Goes as low as 10 below current zone if your damage is that bad, but this is extreme and indicates you should probably portal.', 'boolean', true, null, 'Maps');
-    createSetting('MaxMapBonusAfterZone', 'Max MapBonus After', 'Always gets Max Map Bonus from this zone on. (inclusive and after).<br><b>NOTE:</b> Set -1 to disable entirely (default). Set 0 to use it always.<br><b>Advanced:</b>User can set a lower number than the default 10 maps with the AT hidden console command: MODULES[\\"automaps\\"].maxMapBonusAfterZ = 9;', 'value', '-1', null, 'Maps');    
+    createSetting('MaxMapBonusAfterZone', 'Max MapBonus After', 'Always gets Max Map Bonus from this zone on. (inclusive and after).<br><b>NOTE:</b> Set -1 to disable entirely (default). Set 0 to use it always.<br><b>Advanced:</b>User can set a lower number than the default 10 maps with the AT hidden console command: MODULES[\\"automaps\\"].maxMapBonusAfterZ = 9;', 'value', '-1', null, 'Maps');
     createSetting('MaxStacksForSpire', 'Max Map Bonus for Spire', 'Get max map bonus before running the Spire.', 'boolean', false, null, 'Maps');
     createSetting('MinutestoFarmBeforeSpire', 'Minutes to Farm Before Spire', 'Farm level 200/199(or BW) maps for X minutes before continuing onto attempting Spire.<br><b>NOTE:</b> Set 0 to disable entirely (default). <br>Setting to -1/Infinite does not work here, set a very high number instead.', 'value', '0', null, 'Maps');
     createSetting('IgnoreSpiresUntil', 'Ignore Spires Until', 'Spire specific settings like end-at-cell are ignored until at least this zone is reached (0 to disable).<br>Does not work with Run Bionic Before Spire.', 'value', '200', null, 'Maps');
@@ -304,7 +304,7 @@ function initializeAllSettings() {
     createSetting('SpamGraphs', 'Starting Zone Spam', 'Disables \'Starting new Zone ###\' and any future Graph Spam that comes from graph logs.', 'boolean', true, null, 'Spam');
     createSetting('SpamMagmite', 'Magmite/Magma Spam', 'Everything in Magmite Module and Magmamancers', 'boolean', true, null, 'Spam');
     createSetting('SpamPerks', 'AutoPerks Spam', 'Everything in related to AutoPerks', 'boolean', true, null, 'Spam');
-    
+
 
 // Export/Import/Default settings
     createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
@@ -315,7 +315,7 @@ function initializeAllSettings() {
     //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
     //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
-    
+
     //Create settings profile selection dropdown
     var settingsProfilesLabel = document.createElement("Label");
     settingsProfilesLabel.id = 'settingsProfiles Label';
@@ -327,22 +327,15 @@ function initializeAllSettings() {
     var oldstyle = 'text-align: center; width: 160px;';
     if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
     else settingsProfiles.setAttribute('style', oldstyle);
-    //Add the settingsProfiles dropdown to UI 
+    //Add the settingsProfiles dropdown to UI
     document.getElementById('Import Export').appendChild(settingsProfilesLabel);
     document.getElementById('Import Export').appendChild(settingsProfiles);
     //populate with a Default (read default settings):
-    var innerhtml = "<option id='customProfileRead'>Default</option></select>";
+    var innerhtml = "<option id='customProfileDefault'>Default</option></select>";
     //Append a 2nd default item named "Save New..." and have it tied to a write function();
-    innerhtml += "<option id='customProfileWrite'>Save New...</option></select>";
+    innerhtml += "<option id='customProfileNew'>Save New...</option></select>";
     //dont forget to populate the rest of it with stored items:
     settingsProfiles.innerHTML = innerhtml;
-    //load the last ratio used
-    var loadLastPreset = localStorage.getItem('ATSelectedSettingsProfileName');
-    if (loadLastPreset != null)
-        settingsProfiles.selectedIndex = loadLastPreset; // First element is Default options. (always load defaults -  may be problematic)
-    else
-        settingsProfiles.selectedIndex = 0;
-
 }
 initializeAllSettings(); //EXECUTE
 
@@ -433,14 +426,14 @@ function AutoTrimpsTooltip(what, event) {
         //Shows a Question Popup to set the name:
         titleText = "Enter New Settings Profile Name"
         tooltipText = "What would you like the name of the Settings Profile to be?<br/><br/><textarea id='setSettingsNameTooltip' style='width: 100%' rows='1'></textarea>";
-        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); nameAndSaveNewProfile();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); nameAndSaveNewProfile();'>Import</div><div class='btn btn-info' onclick='cancelTooltip();document.getElementById(\"settingsProfiles\").selectedIndex=0;'>Cancel</div></div>";
         ondisplay = function() {
             document.getElementById('setSettingsNameTooltip').focus();
         };
     } else if (what == 'message') {
         titleText = "Generic message";
         tooltipText = event;
-        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";        
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
     }
     //Common:
     game.global.lockTooltip = true;
@@ -474,7 +467,8 @@ function resetAutoTrimps(imported) {
     setTimeout(waitRemoveLoad(imported),101);
     if (imported) {
         debug("Successfully imported new AT settings...");
-        AutoTrimpsTooltip("message", "Successfully Imported new Autotrimps Settings File!");
+        //AutoTrimpsTooltip("message", "Successfully Imported new Autotrimps Settings File!");
+        AutoTrimpsTooltip('NameSettingsProfiles');
     } else {
         debug("Successfully reset AT settings to Defaults...");
         AutoTrimpsTooltip("message", "Autotrimps has been successfully reset to its defaults!");
@@ -596,7 +590,7 @@ function automationMenuInit() {
     var settingbarRow = document.getElementById("settingsTable").firstElementChild.firstElementChild;
     settingbarRow.insertBefore(newItem, settingbarRow.childNodes[10]);
 
-    //create automaps button (in the world sidebar) 
+    //create automaps button (in the world sidebar)
     var newContainer = document.createElement("DIV");
     newContainer.setAttribute("class", "battleSideBtnContainer");
     newContainer.setAttribute("style", "display: block;");
@@ -1101,31 +1095,42 @@ function addToolTipToArmyCount() {
 function settingsProfileDropdownHandler() {
     //Save new...: asks a name and saves new profile
     var sp = document.getElementById("settingsProfiles");
-    if (sp.selectedIndex == sp.length-1)
+    var id = sp.options[sp.selectedIndex].id;
+    if (id == 'customProfileNew')// || sp.selectedIndex == sp.length-1)
     {
         AutoTrimpsTooltip('NameSettingsProfiles');
     }
     //Default: simply calls Reset To Default:
-    else if (sp.selectedIndex == sp.length-2)
+    else if (id == 'customProfileDefault')// || sp.selectedIndex == sp.length-2)
     {
         resetAutoTrimps();
+        sp.selectedIndex = 0;    // First element is Default options. (always load defaults -  may be problematic)
     }
     //Reads the existing profile name and switches into it.
-    // TODO: validation? 
-    else {
+    // TODO: validation?
+    else if (id == 'customProfileRead') {
         var profname = sp.options[sp.selectedIndex].text;
-        var saveString = localStorage.getItem(profname);
-        resetAutoTrimps(savestring);
-    }     
+        //load the last ratio used
+        var loadLastPreset = localStorage.getItem('ATSelectedSettingsProfile');
+        if (loadLastPreset != null) {
+            sp.childNodes.forEach(function(el) {
+                if (loadLastPreset.name == el.text) {
+                    console.log(el.text)
+                    sp.selectedIndex = el.index;
+                    resetAutoTrimps(JSON.parse(loadLastPreset.data));
+                }
+            });
+        }
+    }
     //whatever was chosen - store what we used last.
-    //safeSetItems('ATSelectedSettingsProfileName', settingsProf);
+    //safeSetItems('ATSelectedSettingsProfile', settingsProf);
 }
 
 function nameAndSaveNewProfile() {
     //try the import
     try {
         var profname = document.getElementById("setSettingsNameTooltip").value.replace(/[\n\r]/gm, "");
-        if (profname == null) { 
+        if (profname == null) {
             debug("Error in naming, the string is empty.");
             return;
         }
@@ -1133,8 +1138,19 @@ function nameAndSaveNewProfile() {
         debug("Error in naming, the string is bad." + err.message);
         return;
     }
-    //var profname = sp.options[sp.selectedIndex].text 
-    safeSetItems('ATSelectedSettingsProfileName', profname);
-    debug("Successfully created new profile: " + profname);
-    AutoTrimpsTooltip('message', 'Successfully created new profile.');
+    //var profname = sp.options[sp.selectedIndex].text
+    var profdata = JSON.parse(serializeSettings());
+    //profdata.replace(/[\n\r]/gm, "");
+    var prof = {
+        name: profname,
+        data: profdata
+    }
+    safeSetItems('ATSelectedSettingsProfile', JSON.stringify(prof));
+    debug("Successfully created new profile: " + prof.name);
+    AutoTrimpsTooltip('message', 'Successfully created new profile: ' + prof.name);
+    let optionElementReference = new Option(prof.name);
+    optionElementReference.id = 'customProfileRead';
+    var sp = document.getElementById("settingsProfiles");
+    sp.add(optionElementReference);
+    sp.selectedIndex = sp.length-1;
 }
