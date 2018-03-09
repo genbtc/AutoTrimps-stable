@@ -122,6 +122,7 @@ initializeAllTabs();
 function initializeAllSettings() {
     //START MAKING BUTTONS IN THE TABS:
 //CORE:
+    //Line1:
     createSetting('ManualGather2', ['Gather/Build OFF', 'Auto Gather/Build', 'Science Research OFF', 'Auto Gather/Build #2'], '3-Way Button. Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research. The decision between AutoGather 1 or 2 is up to your own discretion and they should be similar.', 'multitoggle', 1, null, "Core");
     createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight 1', 'Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. The decision between BetterAutoFight 1 or 2 is up to your own discretion. The new BAF#2 does: A)Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and B) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle', 1, null, "Core");
     createSetting('AutoStance', ['Auto Stance OFF', 'Auto Stance 1', 'Auto Stance 2'], 'Automatically swap stances to avoid death. The decision between AutoStance 1 or 2 is up to your own discretion and they should be similar. ', 'multitoggle', 1, null, "Core");
@@ -129,14 +130,14 @@ function initializeAllSettings() {
     createSetting('BuyBuildings', 'Buy Buildings', 'Will buy non storage buildings as soon as they are available', 'boolean', true, null, "Core");
     createSetting('BuyUpgrades', 'Buy Upgrades', 'Autobuy non equipment Upgrades', 'boolean', true, null, "Core");
     createSetting('BuyJobs', 'Buy Jobs', 'Buys jobs based on ratios configured below. CAUTION: you cannot manually assign jobs with this. Toggle if you need to.', 'boolean', true, null, "Core");
-
+    //Line2:
     createSetting('TrapTrimps', 'Trap Trimps', 'Automatically trap trimps when needed, including building traps. (when you turn off, make sure you also turn off the ingame AutoTraps button)', 'boolean', true, null, "Core");
-
     createSetting('AutoHeirlooms', 'Auto Heirlooms', 'Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.', 'boolean', true, null, "Core");
     createSetting('HireScientists', 'Hire Scientists', 'Enable or disable hiring of scientists. Math: ScientistRatio=(FarmerRatio+LumberjackRatio+MinerRatio)/25 and stops hiring scientists after 250k Farmers.', 'boolean', true, null, "Core");
     createSetting('WorkerRatios', 'Auto Worker Ratios', 'Automatically changes worker ratios based on current progress. WARNING: overrides worker ratio settings. Settings: 1/1/1 up to 300k trimps, 3/3/5 up to 3mil trimps, then 3/1/4 above 3 mil trimps, then 1/1/10 above 1000 tributes, then 1/2/22 above 1500 tributes, then 1/12/12 above 3000 tributes.', 'boolean', true, null, "Core");
     createSetting('ManageBreedtimer', 'Auto Breed Timer', '<u>Genetecist management is controlled by the Timer setting box to the right, not this.</u><br><b>Explanation: </b><br><U>[ON](Green): </U>All this does is auto-choose the appropriate timer for various challenges (0, 3.5s, 10s, 30s).<br><U>[OFF](Red): </U>You set the Timer yourself! Even if this is red, it still tampers with genetecists if the timer is >= 0.<br><b>Note: </b>Using AutoStance is recommended to survive the full 30 seconds or else Auto will probably be undesirable.', 'boolean', true, null, "Core");
     createSetting('GeneticistTimer', 'Geneticist Timer', 'Manages the breed timer by hiring/firing Geneticists for the purpose of setting the ideal anticpation stacks. Disable with -1 to disable the Hiring/Firing of geneticists. <br><b>Info:</b> Potency and Nursery buying behavior is adjusted dynamically (and disabling no longer disables potency). The Automatic Genetecist Hiring Process can best be summarized by: Buy/Wait/Die,Repeat. (if you do not die, no action is taken). Also self-kills (trimpicide) aka force abandon when your anti-stacks arent maxed out (conservatively).<p><B>Controlled automatically (locked) when Auto Breed Timer is on</B>.', 'value', '30', null, "Core");
+    //Line3:
     createSetting('AutoPortal', 'Auto Portal', 'Automatically portal. Will NOT auto-portal if you have a challenge active, the challenge setting dictates which challenge it will select for the next run. All challenge settings will portal right after the challenge ends, regardless. Helium Per Hour only <b>portals at cell 1</b> of the first level where your He/Hr went down even slightly compared to the current runs Best He/Hr. Take note, there is a Buffer option, which is like a grace percentage of how low it can dip without triggering. Setting a buffer will portal mid-zone if you exceed 5x of the buffer.  CAUTION: Selecting He/hr may immediately portal you if its lower-(use Pause AutoTrimps button to pause the script first to avoid this)', 'dropdown', 'Off', ['Off', 'Helium Per Hour', 'Balance', 'Decay', 'Electricity', 'Life', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted', 'Custom'], "Core");
     createSetting('HeliumHourChallenge', 'Challenge for Helium per Hour and Custom', 'Automatically portal into this challenge when using helium per hour or custom autoportal. Custom portals after cell 100 of the zone specified. ', 'dropdown', 'None', ['None', 'Balance', 'Decay', 'Electricity', 'Life', 'Crushed', 'Nom', 'Toxicity', 'Watch', 'Lead', 'Corrupted'], "Core");
     document.getElementById("HeliumHourChallengeLabel").innerHTML = "Challenge:";
@@ -170,14 +171,7 @@ function initializeAllSettings() {
     createSetting('AlwaysArmorLvl2', 'Always Buy Lvl 2 Armor', 'Always Buy the 2nd point of Armor even if we dont need the HP. Its the most cost effective level, and the need HP decision script isnt always adequate. Forced on during Spire. Recommended On.', 'boolean', true, null, 'Gear');
     createSetting('WaitTill60', 'Skip Gear Level 58&59', 'Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.', 'boolean', true, null, 'Gear');
     createSetting('DelayArmorWhenNeeded', 'Delay Armor', 'Delays buying armor prestige-upgrades during Want More Damage or Farming automap-modes, Although if you need health AND damage, it WILL buy armor prestiges tho.', 'boolean', null, null, 'Gear');
-    //migrate old CapEquip to new CapEquip2
-    if (autoTrimpSettings["CapEquip2"] === undefined && autoTrimpSettings["CapEquip"]) {
-        createSetting('CapEquip2', 'Cap Equip to', 'Do not level equipment past this number. Helps for early game when the script wants to level your tier2s to level 40+, or to stop wasting metal. Recommended value: 10, Disable with -1 or 0.', 'value', -1, null, 'Gear');
-        setPageSetting("CapEquip2",10 * autoTrimpSettings["CapEquip"].enabled);
-    } else {
-        createSetting('CapEquip2', 'Cap Equip to', 'Do not level equipment past this number. Helps for early game when the script wants to level your tier2s to level 40+, or to stop wasting metal. Recommended value: 10, Disable with -1 or 0.', 'value', -1, null, 'Gear');
-    }
-
+    createSetting('CapEquip2', 'Cap Equip to', 'Do not level equipment past this number. Helps for early game when the script wants to level your tier2s to level 40+, or to stop wasting metal. Recommended value: 10, Disable with -1 or 0.', 'value', -1, null, 'Gear');
 //AutoMaps + VoidMaps settings:
     createSetting('AutoMaps', 'Auto Maps', 'Recommended. Automatically run maps to progress. Very Important. Has multiple modes: <b>Prestige, Voids, Want more Damage, Want more Health, Want Health & Damage, and Farming.</b>Prestige takes precedence and does equal level maps until it gets what is needed as per Autotrimps Prestige dropdown setting. Voids is self explanatory: use the Void Difficulty Check setting to control the amount of farming. If \'want more damage\', it will only do 10 maps for 200% mapbonus damage bonus. If \'Farming\', it does maps beyond 10 if the displayed number is over >16x. \'Want more health[or and damage]\' is basically just a status message telling you need more health, theres not much that can be done besides tell AutoLevelEquipment to keep buying stuff. If you \'want health\' but your damage is OK to continue, invest in more HP perks.', 'boolean', true, null, "Maps");
     createSetting('RunUniqueMaps', 'Run Unique Maps', 'Relies on AutoMaps. Decides when to run Unique maps. <b>Required to auto-run The Wall and Dimension of Anger.</b> Also Required for challenges: Electricity, Mapocalypse, Meditate, and Crushed (etc) to complete their AutoPortal. <p> Maps/Levels: <br>The Block - 12<br>The Wall - 16<br>Dimension of Anger - 21<br>Trimple Of Doom - 34<br>The Prison - 82<br>Bionic Wonderland (only during Crushed) @ 127<br><b>NOTE:</b> This should generally be on.<br><B>NOTE:</B> Disable Run Bionic Before Spire to be able to disable this. <br><b>NOTICE:</b> This does <b>NOT</b> auto-run all your Bionics according to your lack of Robotrimp status or whether you pass a certain level (yet).', 'boolean', true, null, "Maps");
@@ -305,41 +299,9 @@ function initializeAllSettings() {
     createSetting('SpamMagmite', 'Magmite/Magma Spam', 'Everything in Magmite Module and Magmamancers', 'boolean', true, null, 'Spam');
     createSetting('SpamPerks', 'AutoPerks Spam', 'Everything in related to AutoPerks', 'boolean', true, null, 'Spam');
 
-
 // Export/Import/Default settings
     createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
-
-    //Create settings profile selection dropdown
-    var settingsProfilesLabel = document.createElement("Label");
-    settingsProfilesLabel.id = 'settingsProfiles Label';
-    settingsProfilesLabel.innerHTML = "Settings Profile: ";
-    settingsProfilesLabel.setAttribute('style', 'margin-left: 1.2vw; margin-right: 0.8vw; color: white;');
-    var settingsProfiles = document.createElement("select");
-    settingsProfiles.id = 'settingsProfiles';
-    settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
-    var oldstyle = 'text-align: center; width: 160px;';
-    if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
-    else settingsProfiles.setAttribute('style', oldstyle);
-    //Create settings profile selection dropdown
-    var settingsProfilesButton = document.createElement("Button");
-    settingsProfilesButton.id = 'settingsProfiles Button';
-    settingsProfilesButton.setAttribute('class', 'btn-info');
-    settingsProfilesButton.innerHTML = "&lt;Delete Profile";
-    settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw;');    
-    settingsProfilesButton.setAttribute('onclick','onDeleteProfile()');
-    //Add the settingsProfiles dropdown to UI
-    document.getElementById('Import Export').appendChild(settingsProfilesLabel);
-    document.getElementById('Import Export').appendChild(settingsProfiles);
-    document.getElementById('Import Export').appendChild(settingsProfilesButton);
-    //populate with a Default (read default settings):
-    var innerhtml = "<option id='customProfileCurrent'>Current</option>";    
-    //populate with a Default (read default settings):
-    innerhtml += "<option id='customProfileDefault'>Defaults</option>";
-    //Append a 2nd default item named "Save New..." and have it tied to a write function();
-    innerhtml += "<option id='customProfileNew'>Save New...</option>";
-    //dont forget to populate the rest of it with stored items:
-    settingsProfiles.innerHTML = innerhtml;
-    
+    settingsProfileMakeGUI();   //Settings Profile dropdown and Delete button.    
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
@@ -579,7 +541,6 @@ function resetModuleVars(imported) {
 
 //This creates the entire DOM-structure for this page.
 function automationMenuInit() {
-
     var settingBtnSrch = document.getElementsByClassName("btn btn-default");
     //Change Settings button handler to go through AutoTrimps Settings
     for (var i = 0; i < settingBtnSrch.length; i++) {
@@ -1095,6 +1056,39 @@ function addToolTipToArmyCount() {
     }
 }
 
+//Create settings profile selection dropdown box in DOM. (import/export section)
+function settingsProfileMakeGUI() {
+    var settingsProfilesLabel = document.createElement("Label");
+    settingsProfilesLabel.id = 'settingsProfiles Label';
+    settingsProfilesLabel.innerHTML = "Settings Profile: ";
+    settingsProfilesLabel.setAttribute('style', 'margin-left: 1.2vw; margin-right: 0.8vw; color: white;');
+    var settingsProfiles = document.createElement("select");
+    settingsProfiles.id = 'settingsProfiles';
+    settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
+    var oldstyle = 'text-align: center; width: 160px;';
+    if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
+    else settingsProfiles.setAttribute('style', oldstyle);
+    //Create settings profile selection dropdown
+    var settingsProfilesButton = document.createElement("Button");
+    settingsProfilesButton.id = 'settingsProfiles Button';
+    settingsProfilesButton.setAttribute('class', 'btn-info');
+    settingsProfilesButton.innerHTML = "&lt;Delete Profile";
+    settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw;');    
+    settingsProfilesButton.setAttribute('onclick','onDeleteProfile()');
+    //Add the settingsProfiles dropdown to UI
+    document.getElementById('Import Export').appendChild(settingsProfilesLabel);
+    document.getElementById('Import Export').appendChild(settingsProfiles);
+    document.getElementById('Import Export').appendChild(settingsProfilesButton);
+    //populate with a Default (read default settings):
+    var innerhtml = "<option id='customProfileCurrent'>Current</option>";    
+    //populate with a Default (read default settings):
+    innerhtml += "<option id='customProfileDefault'>Defaults</option>";
+    //Append a 2nd default item named "Save New..." and have it tied to a write function();
+    innerhtml += "<option id='customProfileNew'>Save New...</option>";
+    //dont forget to populate the rest of it with stored items:
+    settingsProfiles.innerHTML = innerhtml;
+}    
+
 //This should switch into the new profile when the dropdown is selected.
 //called by "onchange" of the profile dropdown
 function settingsProfileDropdownHandler() {
@@ -1135,9 +1129,6 @@ function settingsProfileDropdownHandler() {
     }
     //Wait 200ms for everything to reset and then re-select the old index.
     setTimeout(function(){var sp = document.getElementById("settingsProfiles");sp.selectedIndex = index;},200);
-    //else we have no idea what was chosen
-    //whatever was chosen - store what we used last.
-    //safeSetItems('ATSelectedSettingsProfile', settingsProf);
 }
 
 //called by AutoTrimpsTooltip('NameSettingsProfiles')
@@ -1153,7 +1144,7 @@ function nameAndSaveNewProfile() {
         debug("Error in naming, the string is bad." + err.message);
         return;
     }
-    var prof = {
+    var profile = {
         name: profname,
         data: JSON.parse(serializeSettings())
     }
@@ -1161,13 +1152,13 @@ function nameAndSaveNewProfile() {
     var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
     var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
     //rewrite the updated array in
-    var presetlists = [prof];
+    var presetlists = [profile];
     //add the two arrays together, string them, and store them.
     safeSetItems('ATSelectedSettingsProfile', JSON.stringify(oldpresets.concat(presetlists)));
-    debug("Successfully created new profile: " + prof.name);
-    AutoTrimpsTooltip('message', 'Successfully created new profile: ' + prof.name);
+    debug("Successfully created new profile: " + profile.name);
+    AutoTrimpsTooltip('message', 'Successfully created new profile: ' + profile.name);
     //Update dropdown menu to reflect new name:
-    let optionElementReference = new Option(prof.name);
+    let optionElementReference = new Option(profile.name);
     optionElementReference.id = 'customProfileRead';
     var sp = document.getElementById("settingsProfiles");
     sp.add(optionElementReference);
@@ -1181,7 +1172,7 @@ function onDeleteProfile() {
     //Remove the option
     sp.options.remove(index);
     //Stay on the same index (becomes next item) - so we dont have to Toggle into a new profile again and can keep chain deleting.
-    sp.selectedIndex = index;
+    sp.selectedIndex = (index > (sp.length-1)) ? sp.length-1 : index;
     //load the old data in:
     var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
     var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
