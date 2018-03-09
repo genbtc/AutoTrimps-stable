@@ -5,7 +5,16 @@
     //create the Automation icon in the game bar (self-executing)
     automationMenuInit();
 }());
-
+//create container for settings buttons (this is seperate because it needs to
+//  be re-run seperately to reset when importing)
+function automationMenuSettingsInit() {
+    var settingsrow = document.getElementById("settingsRow");
+    var autoSettings = document.createElement("DIV");
+    autoSettings.id = "autoSettings";
+    autoSettings.setAttribute("style", "display: none; max-height: 96vh;overflow: auto;");
+    settingsrow.appendChild(autoSettings);
+}
+automationMenuSettingsInit();
 //prepare CSS for new Tab interface
 var link1 = document.createElement('link');
 link1.rel = "stylesheet";
@@ -114,7 +123,7 @@ function initializeAllSettings() {
     //START MAKING BUTTONS IN THE TABS:
 //CORE:
     createSetting('ManualGather2', ['Gather/Build OFF', 'Auto Gather/Build', 'Science Research OFF', 'Auto Gather/Build #2'], '3-Way Button. Auto Gathering of Food,Wood,Metal(w/turkimp) & Science. Auto speed-Builds your build queue. Now able to turn science researching off for the achievement Reach Z120 without using manual research. The decision between AutoGather 1 or 2 is up to your own discretion and they should be similar.', 'multitoggle', 1, null, "Core");
-    createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight 1', 'Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. The decision between BetterAutoFight 1 or 2 is up to your own discretion. The new BAF#2 does: 3)Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and 4) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle', 1, null, "Core");
+    createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight 1', 'Better Auto Fight 2'], '3-Way Button, Recommended. Will automatically handle fighting. The decision between BetterAutoFight 1 or 2 is up to your own discretion. The new BAF#2 does: A)Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator and we can get away with adding time to it.(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and B) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. WARNING: If you autoportal with BetterAutoFight disabled, the game sits there doing nothing until you click FIGHT. (not good for afk) ', 'multitoggle', 1, null, "Core");
     createSetting('AutoStance', ['Auto Stance OFF', 'Auto Stance 1', 'Auto Stance 2'], 'Automatically swap stances to avoid death. The decision between AutoStance 1 or 2 is up to your own discretion and they should be similar. ', 'multitoggle', 1, null, "Core");
     createSetting('BuyStorage', 'Buy Storage', 'Will buy storage when resource is almost full. (like AutoStorage, even anticipates Jestimp)', 'boolean', true, null, "Core");
     createSetting('BuyBuildings', 'Buy Buildings', 'Will buy non storage buildings as soon as they are available', 'boolean', true, null, "Core");
@@ -294,6 +303,7 @@ function initializeAllSettings() {
     createSetting('SpamJobs', 'Job Spam', 'Job Spam = All jobs, in scientific notation', 'boolean', false, null, 'Spam');
     createSetting('SpamGraphs', 'Starting Zone Spam', 'Disables \'Starting new Zone ###\' and any future Graph Spam that comes from graph logs.', 'boolean', true, null, 'Spam');
     createSetting('SpamMagmite', 'Magmite/Magma Spam', 'Everything in Magmite Module and Magmamancers', 'boolean', true, null, 'Spam');
+    createSetting('SpamPerks', 'AutoPerks Spam', 'Everything in related to AutoPerks', 'boolean', true, null, 'Spam');
     
 
 // Export/Import/Default settings
@@ -305,11 +315,39 @@ function initializeAllSettings() {
     //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
     //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
+    
+    //Create settings profile selection dropdown
+    var settingsProfilesLabel = document.createElement("Label");
+    settingsProfilesLabel.id = 'settingsProfiles Label';
+    settingsProfilesLabel.innerHTML = "Settings Profile: ";
+    settingsProfilesLabel.setAttribute('style', 'margin-left: 1.2vw; margin-right: 0.8vw; color: white;');
+    var settingsProfiles = document.createElement("select");
+    settingsProfiles.id = 'settingsProfiles';
+    settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
+    var oldstyle = 'text-align: center; width: 160px;';
+    if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
+    else settingsProfiles.setAttribute('style', oldstyle);
+    //Add the settingsProfiles dropdown to UI 
+    document.getElementById('Import Export').appendChild(settingsProfilesLabel);
+    document.getElementById('Import Export').appendChild(settingsProfiles);
+    //populate with a Default (read default settings):
+    var innerhtml = "<option id='customProfileRead'>Default</option></select>";
+    //Append a 2nd default item named "Save New..." and have it tied to a write function();
+    innerhtml += "<option id='customProfileWrite'>Save New...</option></select>";
+    //dont forget to populate the rest of it with stored items:
+    settingsProfiles.innerHTML = innerhtml;
+    //load the last ratio used
+    var loadLastPreset = localStorage.getItem('ATSelectedSettingsProfileName');
+    if (loadLastPreset != null)
+        settingsProfiles.selectedIndex = loadLastPreset; // First element is Default options. (always load defaults -  may be problematic)
+    else
+        settingsProfiles.selectedIndex = 0;
+
 }
 initializeAllSettings(); //EXECUTE
 
 //Handler for the popup/tooltip window for Import/Export/Default
-function AutoTrimpsTooltip(what, isItIn, event) {
+function AutoTrimpsTooltip(what, event) {
     if (game.global.lockTooltip)
         return;
     var elem = document.getElementById("tooltipDiv");
@@ -317,6 +355,7 @@ function AutoTrimpsTooltip(what, isItIn, event) {
     var ondisplay = null; // if non-null, called after the tooltip is displayed
     var tooltipText;
     var costText = "";
+    var titleText = what;
     if (what == "ExportAutoTrimps") {
         tooltipText = "This is your AUTOTRIMPS save string. There are many like it but this one is yours. Save this save somewhere safe so you can save time next time. <br/><br/><textarea id='exportArea' style='width: 100%' rows='5'>" + serializeSettings() + "</textarea>";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip()'>Got it</div>";
@@ -389,12 +428,25 @@ function AutoTrimpsTooltip(what, isItIn, event) {
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
     } else if (what == 'MagmiteExplain') {
         tooltipText = "<img src='" + basepath + "mi.png'>";
-        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>I don't get it at all</div></div>";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>Thats all the help you get.</div></div>";
+    } else if (what == 'NameSettingsProfiles') {
+        //Shows a Question Popup to set the name:
+        titleText = "Enter New Settings Profile Name"
+        tooltipText = "What would you like the name of the Settings Profile to be?<br/><br/><textarea id='setSettingsNameTooltip' style='width: 100%' rows='1'></textarea>";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); nameAndSaveNewProfile();'>Import</div><div class='btn btn-info' onclick='cancelTooltip()'>Cancel</div></div>";
+        ondisplay = function() {
+            document.getElementById('setSettingsNameTooltip').focus();
+        };
+    } else if (what == 'message') {
+        titleText = "Generic message";
+        tooltipText = event;
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";        
     }
+    //Common:
     game.global.lockTooltip = true;
     elem.style.left = "33.75%";
     elem.style.top = "25%";
-    document.getElementById("tipTitle").innerHTML = what;
+    document.getElementById("tipTitle").innerHTML = titleText;
     document.getElementById("tipText").innerHTML = tooltipText;
     document.getElementById("tipCost").innerHTML = costText;
     elem.style.display = "block";
@@ -420,6 +472,13 @@ function resetAutoTrimps(imported) {
         ATrunning = true; //restart AT.
     }
     setTimeout(waitRemoveLoad(imported),101);
+    if (imported) {
+        debug("Successfully imported new AT settings...");
+        AutoTrimpsTooltip("message", "Successfully Imported new Autotrimps Settings File!");
+    } else {
+        debug("Successfully reset AT settings to Defaults...");
+        AutoTrimpsTooltip("message", "Autotrimps has been successfully reset to its defaults!");
+    }
 }
 
 //import autotrimps settings from a textbox
@@ -429,12 +488,15 @@ function loadAutoTrimps() {
     try {
         var thestring = document.getElementById("importBox").value.replace(/[\n\r]/gm, "");
         var tmpset = JSON.parse(thestring);
-        if (tmpset == null)
+        if (tmpset == null) {
+            debug("Error importing AT settings, the string is empty.");
             return;
+        }
     } catch (err) {
-        debug("Error importing, the string is bad." + err.message);
+        debug("Error importing AT settings, the string is bad." + err.message);
         return;
     }
+    debug("Importing new AT settings file...");
     resetAutoTrimps(tmpset);
 }
 
@@ -495,12 +557,12 @@ function importModuleVars() {
         // if (tmpset == null)
             // return;
     } catch (err) {
-        debug("Error importing, the string is bad." + err.message);
+        debug("Error importing MODULE vars, the string is bad." + err.message);
         return;
     }
 //    resetModuleVars(tmpset);
     localStorage.removeItem('ATMODULES');
-    localStorage.setItem('ATMODULES', JSON.stringify(tmpset));
+    safeSetItems('ATMODULES', JSON.stringify(tmpset));
 }
 
 //reset MODULE variables to default, (and/or then import)
@@ -511,14 +573,7 @@ function resetModuleVars(imported) {
         MODULES = JSON.parse(JSON.stringify(MODULESdefault));
         //load everything again, anew
         // debug('Saved');
-        try {
-            localStorage.setItem('ATMODULES', JSON.stringify(ATMODULES));
-        } catch(e) {
-          if (e.code == 22) {
-            // Storage full, maybe notify user or do some clean-up
-            debug("Error: LocalStorage is full, or some other error. Try to restart your browser.");
-          }
-        }
+        safeSetItems('ATMODULES', JSON.stringify(ATMODULES));
         ATrunning = true; //restart AT.
     }
     setTimeout(waitRemoveLoad(imported),101);
@@ -526,12 +581,7 @@ function resetModuleVars(imported) {
 
 //This creates the entire DOM-structure for this page.
 function automationMenuInit() {
-    //create container for settings buttons (bottom toolbar)
-    var settingsrow = document.getElementById("settingsRow");
-    var autoSettings = document.createElement("DIV");
-    autoSettings.id = "autoSettings";
-    autoSettings.setAttribute("style", "display: none; max-height: 96vh;overflow: auto;");
-    settingsrow.appendChild(autoSettings);
+
     var settingBtnSrch = document.getElementsByClassName("btn btn-default");
     //Change Settings button handler to go through AutoTrimps Settings
     for (var i = 0; i < settingBtnSrch.length; i++) {
@@ -725,7 +775,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
 
     } else if (type == 'infoclick') {
         btn.setAttribute('class', 'btn btn-info');
-        btn.setAttribute("onclick", 'AutoTrimpsTooltip(\'' + defaultValue + '\', null, \'update\')');
+        btn.setAttribute("onclick", 'AutoTrimpsTooltip(\'' + defaultValue + '\', \'update\')');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
         btn.setAttribute("style", "display: block; font-size: 0.8vw;");
@@ -1045,4 +1095,46 @@ function addToolTipToArmyCount() {
         $armycount.setAttribute("onmouseout", 'tooltip("hide")');
         $armycount.setAttribute("class", 'tooltipadded');
     }
+}
+
+//This should switch into the new profile when the dropdown is selected.
+function settingsProfileDropdownHandler() {
+    //Save new...: asks a name and saves new profile
+    var sp = document.getElementById("settingsProfiles");
+    if (sp.selectedIndex == sp.length-1)
+    {
+        AutoTrimpsTooltip('NameSettingsProfiles');
+    }
+    //Default: simply calls Reset To Default:
+    else if (sp.selectedIndex == sp.length-2)
+    {
+        resetAutoTrimps();
+    }
+    //Reads the existing profile name and switches into it.
+    // TODO: validation? 
+    else {
+        var profname = sp.options[sp.selectedIndex].text;
+        var saveString = localStorage.getItem(profname);
+        resetAutoTrimps(savestring);
+    }     
+    //whatever was chosen - store what we used last.
+    //safeSetItems('ATSelectedSettingsProfileName', settingsProf);
+}
+
+function nameAndSaveNewProfile() {
+    //try the import
+    try {
+        var profname = document.getElementById("setSettingsNameTooltip").value.replace(/[\n\r]/gm, "");
+        if (profname == null) { 
+            debug("Error in naming, the string is empty.");
+            return;
+        }
+    } catch (err) {
+        debug("Error in naming, the string is bad." + err.message);
+        return;
+    }
+    //var profname = sp.options[sp.selectedIndex].text 
+    safeSetItems('ATSelectedSettingsProfileName', profname);
+    debug("Successfully created new profile: " + profname);
+    AutoTrimpsTooltip('message', 'Successfully created new profile.');
 }

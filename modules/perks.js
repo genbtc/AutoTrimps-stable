@@ -11,17 +11,13 @@
 
 //Create blank AutoPerks object
 //MODULES["perks"] = {};
-if (typeof(AutoPerks) === 'undefined')
-    var AutoPerks = {};
-else {
-    debug('AutoPerks is now included in Autotrimps, please disable the tampermonkey script for AutoPerks to remove this message!');
-}
+var AutoPerks = {};
 
 //Import the FastPriorityQueue.js general Library (not AT specific, but needed for perk queue)
 var head = document.getElementsByTagName('head')[0];
 var queuescript = document.createElement('script');
 queuescript.type = 'text/javascript';
-//This does not need to be changed to your own repo. Its a 3rd party file.
+//This does NOT need to be changed to your own repo. Its a 3rd party file.
 queuescript.src = 'https://genbtc.github.io/AutoTrimps/FastPriorityQueue.js';
 head.appendChild(queuescript);
 
@@ -215,7 +211,8 @@ AutoPerks.setNewRatios = function() {
     toughness.updatedValue = resilience.updatedValue / 2;
     // Manually update tier II perks
     var tierIIPerks = AutoPerks.getTierIIPerks();
-    for(var i in tierIIPerks) tierIIPerks[i].updatedValue = tierIIPerks[i].parent.updatedValue / tierIIPerks[i].relativeIncrease;
+    for(var i in tierIIPerks)
+        tierIIPerks[i].updatedValue = tierIIPerks[i].parent.updatedValue / tierIIPerks[i].relativeIncrease;
 }
 
 //get ready / initialize
@@ -263,7 +260,7 @@ AutoPerks.clickAllocate = function() {
 
     //re-arrange perk points
     AutoPerks.applyCalculations(perks);
-    debug("Finishing AutoPerks Auto-Allocate.","general");
+    debug("Finishing AutoPerks Auto-Allocate.","perks");
 }
 
 //NEW way: Get accurate count of helium (calcs it like the game does)
@@ -307,14 +304,14 @@ AutoPerks.calculateIncrease = function(perk, level) {
 }
 
 AutoPerks.spendHelium = function(helium, perks) {
-    debug("Beginning AutoPerks calculate how to spend " + helium + " Helium... This could take a while...","general");
+    debug("Beginning AutoPerks calculate how to spend " + helium + " Helium... This could take a while...","perks");
     if(helium < 0) {
-        debug("AutoPerks: Not enough helium to buy fixed perks.","general");
+        debug("AutoPerks: Not enough helium to buy fixed perks.","perks");
         //document.getElementById("nextCoordinated").innerHTML = "Not enough helium to buy fixed perks.";
         return;
     }
     if(helium == NaN) {
-        debug("AutoPerks: Helium is Not a Number Error");
+        debug("AutoPerks: Helium is Not a Number Error","perks");
         return;
      }
 
@@ -327,7 +324,7 @@ AutoPerks.spendHelium = function(helium, perks) {
         var inc = AutoPerks.calculateIncrease(perks[i], 0);
         perks[i].efficiency = inc/price;
         if(perks[i].efficiency <= 0) {
-            debug("Perk ratios must be positive values.","general");
+            debug("Perk ratios must be positive values.","perks");
             return;
         }
         effQueue.add(perks[i]);
@@ -351,14 +348,14 @@ AutoPerks.spendHelium = function(helium, perks) {
         mostEff = effQueue.poll();
         price = AutoPerks.calculatePrice(mostEff, mostEff.level);
     }
-  debug("AutoPerks: Pass one complete.","general");
+    debug("AutoPerks: Pass one complete.","perks");
 
     //Begin selectable dump perk code
     var selector = document.getElementById('dumpPerk');
     var index = selector.selectedIndex;
     if(selector.value != "None") {
         var dumpPerk = AutoPerks.getPerkByName(selector[index].innerHTML);
-        debug(AutoPerks.capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level,"general");
+        debug(AutoPerks.capitaliseFirstLetter(dumpPerk.name) + " level pre-dump: " + dumpPerk.level,"perks");
         if(dumpPerk.level < dumpPerk.max) {
             for(price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level); price <= helium; price = AutoPerks.calculatePrice(dumpPerk, dumpPerk.level)) {
                 helium -= price;
@@ -385,7 +382,7 @@ AutoPerks.spendHelium = function(helium, perks) {
         if(mostEff.level < mostEff.max) // but first, check if the perk has reached its maximum value
             effQueue.add(mostEff);
     }
-    debug("AutoPerks: Pass two complete.","general");
+    debug("AutoPerks: Pass two complete.","perks");
 }
 
 //Pushes the respec button, then the Clear All button, then assigns perk points based on what was calculated.
@@ -418,7 +415,7 @@ AutoPerks.applyCalculationsRespec = function(perks){
         //activateClicked();    //click OK for them (disappears the window).
     }
     else {
-        debug("A Respec would be required and is not available. You used it already, try again next portal.","other");
+        debug("A Respec would be required and is not available. You used it already, try again next portal.","perks");
         allocatorBtn1.setAttribute('class', 'btn inPortalBtn settingsBtn settingBtnfalse');
         tooltip("Automatic Perk Allocation Error", "customText", event, "A Respec would be required and is NOT available. You used it already, try again next portal. Press <b>esc</b> to close this tooltip." );
     }

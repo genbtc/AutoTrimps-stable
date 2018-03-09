@@ -11,7 +11,7 @@
 var ATServer = 
 {
 	//SERVER_IP: '207.246.77.188',
-    SERVER_HOSTNAME: 'autotrimps.site/ATendpoint.php'
+    SERVER_HOSTNAME: 'https://autotrimps.site/ATendpoint.php'
 }
 
 ATServer.GetID = function(callback)
@@ -26,7 +26,7 @@ ATServer.GetID = function(callback)
 		}
 	}
 
-	req.open('GET', 'https://' + ATServer.SERVER_HOSTNAME, true);
+	req.open('GET', ATServer.SERVER_HOSTNAME, true);
 	req.setRequestHeader('req', 'get_id');
 	req.send();
 }
@@ -43,7 +43,7 @@ ATServer.SaveData = function(id, data, callback)
 		}
 	}
 
-	req.open('POST', 'https://' + ATServer.SERVER_HOSTNAME + '?id=' + id, true);
+	req.open('POST', ATServer.SERVER_HOSTNAME + '?id=' + id, true);
 	req.setRequestHeader('req', 'save_data');
 	req.setRequestHeader("Content-Type", "application/json");
 	req.send(JSON.stringify(data));
@@ -53,9 +53,11 @@ ATServer.Upload = function(data)
 {
     ATServer.GetID(function(id) 
     { 
-        ATServer.SaveData(id, data, function(response) 
+        autoTrimpSettings.analyticsID = autoTrimpSettings.analyticsID || id;
+        debug("Server generated ID: " + autoTrimpSettings.analyticsID, "other");
+        ATServer.SaveData(autoTrimpSettings.analyticsID, data, function(response) 
         { 
-            console.log("Submitted analytics data w/ ID: " + id);
+            debug("Submitted analytics data w/ ID: " + autoTrimpSettings.analyticsID, "other");
         });
     });
 }
@@ -72,7 +74,7 @@ var ulData = {
 
 ATServer.UploadSettings = function() {
     ATServer.Upload(ulData);
-    console.log("AutoTrimps Settings File was Uploaded for analytics/usage! This is controlled with a new button on AT's Import/Export tab.");
+    debug("AutoTrimps Settings File was Uploaded for analytics/usage! This is controlled with a new button on AT's Import/Export tab.","general");
 }
 if (getPageSetting('allowSettingsUpload')) {
     ATServer.UploadSettings();

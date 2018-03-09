@@ -1,4 +1,3 @@
-
 Document Code Structure: (for other developers): see main-doc.txt 
 ----------------
 Main-Documentation (main-doc.txt)
@@ -6,17 +5,15 @@ TODO List (this TODO.md)
 Update README.md/changelog(.json?)/version # (manually for now)
 Code Comments (getting better)
 
-SettingsGUI temp copy, no need.
--    createSetting('BetterAutoFight', ['Better AutoFight OFF', 'Better Auto Fight 1', 'Better Auto Fight 2'], '3-Way Button, Recommended [ON], or Advised to use [OFF] for low level players under 1 million HE.  Will automatically handle fighting. #2 is the new one (benefits higher level players), #1 is the old algorithm (if you have any issues).<br>BAF#1 does: (1)Click Fight if we are dead and already have enough for our breed timer, and fighting would not add a significant amount of time:(&lt;2 sec). (2) Send Trimps to fight now if it takes less than 0.5 seconds to create a new group of soldiers, if we havent bred fully yet. <br>The new BAF#2 additionally does: (3) Click fight anyway if we are dead and stuck in a loop due to Dimensional Generator (z230+) and we can get away with adding time to it(although can happen at any zone) Pseudocode:(RemainingTime + ArmyAdd.Time &lt; GeneTimer) and (4) Clicks fight anyway if we are dead and have &gt;=31 NextGroupTimer and deal with the consequences by firing genetecists afterwards. <br>OFF: Can now be used as to use the in-game AutoFight with no downsides.(will autofight after portal), Recommended OFF for lowlevel. ', 'multitoggle', 1, null, "Core");
-
 old TODO LIST: from 8/17/2016
 -TODO: a BW toggle that can let AT do Bionic Wonderland maps if they haven't ever been done before?
   (in the same vein, check for "Speed" achievements for unique maps and do them if they're not done yet and possible)
 
 get to in Near Future:
 ------------------------
-TODO 1: Add notes or labels to graph runs.  (to indicate which settings we used)
-TODO 1: HighCharts annotations module for "notes" comments to indicate which graph runs were what.
+WORKING ON NOW - TODO 1: TODO: AutoTrimps Presets dropdown list to name, save, reload different profiles
+TODO 2: Add notes or labels to graph runs.  (to indicate which settings we used)
+TODO 2: HighCharts annotations module for "notes" comments to indicate which graph runs were what.
 
 new TODO LIST: 3/3/2018 and 3/4/2018 extended to 3/7
 -------------------------------------
@@ -26,7 +23,7 @@ TODO: Perks - allocate speed improvement, shortcuts, (36 million iterations and 
 TODO: IMPLEMENT A STANDARD FOR USAGE STATISTICS/PROFILE: {
  Highest zone, helium, bones, ATSettings, MODULES, which graphs were clicked on, Perk preset/ratios.
 }
-TODO: SPAM tab - more granular settings. maybe every module could have its own toggle?
+TODO: SPAM tab - more granular settings. maybe every module could have its own toggle? - working on it.
 TODO: "Map Special Modifier": Special Modifiers, Perfect Sliders (way more fragments), Extra Zones (+0 to +10)
     with a save config option
     if you create a config with FA and +5 zones, and save it, next time you/the script creates a map, it will remember the setting
@@ -38,7 +35,6 @@ TODO: "Map Special Modifier": Special Modifiers, Perfect Sliders (way more fragm
     another valid idea is burn out all your frags on perfect near the end i guess
 TODO: for alfa166: "Bionic OverBurner" :smiley: Make it Configurable to run BW 470 one time at z480 to unlock and run BW485, (with the +5 map kit)
 TODO: Make a more configurable Auto Spend Nulli function for 2018
-TODO: AutoTrimps Presets dropdown list to name, save, reload different profiles
 TODO: Graphs, make 2 arrows to cycle sequentially through the graphs without using the dropdown everytime.
 WebSite https://autotrimps.site - link to github, link to tutorials on how to install.
 TODO: Should invent a tool/script to plug in the version numbers, changelogs, docs.
