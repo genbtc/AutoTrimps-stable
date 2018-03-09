@@ -308,13 +308,6 @@ function initializeAllSettings() {
 
 // Export/Import/Default settings
     createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
-    createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
-    createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
-    createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
-    createSetting('allowSettingsUpload', 'Allow Settings Upload for Analytics', 'Uploads your current AUTOTRIMPS settings file (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 3KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, your helium amount, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
-    //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
-    //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
-    //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
 
     //Create settings profile selection dropdown
     var settingsProfilesLabel = document.createElement("Label");
@@ -336,6 +329,15 @@ function initializeAllSettings() {
     innerhtml += "<option id='customProfileNew'>Save New...</option></select>";
     //dont forget to populate the rest of it with stored items:
     settingsProfiles.innerHTML = innerhtml;
+    
+    createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
+    createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
+    createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
+    createSetting('allowSettingsUpload', 'Allow Settings Upload for Analytics', 'Uploads your current AUTOTRIMPS settings file (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 3KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, your helium amount, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
+    //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
+    //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
+    //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
+
 }
 initializeAllSettings(); //EXECUTE
 
@@ -448,7 +450,7 @@ function AutoTrimpsTooltip(what, event) {
 }
 
 //reset autotrimps to defaults (also handles imports)
-function resetAutoTrimps(imported) {
+function resetAutoTrimps(imported,profname) {
     ATrunning = false; //stop AT, wait, remove
     function waitRemoveLoad(imported) {
         localStorage.removeItem('autoTrimpSettings');
@@ -467,8 +469,10 @@ function resetAutoTrimps(imported) {
     setTimeout(waitRemoveLoad(imported),101);
     if (imported) {
         debug("Successfully imported new AT settings...");
-        //AutoTrimpsTooltip("message", "Successfully Imported new Autotrimps Settings File!");
-        AutoTrimpsTooltip('NameSettingsProfiles');
+        if (profname)   //pass in existing profile name to use:
+            AutoTrimpsTooltip("message", "Successfully Imported Autotrimps Settings File!: " + profname);    
+        else            //or prompt to create a new name:
+            AutoTrimpsTooltip('NameSettingsProfiles');
     } else {
         debug("Successfully reset AT settings to Defaults...");
         AutoTrimpsTooltip("message", "Autotrimps has been successfully reset to its defaults!");
@@ -1083,7 +1087,6 @@ function addToolTipToArmyCount() {
 //This should switch into the new profile when the dropdown is selected.
 //called by "onchange" of the profile dropdown
 function settingsProfileDropdownHandler() {
-    //Save new...: asks a name and saves new profile
     var sp = document.getElementById("settingsProfiles");
     var id = sp.options[sp.selectedIndex].id;
     //Default: simply calls Reset To Default:
@@ -1092,6 +1095,7 @@ function settingsProfileDropdownHandler() {
         resetAutoTrimps();
         sp.selectedIndex = 0;    // First element is Default options. (always load defaults -  may be problematic)
     }
+    //Save new...: asks a name and saves new profile
     else if (id == 'customProfileNew')
     {
         AutoTrimpsTooltip('NameSettingsProfiles');
@@ -1101,15 +1105,17 @@ function settingsProfileDropdownHandler() {
     else if (id == 'customProfileRead') {
         var profname = sp.options[sp.selectedIndex].text;
         //load the last ratio used
-        var loadLastPreset = localStorage.getItem('ATSelectedSettingsProfile');
+        var loadLastPreset = JSON.parse(localStorage.getItem('ATSelectedSettingsProfile'));
         if (loadLastPreset != null) {
-            sp.childNodes.forEach(function(el) {
-                if (loadLastPreset.name == el.text) {
-                    console.log(el.text)
-                    sp.selectedIndex = el.index;
-                    resetAutoTrimps(JSON.parse(loadLastPreset.data));
-                }
+            var result = loadLastPreset.filter(function(elem,i){
+                return elem.name == profname;
             });
+            if (result.length > 0) {
+                console.log(profname)
+                //sp.selectedIndex = box.index;
+                //console.log(result[0].data);
+                resetAutoTrimps(result[0].data,profname);
+            }
         }
     }
     //else we have no idea what was chosen
