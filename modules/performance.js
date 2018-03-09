@@ -1,6 +1,7 @@
 ;(function(M, W)
 {
 	M["performance"] = {};
+	M["performance"].isAFK = false;
 
 	// Saved functions
 	M["performance"].updateLabels = W.updateLabels;
@@ -54,7 +55,7 @@
 		font-size: 24pt;
 	}
 
-	.at-afk-zone, .at-afk-helium
+	.at-afk-zone, .at-afk-helium, .at-afk-status
 	{
 		font-size: 20pt;
 	}
@@ -90,13 +91,18 @@
 
 	// Zone
 	M["performance"].AFKOverlayZone = document.createElement('p');
-	M["performance"].AFKOverlayZone.innerText = 'Helium: -';
-	M["performance"].AFKOverlayZone.className = 'at-afk-overlay-zone'
+	M["performance"].AFKOverlayZone.innerText = 'Current zone: -';
+	M["performance"].AFKOverlayZone.className = 'at-afk-zone'
 
 	// Helium
 	M["performance"].AFKOverlayHelium = document.createElement('p');
-	M["performance"].AFKOverlayHelium.innerText = 'Current zone: -';
-	M["performance"].AFKOverlayHelium.className = 'at-afk-overlay-helium'
+	M["performance"].AFKOverlayHelium.innerText = 'Current helium: -';
+	M["performance"].AFKOverlayHelium.className = 'at-afk-helium'
+
+	// Status
+	M["performance"].AFKOverlayStatus = document.createElement('p');
+	M["performance"].AFKOverlayStatus.innerText = 'Status: -';
+	M["performance"].AFKOverlayStatus.className = 'at-afk-status'
 
 	// Disable button
 	M["performance"].AFKOverlayDisable = document.createElement('div');
@@ -112,6 +118,7 @@
 	M["performance"].AFKOverlay.appendChild(AFKOverlayTitle);
 	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayZone);
 	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayHelium);
+	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayStatus);
 	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayDisable);
 
 	document.body.appendChild(M["performance"].AFKOverlay);
@@ -129,6 +136,7 @@
 
 	function EnableAFKMode()
 	{
+		M["performance"].isAFK = true;
 		M["performance"].AFKOverlay.classList.remove('at-afk-overlay-disabled');
 		M["performance"].$wrapper.style.display = 'none';
 		M["performance"].OverrideUpdate();
@@ -136,9 +144,17 @@
 
 	function DisableAFKMode()
 	{
+		M["performance"].isAFK = false;
 		M["performance"].$wrapper.style.display = 'block';
 		M["performance"].RestoreUpdate();
 		M["performance"].AFKOverlay.classList.add('at-afk-overlay-disabled');
+	}
+
+	function UpdateAFKOverlay()
+	{
+		M["performance"].AFKOverlayZone.innerText = 'Current Zone: ' + game.global.world;
+		M["performance"].AFKOverlayHelium.innerText = 'Current Helium: ' + prettify(Math.floor(game.resources.helium.owned));
+		M["performance"].AFKOverlayStatus.innerText = 'Current Status: ' + getAutoMapsStatus()[0];
 	}
 
 	M["performance"].OverrideUpdate = OverrideUpdate;
@@ -146,5 +162,7 @@
 
 	M["performance"].EnableAFKMode = EnableAFKMode;
 	M["performance"].DisableAFKMode = DisableAFKMode;
+	
+	M["performance"].UpdateAFKOverlay = UpdateAFKOverlay;
 
 })(MODULES, window);
