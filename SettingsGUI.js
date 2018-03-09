@@ -320,13 +320,23 @@ function initializeAllSettings() {
     var oldstyle = 'text-align: center; width: 160px;';
     if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
     else settingsProfiles.setAttribute('style', oldstyle);
+    //Create settings profile selection dropdown
+    var settingsProfilesButton = document.createElement("Button");
+    settingsProfilesButton.id = 'settingsProfiles Button';
+    settingsProfilesButton.setAttribute('class', 'btn-info');
+    settingsProfilesButton.innerHTML = "&lt;Delete Profile";
+    settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw;');    
+    settingsProfilesButton.setAttribute('onclick','onDeleteProfile()');
     //Add the settingsProfiles dropdown to UI
     document.getElementById('Import Export').appendChild(settingsProfilesLabel);
     document.getElementById('Import Export').appendChild(settingsProfiles);
+    document.getElementById('Import Export').appendChild(settingsProfilesButton);
     //populate with a Default (read default settings):
-    var innerhtml = "<option id='customProfileDefault'>Default</option></select>";
+    var innerhtml = "<option id='customProfileCurrent'>Current</option>";    
+    //populate with a Default (read default settings):
+    innerhtml += "<option id='customProfileDefault'>Defaults</option>";
     //Append a 2nd default item named "Save New..." and have it tied to a write function();
-    innerhtml += "<option id='customProfileNew'>Save New...</option></select>";
+    innerhtml += "<option id='customProfileNew'>Save New...</option>";
     //dont forget to populate the rest of it with stored items:
     settingsProfiles.innerHTML = innerhtml;
     
@@ -1089,22 +1099,28 @@ function addToolTipToArmyCount() {
 //called by "onchange" of the profile dropdown
 function settingsProfileDropdownHandler() {
     var sp = document.getElementById("settingsProfiles");
-    var id = sp.options[sp.selectedIndex].id;
+    var index = sp.selectedIndex;
+    var id = sp.options[index].id;
+    //Current: placeholder.
+    if (id == 'customProfileCurrent') {
+        index = 0;   //do nothing.
+    }
     //Default: simply calls Reset To Default:
     if (id == 'customProfileDefault')
     {
         resetAutoTrimps();
-        sp.selectedIndex = 0;    // First element is Default options. (always load defaults -  may be problematic)
+        index = 1;
     }
     //Save new...: asks a name and saves new profile
     else if (id == 'customProfileNew')
     {
         AutoTrimpsTooltip('NameSettingsProfiles');  //calls nameAndSaveNewProfile() below
+        index = (sp.length-1);
     }
     //Reads the existing profile name and switches into it.
     // TODO: validation?
-    else if (id == 'customProfileRead') {
-        var profname = sp.options[sp.selectedIndex].text;
+    else if (id == 'customProfileRead') {        
+        var profname = sp.options[index].text;
         //load the stored profiles from browser
         var loadLastProfiles = JSON.parse(localStorage.getItem('ATSelectedSettingsProfile'));
         if (loadLastProfiles != null) {
@@ -1117,6 +1133,8 @@ function settingsProfileDropdownHandler() {
             }
         }
     }
+    //Wait 200ms for everything to reset and then re-select the old index.
+    setTimeout(function(){var sp = document.getElementById("settingsProfiles");sp.selectedIndex = index;},200);
     //else we have no idea what was chosen
     //whatever was chosen - store what we used last.
     //safeSetItems('ATSelectedSettingsProfile', settingsProf);
@@ -1156,16 +1174,36 @@ function nameAndSaveNewProfile() {
     sp.selectedIndex = sp.length-1;
 }
 
+//event handler for profile delete button
+function onDeleteProfile() {
+    var sp = document.getElementById("settingsProfiles");
+    var index = sp.selectedIndex;
+    //Remove the option
+    sp.options.remove(index);
+    //Stay on the same index (becomes next item) - so we dont have to Toggle into a new profile again and can keep chain deleting.
+    sp.selectedIndex = index;
+    //load the old data in:
+    var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
+    var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
+    //rewrite the updated array in. string them, and store them.
+    var target = (index-3); //subtract the 3 default choices out
+    oldpresets.splice(target, 1);
+    safeSetItems('ATSelectedSettingsProfile', JSON.stringify(oldpresets));
+    debug("Successfully deleted profile #: " + target);
+}
+
+//Populate dropdown menu with list of AT SettingsProfiles
 function initializeSettingsProfiles() {
     var sp = document.getElementById("settingsProfiles");
-    //load the old data in,
+    //load the old data in:
     var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
     var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
     oldpresets.forEach(function(elem){
-        //Update dropdown menu to reflect new name:
+        //Populate dropdown menu to reflect new name:
         let optionElementReference = new Option(elem.name);
         optionElementReference.id = 'customProfileRead';
-        sp.add(optionElementReference);
+        sp.add(optionElementReference);        
     });
+    sp.selectedIndex = 0;
 }
 initializeSettingsProfiles();
