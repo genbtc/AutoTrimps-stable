@@ -41,19 +41,22 @@ TODO: Should invent a tool/script to plug in the version numbers, changelogs, do
 Pull external .JSON Changelog and stuff from this site's API (obviously have to create a new server endpoint PHP script)
 TODO: Modular Structured load of the modules/*.js files is less than robust now. Check status of each loaded, tally a count, double check success.
      -FAR: In this way, the tracking and loading of modules can be timestamped and version controlled for itemization and aggregate cloud managed.
+TODO: Cloud management of Save Files (already uploading save files and naming them. just need to download)
+FAR TODO: Cloud distributed graphs. Show similar users graphs?
+    -Could just upload all the graphs after every run (how to detect full run?)
 FAR TODO: Theoretically the graphs database can be used as a pro-active future prediction model and conditions can be inferred from past runs.
     Example: If Helium per/hour is ABOUT to go down based on previous cached runs (during the ambiguity period of about a few zones), portal earlier.
     Think like Grace %% setting but automatic.
-FAR TODO: Cloud distributed graphs. Show similar users graphs? Long shot.
-FAR TODO: Cloud management of Save Files
 FAR TODO: Analysis of the Userbase and custom settings, even make queries to ask server for better decision making based on global multi-client probability state
+TODO: Split SettingsGUI.js up into front-end DOM+GUI, back-end functions for Settings/Modules/Profiles, and createSettings+descriptions.
+TODO: import/export graphs. append?
 
 Bugs To Fix:
 ----------------
-BUG 2: Bone Portal messes with graphs / Importing a savedgame in progress produces bad graphs
 Most github pull requests and issues from recently have been resolved.
-BUG 3: The graphs still can miss time and have gaps/skips and has zone innacuracies, additionally it can fail to track Trimps data entirely during background window Javascript AFK/idle/catchup mode.
-BUG 3: Overkill and certain graphs can skip progress and get mis-aligned if the script was paused or was backgrounded.
+BUG 1: Bone Portal messes with graphs / Importing a savedgame in progress produces bad graphs
+BUG 2: The graphs still can miss time and have gaps/skips and has zone innacuracies, additionally it can fail to track Trimps data entirely during background window Javascript AFK/idle/catchup mode.
+BUG 2: Overkill and certain graphs can skip progress and get mis-aligned if the script was paused or was backgrounded.
 
 
 Done Did:

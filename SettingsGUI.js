@@ -305,7 +305,7 @@ function initializeAllSettings() {
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
-    createSetting('allowSettingsUpload', 'Allow Settings Upload for Analytics', 'Uploads your current AUTOTRIMPS settings file (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 3KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, your helium amount, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
+    createSetting('allowSettingsUpload', 'Allow Settings Upload for Analytics', 'Uploads your AUTOTRIMPS saved settings files (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 5-10KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, your helium amount, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
     //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
     //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
@@ -869,7 +869,6 @@ function autoSetValue(id,negative) {
     if (num > -1 || negative)
         document.getElementById(id).textContent = ranstring + ': ' + prettify(num);
     else
-    //document.getElementById(id).textContent = ranstring + ': ' + 'Infinite';
         document.getElementById(id).innerHTML = ranstring + ': ' + "<span class='icomoon icon-infinity'></span>";
     saveSettings();
     checkPortalSettings();
@@ -957,27 +956,11 @@ function updateCustomButtons() {
                 if (autoTrimpSettings[setting].value > -1 || autoTrimpSettings[setting].type == 'valueNegative')
                     elem.textContent = autoTrimpSettings[setting].name + ': ' + prettify(autoTrimpSettings[setting].value);
                 else
-                //elem.textContent = ranstring + ': ' + 'Infinite';
                     elem.innerHTML = autoTrimpSettings[setting].name + ': ' + "<span class='icomoon icon-infinity'></span>";
             }
         }
     }
 }
-
-//buncha update stuff i wrote but ended up not needing:
-/*
-for (var setting in autoTrimpSettings) {
-    var btn = autoTrimpSettings[setting];
-    var elem = document.getElementById(setting);
-    if (elem == null) continue;
-    if (btn.type == 'boolean')
-        elem.setAttribute('class', 'noselect settingsBtn settingBtn' + btn.enabled);
-    if (btn.type == 'multitoggle') {
-        elem.setAttribute('class', 'noselect settingsBtn settingBtn' + btn.value);
-        elem.textContent = btn.name[btn.value];
-    }
-}
-*/
 
 //Checks portal related UI settings (TODO: split into two, and move the validation check to SettingsGUI)
 function checkPortalSettings() {
@@ -1027,26 +1010,28 @@ function checkPortalSettings() {
     return portalLevel;
 }
 
-//on UI startup:
-//Add breeding box:
-var breedbarContainer = document.querySelector('#trimps > div.row');
-var addbreedTimerContainer = document.createElement("DIV");
-addbreedTimerContainer.setAttribute('class', "col-xs-11");
-addbreedTimerContainer.setAttribute('style', 'padding-right: 0;');
-addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now. This number is what BetterAutoFight #4 refers to when it says NextGroupBreedTimer.\")');
-addbreedTimerContainer.setAttribute("onmouseout", 'tooltip("hide")');
-var addbreedTimerInside = document.createElement("DIV");
-addbreedTimerInside.setAttribute('style', 'display: block;');
-var addbreedTimerInsideIcon = document.createElement("SPAN");
-addbreedTimerInsideIcon.setAttribute('class', "icomoon icon-clock");
-var addbreedTimerInsideText = document.createElement("SPAN"); //updated in the top of mainLoop() each cycle
-addbreedTimerInsideText.id = 'hiddenBreedTimer';
-addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
-addbreedTimerInside.appendChild(addbreedTimerInsideText);
-addbreedTimerContainer.appendChild(addbreedTimerInside);
-breedbarContainer.appendChild(addbreedTimerContainer);
+//Add breeding box (to GUI on startup::
+function addBreedingBoxTimers() {
+    var breedbarContainer = document.querySelector('#trimps > div.row');
+    var addbreedTimerContainer = document.createElement("DIV");
+    addbreedTimerContainer.setAttribute('class', "col-xs-11");
+    addbreedTimerContainer.setAttribute('style', 'padding-right: 0;');
+    addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now. This number is what BetterAutoFight #4 refers to when it says NextGroupBreedTimer.\")');
+    addbreedTimerContainer.setAttribute("onmouseout", 'tooltip("hide")');
+    var addbreedTimerInside = document.createElement("DIV");
+    addbreedTimerInside.setAttribute('style', 'display: block;');
+    var addbreedTimerInsideIcon = document.createElement("SPAN");
+    addbreedTimerInsideIcon.setAttribute('class', "icomoon icon-clock");
+    var addbreedTimerInsideText = document.createElement("SPAN"); //updated in the top of mainLoop() each cycle
+    addbreedTimerInsideText.id = 'hiddenBreedTimer';
+    addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
+    addbreedTimerInside.appendChild(addbreedTimerInsideText);
+    addbreedTimerContainer.appendChild(addbreedTimerInside);
+    breedbarContainer.appendChild(addbreedTimerContainer);
+}
+addBreedingBoxTimers();
 
-//hover over the army group size to get a popup that translates to breeding time
+//Add GUI popup for hovering over the army group size and translate that to breeding time
 function addToolTipToArmyCount() {
     var $armycount = document.getElementById('trimpsFighting');
     if ($armycount.className != "tooltipadded") {

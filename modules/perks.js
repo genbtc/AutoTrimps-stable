@@ -203,7 +203,7 @@ AutoPerks.setDefaultRatios = function() {
 AutoPerks.setNewRatios = function() {
     var perkRatioBoxes = document.getElementsByClassName('perkRatios');
     var currentPerk;
-    for(var i = 0; i < perkRatioBoxes.length; i++) {
+    for(var i in perkRatioBoxes) {
         currentPerk = AutoPerks.getPerkByName(perkRatioBoxes[i].id.substring(0, perkRatioBoxes[i].id.length - 5)); // Remove "ratio" from the id to obtain the perk name
         currentPerk.updatedValue = parseFloat(perkRatioBoxes[i].value);
     }
