@@ -516,12 +516,9 @@ function compareModuleVars() {
         for (var j=0,lenj=vars.length;j<lenj;j++) {
             var a = MODULES[mods[i]][vars[j]];
             var b = MODULESdefault[mods[i]][vars[j]];
-            //var isArray = !!a && Array === a.constructor;
             if (JSON.stringify(a)!=JSON.stringify(b)) {
-            //if ((a != b) || (isArray && JSON.stringify(a)!=JSON.stringify(b))) {
                 if (diffs[mods[i]] === undefined)
                     diffs[mods[i]] = {};
-                //console.log(vars[j]);
                 diffs[mods[i]][vars[j]] = a;
             }
         }
@@ -534,27 +531,20 @@ function compareModuleVars() {
 function importModuleVars() {
     //try the import
     try {
-        //var thestring = document.getElementById("importBox").value.replace(/(\r\n|\n|\r)/gm, "");
         var thestring = document.getElementById("importBox").value;
         var strarr = thestring.split(/\n/);
         for (var line in strarr) {
             var s = strarr[line];
             s = s.substring(0, s.indexOf(';')+1); //cut after the ;
             s = s.replace(/\s/g,'');    //regexp remove ALL(/g) whitespaces(\s)
-            //s = s.split('=');           //split into left / right on the =
             eval(s);
             strarr[line] = s;
         }
-
-        //var tmpset = JSON.parse(thestring);
         var tmpset = compareModuleVars();
-        // if (tmpset == null)
-            // return;
     } catch (err) {
         debug("Error importing MODULE vars, the string is bad." + err.message);
         return;
     }
-//    resetModuleVars(tmpset);
     localStorage.removeItem('ATMODULES');
     safeSetItems('ATMODULES', JSON.stringify(tmpset));
 }
@@ -566,7 +556,6 @@ function resetModuleVars(imported) {
         localStorage.removeItem('ATMODULES');
         MODULES = JSON.parse(JSON.stringify(MODULESdefault));
         //load everything again, anew
-        // debug('Saved');
         safeSetItems('ATMODULES', JSON.stringify(ATMODULES));
         ATrunning = true; //restart AT.
     }
@@ -1092,19 +1081,20 @@ function addToolTipToArmyCount() {
 }
 
 //This should switch into the new profile when the dropdown is selected.
+//called by "onchange" of the profile dropdown
 function settingsProfileDropdownHandler() {
     //Save new...: asks a name and saves new profile
     var sp = document.getElementById("settingsProfiles");
     var id = sp.options[sp.selectedIndex].id;
-    if (id == 'customProfileNew')// || sp.selectedIndex == sp.length-1)
-    {
-        AutoTrimpsTooltip('NameSettingsProfiles');
-    }
     //Default: simply calls Reset To Default:
-    else if (id == 'customProfileDefault')// || sp.selectedIndex == sp.length-2)
+    if (id == 'customProfileDefault')
     {
         resetAutoTrimps();
         sp.selectedIndex = 0;    // First element is Default options. (always load defaults -  may be problematic)
+    }
+    else if (id == 'customProfileNew')
+    {
+        AutoTrimpsTooltip('NameSettingsProfiles');
     }
     //Reads the existing profile name and switches into it.
     // TODO: validation?
@@ -1122,12 +1112,14 @@ function settingsProfileDropdownHandler() {
             });
         }
     }
+    //else we have no idea what was chosen
     //whatever was chosen - store what we used last.
     //safeSetItems('ATSelectedSettingsProfile', settingsProf);
 }
 
+//called by AutoTrimpsTooltip('NameSettingsProfiles')
 function nameAndSaveNewProfile() {
-    //try the import
+    //read the name in from tooltip
     try {
         var profname = document.getElementById("setSettingsNameTooltip").value.replace(/[\n\r]/gm, "");
         if (profname == null) {
@@ -1138,16 +1130,20 @@ function nameAndSaveNewProfile() {
         debug("Error in naming, the string is bad." + err.message);
         return;
     }
-    //var profname = sp.options[sp.selectedIndex].text
-    var profdata = JSON.parse(serializeSettings());
-    //profdata.replace(/[\n\r]/gm, "");
     var prof = {
         name: profname,
-        data: profdata
+        data: JSON.parse(serializeSettings())
     }
-    safeSetItems('ATSelectedSettingsProfile', JSON.stringify(prof));
+    //load the old data in,
+    var loadLastPreset = localStorage.getItem('ATSelectedSettingsProfile');
+    var oldpresets = loadLastPreset ? JSON.parse(loadLastPreset) : new Array(); //load the import.
+    //rewrite the updated array in
+    var presetlists = [prof];
+    //add the two arrays together, string them, and store them.
+    safeSetItems('ATSelectedSettingsProfile', JSON.stringify(oldpresets.concat(presetlists)));
     debug("Successfully created new profile: " + prof.name);
     AutoTrimpsTooltip('message', 'Successfully created new profile: ' + prof.name);
+    //Update dropdown menu to reflect new name:
     let optionElementReference = new Option(prof.name);
     optionElementReference.id = 'customProfileRead';
     var sp = document.getElementById("settingsProfiles");
