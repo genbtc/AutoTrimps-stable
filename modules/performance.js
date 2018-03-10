@@ -140,6 +140,7 @@
 		M["performance"].AFKOverlay.classList.remove('at-afk-overlay-disabled');
 		M["performance"].$wrapper.style.display = 'none';
 		M["performance"].OverrideUpdate();
+		enableDebug = false;
 	}
 
 	function DisableAFKMode()
@@ -148,6 +149,7 @@
 		M["performance"].$wrapper.style.display = 'block';
 		M["performance"].RestoreUpdate();
 		M["performance"].AFKOverlay.classList.add('at-afk-overlay-disabled');
+		enableDebug = true;
 	}
 
 	function UpdateAFKOverlay()
