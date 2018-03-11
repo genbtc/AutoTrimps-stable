@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = basepath + 'SettingsGUI.js';
     document.head.appendChild(document.createElement('script')).src = basepath + 'Graphs.js';
     //Load modulepaths:
-    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
+    var ATmodules = ['query', 'import-export', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
     for (var i=0,len=ATmodules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = basepath + modulepath + ATmodules[i] + '.js';
     }

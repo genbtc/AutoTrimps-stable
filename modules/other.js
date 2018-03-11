@@ -1,4 +1,5 @@
-//MODULES["other"] = {};
+MODULES["other"] = {};
+MODULES["other"].enableRoboTrimpSpam = true;  //set this to false to stop Spam of "Activated Robotrimp MagnetoShriek Ability"
 
 // Finish Challenge2
 function finishChallengeSquared() {
@@ -21,7 +22,8 @@ function autoRoboTrimp() {
     //activate the button when we are above the cutoff zone, and we are out of cooldown (and the button is inactive)
     if (game.global.world >= robotrimpzone && !game.global.useShriek){
         magnetoShriek();
-        debug("Activated Robotrimp MagnetoShriek Ability", "other", '*podcast');
+        if (MODULES["other"].enableRoboTrimpSpam)
+            debug("Activated Robotrimp MagnetoShriek Ability", "other", '*podcast');
     }
 }
 
@@ -78,7 +80,7 @@ function autoNatureTokens() {
             empowerment.tokens -= cost;
             empowerment.level++;
             changed = true;
-            debug('Upgraded Empowerment of ' + nature, 'other');
+            debug('Upgraded Empowerment of ' + nature, 'nature');
         }
         else if (setting == 'Transfer') {
             if (empowerment.retainLevel >= 80)
@@ -88,7 +90,7 @@ function autoNatureTokens() {
             empowerment.tokens -= cost;
             empowerment.retainLevel++;
             changed = true;
-            debug('Upgraded ' + nature + ' transfer rate', 'other');
+            debug('Upgraded ' + nature + ' transfer rate', 'nature');
         }
         else if (setting == 'Convert to Both') {
             if (empowerment.tokens < 20) continue;
@@ -98,7 +100,7 @@ function autoNatureTokens() {
                 var convertRate = (game.talents.nature.purchased) ? ((game.talents.nature2.purchased) ? 8 : 6) : 5;
                 game.empowerments[targetNature].tokens += convertRate;
                 changed = true;
-                debug('Converted ' + nature + ' tokens to ' + targetNature, 'other');
+                debug('Converted ' + nature + ' tokens to ' + targetNature, 'nature');
             }
         }
         else {
@@ -112,7 +114,7 @@ function autoNatureTokens() {
             var convertRate = (game.talents.nature.purchased) ? ((game.talents.nature2.purchased) ? 8 : 6) : 5;
             game.empowerments[targetNature].tokens += convertRate;
             changed = true;
-            debug('Converted ' + nature + ' tokens to ' + targetNature, 'other');
+            debug('Converted ' + nature + ' tokens to ' + targetNature, 'nature');
         }
     }
     if (changed)
