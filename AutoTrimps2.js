@@ -126,7 +126,7 @@ var preBuymaxSplit;
 var currentworld = 0;
 var lastrunworld = 0;
 var aWholeNewWorld = false;
-var needGymystic = true;
+var needGymystic = true;    //used in setScienceNeeded, buildings.js, equipment.js
 var heirloomFlag = false;
 var heirloomCache = game.global.heirloomsExtra.length;
 var magmiteSpenderChanged = false;
@@ -191,44 +191,35 @@ function mainLoop() {
     if (getPageSetting('ExitSpireCell') >0) exitSpireCell(); //"Exit Spire After Cell" (other.js)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"  (jobs.js)
     if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"       (upgrades.js)
-    autoGoldenUpgradesAT();
-    if (getPageSetting('BuyStorage'))
-        buyStorage();     //"Buy Storage"     (buildings.js)
-    if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"   (buildings.js)
-    needGymystic = false;   //reset this after buyBuildings
-    if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"    (jobs.js)
-    if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"           (gather.js)
+    autoGoldenUpgradesAT();                             //"Golden Upgrades"     (other.js)
+    if (getPageSetting('BuyStorage'))  buyStorage();     //"Buy Storage"     (buildings.js)
+    if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"    (buildings.js)
+    if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"            (jobs.js)
+    if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"       (gather.js)
     else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"     (")
     if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"   (automaps.js)
     else updateAutoMapsStatus();
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"     (autobreedtimer.js)
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40) (portal.js)
-
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
     if (aWholeNewWorld && getPageSetting('AutoRoboTrimp')) autoRoboTrimp();   //"AutoRoboTrimp" (other.js)
     if (aWholeNewWorld && getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared) finishChallengeSquared(); // "Finish Challenge2" (other.js)
     autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
-
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
     else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"      (autostance.js)
     else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"       (")
     if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magmite.js)
-
     ATselectAutoFight();  //  pick the right version of Fight/AutoFight/BetterAutoFight/BAF2 (fight.js)
-
     if (getPageSetting('DynamicPrestige2')>0&&((getPageSetting('ForcePresZ')<0)||(game.global.world<getPageSetting('ForcePresZ')))) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
-    else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //if we dont want to, just make sure the UI setting and the internal setting are aligned.
-
-    //Auto Magmite Spender
+    else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //just make sure the UI setting and the internal setting are aligned.
     try {
         if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
-            autoMagmiteSpender(); // magmite.js
+            autoMagmiteSpender();   //Auto Magmite Spender (magmite.js)
     } catch (err) {
         debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
     }
-
-    if (getPageSetting('AutoNatureTokens')) autoNatureTokens();
-
+    if (getPageSetting('AutoNatureTokens')) autoNatureTokens();     //Nature - (other.js)
+    //
     //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
     if (userscriptOn) userscripts();
     //rinse, repeat

@@ -217,9 +217,11 @@ function buyBuildings() {
             if ((gymEff.Wall) || (gymEff.Factor <= shieldEff.Factor && !gymEff.Wall))
                 skipGym = true;
         }
+        //needGymystic is eval'ed by equipment.js line 204, Which is called AFTER buildings.js (spans two cycles)
         if (needGymystic) skipGym = true;
         if (!skipGym)
             safeBuyBuilding('Gym');
+        needGymystic = false;  //needs reset after buyBuildings
     }
     //Tributes:
     if (!game.buildings.Tribute.locked && (getPageSetting('MaxTribute') > game.buildings.Tribute.owned || getPageSetting('MaxTribute') == -1)) {

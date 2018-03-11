@@ -487,10 +487,8 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         dropdownLabel.setAttribute('style', 'margin-right: 0.3vw; font-size: 0.8vw;');
         btnParent.appendChild(dropdownLabel);
         btnParent.appendChild(btn);
-
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
-
     } else if (type == 'infoclick') {
         btn.setAttribute('class', 'btn btn-info');
         btn.setAttribute("onclick", 'ImportExportTooltip(\'' + defaultValue + '\', \'update\')');
