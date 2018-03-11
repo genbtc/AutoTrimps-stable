@@ -152,7 +152,7 @@ function mainLoop() {
     if (ATrunning == false) return;
     ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
-    //addBreedingBoxTimers();  //add hidden next group breed timer;
+    document.getElementById('hiddenBreedTimer').innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's';  //add hidden next group breed timer;
     addToolTipToArmyCount(); //Add hidden tooltip for army count (SettingsGUI.js @ end)
     if (mainCleanup() // Z1 new world
             || portalWindowOpen // in the portal screen (for manual portallers)
