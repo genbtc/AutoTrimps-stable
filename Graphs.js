@@ -14,6 +14,15 @@ chartscript.type = 'text/javascript';
 chartscript.src = 'https://code.highcharts.com/highcharts.js';
 head.appendChild(chartscript);
 
+//Dark graphs by Unihedron
+if (game.options.menu.darkTheme.enabled == 2) {
+    const $link = document.createElement('link');
+    $link.rel = "stylesheet";
+    $link.type = "text/css";
+    $link.href = basepath + 'dark-graph.css';
+    document.head.appendChild($link);
+}
+
 //Create the graph button and div
 var newItem = document.createElement("TD");
 newItem.appendChild(document.createTextNode("Graphs"));

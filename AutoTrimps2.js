@@ -35,14 +35,6 @@ function initializeAutoTrimps() {
     }
     toggleSettingsMenu();
     toggleSettingsMenu();
-    // dank dark graphs by Unihedron
-    if (game.options.menu.darkTheme.enabled == 2) {
-        const $link = document.createElement('link');
-        $link.rel = "stylesheet";
-        $link.type = "text/css";
-        $link.href = basepath + 'dark-graph.css';
-        document.head.appendChild($link);
-    }
     //
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
 }

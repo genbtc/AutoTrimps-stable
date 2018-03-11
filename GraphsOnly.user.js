@@ -19,8 +19,9 @@ function safeSetItems(name,data) {
       }
     }
 }
-var script = document.createElement('script');
-script.id = 'AutoTrimps-script';
 //This can be edited to point to your own Github Repository URL.
-script.src = 'https://genbtc.github.io/AutoTrimps/Graphs.js';
+var basepath = 'https://genbtc.github.io/AutoTrimps/';
+var script = document.createElement('script');
+script.id = 'AutoTrimps-Graphs';
+script.src = basepath + 'Graphs.js';
 document.head.appendChild(script);

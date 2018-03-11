@@ -1,43 +1,23 @@
 AutoTrimps - A Highly Extensive Idle Clicker Game Script
 
-Code Execution Structure Behavior/Explanation:
-=========================
+Code Execution Structure,Behavior/Explanation:
+==============================================
 A script bootstrap file userscript "install.user.js" is ran by Tampermonkeyed/Greasemonkeyed and installed into permanence on the browser extension. This loads AutoTrimps2.js. First it loads utils.js for some tools, then it loads the Settings UI and then it Loads the Graphs, This loads all the 17 submodules *.js files in the modules/ dir, in a particular order as listed. From that point, a timeout/interval loop is set up to launch the Main Game and Re-run the "Main Loop" every 100ms (10x a second) in sync with the Game Loop. Also the Graphs has its own identical tick count and loop. Each module function is called during the "Main Loop" generally one by one, sequentially, in a particular order, each cycle. There is no future state, just current. The past state is limited to anything we explicitly choose to keep around like in the graphs db or other variables.
-
-Detailed Function Documentation (from 2016):
-========================
-The main loop consists of the following subroutines, all of which are enable-able/disable-able by their buttons.:
-    workerRatios();         //"Auto Worker Ratios"
-    buyUpgrades();          //"Buy Upgrades"
-    autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
-    buyStorage();           //"Buy Storage"
-    buyBuildings();         //"Buy Buildings"
-    buyJobs();              //"Buy Jobs"
-    manualLabor();          //"Auto Gather/Build"
-    autoMap();              //"Auto Maps"
-    manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
-    autoPortal();           //"Auto Portal" (hidden until level 60)
-    autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
-    toggleAutoTrap();       //"Trap Trimps"
-    autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
-    autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
-    autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
-    autoStance();           //"Auto Stance"
-    betterAutoFight();      //"Better Auto Fight"
-    prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
-    userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
+The main files are: AutoTrimps2.js, SettingsGUI.js, Graphs.js - Keep reading for details. The separate modules are documented below.
 
 MODULES (2018):
 ===============
 battlecalc.js
 breedtimer.js
 buildings.js
+client-server.js
 dimgen.js (not used anymore?)
 dynprestige.js
 equipment.js
 fight.js
 gather.js
 heirlooms.js
+import-export.js
 jobs.js
 magmite.js
 maps.js
@@ -59,7 +39,7 @@ dark-graph.css - Graphs - needed some tweaks to work for dark theme.
 
 GUI:
 =====
-Consists of SettingsGUI.js is the Settings section + styles of tabs.css + dark-graph.css (maybe need to darkify the css on the perks too window)
+Consists of SettingsGUI.js is the Settings section + styles of tabs.css
 
 SETTINGS:
 =========
@@ -146,7 +126,7 @@ WarpstationCap
 WarpstationWall
 WorkerRatios
 
-GRAPHS - Graphs.js is the graphs section: 
+GRAPHS - Graphs.js is the graphs section: + dark-graph.css (maybe need to darkify the css on the perks too window)
 =======
 HeliumPerHour
 Helium
@@ -171,6 +151,31 @@ DarkEssence
 DarkEssencePerHour
 OverkillCells
 Magmite
+Magmamancers
+
+AutoTrimps2.js Detailed Main Function Documentation (from 2016):
+===================================================
+The main loop consists of the following subroutines, all of which are enable-able/disable-able by their buttons.:
+    workerRatios();         //"Auto Worker Ratios"
+    buyUpgrades();          //"Buy Upgrades"
+    autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
+    buyStorage();           //"Buy Storage"
+    buyBuildings();         //"Buy Buildings"
+    buyJobs();              //"Buy Jobs"
+    manualLabor();          //"Auto Gather/Build"
+    autoMap();              //"Auto Maps"
+    manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
+    autoPortal();           //"Auto Portal" (hidden until level 60)
+    autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
+    toggleAutoTrap();       //"Trap Trimps"
+    autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
+    autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
+    autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
+    autoStance();           //"Auto Stance"
+    betterAutoFight();      //"Better Auto Fight"
+    prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
+    userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
+
 
 Version Numbered Files (files needing version string during minor upgrades):
 ======================
@@ -239,9 +244,6 @@ for /L %%n in (1,0,10) do (
 )
 
 
-Some Files contain/require game-code overwrites that need to be periodically checked and maintained. These are undocumented. Some are for the GUI and some are in utils.js maybe some for the heirlooms, and also graph loot...
-
-
 HOWTO = Add A Button
 =====================
 All the buttons are created in SettingsGUI.js @ line 410 - with a function createSetting(): 
@@ -278,3 +280,4 @@ function userscripts()
 }
 Any function named userscripts will execute 10 times per second at the final portion of each game cycle. 
 This way means you can add your own code without contaminating AutoTrimps files directly.
+Some Files contain/require game-code overwrites that need to be periodically checked and maintained. These are undocumented. Some are for the GUI and some are in utils.js maybe some for the heirlooms, and also graph loot...
