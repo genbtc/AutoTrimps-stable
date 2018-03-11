@@ -1028,6 +1028,7 @@ function addBreedingBoxTimers() {
     addbreedTimerInside.appendChild(addbreedTimerInsideText);
     addbreedTimerContainer.appendChild(addbreedTimerInside);
     breedbarContainer.appendChild(addbreedTimerContainer);
+    addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's'; 
 }
 addBreedingBoxTimers();
 
