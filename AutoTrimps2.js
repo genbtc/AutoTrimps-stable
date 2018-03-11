@@ -70,7 +70,7 @@ function printChangelog() {
 
 //Magic Numbers
 var runInterval = 100;      //How often to loop through logic
-var startupDelay = 2000;    //How long to wait for everything to load
+var startupDelay = 2500;    //How long to wait for everything to load
 
 //Start Loops
 setTimeout(delayStart, startupDelay);
@@ -88,6 +88,9 @@ function delayStartAgain(){
     if (document.getElementById('Prestige').value === "")
         document.getElementById('Prestige').value = "Off";
     MODULESdefault = JSON.parse(JSON.stringify(MODULES));
+    //Set some game ars after we load.
+    game.global.addonUser = true;
+    game.global.autotrimps = true;    
 }
 
 ////////////////////////////////////////
@@ -150,10 +153,12 @@ function mainCleanup() {
 ////////////////////////////////////////
 function mainLoop() {
     if (ATrunning == false) return;
+    if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades) return;
     ATrunning = true;
     if(game.options.menu.showFullBreed.enabled != 1) toggleSetting("showFullBreed");    //more detail
-    document.getElementById('hiddenBreedTimer').innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's';  //add hidden next group breed timer;
+    addbreedTimerInsideText.innerHTML = parseFloat(game.global.lastBreedTime/1000).toFixed(1) + 's';  //add hidden next group breed timer;
     addToolTipToArmyCount(); //Add hidden tooltip for army count (SettingsGUI.js @ end)
+    //Heirloom:
     if (mainCleanup() // Z1 new world
             || portalWindowOpen // in the portal screen (for manual portallers)
             || (!heirloomsShown && heirloomFlag) // closed heirlooms screen
@@ -166,10 +171,7 @@ function mainLoop() {
         heirloomCache = game.global.heirloomsExtra.length;
     }
     heirloomFlag = heirloomsShown;
-
-    if(getPageSetting('PauseScript') || game.options.menu.pauseGame.enabled || game.global.viewingUpgrades) return;
-    game.global.addonUser = true;
-    game.global.autotrimps = true;
+    //Stuff to do  Every new Zone
     if (aWholeNewWorld) {
         // Auto-close dialogues.
         switch (document.getElementById('tipTitle').innerHTML) {
@@ -179,10 +181,9 @@ function mainLoop() {
             case 'The Magma':           // Magma
                 cancelTooltip();
         }
-        setTitle(); // Set the browser title
-
         if (getPageSetting('AutoEggs'))
             easterEggClicked();
+        setTitle(); // Set the browser title        
     }
     setScienceNeeded();  //determine how much science is needed
 
@@ -211,7 +212,7 @@ function mainLoop() {
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
     else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"      (autostance.js)
     else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"       (")
-    if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magma.js)
+    if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magmite.js)
 
     ATselectAutoFight();  //  pick the right version of Fight/AutoFight/BetterAutoFight/BAF2 (fight.js)
 

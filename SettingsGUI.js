@@ -1011,6 +1011,7 @@ function checkPortalSettings() {
 }
 
 //Add breeding box (to GUI on startup::
+var addbreedTimerInsideText;
 function addBreedingBoxTimers() {
     var breedbarContainer = document.querySelector('#trimps > div.row');
     var addbreedTimerContainer = document.createElement("DIV");
@@ -1022,7 +1023,7 @@ function addBreedingBoxTimers() {
     addbreedTimerInside.setAttribute('style', 'display: block;');
     var addbreedTimerInsideIcon = document.createElement("SPAN");
     addbreedTimerInsideIcon.setAttribute('class', "icomoon icon-clock");
-    var addbreedTimerInsideText = document.createElement("SPAN"); //updated in the top of mainLoop() each cycle
+    addbreedTimerInsideText = document.createElement("SPAN"); //updated in the top of mainLoop() each cycle
     addbreedTimerInsideText.id = 'hiddenBreedTimer';
     addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
     addbreedTimerInside.appendChild(addbreedTimerInsideText);
