@@ -11,7 +11,7 @@ function settingsProfileMakeGUI() {
     settingsProfiles.id = 'settingsProfiles';
     settingsProfiles.setAttribute('class', 'noselect');
     settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
-    var oldstyle = 'text-align: center; width: 160px; font-size: 0.8vw;';
+    var oldstyle = 'text-align: center; width: 160px; font-size: 1.1vw;';
     if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
     else settingsProfiles.setAttribute('style', oldstyle);
     //Create settings profile selection dropdown
@@ -22,9 +22,10 @@ function settingsProfileMakeGUI() {
     settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw; font-size: 0.8vw;');    
     settingsProfilesButton.setAttribute('onclick','onDeleteProfile()');
     //Add the settingsProfiles dropdown to UI
-    document.getElementById('Import Export').appendChild(settingsProfilesLabel);
-    document.getElementById('Import Export').appendChild(settingsProfiles);
-    document.getElementById('Import Export').appendChild(settingsProfilesButton);
+    var ietab = document.getElementById('Import Export');
+    ietab.insertBefore(settingsProfilesLabel, ietab.childNodes[2]);
+    ietab.insertBefore(settingsProfiles, ietab.childNodes[3]);
+    ietab.insertBefore(settingsProfilesButton, ietab.childNodes[4]);
     //populate with a Default (read default settings):
     var innerhtml = "<option id='customProfileCurrent'>Current</option>";    
     //populate with a Default (read default settings):
