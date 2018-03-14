@@ -79,7 +79,7 @@ function autoBreedTimer() {
     }
     if (newGeneTimerSetting != targetBreed) {
          setPageSetting('GeneticistTimer',newGeneTimerSetting);
-         debug("Changing the Geneticist Timer to a new value : " + newGeneTimerSetting, "breed");
+         debug("Changing the Geneticist Timer to a new value : " + newGeneTimerSetting, "other");
     }
     var inDamageStance = game.upgrades.Dominance.done ? game.global.formation == 2 : game.global.formation == 0;
     var inScryerStance = (game.global.world >= 60 && game.global.highestLevelCleared >= 180) && game.global.formation == 4;
@@ -100,7 +100,7 @@ function autoBreedTimer() {
             if (!firingForJobs && fWorkers < hiredNumGens)
                 safeFireJob('Farmer', hiredNumGens);
             safeBuyJob('Geneticist', hiredNumGens);
-            debug("Bought this many Geneticists: " + hiredNumGens + ". Jobs Now: " + game.jobs.Geneticist.owned, "breed");
+            //debug("Bought this many Geneticists: " + hiredNumGens + ". Jobs Now: " + game.jobs.Geneticist.owned, "breed");
             boughtGenRound1 = true;
         }
     }
@@ -125,7 +125,7 @@ function autoBreedTimer() {
         //debug("2b. " + numgens + " Genes.. / " + game.jobs.Geneticist.owned + " -> " + (game.jobs.Geneticist.owned+numgens),"breed");
         if (isNaN(numgens)) numgens = 0;
         safeBuyJob('Geneticist', numgens);
-        debug("This many Geneticists were FIRED: " + numgens + ". Jobs Now: " + game.jobs.Geneticist.owned, "breed");
+        //debug("This many Geneticists were FIRED: " + numgens + ". Jobs Now: " + game.jobs.Geneticist.owned, "breed");
         //debug("2c. Time: " + getBreedTime(true) + " / " + getBreedTime(),"breed" );
     }
     //if our time remaining to full trimps is still too high, fire some jobs to get-er-done
@@ -210,5 +210,5 @@ function forceAbandonTrimps() {
             mapsClicked();
         mapsClicked();
     }
-    debug("Killed your army! (to get " + targetBreed + " Anti-stacks). Trimpicide successful.","breed");
+    debug("Killed your army! (to get " + targetBreed + " Anti-stacks). Trimpicide successful.","other");
 }
