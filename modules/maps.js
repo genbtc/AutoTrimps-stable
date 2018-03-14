@@ -67,15 +67,11 @@ function autoMap() {
         updateAutoMapsStatus();    //refresh the UI status (10x per second)
         return;
     }
-
-    var AutoStance = getPageSetting('AutoStance');
-
     //if we are in mapology and we have no credits, exit
     if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) {
         updateAutoMapsStatus();
         return;
     }
-    var AutoStance = getPageSetting('AutoStance');
     //FIND VOID MAPS LEVEL:
     var voidMapLevelSetting = getPageSetting('VoidMaps');
     //decimal void maps are possible, using string function to avoid false float precision (0.29999999992). javascript can compare ints to strings anyway.
@@ -124,6 +120,7 @@ function autoMap() {
     }
 
 //START CALCULATING DAMAGES:
+    var AutoStance = getPageSetting('AutoStance');
     //calculate crits (baseDamage was calced in function autoStance)    this is a weighted average of nonCrit + Crit. (somewhere in the middle)
     ourBaseDamage = (baseDamage * (1-getPlayerCritChance()) + (baseDamage * getPlayerCritChance() * getPlayerCritDamageMult()));
     //calculate with map bonus

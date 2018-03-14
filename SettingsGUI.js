@@ -55,8 +55,9 @@ function automationMenuInit() {
     fightButtonCol.appendChild(newContainer);
 
     //make timer clock toggle paused mode when clicked (bottom right)
-    document.getElementById('portalTimer').setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
-    document.getElementById('portalTimer').setAttribute('style', 'cursor: default');
+    var $portalTimer = document.getElementById('portalTimer');
+    $portalTimer.setAttribute('onclick', 'toggleSetting(\'pauseGame\')');
+    $portalTimer.setAttribute('style', 'cursor: default');
 
     //shrink padding for fight buttons to help fit automaps button/status
     var btns = document.getElementsByClassName("fightBtn");
@@ -126,12 +127,12 @@ function toggleTab(evt, tabName) {
 //Minimize button handler
 function minimizeAllTabs() {
     // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
+    var tabcontent = document.getElementsByClassName("tabcontent");
     for (var i = 0,len = tabcontent.length; i < len ; i++) {
         tabcontent[i].style.display = "none";
     }
     // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
+    var tablinks = document.getElementsByClassName("tablinks");
     for (var i = 0,len = tablinks.length; i < len ; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
@@ -207,9 +208,10 @@ function initializeAllSettings() {
     createSetting('AutoFinishDailyZone', 'Finish Daily Zone Mod', 'Finish Daily by this # of zones earlier/later than your regular Custom AutoPortal zone or your Helium Dont Portal Before zone. When Auto Finish Daily is on. Tip: Tune your value of He/HrDontPortalBefore to suit the daily, and then tune this. Can accept negative numbers for earlier, ie: -7 means portal 7 zones earlier than normal. Can also use positive numbers to DELAY portaling for later. When used with He/Hr AutoPortal, the number of zones early does not FORCE end the daily at that zone, only ALLOW it to end that early: it will Always end when your HE/hr drops enough to trigger the portal. <b>Use 0 to disable.</b>', 'valueNegative', -2, null, 'Core');
     createSetting('AutoStartDaily', 'Auto Start Daily', 'With this on, the Auto Portal options will portal you into and auto-start the daily <b>whenever available</b>. Does Yesterday first, followed by Today. Falls back to selected challenge when both are complete.', 'boolean', false, null, 'Core');
     createSetting('PauseScript', 'Pause AutoTrimps', 'Pause AutoTrimps Script (not including the graphs module)', 'boolean', null, null, 'Core');
-    document.getElementById('PauseScript').parentNode.style.setProperty('float','right');
-    document.getElementById('PauseScript').parentNode.style.setProperty('margin-right','1vw');
-    document.getElementById('PauseScript').parentNode.style.setProperty('margin-left','0');
+    var $pauseScript = document.getElementById('PauseScript');
+    $pauseScript.parentNode.style.setProperty('float','right');
+    $pauseScript.parentNode.style.setProperty('margin-right','1vw');
+    $pauseScript.parentNode.style.setProperty('margin-left','0');
 
 //GEAR:
     createSetting('BuyArmor', 'Buy Armor', 'Auto-Buy/Level-Up the most cost efficient armor available. ', 'boolean', true, null, "Gear");
@@ -228,8 +230,8 @@ function initializeAllSettings() {
     createSetting('DynamicPrestige2', 'Dynamic Prestige z', 'Dynamic Prestige: <b>Set Target Zone number: Z #. (disable with 0 or -1)</b><br> Skip getting prestiges at first, and Gradually work up to the desired Prestige setting you have set (set the Prestige dropdown to the highest weapon you want to end up on at the target zone you set here). Runs with Dagger to save a significant amount of time until we need better gear, then starts increasing the prestige setting near the end of the run.  Examines which prestiges you have, how many missing ones youd need to achieve the desired target and starts running maps every zone (more maps for higher settings), Until the target prestige is reached. ', 'value', -1, null, 'Gear');
     createSetting('PrestigeSkipMode', 'Prestige Skip Mode', 'If there are more than 2 Unbought Prestiges (besides Shield), ie: sitting in your upgrades window but you cant afford them, AutoMaps will not enter Prestige Mode, and/or will exit from it. The amount of unboughts can be configured with this variable MODULES[\\"automaps\\"].SkipNumUnboughtPrestiges = 2;', 'boolean', false, null, "Gear");
     createSetting('AlwaysArmorLvl2', 'Always Buy Lvl 2 Armor', 'Always Buy the 2nd point of Armor even if we dont need the HP. Its the most cost effective level, and the need HP decision script isnt always adequate. Forced on during Spire. Recommended On.', 'boolean', true, null, 'Gear');
-    createSetting('WaitTill60', 'Skip Gear Level 58&59', 'Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.', 'boolean', true, null, 'Gear');
-    createSetting('DelayArmorWhenNeeded', 'Delay Armor', 'Delays buying armor prestige-upgrades during Want More Damage or Farming automap-modes, Although if you need health AND damage, it WILL buy armor prestiges tho.', 'boolean', null, null, 'Gear');
+    createSetting('DelayArmorWhenNeeded', 'Delay Armor Prestige', 'Delays buying armor prestige-upgrades during Want More Damage or Farming automap-modes, Although if you need health AND damage, it WILL buy armor prestiges tho. NOTE: <b>Applies to Prestiges only</b>', 'boolean', null, null, 'Gear');
+    createSetting('WaitTill60', 'Skip Gear Level 58&59', 'Dont Buy Gear during level 58 and 59, wait till level 60, when cost drops down to 10%.', 'boolean', true, null, 'Gear');    
     createSetting('CapEquip2', 'Cap Equip to', 'Do not level equipment past this number. Helps for early game when the script wants to level your tier2s to level 40+, or to stop wasting metal. Recommended value: 10, Disable with -1 or 0.', 'value', -1, null, 'Gear');
 //AutoMaps + VoidMaps settings:
     createSetting('AutoMaps', 'Auto Maps', 'Recommended. Automatically run maps to progress. Very Important. Has multiple modes: <b>Prestige, Voids, Want more Damage, Want more Health, Want Health & Damage, and Farming.</b>Prestige takes precedence and does equal level maps until it gets what is needed as per Autotrimps Prestige dropdown setting. Voids is self explanatory: use the Void Difficulty Check setting to control the amount of farming. If \'want more damage\', it will only do 10 maps for 200% mapbonus damage bonus. If \'Farming\', it does maps beyond 10 if the displayed number is over >16x. \'Want more health[or and damage]\' is basically just a status message telling you need more health, theres not much that can be done besides tell AutoLevelEquipment to keep buying stuff. If you \'want health\' but your damage is OK to continue, invest in more HP perks.', 'boolean', true, null, "Maps");
@@ -782,38 +784,6 @@ function getDailyHeHrStats() {
         words = "<b>After Daily He/Hr: " + getPercent.toFixed(3) +'%';
     }
     return words;
-}
-
-//Add breeding box (to GUI on startup):
-var addbreedTimerInsideText;
-function addBreedingBoxTimers() {
-    var breedbarContainer = document.querySelector('#trimps > div.row');
-    var addbreedTimerContainer = document.createElement("DIV");
-    addbreedTimerContainer.setAttribute('class', "col-xs-11");
-    addbreedTimerContainer.setAttribute('style', 'padding-right: 0;');
-    addbreedTimerContainer.setAttribute("onmouseover", 'tooltip(\"Hidden Next Group Breed Timer\", \"customText\", event, \"How long your next army has been breeding for, or how many anticipation stacks you will have if you send a new army now. This number is what BetterAutoFight #4 refers to when it says NextGroupBreedTimer.\")');
-    addbreedTimerContainer.setAttribute("onmouseout", 'tooltip("hide")');
-    var addbreedTimerInside = document.createElement("DIV");
-    addbreedTimerInside.setAttribute('style', 'display: block;');
-    var addbreedTimerInsideIcon = document.createElement("SPAN");
-    addbreedTimerInsideIcon.setAttribute('class', "icomoon icon-clock");
-    addbreedTimerInsideText = document.createElement("SPAN"); //updated in the top of mainLoop() each cycle
-    addbreedTimerInsideText.id = 'hiddenBreedTimer';
-    addbreedTimerInside.appendChild(addbreedTimerInsideIcon);
-    addbreedTimerInside.appendChild(addbreedTimerInsideText);
-    addbreedTimerContainer.appendChild(addbreedTimerInside);
-    breedbarContainer.appendChild(addbreedTimerContainer);
-}
-addBreedingBoxTimers();
-
-//Add GUI popup for hovering over the army group size and translate that to breeding time
-function addToolTipToArmyCount() {
-    var $armycount = document.getElementById('trimpsFighting');
-    if ($armycount.className != "tooltipadded") {
-        $armycount.setAttribute("onmouseover", 'tooltip(\"Army Count\", \"customText\", event, \"To Fight now would add: \" + prettify(getArmyTime()) + \" seconds to the breed timer.\")');
-        $armycount.setAttribute("onmouseout", 'tooltip("hide")');
-        $armycount.setAttribute("class", 'tooltipadded');
-    }
 }
 
 //Part of import-export.js module.

@@ -82,3 +82,22 @@ ATServer.UploadSettings = function() {
 if (getPageSetting('allowSettingsUpload')) {
     ATServer.UploadSettings();
 }
+//Log all javascript errors and upload them.
+window.onerror = function uploadErrors(msg, url, lineNo, columnNo, error) {
+    var message = [
+        'Message: ' + msg,
+        'URL: ' + url,
+        'Line: ' + lineNo,
+        'Column: ' + columnNo,
+        'Error object: ' + JSON.stringify(error)
+    ].join(' - ');
+    console.log("AT logged error: " + message);
+    //ATServer.Upload(message);
+};
+/*
+window.addEventListener('error', function(event) {
+    var message = JSON.stringify(event);
+    console.log("logged error: " + message);
+    //ATServer.Upload(message);
+});
+*/

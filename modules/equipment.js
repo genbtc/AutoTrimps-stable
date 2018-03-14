@@ -241,7 +241,7 @@ function autoLevelEquipment() {
     enemyDamage = calcDailyAttackMod(enemyDamage); //daily mods: badStrength,badMapStrength,bloodthirst
     var enemyHealth = getEnemyMaxHealth(game.global.world + 1);
     //Take Spire as a special case.
-    var spirecheck = (isActiveSpireAT());
+    var spirecheck = isActiveSpireAT();
     if (spirecheck) {
         var exitcell = getPageSetting('ExitSpireCell');
         var cell = (!game.global.mapsActive && !game.global.preMapsActive) ? game.global.lastClearedCell : 50;
@@ -279,14 +279,16 @@ function autoLevelEquipment() {
         (baseHealth/FORMATION_MOD_1 > numHits * (enemyDamage - baseBlock/FORMATION_MOD_1 > 0 ? enemyDamage - baseBlock/FORMATION_MOD_1 : enemyDamage * pierceMod)) &&
         (!(valid_min && valid_max) || (baseHealth/2 > numHitsScry * (enemyDamage - baseBlock/2 > 0 ? enemyDamage - baseBlock/2 : enemyDamage * pierceMod)));
     enoughDamageE = (baseDamage * MODULES["equipment"].enoughDamageCutoff > enemyHealth);
-
+    
+//PRESTIGE and UPGRADE SECTION:
     for (var equipName in equipmentList) {
         var equip = equipmentList[equipName];
         // debug('Equip: ' + equip + ' EquipIndex ' + equipName);
         var gameResource = equip.Equip ? game.equipment[equipName] : game.buildings[equipName];
         // debug('Game Resource: ' + gameResource);
         if (!gameResource.locked) {
-            document.getElementById(equipName).style.color = 'white';   //reset
+            var $equipName = document.getElementById(equipName);
+            $equipName.style.color = 'white';   //reset
             var evaluation = evaluateEquipmentEfficiency(equipName);
             // debug(equipName + ' evaluation ' + evaluation.StatusBorder);
             var BKey = equip.Stat + equip.Resource;
@@ -305,48 +307,50 @@ function autoLevelEquipment() {
             //orange - Upgrade is affordable, but will lower stats
             //red - Yes, do it now!
 
-            document.getElementById(equipName).style.border = '1px solid ' + evaluation.StatusBorder;
+            $equipName.style.border = '1px solid ' + evaluation.StatusBorder;
+            var $equipUpgrade = document.getElementById(equip.Upgrade);
             if (evaluation.StatusBorder != 'white' && evaluation.StatusBorder != 'yellow') {
-                var elem = document.getElementById(equip.Upgrade);
-                if (elem)
-                    elem.style.color = evaluation.StatusBorder;
+                if ($equipUpgrade)
+                    $equipUpgrade.style.color = evaluation.StatusBorder;
             }
             if (evaluation.StatusBorder == 'yellow') {
-                document.getElementById(equip.Upgrade).style.color = 'white';
+                $equipUpgrade.style.color = 'white';
             }
             if (evaluation.Wall) {
-                document.getElementById(equipName).style.color = 'yellow';
+                $equipName.style.color = 'yellow';
             }
             if (equipName == 'Gym' && needGymystic) {
-                document.getElementById(equipName).style.color = 'white';
-                document.getElementById(equipName).style.border = '1px solid white';
-                document.getElementById(equip.Upgrade).style.color = 'red';
-                document.getElementById(equip.Upgrade).style.border = '2px solid red';
+                $equipName.style.color = 'white';
+                $equipName.style.border = '1px solid white';
+                $equipUpgrade.style.color = 'red';
+                $equipUpgrade.style.border = '2px solid red';
             }
             //add up whats needed:
             resourcesNeeded[equip.Resource] += Best[BKey].Cost;
 
             //Code is Spaced This Way So You Can Read It:
             if (evaluation.StatusBorder == 'red' && !(game.global.world >= 58 && game.global.world < 60 && getPageSetting('WaitTill60'))) {
+                var BuyWeaponUpgrades = getPageSetting('BuyWeaponUpgrades');
+                var BuyArmorUpgrades = getPageSetting('BuyArmorUpgrades');
+                var DelayArmorWhenNeeded = getPageSetting('DelayArmorWhenNeeded');
                 if
                 (
-                    ( getPageSetting('BuyWeaponUpgrades') && equipmentList[equipName].Stat == 'attack' )
+                    ( BuyWeaponUpgrades && equipmentList[equipName].Stat == 'attack' )
                     ||
-                    ( getPageSetting('BuyWeaponUpgrades') && equipmentList[equipName].Stat == 'block' )
+                    ( BuyWeaponUpgrades && equipmentList[equipName].Stat == 'block' )
                     ||
-                    ( getPageSetting('BuyArmorUpgrades') && (equipmentList[equipName].Stat == 'health' )
-                        &&
+                    ( BuyArmorUpgrades && equipmentList[equipName].Stat == 'health' &&
                 //Only buy Armor prestiges when 'DelayArmorWhenNeeded' is on, IF:
                         (
-                            (getPageSetting('DelayArmorWhenNeeded') && !shouldFarm)  // not during "Farming" mode
+                            ( DelayArmorWhenNeeded && !shouldFarm)  // not during "Farming" mode
                             ||                                                       //     or
-                            (getPageSetting('DelayArmorWhenNeeded') && enoughDamage) //  has enough damage (not in "Wants more Damage" mode)
+                            ( DelayArmorWhenNeeded && enoughDamageE) //  has enough damage (not in "Wants more Damage" mode)
                             ||                                                       //     or
-                            (getPageSetting('DelayArmorWhenNeeded') && !enoughDamage && !enoughHealth) // if neither enough dmg or health, then tis ok to buy.
+                            ( DelayArmorWhenNeeded && !enoughDamageE && !enoughHealthE) // if neither enough dmg or health, then tis ok to buy.
                             ||
-                            (getPageSetting('DelayArmorWhenNeeded') && equipmentList[equipName].Resource == 'wood')
+                            ( DelayArmorWhenNeeded && equipmentList[equipName].Resource == 'wood')
                             ||
-                            !getPageSetting('DelayArmorWhenNeeded')  //or when its off.
+                            ( !DelayArmorWhenNeeded) //or when its off.
                         )
                     )
                 )
@@ -359,25 +363,28 @@ function autoLevelEquipment() {
                     buyUpgrade(upgrade, true, true);
                 }
                 else {
-                    document.getElementById(equipName).style.color = 'orange';
-                    document.getElementById(equipName).style.border = '2px solid orange';
+                    $equipName.style.color = 'orange';
+                    $equipName.style.border = '2px solid orange';
                 }
             }
         }
     }
+
+//LEVELING EQUIPMENT SECTION
     preBuy();
     game.global.buyAmt = 1; //needed for buyEquipment()
     for (var stat in Best) {
         var eqName = Best[stat].Name;
+        var $eqName = document.getElementById(eqName);
         if (eqName !== '') {
             var DaThing = equipmentList[eqName];
             if (eqName == 'Gym' && needGymystic) {
-                document.getElementById(eqName).style.color = 'white';
-                document.getElementById(eqName).style.border = '1px solid white';
+                $eqName.style.color = 'white';
+                $eqName.style.border = '1px solid white';
                 continue;
             } else {
-                document.getElementById(eqName).style.color = Best[stat].Wall ? 'orange' : 'red';
-                document.getElementById(eqName).style.border = '2px solid red';
+                $eqName.style.color = Best[stat].Wall ? 'orange' : 'red';
+                $eqName.style.border = '2px solid red';
             }
             //If we're considering an attack item, we want to buy weapons if we don't have enough damage, or if we don't need health (so we default to buying some damage)
             if (getPageSetting('BuyWeapons') && DaThing.Stat == 'attack' && (!enoughDamageE || enoughHealthE)) {

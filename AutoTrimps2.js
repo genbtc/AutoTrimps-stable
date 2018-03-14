@@ -21,20 +21,26 @@ var atscript = document.getElementById('AutoTrimps-script')
 if (atscript !== null) {
     basepath = atscript.getAttribute('src').replace(/AutoTrimps2\.js$/, '');
 }
-//Load stuff needed to load other stuff:
-document.head.appendChild(document.createElement('script')).src = basepath + modulepath + 'utils.js';
 
+function scriptLoad(pathname) {
+    var script = document.createElement('script');
+    script.src = basepath + pathname;
+    //script.setAttribute('crossorigin',"use-credentials");
+    //script.setAttribute('crossorigin',"anonymous");
+    document.head.appendChild(script);
+}
+scriptLoad(modulepath + 'utils.js');    //Load stuff needed to load other stuff:
+
+//This starts up after 2.5 seconds.
 function initializeAutoTrimps() {
-    loadPageVariables();
-    document.head.appendChild(document.createElement('script')).src = basepath + 'SettingsGUI.js';
-    document.head.appendChild(document.createElement('script')).src = basepath + 'Graphs.js';
-    //Load modulepaths:
+    loadPageVariables();            //get autoTrimpSettings
+    scriptLoad('SettingsGUI.js');   //populate Settings GUI
+    scriptLoad('Graphs.js');        //populate Graphs
+    //Load modules:
     var ATmodules = ['query', 'import-export', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
-    for (var i=0,len=ATmodules.length; i<len; i++) {
-        document.head.appendChild(document.createElement('script')).src = basepath + modulepath + ATmodules[i] + '.js';
+    for (var m in ATmodules) {
+        scriptLoad(modulepath + ATmodules[m] + '.js');
     }
-    toggleSettingsMenu();
-    toggleSettingsMenu();
     //
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
 }
