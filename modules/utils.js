@@ -37,7 +37,20 @@ function getCorruptScale(type) {
     }
 }
 
-// Serialize automation settings, reduce description of autoTrimpSettings and only keep valid data.
+//Safe Set a single generic item into localstorage (
+function safeSetItems(name,data) {
+    try {
+        localStorage.setItem(name, data);
+    } catch(e) {
+      if (e.code == 22) {
+        // Storage full, maybe notify user or do some clean-up
+        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
+      }
+    }
+}
+
+//The Overall Export function to output an autoTrimpSettings file.
+//Serializes automation settings, remove long descriptions in autoTrimpSettings and only keep valid data.
 function serializeSettings() {
     return JSON.stringify(Object.keys(autoTrimpSettings).reduce((v, k) => {
         const el = autoTrimpSettings[k];
@@ -55,19 +68,7 @@ function serializeSettings() {
     }, {}));
 }
 
-//Safe Set generic items (
-function safeSetItems(name,data) {
-    try {
-        localStorage.setItem(name, data);
-    } catch(e) {
-      if (e.code == 22) {
-        // Storage full, maybe notify user or do some clean-up
-        debug("Error: LocalStorage is full, or error. Attempt to delete some portals from your graph or restart browser.");
-      }
-    }
-}
-
-//Saves automation settings to browser cache
+//Saves autoTrimpSettings to browser cache
 function saveSettings() {
     safeSetItems('autoTrimpSettings', serializeSettings());
 }
@@ -123,8 +124,10 @@ function debug(message, type, lootIcon) {
     var maps = getPageSetting('SpamMaps');
     var other = getPageSetting('SpamOther');
     var buildings = getPageSetting('SpamBuilding');
-    var jobs = getPageSetting('SpamJobs');    
+    var jobs = getPageSetting('SpamJobs');
     var graphs = getPageSetting('SpamGraphs');
+    var magmite = getPageSetting('SpamMagmite');
+    var perks = getPageSetting('SpamPerks');
     var output = true;
     switch (type) {
         case null:
@@ -152,6 +155,12 @@ function debug(message, type, lootIcon) {
             break;
         case "graphs":
             output = graphs;
+            break;
+        case "magmite":
+            output = magmite;
+            break;
+        case "perks":
+            output = perks;
             break;
     }
     if (output) {
@@ -215,7 +224,7 @@ var lastmessagecount = 1;
 function message2(messageString, type, lootIcon, extraClass) {
     var log = document.getElementById("log");
     var needsScroll = ((log.scrollTop + 10) > (log.scrollHeight - log.clientHeight));
-    var displayType = (AutoTrimpsDebugTabVisible) ? "block" : "none";
+    var displayType = (ATmessageLogTabVisible) ? "block" : "none";
     var prefix = "";
     if (lootIcon && lootIcon.charAt(0) == "*") {
         lootIcon = lootIcon.replace("*", "");
@@ -271,8 +280,8 @@ document.getElementById('logBtnGroup').appendChild(tab);
 function filterMessage2(what){
     var log = document.getElementById("log");
 
-    displayed = (AutoTrimpsDebugTabVisible) ? false : true;
-    AutoTrimpsDebugTabVisible = displayed;
+    displayed = (ATmessageLogTabVisible) ? false : true;
+    ATmessageLogTabVisible = displayed;
 
     var toChange = document.getElementsByClassName(what + "Message");
     var btnText = (displayed) ? what : what + " off";

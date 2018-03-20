@@ -14,6 +14,15 @@ chartscript.type = 'text/javascript';
 chartscript.src = 'https://code.highcharts.com/highcharts.js';
 head.appendChild(chartscript);
 
+//Dark graphs by Unihedron
+if (game.options.menu.darkTheme.enabled == 2) {
+    const $link = document.createElement('link');
+    $link.rel = "stylesheet";
+    $link.type = "text/css";
+    $link.href = basepath + 'dark-graph.css';
+    document.head.appendChild($link);
+}
+
 //Create the graph button and div
 var newItem = document.createElement("TD");
 newItem.appendChild(document.createTextNode("Graphs"));
@@ -31,7 +40,7 @@ btn.id = 'graphSelection';
 //btn.setAttribute("style", "");
 btn.setAttribute("onmouseover", 'tooltip(\"Graph\", \"customText\", event, \"What graph would you like to display?\")');
 btn.setAttribute("onmouseout", 'tooltip("hide")');
-btn.setAttribute("onchange", "setGraphData(document.getElementById('graphSelection').value)");
+btn.setAttribute("onchange", "drawGraph()");
 for (var item in graphList) {
     var option = document.createElement("option");
     option.value = graphList[item];
@@ -544,13 +553,12 @@ function checkWorldSequentiality() {
     }
 }
 
-function drawGraph() {
-    setGraphData(document.getElementById('graphSelection').value);
-}
-
 //////////////////////////////////////
 //MAIN GRAPHING FUNCTION - the meat.//
 //////////////////////////////////////
+function drawGraph() {
+    setGraphData(document.getElementById('graphSelection').value);
+}
 function setGraphData(graph) {
     var title, xTitle, yTitle, yType, valueSuffix, series, formatter;
     var precision = 0;

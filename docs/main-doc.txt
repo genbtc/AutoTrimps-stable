@@ -1,43 +1,23 @@
 AutoTrimps - A Highly Extensive Idle Clicker Game Script
 
-Code Execution Structure Behavior/Explanation:
-=========================
+Code Execution Structure,Behavior/Explanation:
+==============================================
 A script bootstrap file userscript "install.user.js" is ran by Tampermonkeyed/Greasemonkeyed and installed into permanence on the browser extension. This loads AutoTrimps2.js. First it loads utils.js for some tools, then it loads the Settings UI and then it Loads the Graphs, This loads all the 17 submodules *.js files in the modules/ dir, in a particular order as listed. From that point, a timeout/interval loop is set up to launch the Main Game and Re-run the "Main Loop" every 100ms (10x a second) in sync with the Game Loop. Also the Graphs has its own identical tick count and loop. Each module function is called during the "Main Loop" generally one by one, sequentially, in a particular order, each cycle. There is no future state, just current. The past state is limited to anything we explicitly choose to keep around like in the graphs db or other variables.
-
-Detailed Function Documentation (from 2016):
-========================
-The main loop consists of the following subroutines, all of which are enable-able/disable-able by their buttons.:
-    workerRatios();         //"Auto Worker Ratios"
-    buyUpgrades();          //"Buy Upgrades"
-    autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
-    buyStorage();           //"Buy Storage"
-    buyBuildings();         //"Buy Buildings"
-    buyJobs();              //"Buy Jobs"
-    manualLabor();          //"Auto Gather/Build"
-    autoMap();              //"Auto Maps"
-    manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
-    autoPortal();           //"Auto Portal" (hidden until level 60)
-    autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
-    toggleAutoTrap();       //"Trap Trimps"
-    autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
-    autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
-    autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
-    autoStance();           //"Auto Stance"
-    betterAutoFight();      //"Better Auto Fight"
-    prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
-    userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
+The main files are: AutoTrimps2.js, SettingsGUI.js, Graphs.js - Keep reading for details. The separate modules are documented below.
 
 MODULES (2018):
 ===============
 battlecalc.js
 breedtimer.js
 buildings.js
+client-server.js
 dimgen.js (not used anymore?)
 dynprestige.js
 equipment.js
 fight.js
 gather.js
 heirlooms.js
+import-export.js
 jobs.js
 magmite.js
 maps.js
@@ -59,7 +39,7 @@ dark-graph.css - Graphs - needed some tweaks to work for dark theme.
 
 GUI:
 =====
-Consists of SettingsGUI.js is the Settings section + styles of tabs.css + dark-graph.css (maybe need to darkify the css on the perks too window)
+Consists of SettingsGUI.js is the Settings section + styles of tabs.css
 
 SETTINGS:
 =========
@@ -146,7 +126,7 @@ WarpstationCap
 WarpstationWall
 WorkerRatios
 
-GRAPHS - Graphs.js is the graphs section: 
+GRAPHS - Graphs.js is the graphs section: + dark-graph.css (maybe need to darkify the css on the perks too window)
 =======
 HeliumPerHour
 Helium
@@ -171,9 +151,34 @@ DarkEssence
 DarkEssencePerHour
 OverkillCells
 Magmite
+Magmamancers
+
+AutoTrimps2.js Detailed Main Function Documentation (from 2016):
+===================================================
+The main loop consists of the following subroutines, all of which are enable-able/disable-able by their buttons.:
+    workerRatios();         //"Auto Worker Ratios"
+    buyUpgrades();          //"Buy Upgrades"
+    autoGoldenUpgrades();   //"AutoGoldenUpgrades" (genBTC settings area)
+    buyStorage();           //"Buy Storage"
+    buyBuildings();         //"Buy Buildings"
+    buyJobs();              //"Buy Jobs"
+    manualLabor();          //"Auto Gather/Build"
+    autoMap();              //"Auto Maps"
+    manageGenes();          //"Genetecist Timer" / "Manage Breed Timer"
+    autoPortal();           //"Auto Portal" (hidden until level 60)
+    autoHeirlooms2();  or  autoHeirlooms(); //"Auto Heirlooms 2" (genBTC settings area) or //"Auto Heirlooms"
+    toggleAutoTrap();       //"Trap Trimps"
+    autoRoboTrimp();        //"AutoRoboTrimp" (genBTC settings area)
+    autoNull();             //"Auto Upgrade Heirlooms" (genBTC settings area)
+    autoLevelEquipment();   //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons","Buy Weapons Upgrades"
+    autoStance();           //"Auto Stance"
+    betterAutoFight();      //"Better Auto Fight"
+    prestigeChanging2();    //"Dynamic Prestige" (genBTC settings area)
+    userscripts();          //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
+
 
 Version Numbered Files (files needing version string during minor upgrades):
-=================
+======================
 .user.js
 user.js
 install.user.js
@@ -181,8 +186,8 @@ AutoTrimps2.js
 Graphs.js
 TODO: Should invent a tool/script to advance the version numbers, generate changelogs, auto-link docs.
 
-How to become an AutoTrimps developer
-=====================================
+HOWTO = Become an AutoTrimps developer
+======================================
 The script is setup to be able to be bootstrapped from Tampermonkey/Greasemonkey. 
 If you paste the AutoTrimps2.js into your Tampermonkey window directly, you can attempt to run a local developer copy and edit it in the tampermonkey edit window. This pulls from a repo and loads all the sub-modules .js files.
 The point to understand is HTTPS and SSL is required. It has to be served over an actual HTTPS web-server so chrome can successfully load the secure content resources since https://trimps.github.io is technically the origin and any non-secure javascript resources will be flagged,denied and not-executed...
@@ -239,4 +244,40 @@ for /L %%n in (1,0,10) do (
 )
 
 
+HOWTO = Add A Button
+=====================
+All the buttons are created in SettingsGUI.js @ line 410 - with a function createSetting(): 
+This function takes 7 parameters and can make about 6 types of buttons: (boolean, value, valueNegative, dropdown, infoclick, multitoggle). The visual style will match similar. First determine the type of button, then copy a similar button. This explains the parameters:
+function createSetting(id, name, description, type, defaultValue, list, container) 
+id = settings variable name
+name = text on the button
+description = tooltip when hovering inside the button.
+type = boolean, value, valueNegative, dropdown, infoclick, multitoggle
+defaultValue = pick the most common desirable setting
+list = Only for dropdowns, the list of choices in ["one", "two", "three"] form
+container = IMPORTANT: this will position the button in any of the tabbable sections "Main, Gear, Maps, Settings, Scryer" etc.
+
+    These container tabs are what we will learn next:
+
+HOWTO = Add a New Tab (to the settings area.)
+=============================================
+All the tabs are created in SettingsGUI.js @ line 143 - the function is: initializeAllTabs():
+Inside there, follow the existing pattern and create a new line in the form of:
+    createTabs("Tab Name", "Tab Sub Heading");
+
+Then you can use this new "Tab Name" as the container variable when you createSetting() and the button will go in there.
+
+HOWTO = Add a New Script Module
+===============================
+AutoTrimps2.js is the module loader. Line 32:
+var ATmodules = ['query', 'import-export', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
+They refer to .js files of the same name in the "modules" directory. 
+All you have to do is create a new file in modules/ named something.js and add ,'something' to the end of that list. 
+The script will then load it on startup, so it either has to run itself self-sufficiently, or you need to use ATs userscripts functionality to run it, something like this:
+function userscripts()
+{
+    runModuleWhatever.FunctionFromThatModuleFile();
+}
+Any function named userscripts will execute 10 times per second at the final portion of each game cycle. 
+This way means you can add your own code without contaminating AutoTrimps files directly.
 Some Files contain/require game-code overwrites that need to be periodically checked and maintained. These are undocumented. Some are for the GUI and some are in utils.js maybe some for the heirlooms, and also graph loot...

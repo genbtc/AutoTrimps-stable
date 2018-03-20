@@ -11,7 +11,7 @@
 var ATServer = 
 {
 	//SERVER_IP: '207.246.77.188',
-    SERVER_HOSTNAME: 'autotrimps.site/ATendpoint.php'
+    SERVER_HOSTNAME: 'https://autotrimps.site/ATendpoint.php'
 }
 
 ATServer.GetID = function(callback)
@@ -26,7 +26,7 @@ ATServer.GetID = function(callback)
 		}
 	}
 
-	req.open('GET', 'https://' + ATServer.SERVER_HOSTNAME, true);
+	req.open('GET', ATServer.SERVER_HOSTNAME, true);
 	req.setRequestHeader('req', 'get_id');
 	req.send();
 }
@@ -43,7 +43,7 @@ ATServer.SaveData = function(id, data, callback)
 		}
 	}
 
-	req.open('POST', 'https://' + ATServer.SERVER_HOSTNAME + '?id=' + id, true);
+	req.open('POST', ATServer.SERVER_HOSTNAME + '?id=' + id, true);
 	req.setRequestHeader('req', 'save_data');
 	req.setRequestHeader("Content-Type", "application/json");
 	req.send(JSON.stringify(data));
@@ -53,27 +53,51 @@ ATServer.Upload = function(data)
 {
     ATServer.GetID(function(id) 
     { 
-        ATServer.SaveData(id, data, function(response) 
+        autoTrimpSettings.analyticsID = autoTrimpSettings.analyticsID || id;
+        //debug("Server generated ID: " + autoTrimpSettings.analyticsID, "other");
+        ATServer.SaveData(autoTrimpSettings.analyticsID, data, function(response) 
         { 
-            console.log("Submitted analytics data w/ ID: " + id);
+            debug("Submitted analytics data w/ ID: " + autoTrimpSettings.analyticsID, "other");
         });
     });
 }
 
-//Data to be uploaded: The version of AutoTrimps and the list of your settings file.
+//Data to be uploaded: The version of AutoTrimps and the list of your settings file. Also list of saved/named profiles.
 // note to newbs: typing in autoTrimpSettings into console and expanding the arrow will show you what is all in here.
 //-------------------------------------------------------------------------------------------------------------------
 //TODO: This is part of the ATsettings variable management:, it might make sense to move to that file, splitting here
 //-------------------------------------------------------------------------------------------------------------------
-var ulData = {
-    settings: JSON.parse(serializeSettings()),  //Line 41 utils.js - grabs fresh autoTrimpSettings from localstorage, reduces the length and parses it.
-    modules: MODULES
-}
 
 ATServer.UploadSettings = function() {
+    var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
+    var allProfiles = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
+    var ulData = {
+        settings: JSON.parse(serializeSettings()),  //Line 41 utils.js - grabs fresh autoTrimpSettings from localstorage, reduces the length and parses it.
+        profiles: allProfiles,  //every saved profile.
+        modules: MODULES
+    };
     ATServer.Upload(ulData);
-    console.log("AutoTrimps Settings File was Uploaded for analytics/usage! This is controlled with a new button on AT's Import/Export tab.");
+    debug("AutoTrimps Settings File was Uploaded for analytics/usage! This is controlled with a new button on AT's Import/Export tab.","general");
 }
 if (getPageSetting('allowSettingsUpload')) {
     ATServer.UploadSettings();
 }
+//Log all javascript errors and upload them.
+window.onerror = function uploadErrors(msg, url, lineNo, columnNo, error) {
+    var message = [
+        'Message: ' + msg,
+        'URL: ' + url,
+        'Line: ' + lineNo,
+        'Column: ' + columnNo,
+        'Error object: ' + JSON.stringify(error)
+    ].join(' - ');
+    console.log("AT logged error: " + message);
+    //ATServer.Upload(message);
+};
+/*
+window.addEventListener('error', function(event) {
+    var message = JSON.stringify(event);
+    console.log("logged error: " + message);
+    //ATServer.Upload(message);
+});
+*/
