@@ -1,7 +1,7 @@
 # AutoTrimps + genBTC
 ![Donate](https://blockchain.info/Resources/buttons/donate_64.png)
-<a href="bitcoin:1genbtcPLjAEk6RnfC66chYniFKfP7vAS">1genbtcPLjAEk6RnfC66chYniFKfP7vAS</a><br />
-Automation script for the idle incremental game Trimps, based on the zininzinin script and modified by genBTC (genr8_ on discord)<br />
+<a href="bitcoin:1genbtcPLjAEk6RnfC66chYniFKfP7vAS">1genbtcPLjAEk6RnfC66chYniFKfP7vAS</a>No one has donated bitcoin yet - be the first and I will be ever eternally grateful<br />
+Automation script for the idle incremental game Trimps, originally based on the zininzinin fork and modified by genBTC (genr8_ on discord)<br />
 
 [![Join the chat at https://gitter.im/AutoTrimps/Lobby](https://badges.gitter.im/AutoTrimps/Lobby.svg)](https://gitter.im/AutoTrimps/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ## Discussion / Discord Channel

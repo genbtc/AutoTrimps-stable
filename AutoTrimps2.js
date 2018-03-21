@@ -62,6 +62,10 @@ function printChangelog() {
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
 ', 'cancelTooltip()', 'Script Update Notice<br>' + ATversion, "Thank you for playing AutoTrimps. Accept and Continue.", null, true);
 }
+function printLowerLevelPlayerNotice() {
+    tooltip('confirm', null, 'update', '\
+The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned.<br>Happy scripting! -genBTC','cancelTooltip()', '<b>LowLevelPlayer Notes:</b><br><b>PSA: </b><u>AutoTrimps was not designed for  new/low-level players.</u>', "I understand I am on my own and I Accept and Continue.", null, true);
+}
 ////////////////////////////////////////
 //Main DELAY Loop///////////////////////
 ////////////////////////////////////////
@@ -78,6 +82,8 @@ function delayStart() {
     setTimeout(delayStartAgain, startupDelay);
 }
 function delayStartAgain(){
+    if (game.achievements.zones.finished < 8)   //z60
+        printLowerLevelPlayerNotice();
     setInterval(mainLoop, runInterval);
     setInterval(guiLoop, runInterval*10);
     updateCustomButtons();
