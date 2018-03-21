@@ -73,7 +73,7 @@ function automationMenuSettingsInit() {
     var settingsrow = document.getElementById("settingsRow");
     var autoSettings = document.createElement("DIV");
     autoSettings.id = "autoSettings";
-    autoSettings.setAttribute("style", "display: none; max-height: 92vh;overflow: auto;");
+    autoSettings.setAttribute("style", "display: none; max-height: 92.5vh;overflow: auto;");
     settingsrow.appendChild(autoSettings);
 }
 automationMenuSettingsInit();

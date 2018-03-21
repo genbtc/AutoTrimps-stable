@@ -82,3 +82,11 @@ ul.tab li a:hover {background-color: #ddd;}
     margin-top: 0;
     padding: 0;
 }
+
+/* stop the Traps building progress from showing through the AT settings screen */
+#animationDiv {
+   z-index: -1!important;
+}
+.queueItemName, #queueTimeRemaining {
+   z-index: 0!important;
+}
