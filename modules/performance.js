@@ -1,18 +1,15 @@
 ;(function(M, W)
 {
 	M["performance"] = {};
-	M["performance"].isAFK = false;
+	M["performance"].isAFK = false; //start with AFK disabled
 
-	// Saved functions
+	// Save updateLabels Trimps game functions, to restore it after we disable it.
 	M["performance"].updateLabels = W.updateLabels;
 
-
-	// Wrapper to detach
+	// Game Wrapper to insert DOM elements into
 	M["performance"].$wrapper = document.getElementById('wrapper');
 
-	// AFK OVERLAY
-
-	// Style
+	// AFK OVERLAY CSS Style
 	document.head.appendChild(document.createElement('style')).innerHTML = `
 	.at-afk-overlay 
 	{
@@ -104,9 +101,9 @@
 	M["performance"].AFKOverlayStatus.innerText = 'Status: -';
 	M["performance"].AFKOverlayStatus.className = 'at-afk-status'
 
-	// Disable button
+	// Disable(Back) button
 	M["performance"].AFKOverlayDisable = document.createElement('div');
-	M["performance"].AFKOverlayDisable.innerText = 'DISABLE';
+	M["performance"].AFKOverlayDisable.innerText = 'I\'m Back';
 	M["performance"].AFKOverlayDisable.className = 'at-afk-overlay-disable-btn'
 
 	M["performance"].AFKOverlayDisable.addEventListener('click', function()
@@ -114,57 +111,38 @@
 		M["performance"].DisableAFKMode();
 	});
 
-	// Combowombo them together
+	// Bundle them together
 	M["performance"].AFKOverlay.appendChild(AFKOverlayTitle);
 	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayZone);
 	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayHelium);
 	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayStatus);
 	M["performance"].AFKOverlay.appendChild(M["performance"].AFKOverlayDisable);
-
+    
+    // Insert the afk page, at the top level <body> tag
 	document.body.appendChild(M["performance"].AFKOverlay);
 
-
-	function OverrideUpdate()
-	{
-		W.updateLabels = function() {};
-	}
-
-	function RestoreUpdate()
-	{
-		W.updateLabels = M["performance"].updateLabels;
-	}
-
-	function EnableAFKMode()
+	M["performance"].EnableAFKMode = function EnableAFKMode()
 	{
 		M["performance"].isAFK = true;
 		M["performance"].AFKOverlay.classList.remove('at-afk-overlay-disabled');
 		M["performance"].$wrapper.style.display = 'none';
-		M["performance"].OverrideUpdate();
-		enableDebug = false;
+        //This is the whole meat - replaces the update function with nothing (means save resources)
+		W.updateLabels = function() {};
 	}
 
-	function DisableAFKMode()
+	M["performance"].DisableAFKMode = function DisableAFKMode()
 	{
 		M["performance"].isAFK = false;
 		M["performance"].$wrapper.style.display = 'block';
-		M["performance"].RestoreUpdate();
 		M["performance"].AFKOverlay.classList.add('at-afk-overlay-disabled');
-		enableDebug = true;
+        W.updateLabels = M["performance"].updateLabels;
 	}
 
-	function UpdateAFKOverlay()
+	M["performance"].UpdateAFKOverlay = function UpdateAFKOverlay()
 	{
 		M["performance"].AFKOverlayZone.innerText = 'Current Zone: ' + game.global.world;
 		M["performance"].AFKOverlayHelium.innerText = 'Current Helium: ' + prettify(Math.floor(game.resources.helium.owned));
-		M["performance"].AFKOverlayStatus.innerText = 'Current Status: ' + getAutoMapsStatus()[0];
+		M["performance"].AFKOverlayStatus.innerHTML = 'Current Status: ' + getAutoMapsStatus()[0];
 	}
-
-	M["performance"].OverrideUpdate = OverrideUpdate;
-	M["performance"].RestoreUpdate = RestoreUpdate;
-
-	M["performance"].EnableAFKMode = EnableAFKMode;
-	M["performance"].DisableAFKMode = DisableAFKMode;
-	
-	M["performance"].UpdateAFKOverlay = UpdateAFKOverlay;
 
 })(MODULES, window);
