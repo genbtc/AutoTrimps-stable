@@ -30,6 +30,7 @@ function scriptLoad(pathname) {
     document.head.appendChild(script);
 }
 scriptLoad(modulepath + 'utils.js');    //Load stuff needed to load other stuff:
+scriptLoad(modulepath + 'performance.js');    //Load stuff needed to load other stuff:
 
 //This starts up after 2.5 seconds.
 function initializeAutoTrimps() {
@@ -37,7 +38,7 @@ function initializeAutoTrimps() {
     scriptLoad('SettingsGUI.js');   //populate Settings GUI
     scriptLoad('Graphs.js');        //populate Graphs
     //Load modules:
-    var ATmodules = ['query', 'import-export', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
+    var ATmodules = ['query', 'import-export', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks', 'fight-info'];
     for (var m in ATmodules) {
         scriptLoad(modulepath + ATmodules[m] + '.js');
     }
@@ -228,6 +229,14 @@ function mainLoop() {
 //GUI Updates happen on this thread, every 1000ms, concurrently
 function guiLoop() {
     updateCustomButtons();
+
+    if(autoTrimpSettings['EnhanceGrids'].enabled)
+        MODULES["fightinfo"].Update();
+
+    if(typeof MODULES !== 'undefined' && typeof MODULES["performance"] !== 'undefined' && MODULES["performance"].isAFK)
+    {
+        MODULES["performance"].UpdateAFKOverlay();
+    }
 }
 
 // Userscript loader. write your own!
