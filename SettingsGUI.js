@@ -134,7 +134,25 @@ function minimizeAllTabs() {
     // Get all elements with class="tablinks" and remove the class "active"
     var tablinks = document.getElementsByClassName("tablinks");
     for (var i = 0,len = tablinks.length; i < len ; i++) {
+        // if (!(tablinks[i].className.includes('minimize') || tablinks[i].className.includes('maximize') || tablinks[i].className.includes('tabclose') || tablinks[i].parentNode.id.includes('tabCore')))
+            // tablinks[i].style.display = "none";
         tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+}
+
+//Minimize button handler
+function maximizeAllTabs() {
+    // Get all elements with class="tabcontent" and show them
+    var tabcontent = document.getElementsByClassName("tabcontent");
+    for (var i = 0,len = tabcontent.length; i < len ; i++) {
+        tabcontent[i].style.display = "block";
+    }
+    // Get all elements with class="tablinks" and add the class "active"
+    var tablinks = document.getElementsByClassName("tablinks");
+    for (var i = 0,len = tablinks.length; i < len ; i++) {
+        tablinks[i].style.display = "block";
+        if (!tablinks[i].className.includes(' active'))
+            tablinks[i].className += " active";
     }
 }
 
@@ -171,12 +189,35 @@ function initializeAllTabs() {
     var li_0 = document.createElement('li');
     var a_0 = document.createElement('a');
     a_0.className = "tablinks minimize";
-    a_0.setAttribute('onclick', 'minimizeAllTabs()');
+    a_0.setAttribute('onclick', 'cancelTooltip(); minimizeAllTabs();');
     a_0.href = "#";
-    a_0.appendChild(document.createTextNode("Minimize All"));
+    a_0.appendChild(document.createTextNode("-"));
     li_0.appendChild(a_0);
     li_0.setAttribute("style", "float:right!important;");
-    addtabsUL.appendChild(li_0);
+    li_0.setAttribute("onmouseover",'tooltip("Minimize all tabs", "customText", event, "Minimize all AT settings tabs.")');
+    //add a maximize button:
+    var li_1 = document.createElement('li');
+    var a_1 = document.createElement('a');
+    a_1.className = "tablinks maximize";
+    a_1.setAttribute('onclick', 'cancelTooltip(); maximizeAllTabs();');
+    a_1.href = "#";
+    a_1.appendChild(document.createTextNode("+"));
+    li_1.appendChild(a_1);
+    li_1.setAttribute("style", "float:right!important;");
+    li_1.setAttribute("onmouseover",'tooltip("Maximize all tabs", "customText", event, "Maximize all AT settings tabs.")');
+    //add a minimize button:
+    var li_2 = document.createElement('li');
+    var a_2 = document.createElement('a');
+    a_2.className = "tablinks tabclose";
+    a_2.setAttribute('onclick', 'cancelTooltip(); autoToggle();');
+    a_2.href = "#";
+    a_2.appendChild(document.createTextNode("x"));
+    li_2.appendChild(a_2);
+    li_2.setAttribute("style", "float:right!important;");
+    li_2.setAttribute("onmouseover",'tooltip("Close all tabs", "customText", event, "Close all AT settings tabs.")');
+    addtabsUL.appendChild(li_2);    //close
+    addtabsUL.appendChild(li_1);    //max
+    addtabsUL.appendChild(li_0);    //min
     //Insert tabs into the game area
     document.getElementById("autoSettings").appendChild(addTabsDiv);
     //pretend click to make first tab active.
@@ -408,9 +449,9 @@ function initializeAllSettings() {
 //Display settings:
     //Subsection1Line1
     createSetting('EnhanceGrids', 'Enhance Grids', 'Apply visual enhancements to world and map grids', 'boolean', false, null, 'Display');
-    createSetting('EnableAFK', 'Enable AFK', 'Enables CPU and RAM saving AFK-mode', 'action', null, null, 'Display');
-    
-    document.getElementById('EnableAFK').parentNode.insertAdjacentHTML('afterend','<br>');
+    createSetting('EnableAFK', 'Enable AFK', 'Enables CPU and RAM saving AFK-mode', 'action', 'MODULES["performance"].EnableAFKMode()', null, 'Display');
+    createSetting('ChangeLog', 'Show Changelog', 'Shows the changelog popup message that AT loads on startup in case you missed it.', 'action', 'printChangelog()', null, 'Display');
+    document.getElementById('ChangeLog').parentNode.insertAdjacentHTML('afterend','<br>');
     //Subsection2Line1
     createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Display');
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Display');
@@ -609,7 +650,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
 
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtntrue');
-        btn.setAttribute('onclick', 'MODULES["performance"].EnableAFKMode()');
+        btn.setAttribute('onclick', defaultValue);
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
         btn.textContent = name;
