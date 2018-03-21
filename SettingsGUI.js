@@ -189,32 +189,35 @@ function initializeAllTabs() {
     var li_0 = document.createElement('li');
     var a_0 = document.createElement('a');
     a_0.className = "tablinks minimize";
-    a_0.setAttribute('onclick', 'cancelTooltip(); minimizeAllTabs();');
+    a_0.setAttribute('onclick', 'minimizeAllTabs();');
     a_0.href = "#";
     a_0.appendChild(document.createTextNode("-"));
     li_0.appendChild(a_0);
     li_0.setAttribute("style", "float:right!important;");
     li_0.setAttribute("onmouseover",'tooltip("Minimize all tabs", "customText", event, "Minimize all AT settings tabs.")');
+    li_0.setAttribute("onmouseout", 'tooltip("hide")');
     //add a maximize button:
     var li_1 = document.createElement('li');
     var a_1 = document.createElement('a');
     a_1.className = "tablinks maximize";
-    a_1.setAttribute('onclick', 'cancelTooltip(); maximizeAllTabs();');
+    a_1.setAttribute('onclick', 'maximizeAllTabs();');
     a_1.href = "#";
     a_1.appendChild(document.createTextNode("+"));
     li_1.appendChild(a_1);
     li_1.setAttribute("style", "float:right!important;");
     li_1.setAttribute("onmouseover",'tooltip("Maximize all tabs", "customText", event, "Maximize all AT settings tabs.")');
+    li_1.setAttribute("onmouseout", 'tooltip("hide")');
     //add a minimize button:
     var li_2 = document.createElement('li');
     var a_2 = document.createElement('a');
     a_2.className = "tablinks tabclose";
-    a_2.setAttribute('onclick', 'cancelTooltip(); autoToggle();');
+    a_2.setAttribute('onclick', 'autoToggle();');
     a_2.href = "#";
     a_2.appendChild(document.createTextNode("x"));
     li_2.appendChild(a_2);
     li_2.setAttribute("style", "float:right!important;");
-    li_2.setAttribute("onmouseover",'tooltip("Close all tabs", "customText", event, "Close all AT settings tabs.")');
+    li_2.setAttribute("onmouseover",'tooltip("Exit (duplicate)", "customText", event, "Closes/toggles/hides AutoTrimps (just a UI shortcut)")');
+    li_2.setAttribute("onmouseout", 'tooltip("hide")');
     addtabsUL.appendChild(li_2);    //close
     addtabsUL.appendChild(li_1);    //max
     addtabsUL.appendChild(li_0);    //min
