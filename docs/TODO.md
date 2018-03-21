@@ -1,25 +1,21 @@
 Document Code Structure: (for other developers): see main-doc.txt 
 ----------------
 Main-Documentation (main-doc.txt)
-TODO List (this TODO.md)
+TODO List (this file - TODO.md)
 Update README.md/changelog(.json?)/version # (manually for now)
 Code Comments (getting better)
 
-old TODO LIST: from 8/17/2016
--TODO: a BW toggle that can let AT do Bionic Wonderland maps if they haven't ever been done before?
-  (in the same vein, check for "Speed" achievements for unique maps and do them if they're not done yet and possible)
-
 get to in Near Future:
 ------------------------
+TODO 1: Add notes or labels to graph runs.  (to indicate which settings we used)
+TODO 1: HighCharts annotations module for "notes" comments to indicate which graph runs were what.
 
-TODO 2: Add notes or labels to graph runs.  (to indicate which settings we used)
-TODO 2: HighCharts annotations module for "notes" comments to indicate which graph runs were what.
-
-new TODO LIST: 3/3/2018 and 3/4/2018 extended to 3/7
+new TODO LIST: 3/3/2018 and 3/4/2018 extended to 3/7 still working on it as of 3/20.
 -------------------------------------
-TODO: Perks - background thread / web worker    
-TODO: Perks - allocate speed improvement, shortcuts, (36 million iterations and 15 seconds @ 720Qa HE)
+XXXX: AutoPerks - background thread / web worker    
+XXXX: AutoPerks - allocate speed improvement, shortcuts, (36 million iterations and 15 seconds @ 720Qa HE)
             - maybe slow due to OO structure and repeated resolutions for pass2.
+TODO: Perky - implement Altizar Perky new Perk manager interface
 TODO: IMPLEMENT A STANDARD FOR USAGE STATISTICS/PROFILE: {
  Highest zone, helium, bones, ATSettings, MODULES, which graphs were clicked on, Perk preset/ratios.
 }
@@ -33,6 +29,8 @@ TODO: "Map Special Modifier": Special Modifiers, Perfect Sliders (way more fragm
     perfect sliders when you can afford it
     make perfect sliders like if you're able to afford 3x the cost of it in frags, just buy it. otherwise no. and it will be rarer that way but still useful
     another valid idea is burn out all your frags on perfect near the end i guess
+TODO: (from old TODO LIST: 8/17/2016) BionicW toggle that can let AT do Bionic Wonderland maps if they haven't ever been done before?
+    (in the same vein, check for "Speed" achievements for unique maps and do them if they're not done yet and possible)
 TODO: for alfa166: "Bionic OverBurner" :smiley: Make it Configurable to run BW 470 one time at z480 to unlock and run BW485, (with the +5 map kit)
 TODO: Make a more configurable Auto Spend Nulli function for 2018
 TODO: Graphs, make 2 arrows to cycle sequentially through the graphs without using the dropdown everytime.
@@ -48,8 +46,11 @@ FAR TODO: Theoretically the graphs database can be used as a pro-active future p
     Example: If Helium per/hour is ABOUT to go down based on previous cached runs (during the ambiguity period of about a few zones), portal earlier.
     Think like Grace %% setting but automatic.
 FAR TODO: Analysis of the Userbase and custom settings, even make queries to ask server for better decision making based on global multi-client probability state
-TODO: Split SettingsGUI.js up into front-end DOM+GUI, back-end functions for Settings/Modules/Profiles, and createSettings+descriptions.
-TODO: import/export graphs. append?
+TODO: import/export graphs. append? 
+TODO: Put changelog show/hide popup Button into settings
+TODO: Instead of hard-coded changelog, Break changelog out into a seperate file and HTTPRequest it, parse it and run it through a standardized display function.
+TODO: Graphs encoding vs. storage is wasteful of space. We need more. Compress data or RLE it
+
 
 Bugs To Fix:
 ----------------
@@ -69,7 +70,8 @@ Done: Add autotrimps.site data json upload capability (thanks to Swiffy)
 Done: BUG 1: Liquification - the Auto-Skip-tons-of-zones-in-beginning - causes overkill graph to be off by a LOT.
 Not actually a thing: "Max Magmamancers By Zone #" so we can buy them at the start, to gain 5% attack for the first 10 minutes, usually for cases when the void zone which is the same as the portal zone, and you want to stack that level up with all you've got. 
     -5% Attack is only given after 5 minutes. Misunderstanding.
-Done: WORKING ON NOW - TODO 1: TODO: AutoTrimps Presets dropdown list to name, save, reload different profiles    
+Done: AutoTrimps Presets dropdown list to name, save, reload different profiles
+Done: Partially: Split SettingsGUI.js up into front-end DOM+GUI, back-end functions for Settings/Modules/Profiles, and createSettings+descriptions.
     
 Other Improvements:
 ------------------

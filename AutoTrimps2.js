@@ -54,7 +54,7 @@ function initializeAutoTrimps() {
 //Other function should be made to create a DOM element for this, scrape the API data into it, and then print tooltip with header/footer.
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">3/20 v2.1.6.7 </b><b style="background-color:#32CD32"> New:</b> Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + EnableAFKMode. Pinned AT Tab menu bar to top when scrolling. Graph: FluffyXP \
+<br><b class="AutoEggs">3/20 v2.1.6.7 </b><b style="background-color:#32CD32"> New:</b> Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + EnableAFKMode. Pinned AT Tab menu bar to top when scrolling. Graph: FluffyXP (beta-testing)\
 <br><b>3/13 v2.1.6.6</b> Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors.\
 <br><b>3/7 v2.1.6.5</b> Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable. \
 <br><b>Ongoing Development<b>-<u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\

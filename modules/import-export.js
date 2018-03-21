@@ -23,6 +23,7 @@ function settingsProfileMakeGUI() {
     settingsProfilesButton.setAttribute('onclick','onDeleteProfile()');
     //Add the settingsProfiles dropdown to UI
     var ietab = document.getElementById('Import Export');
+    //Any ERRORs here are caused by incorrect order loading of script and you should reload until its gone.(for now)
     ietab.insertBefore(settingsProfilesLabel, ietab.childNodes[2]);
     ietab.insertBefore(settingsProfiles, ietab.childNodes[3]);
     ietab.insertBefore(settingsProfilesButton, ietab.childNodes[4]);
@@ -268,6 +269,7 @@ function resetAutoTrimps(imported,profname) {
         autoTrimpSettings = imported ? imported : new Object(); //load the import.
         var settingsrow = document.getElementById("settingsRow");
         settingsrow.removeChild(document.getElementById("autoSettings"));
+        settingsrow.removeChild(document.getElementById("autoTrimpsTabBarMenu"));
         automationMenuSettingsInit();
         initializeAllTabs();
         initializeAllSettings();

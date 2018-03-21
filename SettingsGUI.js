@@ -753,17 +753,21 @@ function updateCustomButtons() {
     //auto portal setting, hide until player has unlocked the balance challenge
     (game.challenges.Balance.filter()) ? turnOn("AutoPortal") : turnOff("AutoPortal");
     //auto Daily settings, hide until player has unlocked the Daily challenges
-    (game.challenges.Daily.filter()) ? turnOn("AutoStartDaily") : turnOff("AutoStartDaily");
-    (game.challenges.Daily.filter()) ? turnOn("AutoFinishDaily") : turnOff("AutoFinishDaily");
-    (game.challenges.Daily.filter() && getPageSetting('AutoFinishDaily')) ? turnOn("AutoFinishDailyZone") : turnOff("AutoFinishDailyZone");
+    var doDaily = game.challenges.Daily.filter();
+    (doDaily) ? turnOn("AutoStartDaily") : turnOff("AutoStartDaily");
+    (doDaily) ? turnOn("AutoFinishDaily") : turnOff("AutoFinishDaily");
+    (doDaily && getPageSetting('AutoFinishDaily')) ? turnOn("AutoFinishDailyZone") : turnOff("AutoFinishDailyZone");
     //if custom auto portal is not selected, remove the custom value settingsbox
     (autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("CustomAutoPortal") : turnOff("CustomAutoPortal");
     //if HeHr is not selected, remove HeliumHourChallenge settingsbox
-    (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour" || autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("HeliumHourChallenge") : turnOff("HeliumHourChallenge");
+    var heHr = (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour");
+    (heHr || autoTrimpSettings.AutoPortal.selected == "Custom") ? turnOn("HeliumHourChallenge") : turnOff("HeliumHourChallenge");
     //if HeHr is not selected, remove HeHrDontPortalBefore settingsbox
-    (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeHrDontPortalBefore") : turnOff("HeHrDontPortalBefore");
+    (heHr) ? turnOn("HeHrDontPortalBefore") : turnOff("HeHrDontPortalBefore");
     //if HeHr is not selected, remove HeHr buffer settingsbox
-    (autoTrimpSettings.AutoPortal.selected == "Helium Per Hour") ? turnOn("HeliumHrBuffer") : turnOff("HeliumHrBuffer");
+    (heHr) ? turnOn("HeliumHrBuffer") : turnOff("HeliumHrBuffer");
+    //if ShieldBlock is for sure, remove ShieldBlock from settingsbox (achievement=12 means z100).
+    (game.achievements.zones.finished < 12) ? turnOn("BuyShieldblock") : function(){turnOff("BuyShieldblock");setPageSetting("BuyShieldblock",false);}();
 
     //update dropdown selections: (ALL DROPDOWNS REQUIRE THIS BIT TO BE UPDATEY)
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
