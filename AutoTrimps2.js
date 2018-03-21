@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
-// @version      2.1.6.6-genbtc-3-13-2018+Mod+Uni+coderpatsy
+// @version      2.1.6.7-genbtc-3-20-2018+Mod+Uni+coderpatsy
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
 // @include      *trimps.github.io*
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.6.6-genbtc-3-13-2018+Mod+Uni+coderpatsy';
+var ATversion = '2.1.6.7-genbtc-3-20-2018+Mod+Uni+coderpatsy';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -34,11 +34,11 @@ scriptLoad(modulepath + 'utils.js');    //Load stuff needed to load other stuff:
 //This starts up after 2.5 seconds.
 function initializeAutoTrimps() {
     loadPageVariables();            //get autoTrimpSettings
-    scriptLoad(modulepath + 'performance.js');    //Load stuff needed to load other stuff:
+    //scriptLoad(modulepath + 'performance.js');    //Performance module must load before SettingsGUI (not anymore)
     scriptLoad('SettingsGUI.js');   //populate Settings GUI
     scriptLoad('Graphs.js');        //populate Graphs
     //Load modules:
-    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'import-export', 'client-server', 'perks', 'fight-info'];
+    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'import-export', 'client-server', 'perks', 'fight-info', 'performance'];
     for (var m in ATmodules) {
         scriptLoad(modulepath + ATmodules[m] + '.js');
     }
@@ -55,11 +55,10 @@ function initializeAutoTrimps() {
 //Other function should be made to create a DOM element for this, scrape the API data into it, and then print tooltip with header/footer.
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">3/13 v2.1.6.6 </b><b style="background-color:#32CD32"> New:</B> Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors. Continue Development on long TODO list... \
-<br>3/7 v2.1.6.5 </b><b style="background-color:#32CD32"> New:</B> Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable. \
-<br><b>3/4 v2.1.6.4 </b> Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.\
-<br><b>3/1 v2.1.6.3 </b> AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer - Fix bugs in autoperks around capable/fluffy allocating looting + more bugs\
-<br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
+<br><b class="AutoEggs">3/20 v2.1.6.7 </b><b style="background-color:#32CD32"> New:</b> Moved all the Settings around on you :) Enjoy the new layout. UI Tab: EnhanceGrid + EnableAFKMode\
+<br><b>3/13 v2.1.6.6</b> Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors.\
+<br><b>3/7 v2.1.6.5</b> Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable. \
+<br><b>Ongoing Development<b>-<u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
 <a href="https://discord.gg/0VbWe0dxB9kIfV2C"> @ AT Discord Channel</a></u>\
 <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
 ', 'cancelTooltip()', 'Script Update Notice<br>' + ATversion);

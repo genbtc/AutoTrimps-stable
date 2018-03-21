@@ -9,8 +9,11 @@ Automation script for the idle incremental game Trimps, based on the zininzinin 
 Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestions for new features : https://discord.gg/0VbWe0dxB9kIfV2C (same one as zininzinin)
 
 ## Current Version (full changes below)
-- v2.1.6.4 - March 4, 2018
-- v2.1.6.3 - March 3, 2018
+- v2.1.6.7 - March 20, Moved all the Settings around on you :) Enjoy the new layout. UI Tab: EnhanceGrid + EnableAFKMode
+- v2.1.6.6 - March 13, Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors. Continue Development on long TODO list... 
+- v2.1.6.5 - March 7, Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable. 
+- v2.1.6.4 - March 4, 2018 Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.
+- v2.1.6.3 - March 3, 2018 AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer - Fix bugs in autoperks around capable/fluffy allocating looting + more bugs\
 - v2.1.6.2 - March 2, 2018
 - v2.1.6.1 - March 1, 2018
 - v2.1.6.0 - December 23, 2018
