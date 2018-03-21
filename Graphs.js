@@ -34,7 +34,7 @@ document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style
 document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;font-size: 1em;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
 //Create the buttons in the graph Footer:
 //Create the dropdown for what graph to show    (these correspond to headings in setGraph() and have to match)
-var graphList = ['HeliumPerHour', 'Helium', 'HeliumPerHour Instant', 'HeliumPerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coords', 'Gigas', 'UnusedGigas', 'Lastwarp', 'Trimps', 'Nullifium Gained', 'DarkEssence', 'DarkEssencePerHour', 'OverkillCells', 'Magmite', 'Magmamancers'];
+var graphList = ['Helium PerHour', 'Helium', 'Helium PerHour Instant', 'Helium PerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coordinations', 'GigaStations', 'Unused Gigas', 'Last Warpstation', 'Trimps', 'Nullifium Gained', 'Dark Essence', 'Dark Essence PerHour', 'OverkillCells', 'Magmite', 'Magmamancers', 'Fluffy XP', 'Fluffy XP PerHour'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 //btn.setAttribute("style", "");
@@ -392,7 +392,8 @@ function pushData() {
         zonetime: GraphsVars.ZoneStartTime,
         mapbonus: GraphsVars.MapBonus,
         magmite: game.global.magmite,
-        magmamancers: game.jobs.Magmamancer.owned
+        magmamancers: game.jobs.Magmamancer.owned,
+        fluffy: game.global.fluffyExp
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);
@@ -566,7 +567,7 @@ function setGraphData(graph) {
     valueSuffix = '';
 
     switch (graph) {
-        case 'HeliumPerHour Instant':
+        case 'Helium PerHour Instant':
             var currentPortal = -1;
             var currentZone = -1;
             graphData = [];
@@ -603,7 +604,7 @@ function setGraphData(graph) {
             yType = 'Linear';
             break;
 
-        case 'HeliumPerHour Delta':
+        case 'Helium PerHour Delta':
             var currentPortal = -1;
             var currentZone = -1;
             graphData = [];
@@ -826,7 +827,7 @@ function setGraphData(graph) {
 
             };
             break;
-        case 'HeliumPerHour':
+        case 'Helium PerHour':
             graphData = allPurposeGraph('heliumhr',true,null,
                     function specialCalc(e1,e2) {
                         return Math.floor(e1.heliumOwned / ((e1.currentTime - e1.portalTime) / 3600000));
@@ -890,15 +891,15 @@ function setGraphData(graph) {
             yTitle = 'Number of Gigas';
             yType = 'Linear';
             break;
-        case 'UnusedGigas':
+        case 'Unused Gigas':
             graphData = allPurposeGraph('gigasleft',true,"number");
             title = 'Unused Gigastations';
             xTitle = 'Zone';
             yTitle = 'Number of Gigas';
             yType = 'Linear';
             break;
-        case 'Lastwarp':
             graphData = allPurposeGraph('lastwarp',true,"number");
+        case 'Last Warpstation':
             title = 'Warpstation History';
             xTitle = 'Zone';
             yTitle = 'Previous Giga\'s Number of Warpstations';
@@ -925,14 +926,14 @@ function setGraphData(graph) {
             yTitle = 'Magmamancers';
             yType = 'Linear';
             break;
-        case 'DarkEssence':
+        case 'Dark Essence':
             graphData = allPurposeGraph('essence',true,"number");
             title = 'Total Dark Essence Owned';
             xTitle = 'Zone';
             yTitle = 'Dark Essence';
             yType = 'Linear';
             break;
-        case 'DarkEssencePerHour':
+        case 'Dark Essence PerHour':
             var currentPortal = -1;
             var currentZone = -1;
             var startEssence = 0;
@@ -966,7 +967,47 @@ function setGraphData(graph) {
             yTitle = 'Dark Essence/Hour';
             yType = 'Linear';
             break;
-
+        case 'Fluffy XP':
+            graphData = allPurposeGraph('fluffy',true,"number");
+            title = 'Total Fluffy XP Earned';
+            xTitle = 'Zone';
+            yTitle = 'Fluffy XP';
+            yType = 'Linear';
+            break;            
+        case 'Fluffy XP PerHour':
+            var currentPortal = -1;
+            var currentZone = -1;
+            var startFluffy = 0;
+            graphData = [];
+            for (var i in allSaveData) {
+                if (allSaveData[i].totalPortals != currentPortal) {
+                    graphData.push({
+                        name: 'Portal ' + allSaveData[i].totalPortals + ': ' + allSaveData[i].challenge,
+                        data: []
+                    });
+                    currentPortal = allSaveData[i].totalPortals;
+                    currentZone = 0;
+                    startFluffy = allSaveData[i].fluffy;
+                }
+                //runs extra checks for mid-run imports, and pushes 0's to align to the right zone properly.
+                if (currentZone != allSaveData[i].world - 1) {
+                    var loop = allSaveData[i].world - 1 - currentZone;
+                    while (loop > 0) {
+                        graphData[graphData.length - 1].data.push(0);
+                        loop--;
+                    }
+                }
+                //write datapoint (one of 3 ways)
+                if (currentZone != 0) {
+                    graphData[graphData.length - 1].data.push(Math.floor((allSaveData[i].fluffy - startFluffy) / ((allSaveData[i].currentTime - allSaveData[i].portalTime) / 3600000)));
+                }
+                currentZone = allSaveData[i].world;
+            }
+            title = 'Fluffy XP/Hour (Cumulative)';
+            xTitle = 'Zone';
+            yTitle = 'Fluffy XP/Hour';
+            yType = 'Linear';
+            break;
         case 'OverkillCells':
             var currentPortal = -1;
             graphData = [];
@@ -1070,7 +1111,7 @@ function setGraphData(graph) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
     }
     //put finishing touches on this graph.
-    if (graph == 'HeliumPerHour Delta') {
+    if (graph == 'Helium PerHour Delta') {
         var plotLineoptions = {
                 value: 0,
                 width: 2,
