@@ -245,31 +245,31 @@ function deleteSpecific() {
 
 function autoToggleGraph() {
     if (game.options.displayed) toggleSettingsMenu();
-    var aset = document.getElementById('autoSettings');
-    if (aset) {
-    if (aset.style.display === 'block') aset.style.display = 'none';
+    var $item = document.getElementById('autoSettings');
+    if ($item) {
+    if ($item.style.display === 'block') $item.style.display = 'none';
     }
-    var item = document.getElementById('graphParent');
-    if (item.style.display === 'block') item.style.display = 'none';
+    var $item = document.getElementById('autoTrimpsTabBarMenu');
+    if ($item) {
+    if ($item.style.display === 'block') $item.style.display = 'none';
+    }    
+    var $graph = document.getElementById('graphParent');
+    if ($graph.style.display === 'block') $graph.style.display = 'none';
     else {
-        item.style.display = 'block';
+        $graph.style.display = 'block';
         setGraph();
     }
 }
 
-//unused: hides graph and shows Trimps (not AT) settings menu
-function autoPlusGraphMenu() {
-    var item = document.getElementById('graphParent');
-    if (item.style.display === 'block') item.style.display = 'none';
-    toggleSettingsMenu();
-}
 function escapeATWindows() {
     //Turn off "Settings"/"AutoTrimpsSettings"/"Graphs" Menu on escape.
     if (game.options.displayed) toggleSettingsMenu();
-    var aset = document.getElementById('autoSettings');
-    if (aset.style.display === 'block') aset.style.display = 'none';
-    var graph = document.getElementById('graphParent');
-    if (graph.style.display === 'block') graph.style.display = 'none';
+    var $item = document.getElementById('autoSettings');
+    if ($item.style.display === 'block') $item.style.display = 'none';
+    var $item = document.getElementById('autoTrimpsTabBarMenu');
+    if ($item.style.display === 'block') $item.style.display = 'none';
+    var $graph = document.getElementById('graphParent');
+    if ($graph.style.display === 'block') $graph.style.display = 'none';    
 }
 document.addEventListener("keydown",function (event) {
     //Hotkeys have to be enabled, and all these conditions have to be met or else we cant use the hotkey.

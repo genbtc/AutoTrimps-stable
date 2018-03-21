@@ -73,7 +73,7 @@ function automationMenuSettingsInit() {
     var settingsrow = document.getElementById("settingsRow");
     var autoSettings = document.createElement("DIV");
     autoSettings.id = "autoSettings";
-    autoSettings.setAttribute("style", "display: none; max-height: 96vh;overflow: auto;");
+    autoSettings.setAttribute("style", "display: none; max-height: 92vh;overflow: auto;");
     settingsrow.appendChild(autoSettings);
 }
 automationMenuSettingsInit();
@@ -146,7 +146,13 @@ function initializeAllTabs() {
     addTabsDiv = document.createElement('div');
     addtabsUL = document.createElement('ul');
     addtabsUL.className = "tab";
-    addTabsDiv.appendChild(addtabsUL);
+    addtabsUL.id = 'autoTrimpsTabBarMenu';
+    addtabsUL.style.display = "none";
+    //Pin settings Tab Bar to the top like the other bar?
+    var sh = document.getElementById("settingsRow")
+    sh.insertBefore(addtabsUL, sh.childNodes[2]);
+    //addTabsDiv.appendChild(addtabsUL);
+    //Then it has to be maintained and toggled on off.
     //Make Tabs.
     createTabs("Core", "Main Controls for the script");
     createTabs("Buildings", "Building Settings");
@@ -434,35 +440,43 @@ initializeAllSettings(); //EXECUTE
 //toggles the display of the settings menu. 1
 function autoToggle(what) {
     if (what) {
-        whatobj = document.getElementById(what);
-        if (whatobj.style.display === 'block') {
-            whatobj.style.display = 'none';
+        var $what = document.getElementById(what);
+        if ($what.style.display === 'block') {
+            $what.style.display = 'none';
             document.getElementById(what + 'BTN').style.border = '';
         } else {
-            whatobj.style.display = 'block';
+            $what.style.display = 'block';
             document.getElementById(what + 'BTN').style.border = '4px solid green';
         }
     } else {
         if (game.options.displayed)
             toggleSettingsMenu();
-        if (document.getElementById('graphParent').style.display === 'block')
-            document.getElementById('graphParent').style.display = 'none';
-        var item = document.getElementById('autoSettings');
-        if (item.style.display === 'block')
-            item.style.display = 'none';
-        else item.style.display = 'block';
+        var $item = document.getElementById('graphParent');
+        if ($item.style.display === 'block')
+            $item.style.display = 'none';
+        var $item = document.getElementById('autoTrimpsTabBarMenu');
+        if ($item.style.display === 'block')
+            $item.style.display = 'none';
+        else $item.style.display = 'block';        
+        var $item = document.getElementById('autoSettings');
+        if ($item.style.display === 'block')
+            $item.style.display = 'none';
+        else $item.style.display = 'block';
     }
 }
 
 //toggles the display of the original settings menu button,
 // when clicked, hiding the AT settings and graph.
 function autoPlusSettingsMenu() {
-    var item = document.getElementById('autoSettings');
-    if (item.style.display === 'block')
-        item.style.display = 'none';
-    item = document.getElementById('graphParent');
-    if (item.style.display === 'block')
-        item.style.display = 'none';
+    var $item = document.getElementById('autoSettings');
+    if ($item.style.display === 'block')
+        $item.style.display = 'none';
+    var $item = document.getElementById('graphParent');
+    if ($item.style.display === 'block')
+        $item.style.display = 'none';
+    var $item = document.getElementById('autoTrimpsTabBarMenu');
+    if ($item.style.display === 'block')
+        $item.style.display = 'none';
     toggleSettingsMenu();
 }
 
