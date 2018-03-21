@@ -12,8 +12,8 @@ WebSite https://autotrimps.site - even just a link to github, or link to tutoria
 TODO 1: Add notes or labels to graph runs.  (to indicate which settings we used)
 TODO 1: HighCharts annotations module for "notes" comments to indicate which graph runs were what.
 TODO: IMPLEMENTING A STANDARD FOR CLOUD GRAPH STATISTICS: 
-  now: Highest zone, helium, bones, Perk preset/ratios.
-  next: ATSettings, MODULES, which graphs were clicked on.
+      -now : Highest zone, helium, bones, Perk preset/ratios.
+      -next: ATSettings, MODULES, which graphs were clicked on.
 
 
 new TODO LIST: 3/3/2018 and 3/4/2018 extended to 3/7 still working on it as of 3/20.
@@ -22,7 +22,6 @@ XXXX: AutoPerks - background thread / web worker
 XXXX: AutoPerks - allocate speed improvement, shortcuts, (36 million iterations and 15 seconds @ 720Qa HE)
             - maybe slow due to OO structure and repeated resolutions for pass2.
 TODO: Perky - implement Altizar Perky new Perk manager interface
-
 TODO: SPAM tab - more granular settings. maybe every module could have its own toggle? - working on it.
 TODO: "Map Special Modifier": Special Modifiers, Perfect Sliders (way more fragments), Extra Zones (+0 to +10)
     with a save config option
@@ -37,26 +36,30 @@ TODO: (from old TODO LIST: 8/17/2016) BionicW toggle that can let AT do Bionic W
     (in the same vein, check for "Speed" achievements for unique maps and do them if they're not done yet and possible)
 TODO: for alfa166: "Bionic OverBurner" :smiley: Make it Configurable to run BW 470 one time at z480 to unlock and run BW485, (with the +5 map kit)
 TODO: Make a more configurable Auto Spend Nulli function for 2018
-
 TODO: Should invent a tool/script to plug in the version numbers, changelogs, docs.
 TODO: Instead of hard-coded changelog, Break changelog out into a seperate file and HTTPRequest it, parse it and run it through a standardized display function.
     Pull external .JSON Changelog and stuff from this site's API (obviously have to create a new server endpoint PHP script)
 TODO: Modular Structured load of the modules/*.js files is less than robust now. Check status of each loaded, tally a count, double check success.
      -FAR: In this way, the tracking and loading of modules can be timestamped and version controlled for itemization and aggregate cloud managed.
 FAR TODO: Cloud management of Save Files (already uploading save files and naming them. just need to download)
-FAR TODO: Cloud distributed graphs. Show similar users graphs?
+FAR TODO: Cloud distributed graphs. Show similar users graphs? (STARTED)
     -Could just upload all the graphs after every run (how to detect full run?)
 FAR TODO: Theoretically the graphs database can be used as a pro-active future prediction model and conditions can be inferred from past runs.
     Example: If Helium per/hour is ABOUT to go down based on previous cached runs (during the ambiguity period of about a few zones), portal earlier.
     Think like Grace %% setting but automatic.
 FAR TODO: Analysis of the Userbase and custom settings, even make queries to ask server for better decision making based on global multi-client probability state
+TODO: Develop an internal utility for me to Scrape/Grep/Grok the .json analytics files already on the server.
 FAR TODO: Import/Export/Append Graphs. is delete working on refresh? 
 FAR TODO: Graphs encoding vs. storage is wasteful of space. We need more. Compress data or RLE it
+TODO: Structure of Graphs.js is very wonky and can be re-sorted, nested somehow.
+TODO: Keep generating content in this file very late at night, that nobody can see or care about - real smart use of my time.
 
 
 Bugs To Fix:
 ----------------
-Most github pull requests and issues from recently have been resolved.
+Last github pull request is from 2016 = needs to be cleared. Has useful code that could be imported into Settings file for version comparisons and settings migrations/in-place upgrades.
+All Issues from January to February have been resolved.
+Any Issues remaining from prior 2017 should be disregarded.
 BUG 1: Bone Portal messes with graphs / Importing a savedgame in progress produces bad graphs
 BUG 2: The graphs still can miss time and have gaps/skips and has zone innacuracies, additionally it can fail to track Trimps data entirely during background window Javascript AFK/idle/catchup mode.
 BUG 2: Overkill and certain graphs can skip progress and get mis-aligned if the script was paused or was backgrounded.
@@ -74,8 +77,11 @@ Not actually a thing: "Max Magmamancers By Zone #" so we can buy them at the sta
     -5% Attack is only given after 5 minutes. Misunderstanding.
 Done: AutoTrimps Presets dropdown list to name, save, reload different profiles
 Done: Partially: Split SettingsGUI.js up into front-end DOM+GUI, back-end functions for Settings/Modules/Profiles, and createSettings+descriptions.
+Done: Fluffy XP Graph
+Done: Pin the ATSettings Tab MenuBar + Minimize,Maximize,Close buttons.
 Done: TODO: Graphs, make 2 arrows to cycle sequentially through the graphs without using the dropdown everytime.
 Done: TODO: Put changelog show/hide popup Button into settings
+Done: PrintChangelog: print changelog function should be refactored: another function should be made to create a DOM element for all the changelog lines, scrape the API data into it, and then print tooltip with header/footer.
 
 Other Improvements:
 ------------------

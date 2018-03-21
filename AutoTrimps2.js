@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
 // @version      2.1.6.7-genbtc-3-20-2018+Mod+Uni+coderpatsy
+// @updateURL    https://github.com/genbtc/AutoTrimps/AutoTrimps2.js
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
 // @include      *trimps.github.io*
@@ -26,7 +27,7 @@ function scriptLoad(pathname) {
     var script = document.createElement('script');
     script.src = basepath + pathname;
     //script.setAttribute('crossorigin',"use-credentials");
-    //script.setAttribute('crossorigin',"anonymous");
+    script.setAttribute('crossorigin',"anonymous");
     document.head.appendChild(script);
 }
 scriptLoad(modulepath + 'utils.js');    //Load stuff needed to load other stuff:
@@ -45,26 +46,37 @@ function initializeAutoTrimps() {
     debug('AutoTrimps v' + ATversion + ' Loaded!', '*spinner3');
 }
 
-//print changelog function should be refactored:
-// arguments: Line #/
-//          : Date
-//          : Version #
-//          : New?
-//          : Description
-//Other function should be made to create a DOM element for this, scrape the API data into it, and then print tooltip with header/footer.
+var changelogList = [];
+//changelogList.push({date: " ", version: " ", description: "", isNew: true});  //TEMPLATE
+changelogList.push({date: "3/20", version: "v2.1.6.7", description: "Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + EnableAFKMode. GUI: Pinned AT Tab menu bar to top when scrolling. Minimize/Maxi/Close Buttons. ShowChangeLog Button. Graph: FluffyXP(testing)", isNew: true});
+changelogList.push({date: "3/13", version: "v2.1.6.6", description: "Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors.", isNew: false});
+changelogList.push({date: "3/7", version: "v2.1.6.5", description: "Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable.", isNew: false});
+function assembleChangelog(date,version,description,isNew) {
+    if (isNew)
+        return (`<b class="AutoEggs">${date} ${version} </b><b style="background-color:#32CD32"> New:</b> ${description}<br>`);
+    else
+        return (`<b>${date} ${version} </b> ${description}<br>`);
+}
 function printChangelog() {
-    tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">3/20 v2.1.6.7 </b><b style="background-color:#32CD32"> New:</b> Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + EnableAFKMode. GUI: Pinned AT Tab menu bar to top when scrolling. Minimize/Maxi/Close Buttons. Show Changelog Button. Graph: FluffyXP(testing)\
-<br><b>3/13 v2.1.6.6</b> Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors.\
-<br><b>3/7 v2.1.6.5</b> Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable. \
-<br><b>Ongoing Development<b>-<u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
-<a href="https://discord.gg/0VbWe0dxB9kIfV2C"> @ AT Discord Channel</a></u>\
-<br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)\
-', 'cancelTooltip()', 'Script Update Notice<br>' + ATversion, "Thank you for playing AutoTrimps. Accept and Continue.", null, true);
+    var body="";
+    for (var i in changelogList) { 
+        var $item = changelogList[i];
+        var result = assembleChangelog($item.date,$item.version,$item.description,$item.isNew);
+        body+=result; 
+    };
+    var footer = 
+        '<br><b>Ongoing Development</b> - <u>Report any bugs/problems please</u>!\
+        <br>You can find me on Discord: <b>genr8_#8163</b> @ <a href="https://discord.gg/0VbWe0dxB9kIfV2C">AT Discord Channel</a>\
+        <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)'
+    ,   action = 'cancelTooltip()'
+    ,   title = 'Script Update Notice<br>' + ATversion
+    ,   acceptBtnText = "Thank you for playing AutoTrimps. Accept and Continue."
+    ,   hideCancel = true;
+    tooltip('confirm', null, 'update', body+footer, action, title, acceptBtnText, null, hideCancel);
 }
 function printLowerLevelPlayerNotice() {
     tooltip('confirm', null, 'update', '\
-The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned.<br>Happy scripting! -genBTC','cancelTooltip()', '<b>LowLevelPlayer Notes:</b><br><b>PSA: </b><u>AutoTrimps was not designed for  new/low-level players.</u>', "I understand I am on my own and I Accept and Continue.", null, true);
+The fact that it works at all is misleading new players into thinking its perfect. Its not. If your highest zone is under z60, you have not unlocked the stats required, and have not experienced the full meta with its various paradigm shifts. If you are just starting, my advice is to play along naturally and use AutoTrimps as a tool, not a crutch. Play with the settings as if it was the game, Dont expect to go unattended, if AT chooses wrong, and make the RIGHT choice yourself. Additionally, its not coded to run one-time challenges for you, only repeatable ones for helium. During this part of the game, content is king - automating literally removes the fun of the game. If you find that many flaws in the automation exist for you, level up. Keep in mind the challenge of maintaining the code is that it has to work for everyone. AT cant see the future and doesnt run simulations, it exists only in the present moment. Post any suggestions on how it can be better, or volunteer to adapt the code, or produce some sort of low-level player guide with what youve learned.<br>Happy scripting! -genBTC','cancelTooltip()', '<b>LowLevelPlayer Notes:</b><br><b>PSA: </b><u>AutoTrimps was not designed for new/low-level players.</u>', "I understand I am on my own and I Accept and Continue.", null, true);
 }
 ////////////////////////////////////////
 //Main DELAY Loop///////////////////////
@@ -230,17 +242,14 @@ function mainLoop() {
     return;
 }
 
-//GUI Updates happen on this thread, every 1000ms, concurrently
+//GUI Updates happen on this thread, every 1000ms
 function guiLoop() {
     updateCustomButtons();
-
+    //Swiffy UI/Display tab
     if(autoTrimpSettings['EnhanceGrids'].enabled)
         MODULES["fightinfo"].Update();
-
     if(typeof MODULES !== 'undefined' && typeof MODULES["performance"] !== 'undefined' && MODULES["performance"].isAFK)
-    {
         MODULES["performance"].UpdateAFKOverlay();
-    }
 }
 
 // Userscript loader. write your own!
@@ -250,4 +259,7 @@ var globalvar0,globalvar1,globalvar2,globalvar3,globalvar4,globalvar5,globalvar6
 function userscripts()
 {
     //insert code here:
+}
+function throwErrorfromMain() {
+    throw new Error("We have successfully read the thrown error message out of the main file");
 }

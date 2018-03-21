@@ -415,12 +415,14 @@ function trackHourlyGraphAnalytics() {
         totalPortals: game.global.totalPortals,
         heliumOwned: game.resources.helium.owned,
         highzone: game.global.highestLevelCleared,
-        bones: game.global.b,
-        ratio: document.getElementById("ratioPreset").value
+        bones: game.global.b
+        //ratio: document.getElementById("ratioPreset").value
     });
     //safeSetItems('graphAnal', JSON.stringify(graphAnal));    
 }
-//Timer set for 1 hour;
+//Run once.
+trackHourlyGraphAnalytics();
+//then set Timer loop for 1 hour;
 setInterval(trackHourlyGraphAnalytics, 3600000);
 
 function initializeData() {

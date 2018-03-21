@@ -317,3 +317,26 @@ function formatMinutesForDescriptions(number){
     }
     return text;
 }
+
+//Log all javascript errors and catch them.
+window.onerror = function catchErrors(msg, url, lineNo, columnNo, error) {
+    var message = [
+        'Message: ' + msg,
+        'URL: ' + url,
+        'Line: ' + lineNo,
+        'Column: ' + columnNo,
+        'Error object: ' + JSON.stringify(error)
+    ].join(' - ');
+    console.log("AT logged error: " + message);
+    //ATServer.Upload(message);
+};
+/*
+window.addEventListener('error', function(event) {
+    var message = JSON.stringify(event);
+    console.log("logged error: " + message);
+    //ATServer.Upload(message);
+});
+*/
+function throwErrorfromModule() {
+    throw new Error("We have successfully read the thrown error message out of a module");
+}
