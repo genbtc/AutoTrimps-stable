@@ -30,11 +30,11 @@ function scriptLoad(pathname) {
     document.head.appendChild(script);
 }
 scriptLoad(modulepath + 'utils.js');    //Load stuff needed to load other stuff:
-scriptLoad(modulepath + 'performance.js');    //Load stuff needed to load other stuff:
 
 //This starts up after 2.5 seconds.
 function initializeAutoTrimps() {
     loadPageVariables();            //get autoTrimpSettings
+    scriptLoad(modulepath + 'performance.js');    //Load stuff needed to load other stuff:
     scriptLoad('SettingsGUI.js');   //populate Settings GUI
     scriptLoad('Graphs.js');        //populate Graphs
     //Load modules:
