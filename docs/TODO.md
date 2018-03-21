@@ -5,10 +5,16 @@ TODO List (this file - TODO.md)
 Update README.md/changelog(.json?)/version # (manually for now)
 Code Comments (getting better)
 
-get to in Near Future:
+Near Future:
 ------------------------
+WebSite https://autotrimps.site - even just a link to github, or link to tutorials on how to install.
+-GRAPHS!
 TODO 1: Add notes or labels to graph runs.  (to indicate which settings we used)
 TODO 1: HighCharts annotations module for "notes" comments to indicate which graph runs were what.
+TODO: IMPLEMENTING A STANDARD FOR CLOUD GRAPH STATISTICS: 
+  now: Highest zone, helium, bones, Perk preset/ratios.
+  next: ATSettings, MODULES, which graphs were clicked on.
+
 
 new TODO LIST: 3/3/2018 and 3/4/2018 extended to 3/7 still working on it as of 3/20.
 -------------------------------------
@@ -16,9 +22,7 @@ XXXX: AutoPerks - background thread / web worker
 XXXX: AutoPerks - allocate speed improvement, shortcuts, (36 million iterations and 15 seconds @ 720Qa HE)
             - maybe slow due to OO structure and repeated resolutions for pass2.
 TODO: Perky - implement Altizar Perky new Perk manager interface
-TODO: IMPLEMENT A STANDARD FOR USAGE STATISTICS/PROFILE: {
- Highest zone, helium, bones, ATSettings, MODULES, which graphs were clicked on, Perk preset/ratios.
-}
+
 TODO: SPAM tab - more granular settings. maybe every module could have its own toggle? - working on it.
 TODO: "Map Special Modifier": Special Modifiers, Perfect Sliders (way more fragments), Extra Zones (+0 to +10)
     with a save config option
@@ -33,23 +37,21 @@ TODO: (from old TODO LIST: 8/17/2016) BionicW toggle that can let AT do Bionic W
     (in the same vein, check for "Speed" achievements for unique maps and do them if they're not done yet and possible)
 TODO: for alfa166: "Bionic OverBurner" :smiley: Make it Configurable to run BW 470 one time at z480 to unlock and run BW485, (with the +5 map kit)
 TODO: Make a more configurable Auto Spend Nulli function for 2018
-TODO: Graphs, make 2 arrows to cycle sequentially through the graphs without using the dropdown everytime.
-WebSite https://autotrimps.site - link to github, link to tutorials on how to install.
+
 TODO: Should invent a tool/script to plug in the version numbers, changelogs, docs.
-Pull external .JSON Changelog and stuff from this site's API (obviously have to create a new server endpoint PHP script)
+TODO: Instead of hard-coded changelog, Break changelog out into a seperate file and HTTPRequest it, parse it and run it through a standardized display function.
+    Pull external .JSON Changelog and stuff from this site's API (obviously have to create a new server endpoint PHP script)
 TODO: Modular Structured load of the modules/*.js files is less than robust now. Check status of each loaded, tally a count, double check success.
      -FAR: In this way, the tracking and loading of modules can be timestamped and version controlled for itemization and aggregate cloud managed.
-TODO: Cloud management of Save Files (already uploading save files and naming them. just need to download)
+FAR TODO: Cloud management of Save Files (already uploading save files and naming them. just need to download)
 FAR TODO: Cloud distributed graphs. Show similar users graphs?
     -Could just upload all the graphs after every run (how to detect full run?)
 FAR TODO: Theoretically the graphs database can be used as a pro-active future prediction model and conditions can be inferred from past runs.
     Example: If Helium per/hour is ABOUT to go down based on previous cached runs (during the ambiguity period of about a few zones), portal earlier.
     Think like Grace %% setting but automatic.
 FAR TODO: Analysis of the Userbase and custom settings, even make queries to ask server for better decision making based on global multi-client probability state
-TODO: import/export graphs. append? 
-TODO: Put changelog show/hide popup Button into settings
-TODO: Instead of hard-coded changelog, Break changelog out into a seperate file and HTTPRequest it, parse it and run it through a standardized display function.
-TODO: Graphs encoding vs. storage is wasteful of space. We need more. Compress data or RLE it
+FAR TODO: Import/Export/Append Graphs. is delete working on refresh? 
+FAR TODO: Graphs encoding vs. storage is wasteful of space. We need more. Compress data or RLE it
 
 
 Bugs To Fix:
@@ -72,7 +74,9 @@ Not actually a thing: "Max Magmamancers By Zone #" so we can buy them at the sta
     -5% Attack is only given after 5 minutes. Misunderstanding.
 Done: AutoTrimps Presets dropdown list to name, save, reload different profiles
 Done: Partially: Split SettingsGUI.js up into front-end DOM+GUI, back-end functions for Settings/Modules/Profiles, and createSettings+descriptions.
-    
+Done: TODO: Graphs, make 2 arrows to cycle sequentially through the graphs without using the dropdown everytime.
+Done: TODO: Put changelog show/hide popup Button into settings
+
 Other Improvements:
 ------------------
 AUTOMAPS:
