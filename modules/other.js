@@ -1,18 +1,8 @@
 MODULES["other"] = {};
 MODULES["other"].enableRoboTrimpSpam = true;  //set this to false to stop Spam of "Activated Robotrimp MagnetoShriek Ability"
 
-// Finish Challenge2
-function finishChallengeSquared() {
-    // some checks done before reaching this:
-    // getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared
-    var zone = getPageSetting('FinishC2');
-    if (game.global.world >= zone) {
-        abandonChallenge();
-        debug("Finished challenge2 because we are on zone " + game.global.world, "other", 'oil');
-    }
-}
 
-//Activate Robo Trimp
+//Activate Robo Trimp (will activate on the first zone after liquification)
 function autoRoboTrimp() {
     //exit if the cooldown is active, or we havent unlocked robotrimp.
     if (game.global.roboTrimpCooldown > 0 || !game.global.roboTrimpLevel) return;
@@ -28,40 +18,37 @@ function autoRoboTrimp() {
 }
 
 //Version 3.6 Golden Upgrades
-function autoGoldenUpgradesAT() {
-    var setting = getPageSetting('AutoGoldenUpgrades');
-    //get the numerical value of the selected index of the dropdown box
-    try {
-        if (setting == "Off") return;   //if disabled, exit.
-        var num = getAvailableGoldenUpgrades();
-        if (num == 0) return;       //if we have nothing to buy, exit.
-        //buy one upgrade per loop.
-        var success = buyGoldenUpgrade(setting);
-        //Challenge^2 cant Get/Buy Helium, so adapt - do Derskagg mod.
-        var challSQ = game.global.runningChallengeSquared;        
-        var doDerskaggChallSQ = false;
-        if (setting == "Helium" && challSQ && !success)
-            doDerskaggChallSQ = true;
-        // DZUGAVILI MOD - SMART VOID GUs
-        // Assumption: buyGoldenUpgrades is not an asynchronous operation and resolves completely in function execution.
-        // Assumption: "Locking" game option is not set or does not prevent buying Golden Void
-        if (!success && setting == "Void" || doDerskaggChallSQ) {
-            num = getAvailableGoldenUpgrades(); //recheck availables.
-            if (num == 0) return;  //we already bought the upgrade...(unreachable)
-            // DerSkagg Mod - Instead of Voids, For every Helium upgrade buy X-1 battle upgrades to maintain speed runs
-            var goldStrat = getPageSetting('goldStrat');
-            if (goldStrat == "Alternating") {
-                var goldAlternating = getPageSetting('goldAlternating');
-                setting = (game.global.goldenUpgrades%goldAlternating == 0) ? "Helium" : "Battle";
-            } else if (goldStrat == "Zone") {
-                var goldZone = getPageSetting('goldZone');
-                setting = (game.global.world <= goldZone) ? "Helium" : "Battle";
-            } else
-                setting = (!challSQ) ? "Helium" : "Battle";
-            buyGoldenUpgrade(setting);
-        }
-        // END OF DerSkagg & DZUGAVILI MOD
-    } catch(err) { debug("Error in autoGoldenUpgrades: " + err.message, "other"); }
+    //setting param : get the numerical value of the selected index of the dropdown box
+function autoGoldenUpgradesAT(setting) {
+    var num = getAvailableGoldenUpgrades();
+    if (num == 0) return;       //if we have nothing to buy, exit.
+    //buy one upgrade per loop.
+    var success = buyGoldenUpgrade(setting);
+    //Challenge^2 cant Get/Buy Helium, so adapt - do Derskagg mod.
+    var challSQ = game.global.runningChallengeSquared;        
+    var doDerskaggChallSQ = false;
+    if (setting == "Helium" && challSQ && !success)
+        doDerskaggChallSQ = true;
+    // DZUGAVILI MOD - SMART VOID GUs
+    // Assumption: buyGoldenUpgrades is not an asynchronous operation and resolves completely in function execution.
+    // Assumption: "Locking" game option is not set or does not prevent buying Golden Void
+    if (!success && setting == "Void" || doDerskaggChallSQ) {
+        num = getAvailableGoldenUpgrades(); //recheck availables.
+        if (num == 0) return;  //we already bought the upgrade...(unreachable)
+        // DerSkagg Mod - Instead of Voids, For every Helium upgrade buy X-1 battle upgrades to maintain speed runs
+        var goldStrat = getPageSetting('goldStrat');
+        if (goldStrat == "Alternating") {
+            var goldAlternating = getPageSetting('goldAlternating');
+            setting = (game.global.goldenUpgrades%goldAlternating == 0) ? "Helium" : "Battle";
+        } else if (goldStrat == "Zone") {
+            var goldZone = getPageSetting('goldZone');
+            setting = (game.global.world <= goldZone) ? "Helium" : "Battle";
+        } else
+            setting = (!challSQ) ? "Helium" : "Battle";
+        buyGoldenUpgrade(setting);
+    }
+    // END OF DerSkagg & DZUGAVILI MOD
+//} catch(err) { debug("Error in autoGoldenUpgrades: " + err.message, "other"); }
 }
 
 //auto spend nature tokens

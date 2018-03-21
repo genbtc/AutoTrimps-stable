@@ -172,11 +172,11 @@ function initializeAllTabs() {
     //addTabsDiv.appendChild(addtabsUL);
     //Then it has to be maintained and toggled on off.
     //Make Tabs.
-    createTabs("Core", "Main Controls for the script");
+    createTabs("Core", "Core - Main Controls for the script");
     createTabs("Buildings", "Building Settings");
-    createTabs("Jobs", "Worker Settings");
-    createTabs("Gear", "Equipment Settings");
-    createTabs("Maps", "AutoMaps & VoidMaps Settings");
+    createTabs("Jobs", "Jobs - Worker Settings");
+    createTabs("Gear", "Gear - Equipment Settings");
+    createTabs("Maps", "Maps - AutoMaps & VoidMaps Settings");
     createTabs("Combat", "Combat & Stance Settings");
     createTabs("Scryer", "Scryer Settings");
     createTabs("Heirlooms", "Heirloom & Perk Settings");
@@ -475,7 +475,7 @@ function initializeAllSettings() {
     createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
     createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
-    createSetting('allowSettingsUpload', 'Allow Settings Upload for Analytics', 'Uploads your AUTOTRIMPS saved settings files (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 5-10KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, your helium amount, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
+    createSetting('allowSettingsUpload', 'Allow Analytics Upload', 'Uploads your AUTOTRIMPS saved settings files (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 5-10KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, helium amount, bones, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
     //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
     //createSetting('ImportModuleVars', 'Import Custom Variables', 'Import your custom MODULES variables (and save).', 'infoclick', 'ImportModuleVars', null, 'Import Export');
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
@@ -865,39 +865,6 @@ function updateCustomButtons() {
     }
 }
 
-//returns the proper level we should be auto-portaling at.
-function findOutCurrentPortalLevel() {
-    var portalLevel = -1;
-    var leadCheck = false;
-    var portalLevelName = 
-    {
-        "Balance" : 41,
-        "Decay" : 56,
-        "Electricity" : 82,
-        "Crushed" : 126,
-        "Nom" : 146,
-        "Toxicity" : 166,
-        "Lead" : 181,
-        "Watch" : 181,
-        "Corrupted" : 191
-    };
-    var AP = getPageSetting("AutoPortal");
-    switch (AP) {
-        case "Off":
-            break;
-        case "Custom":
-            portalLevel = autoTrimpSettings.CustomAutoPortal.value + 1;
-            leadCheck = autoTrimpSettings.HeliumHourChallenge.selected == "Lead" ? true : false;
-            break;
-        default:
-            var result = portalLevelName[AP];
-            if (result)
-                portalLevel = result;
-            break;
-    }
-    return {level:portalLevel,lead:leadCheck};
-}
-
 //Checks portal related UI settings
 function checkPortalSettings() {
     var result = findOutCurrentPortalLevel();
@@ -905,9 +872,10 @@ function checkPortalSettings() {
     var leadCheck = result.lead;
     if (portalLevel == -1)
         return portalLevel;
-    if (autoTrimpSettings.VoidMaps.value >= portalLevel)
+    var voidmaps = getPageSetting('VoidMaps');
+    if (voidmaps >= portalLevel)
         tooltip('confirm', null, 'update', 'WARNING: Your void maps are set to complete after your autoPortal, and therefore will not be done at all! Please Change Your Settings Now. This Box Will Not Go away Until You do. Remember you can choose \'Custom\' autoPortal along with challenges for complete control over when you portal. <br><br> Estimated autoPortal level: ' + portalLevel, 'cancelTooltip()', 'Void Maps Conflict');
-    if ((leadCheck || game.global.challengeActive == 'Lead') && (autoTrimpSettings.VoidMaps.value % 2 == 0 && portalLevel <= 181))
+    if ((leadCheck || game.global.challengeActive == 'Lead') && (voidmaps % 2 == 0 && portalLevel <= 181))
         tooltip('confirm', null, 'update', 'WARNING: Voidmaps run during Lead on an Even zone do not receive the 2x Helium Bonus for Odd zones, and are also tougher. You should probably fix this.', 'cancelTooltip()', 'Lead Challenge Void Maps');
     return portalLevel;
 }

@@ -27,7 +27,7 @@ function scriptLoad(pathname) {
     var script = document.createElement('script');
     script.src = basepath + pathname;
     //script.setAttribute('crossorigin',"use-credentials");
-    script.setAttribute('crossorigin',"anonymous");
+    //script.setAttribute('crossorigin',"anonymous");
     document.head.appendChild(script);
 }
 scriptLoad(modulepath + 'utils.js');    //Load stuff needed to load other stuff:
@@ -207,7 +207,8 @@ function mainLoop() {
     if (getPageSetting('ExitSpireCell') >0) exitSpireCell(); //"Exit Spire After Cell" (other.js)
     if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"  (jobs.js)
     if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"       (upgrades.js)
-    autoGoldenUpgradesAT();                             //"Golden Upgrades"     (other.js)
+    var agu = getPageSetting('AutoGoldenUpgrades');
+    if (agu && agu!='Off') autoGoldenUpgradesAT(agu); //"Golden Upgrades"     (other.js)
     if (getPageSetting('BuyStorage'))  buyStorage();     //"Buy Storage"     (buildings.js)
     if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"    (buildings.js)
     if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"            (jobs.js)

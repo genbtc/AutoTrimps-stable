@@ -152,3 +152,47 @@ function doPortal(challenge) {
     activatePortal();
     lastHeliumZone = 0; zonePostpone = 0;
 }
+
+// Finish Challenge2 (UNI mod)
+function finishChallengeSquared() {
+    // some checks done before reaching this:
+    // getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared
+    var zone = getPageSetting('FinishC2');
+    if (game.global.world >= zone) {
+        abandonChallenge();
+        debug("Finished challenge2 because we are on zone " + game.global.world, "other", 'oil');
+    }
+}
+
+//helper for returning the proper level we should be auto-portaling at.
+function findOutCurrentPortalLevel() {
+    var portalLevel = -1;
+    var leadCheck = false;
+    var portalLevelName = 
+    {
+        "Balance" : 41,
+        "Decay" : 56,
+        "Electricity" : 82,
+        "Crushed" : 126,
+        "Nom" : 146,
+        "Toxicity" : 166,
+        "Lead" : 181,
+        "Watch" : 181,
+        "Corrupted" : 191
+    };
+    var AP = getPageSetting("AutoPortal");
+    switch (AP) {
+        case "Off":
+            break;
+        case "Custom":
+            portalLevel = getPageSetting('CustomAutoPortal') + 1;
+            leadCheck = getPageSetting('HeliumHourChallenge') == "Lead" ? true : false;
+            break;
+        default:
+            var result = portalLevelName[AP];
+            if (result)
+                portalLevel = result;
+            break;
+    }
+    return {level:portalLevel, lead:leadCheck};
+}
