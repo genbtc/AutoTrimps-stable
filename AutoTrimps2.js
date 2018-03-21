@@ -30,7 +30,7 @@ function scriptLoad(pathname) {
     document.head.appendChild(script);
 }
 scriptLoad(modulepath + 'utils.js');    //Load stuff needed to load other stuff:
-
+scriptLoad(modulepath + 'performance.js');    //Load performance before Settings
 //This starts up after 2.5 seconds.
 function initializeAutoTrimps() {
     loadPageVariables();            //get autoTrimpSettings
