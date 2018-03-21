@@ -19,6 +19,7 @@ if (game.options.menu.darkTheme.enabled == 2) {
     const $link = document.createElement('link');
     $link.rel = "stylesheet";
     $link.type = "text/css";
+    //basepath ref comes from the userscripts
     $link.href = basepath + 'dark-graph.css';
     document.head.appendChild($link);
 }
@@ -34,7 +35,7 @@ document.getElementById("settingsRow").innerHTML += '<div id="graphParent" style
 document.getElementById("graphParent").innerHTML += '<div id="graphFooter" style="height: 50px;font-size: 1em;"><div id="graphFooterLine1" style="display: -webkit-flex;flex: 0.75;flex-direction: row; height:30px;"></div><div id="graphFooterLine2"></div></div>';
 //Create the buttons in the graph Footer:
 //Create the dropdown for what graph to show    (these correspond to headings in setGraph() and have to match)
-var graphList = ['Helium PerHour', 'Helium', 'Helium PerHour Instant', 'Helium PerHour Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coordinations', 'GigaStations', 'Unused Gigas', 'Last Warpstation', 'Trimps', 'Nullifium Gained', 'Dark Essence', 'Dark Essence PerHour', 'OverkillCells', 'Magmite', 'Magmamancers', 'Fluffy XP', 'Fluffy XP PerHour'];
+var graphList = ['Helium - He/Hr', 'Helium - Total', 'Helium - He/Hr Instant', 'Helium - He/Hr Delta', 'HeHr % / LifetimeHe', 'He % / LifetimeHe', 'Clear Time', 'Cumulative Clear Time', 'Run Time', 'Map Bonus', 'Void Maps', 'Void Map History', 'Loot Sources', 'Coordinations', 'GigaStations', 'Unused Gigas', 'Last Warpstation', 'Trimps', 'Nullifium Gained', 'Dark Essence', 'Dark Essence PerHour', 'OverkillCells', 'Magmite', 'Magmamancers', 'Fluffy XP', 'Fluffy XP PerHour'];
 var btn = document.createElement("select");
 btn.id = 'graphSelection';
 //btn.setAttribute("style", "");
@@ -47,9 +48,13 @@ for (var item in graphList) {
     option.text = graphList[item];
     btn.appendChild(option);
 }
-document.getElementById('graphFooterLine1').appendChild(btn);
+var $graphFooter = document.getElementById('graphFooterLine1');
+$graphFooter.innerHTML += '\
+<div><button onclick="drawGraph(true,false)">↑</button></div>\
+<div><button onclick="drawGraph(false,true)">↓</button></div>';
+$graphFooter.appendChild(btn);
 //just write it in HTML instead of a million lines of DOM javascript.
-document.getElementById("graphFooterLine1").innerHTML += '\
+$graphFooter.innerHTML += '\
 <div><button onclick="drawGraph()">Refresh</button></div>\
 <div style="flex:0 100 5%;"></div>\
 <div><input type="checkbox" id="clrChkbox" onclick="toggleClearButton();"></div>\
@@ -61,8 +66,9 @@ document.getElementById("graphFooterLine1").innerHTML += '\
 <div style="flex:auto;"><button  onclick="GraphsImportExportTooltip(\'ExportGraphs\', null, \'update\')">Export your Graph Database</button></div>\
 <div style="float:right; margin-right: 0.5vw;"><button onclick="toggleSpecificGraphs()">Invert Selection</button></div>\
 <div style="float:right; margin-right: 1vw;"><button onclick="toggleAllGraphs()">All Off/On</button></div>';
+//TODO: make the overall hover tooltip better and seperate individual help into each button tooltip.
 document.getElementById("graphFooterLine2").innerHTML += '\
-<span style="float: left;" onmouseover=\'tooltip(\"Tips\", \"customText\", event, \"You can zoom by dragging a box around an area. You can turn portals off by clicking them on the legend. Quickly view the last portal by clicking it off, then Invert Selection. Or by clicking All Off, then clicking the portal on. To delete a portal, Type its portal number in the box and press Delete Specific. Using negative numbers in the Delete Specific box will KEEP that many portals (starting counting backwards from the current one), ie: if you have Portals 1000-1015, typing -10 will keep 1005-1015. Export Graph Database will make a backup of all the graph data (not that useful yet). There is a browser data storage limitation of 10MB, so do not exceed 15 portals-worth of data.\")\'>Tips: Hover for usage tips.</span>\
+<span style="float: left;" onmouseover=\'tooltip(\"Tips\", \"customText\", event, \"You can zoom by dragging a box around an area. You can turn portals off by clicking them on the legend. Quickly view the last portal by clicking it off, then Invert Selection. Or by clicking All Off, then clicking the portal on. To delete a portal, Type its portal number in the box and press Delete Specific. Using negative numbers in the Delete Specific box will KEEP that many portals (starting counting backwards from the current one), ie: if you have Portals 1000-1015, typing -10 will keep 1005-1015. Export Graph Database will make a backup of all the graph data (not that useful yet). There is a browser data storage limitation of 10MB, so do not exceed 20 portals-worth of data.\")\'>Tips: Hover for usage tips.</span>\
 <input style="height: 20px; float: right; margin-right: 0.5vw;" type="checkbox" id="rememberCB">\
 <span style="float: right; margin-right: 0.5vw;">Try to Remember Which Portals are Selected when switching between Graphs:</span>';
 //handle the locking mechanism checkbox for the Clear all previous data button:
@@ -557,9 +563,20 @@ function checkWorldSequentiality() {
 //////////////////////////////////////
 //MAIN GRAPHING FUNCTION - the meat.//
 //////////////////////////////////////
-function drawGraph() {
-    setGraphData(document.getElementById('graphSelection').value);
+function drawGraph(minus,plus) {
+    var $item = document.getElementById('graphSelection');
+    if (minus) {
+        $item.selectedIndex--;
+        if ($item.selectedIndex < 0)
+            $item.selectedIndex = 0;
+    }
+    else if (plus) { 
+        if ($item.selectedIndex != ($item.options.length-1))
+            $item.selectedIndex++;
+    }
+    setGraphData($item.value);
 }
+
 function setGraphData(graph) {
     var title, xTitle, yTitle, yType, valueSuffix, series, formatter;
     var precision = 0;
@@ -567,7 +584,7 @@ function setGraphData(graph) {
     valueSuffix = '';
 
     switch (graph) {
-        case 'Helium PerHour Instant':
+        case 'Helium - He/Hr Instant':
             var currentPortal = -1;
             var currentZone = -1;
             graphData = [];
@@ -604,7 +621,7 @@ function setGraphData(graph) {
             yType = 'Linear';
             break;
 
-        case 'Helium PerHour Delta':
+        case 'Helium - He/Hr Delta':
             var currentPortal = -1;
             var currentZone = -1;
             graphData = [];
@@ -706,9 +723,9 @@ function setGraphData(graph) {
                      totalVoids = allSaveData[i].voids;
                  }
             }
-            title = 'Void Maps Per Portal';
+            title = 'Void Maps (completed)';
             xTitle = 'Portal';
-            yTitle = 'Void Maps';
+            yTitle = 'Number of Void Maps';
             yType = 'Linear';
             break;
 
@@ -798,7 +815,7 @@ function setGraphData(graph) {
                     function specialCalc(e1,e2) {
                         return Math.round(e1.zonetime);
                     },true);
-            title = '(#2) Cumulative Time at END of zone#';
+            title = '(#2) Cumulative Time (at END of zone#)';
             xTitle = 'Zone';
             yTitle = 'Cumulative Clear Time';
             yType = 'datetime';
@@ -815,7 +832,7 @@ function setGraphData(graph) {
                     function specialCalc(e1,e2) {
                         return Math.round((e1.currentTime - e2.currentTime)-(e1.portalTime - e2.portalTime));
                     },true);
-            title = 'Cumulative Time at END of zone#';
+            title = 'Cumulative Time (at END of zone#)';
             xTitle = 'Zone';
             yTitle = 'Cumulative Clear Time';
             yType = 'datetime';
@@ -827,7 +844,7 @@ function setGraphData(graph) {
 
             };
             break;
-        case 'Helium PerHour':
+        case 'Helium - He/Hr':
             graphData = allPurposeGraph('heliumhr',true,null,
                     function specialCalc(e1,e2) {
                         return Math.floor(e1.heliumOwned / ((e1.currentTime - e1.portalTime) / 3600000));
@@ -837,12 +854,12 @@ function setGraphData(graph) {
             yTitle = 'Helium/Hour';
             yType = 'Linear';
             break;
-        case 'Helium':
+        case 'Helium - Total':
             graphData = allPurposeGraph('heliumOwned',true,null,
                     function specialCalc(e1,e2) {
                         return Math.floor(e1.heliumOwned);
                     });
-            title = 'Helium (earned)';
+            title = 'Helium (Lifetime Total)';
             xTitle = 'Zone';
             yTitle = 'Helium';
             yType = 'Linear';
@@ -969,7 +986,7 @@ function setGraphData(graph) {
             break;
         case 'Fluffy XP':
             graphData = allPurposeGraph('fluffy',true,"number");
-            title = 'Total Fluffy XP Earned';
+            title = 'Fluffy XP (Lifetime Total)';
             xTitle = 'Zone';
             yTitle = 'Fluffy XP';
             yType = 'Linear';
@@ -1111,7 +1128,7 @@ function setGraphData(graph) {
         setGraph(title, xTitle, yTitle, valueSuffix, formatter, graphData, yType);
     }
     //put finishing touches on this graph.
-    if (graph == 'Helium PerHour Delta') {
+    if (graph == 'Helium - He/Hr Delta') {
         var plotLineoptions = {
                 value: 0,
                 width: 2,
