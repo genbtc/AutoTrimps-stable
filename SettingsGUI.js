@@ -869,39 +869,30 @@ function updateCustomButtons() {
 function findOutCurrentPortalLevel() {
     var portalLevel = -1;
     var leadCheck = false;
-    switch (autoTrimpSettings.AutoPortal.selected) {
+    var portalLevelName = 
+    {
+        "Balance" : 41,
+        "Decay" : 56,
+        "Electricity" : 82,
+        "Crushed" : 126,
+        "Nom" : 146,
+        "Toxicity" : 166,
+        "Lead" : 181,
+        "Watch" : 181,
+        "Corrupted" : 191
+    };
+    var AP = getPageSetting("AutoPortal");
+    switch (AP) {
         case "Off":
             break;
         case "Custom":
             portalLevel = autoTrimpSettings.CustomAutoPortal.value + 1;
             leadCheck = autoTrimpSettings.HeliumHourChallenge.selected == "Lead" ? true : false;
             break;
-        case "Balance":
-            portalLevel = 41;
-            break;
-        case "Decay":
-            portalLevel = 56;
-            break;
-        case "Electricity":
-            portalLevel = 82;
-            break;
-        case "Crushed":
-            portalLevel = 126;
-            break;
-        case "Nom":
-            portalLevel = 146;
-            break;
-        case "Toxicity":
-            portalLevel = 166;
-            break;
-        case "Lead":
-            portalLevel = 181;
-            break;
-        case "Watch":
-            portalLevel = 181;
-            break;
-        case "Corrupted":
-            portalLevel = 191;
+        default:
+            var result = portalLevelName[AP];
+            if (result)
+                portalLevel = result;
             break;
     }
     return {level:portalLevel,lead:leadCheck};
