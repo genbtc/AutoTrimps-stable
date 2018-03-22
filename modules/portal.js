@@ -44,10 +44,9 @@ function autoPortal() {
                 if (OKtoPortal && zonePostpone == 0) {
                     zonePostpone+=1;
                     //lastHeliumZone = game.global.world;
-                    debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  bestHeHrZone, "general");
+                    debug("My HeliumHr was: " + myHeliumHr + " & the Best HeliumHr was: " + bestHeHr + " at zone: " +  bestHeHrZone, "portal");
                     cancelTooltip();
-                    tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Delay Portal to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>');
-                    document.getElementById("confirmTooltipBtn").innerHTML = "Delay Portal";
+                    tooltip('confirm', null, 'update', '<b>Auto Portaling NOW!</b><p>Hit Delay Portal to WAIT 1 more zone.', 'zonePostpone+=1', '<b>NOTICE: Auto-Portaling in 10 seconds....</b>','Delay Portal');
                     //set up 2 things to happen after the timeout. close the tooltip:
                     setTimeout(cancelTooltip,MODULES["portal"].timeout);
                     //and check if we hit the confirm to postpone, and if not, portal.
@@ -105,12 +104,7 @@ function autoPortal() {
 //Actually Portal.
 function doPortal(challenge) {
     if(!game.global.portalActive) return;
-    try {
-        if (getPageSetting('AutoMagmiteSpender2')==1)
-            autoMagmiteSpender();
-    } catch (err) {
-        debug("Error encountered in AutoMagmiteSpender: " + err.message,"general");
-    }
+    if (getPageSetting('AutoMagmiteSpender2')==1) autoMagmiteSpender();
     // From mainLoop
     if (getPageSetting('AutoHeirlooms2')) autoHeirlooms2(); //"Auto Heirlooms 2" (heirlooms.js)
     else if (getPageSetting('AutoHeirlooms')) autoHeirlooms();//"Auto Heirlooms"      (")
@@ -133,12 +127,12 @@ function doPortal(challenge) {
         }
 
         if (lastUndone == 1) { // None
-            debug("All available Dailies already completed.");
+            debug("All available Dailies already completed.", "portal");
             //Fallback to w/e Regular challenge we picked. Or none (unselect)
             selectChallenge(challenge || 0);
         } else {
             getDailyChallenge(lastUndone);
-            debug("Portaling into Daily for: " + getDailyTimeString(lastUndone, true) + " now!");
+            debug("Portaling into Daily for: " + getDailyTimeString(lastUndone, true) + " now!", "portal");
         }
     }
     //Regular Challenge:

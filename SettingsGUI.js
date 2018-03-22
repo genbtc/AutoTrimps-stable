@@ -429,13 +429,11 @@ function initializeAllSettings() {
 
 
 
-
 //Golden Upgrade Strategies:
     createSetting('AutoGoldenUpgrades', 'AutoGolden', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available. <b>Void</b> unlocks some intelligent settings from Dzugavili Mod and Derskagg Mod.', 'dropdown', 'Off', ["Off", "Helium", "Battle", "Void"], 'Golden');
     createSetting('goldStrat', 'OnceVoidMaxed', 'VOID ONLY: After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at (picking a low zone will buy only battle, and a high zone only helium).', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
     createSetting('goldAlternating', 'goldAlternating', 'Buy a helium upgrade after X-1 battle upgrades have been purchased', 'value', '2', null, 'Golden');
     createSetting('goldZone', 'goldZone', 'Buy a helium upgrade until zone X, then buy battle upgrades.', 'value', '200', null, 'Golden');
-
 
 
 
@@ -447,19 +445,18 @@ function initializeAllSettings() {
 
 
 
-
 //Display settings:
     //Subsection1Line1
-    createSetting('EnhanceGrids', 'Enhance Grids', 'Apply visual enhancements to world and map grids', 'boolean', false, null, 'Display');
-    createSetting('EnableAFK', 'Enable AFK', 'Enables CPU and RAM saving AFK-mode', 'action', 'MODULES["performance"].EnableAFKMode()', null, 'Display');
-    createSetting('ChangeLog', 'Show Changelog', 'Shows the changelog popup message that AT loads on startup in case you missed it.', 'action', 'printChangelog()', null, 'Display');
-    document.getElementById('ChangeLog').parentNode.insertAdjacentHTML('afterend','<br>');
+    createSetting('EnhanceGrids', 'Enhance Grids', 'Apply slight visual enhancements to world and map grids that highlights with drop shadow all the exotic, powerful, skeletimps and other special imps.', 'boolean', false, null, 'Display');
+    createSetting('EnableAFK', 'Go AFK', '(Action Button). Go AFK uses a Black Screen, and suspends ALL the Trimps GUI visual update functions (updateLabels) to improve performance by not doing unnecessary stuff. This feature is primarily just a CPU and RAM saving mode. Everything will resume when you come back and press the Back button. Console debug output is also disabled. The blue color means this is not a settable setting, just a button.', 'action', 'MODULES["performance"].EnableAFKMode()', null, 'Display');
+    createSetting('ChangeLog', 'Show Changelog', '(Action Button). Shows the changelog popup message that AT loads on startup again, in case you missed it. The blue color means this is not a settable setting, just a button.', 'action', 'printChangelog()', null, 'Display');
+    document.getElementById('Display').lastChild.insertAdjacentHTML('afterend','<br>');
     //Subsection2Line1
-    createSetting('SpamGeneral', 'General Spam', 'General Spam = Starting Zone, Auto He/Hr, AutoMagmiteSpender ', 'boolean', true, null, 'Display');
+    createSetting('SpamGeneral', 'General Spam', 'General Spam = Notification Messages, Auto He/Hr', 'boolean', true, null, 'Display');
     createSetting('SpamUpgrades', 'Upgrades Spam', 'Upgrades Spam', 'boolean', true, null, 'Display');
     createSetting('SpamEquipment', 'Equipment Spam', 'Equipment Spam', 'boolean', true, null, 'Display');
     createSetting('SpamMaps', 'Maps Spam', 'Maps Spam = Buy,Pick,Run Maps,Recycle,CantAfford', 'boolean', true, null, 'Display');
-    createSetting('SpamOther', 'Other Spam', 'Other Spam = Better Auto Fight, Trimpicide, Robotrimp ', 'boolean', true, null, 'Display');
+    createSetting('SpamOther', 'Other Spam', 'Other Spam = mostly Better Auto Fight (disable with: MODULES["fight"].enableDebug=false ), Trimpicide & AutoBreed/Gene Timer changes, AnalyticsID, etc - a catch all. ', 'boolean', true, null, 'Display');
     createSetting('SpamBuilding', 'Building Spam', 'Building Spam = all buildings, even storage', 'boolean', false, null, 'Display');
     createSetting('SpamJobs', 'Job Spam', 'Job Spam = All jobs, in scientific notation', 'boolean', false, null, 'Display');
     //Line2
@@ -468,11 +465,12 @@ function initializeAllSettings() {
     createSetting('SpamPerks', 'AutoPerks Spam', 'Everything in related to AutoPerks', 'boolean', true, null, 'Display');
 
 
+    
 // Export/Import/Default settings
-    createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your Settings.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
+    createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your AutoTrimps Settings. Asks you to name it as a profile afterwards.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
+    createSetting('ExportAutoTrimps', 'Export AutoTrimps', 'Export your AutoTrimps Settings as a output string text formatted in JSON.', 'infoclick', 'ExportAutoTrimps', null, 'Import Export');
+    createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script. (Also ', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     settingsProfileMakeGUI();   //Settings Profile dropdown and Delete button.
-    createSetting('ImportAutoTrimps', 'Import AutoTrimps', 'Import your Settings.', 'infoclick', 'ImportAutoTrimps', null, 'Import Export');
-    createSetting('DefaultAutoTrimps', 'Reset to Default', 'Reset everything to the way it was when you first installed the script.', 'infoclick', 'DefaultAutoTrimps', null, 'Import Export');
     createSetting('CleanupAutoTrimps', 'Cleanup Saved Settings ', 'Deletes old values from previous versions of the script from your AutoTrimps Settings file.', 'infoclick', 'CleanupAutoTrimps', null, 'Import Export');
     createSetting('allowSettingsUpload', 'Allow Analytics Upload', 'Uploads your AUTOTRIMPS saved settings files (the same as Export AutoTrimps on this tab) <b>anonymously</b> - to https://autotrimps.site = the official Autotrimps development server. It will remain private for now, and aggregated for analytics to improve the script in the future and see which features are being used. Please Opt in. The upload will be approximately a small 5-10KB uncompressed text file every time the script is LOADED (for the time being until it is refined), and there is no concern for any personal data leak or privacy concern. This is all in good faith, and you are welcome to check the open source file modules/client-server.js. In the future, I will have to make a more fine-grained data-usage privacy-policy. Possible other data collected in the near-future may include certain game stats such as your highest zone, helium amount, bones, resource/magma/DE amounts, perk ratio selections. ', 'boolean', true, null, 'Import Export');
     //createSetting('ExportModuleVars', 'Export Custom Variables', 'Export your custom MODULES variables.', 'infoclick', 'ExportModuleVars', null, 'Import Export');
@@ -593,17 +591,9 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     }
     else if(type === 'action')
     {
-        if (!(loaded && id == loaded.id))
-            autoTrimpSettings[id] =
-            {
-                id: id,
-                name: name,
-                description: description,
-                type: type,
-                value: 1
-            };
+        //We're not storing the state on these.
         btn.setAttribute("style", "font-size: 1.1vw;");
-        btn.setAttribute('class', 'noselect settingsBtn settingBtntrue');
+        btn.setAttribute('class', 'noselect settingsBtn settingBtn3');  //color 3 is teal.
         btn.setAttribute('onclick', defaultValue);
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
@@ -611,6 +601,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btnParent.appendChild(btn);
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
+        return; //return means don't store it in autoTrimpSettings at the bottom
     }
 
     //make sure names/descriptions match what we have stored.

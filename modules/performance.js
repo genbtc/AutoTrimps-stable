@@ -21,7 +21,6 @@
 		background-color: black;
 		color: white;
 		z-index: 9001;
-
 		display: -ms-flexbox;
 		display: -webkit-flex;
 		display: flex;
@@ -128,6 +127,7 @@
 		M["performance"].$wrapper.style.display = 'none';
         //This is the whole meat - replaces the update function with nothing (means save resources)
 		W.updateLabels = function() {};
+        enableDebug = false;
 	}
 
 	M["performance"].DisableAFKMode = function DisableAFKMode()
@@ -136,6 +136,7 @@
 		M["performance"].$wrapper.style.display = 'block';
 		M["performance"].AFKOverlay.classList.add('at-afk-overlay-disabled');
         W.updateLabels = M["performance"].updateLabels;
+        enableDebug = true;
 	}
 
 	M["performance"].UpdateAFKOverlay = function UpdateAFKOverlay()

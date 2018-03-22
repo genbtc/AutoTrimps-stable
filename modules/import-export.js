@@ -1,84 +1,88 @@
 MODULES["import-export"] = {};
+
 //2018 AutoTrimps - genBTC, copied from SettingsGUI.js
 //Create settings profile selection dropdown box in DOM. (import/export section)
+var $settingsProfiles;
 function settingsProfileMakeGUI() {
-    var settingsProfilesLabel = document.createElement("Label");
-    settingsProfilesLabel.id = 'settingsProfiles Label';
-    settingsProfilesLabel.innerHTML = "Settings Profile: ";
-    if (game.options.menu.darkTheme.enabled == 2) settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color: #C8C8C8; font-size: 0.8vw;");
-    else settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color:white; font-size: 0.8vw;");
-    var settingsProfiles = document.createElement("select");
-    settingsProfiles.id = 'settingsProfiles';
-    settingsProfiles.setAttribute('class', 'noselect');
-    settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
+    var $settingsProfilesLabel = document.createElement("Label");
+    $settingsProfilesLabel.id = 'settingsProfiles Label';
+    $settingsProfilesLabel.innerHTML = "Settings Profile: ";
+    if (game.options.menu.darkTheme.enabled == 2) $settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color: #C8C8C8; font-size: 0.8vw;");
+    else $settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color:white; font-size: 0.8vw;");
+    $settingsProfiles = document.createElement("select");
+    $settingsProfiles.id = 'settingsProfiles';
+    $settingsProfiles.setAttribute('class', 'noselect');
+    $settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
     var oldstyle = 'text-align: center; width: 160px; font-size: 1.1vw;';
-    if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
-    else settingsProfiles.setAttribute('style', oldstyle);
+    if(game.options.menu.darkTheme.enabled != 2) $settingsProfiles.setAttribute("style", oldstyle + " color: black;");
+    else $settingsProfiles.setAttribute('style', oldstyle);
     //Create settings profile selection dropdown
-    var settingsProfilesButton = document.createElement("Button");
-    settingsProfilesButton.id = 'settingsProfiles Button';
-    settingsProfilesButton.setAttribute('class', 'btn btn-info');
-    settingsProfilesButton.innerHTML = "&lt;Delete Profile";
-    settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw; font-size: 0.8vw;');    
-    settingsProfilesButton.setAttribute('onclick','onDeleteProfile()');
-    //Add the settingsProfiles dropdown to UI
-    var ietab = document.getElementById('Import Export');
+    var $settingsProfilesButton = document.createElement("Button");
+    $settingsProfilesButton.id = 'settingsProfiles Button';
+    $settingsProfilesButton.setAttribute('class', 'btn btn-info');
+    $settingsProfilesButton.innerHTML = "&lt;Delete Profile";
+    $settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw; font-size: 0.8vw;');
+    $settingsProfilesButton.setAttribute('onclick','onDeleteProfileHandler()');
+    //Add the $settingsProfiles dropdown to UI
+    var $ietab = document.getElementById('Import Export');
     //Any ERRORs here are caused by incorrect order loading of script and you should reload until its gone.(for now)
-    ietab.insertBefore(settingsProfilesLabel, ietab.childNodes[2]);
-    ietab.insertBefore(settingsProfiles, ietab.childNodes[3]);
-    ietab.insertBefore(settingsProfilesButton, ietab.childNodes[4]);
+    $ietab.insertBefore($settingsProfilesLabel, $ietab.childNodes[1]);
+    $ietab.insertBefore($settingsProfiles, $ietab.childNodes[2]);
+    $ietab.insertBefore($settingsProfilesButton, $ietab.childNodes[3]);
     //populate with a Default (read default settings):
-    var innerhtml = "<option id='customProfileCurrent'>Current</option>";    
+    var innerhtml = "<option id='customProfileCurrent'>Current</option>";
     //populate with a Default (read default settings):
-    innerhtml += "<option id='customProfileDefault'>Defaults</option>";
+    innerhtml += "<option id='customProfileDefault'>Reset to Default</option>";
     //Append a 2nd default item named "Save New..." and have it tied to a write function();
     innerhtml += "<option id='customProfileNew'>Save New...</option>";
     //dont forget to populate the rest of it with stored items:
-    settingsProfiles.innerHTML = innerhtml;
+    $settingsProfiles.innerHTML = innerhtml;
 }
 settingsProfileMakeGUI();
 
-//This should switch into the new profile when the dropdown is selected.
-//called by "onchange" of the profile dropdown
+//This switches into the new profile when the dropdown is selected.
+//it is the "onchange" handler of the settingsProfiles dropdown
+//Asks them do a confirmation check tooltip first. The 
 function settingsProfileDropdownHandler() {
-    var sp = document.getElementById("settingsProfiles");
-    if (sp == null) return;
-    var index = sp.selectedIndex;
-    var id = sp.options[index].id;
+    if ($settingsProfiles == null) return;
+    var index = $settingsProfiles.selectedIndex;
+    var id = $settingsProfiles.options[index].id;
     //Current: placeholder.
-    if (id == 'customProfileCurrent') {
-        index = 0;   //do nothing.
-    }
-    //Default: simply calls Reset To Default:
+    if (id == 'customProfileCurrent')
+        return;
+    cancelTooltip();
+//Default: simply calls Reset To Default:
     if (id == 'customProfileDefault')
-    {
-        resetAutoTrimps();
-        index = 1;
-    }
-    //Save new...: asks a name and saves new profile
+        //calls a tooltip then resetAutoTrimps() below
+        ImportExportTooltip('ResetDefaultSettingsProfiles');
+//Save new...: asks a name and saves new profile
     else if (id == 'customProfileNew')
-    {
-        ImportExportTooltip('NameSettingsProfiles');  //calls nameAndSaveNewProfile() below
-        index = (sp.length-1);
-    }
-    //Reads the existing profile name and switches into it.
-    // TODO: validation?
-    else if (id == 'customProfileRead') {        
-        var profname = sp.options[index].text;
-        //load the stored profiles from browser
-        var loadLastProfiles = JSON.parse(localStorage.getItem('ATSelectedSettingsProfile'));
-        if (loadLastProfiles != null) {
-            var results = loadLastProfiles.filter(function(elem,i){
-                return elem.name == profname;
-            });
-            if (results.length > 0) {
-                resetAutoTrimps(results[0].data,profname);
-                debug("Successfully loaded existing profile: " + profname);
-            }
+        //calls a tooltip then nameAndSaveNewProfile() below
+        ImportExportTooltip('NameSettingsProfiles');
+//Reads the existing profile name and switches into it.
+    else if (id == 'customProfileRead')
+        //calls a tooltip then confirmedSwitchNow() below
+        ImportExportTooltip('ReadSettingsProfiles');
+    //NOPE.XWait 200ms for everything to reset and then re-select the old index.
+    //setTimeout(function(){ settingsProfiles.selectedIndex = index;} ,200);
+    return;
+}
+
+function confirmedSwitchNow() {
+    if ($settingsProfiles == null) return;
+    var index = $settingsProfiles.selectedIndex;
+    var profname = $settingsProfiles.options[index].text;
+    //load the stored profiles from browser
+    var loadLastProfiles = JSON.parse(localStorage.getItem('ATSelectedSettingsProfile'));
+    if (loadLastProfiles != null) {
+        var results = loadLastProfiles.filter(function(elem,i){
+            return elem.name == profname;
+        });
+        if (results.length > 0) {
+            resetAutoTrimps(results[0].data,profname);
+            debug("Successfully loaded existing profile: " + profname, "profile");
         }
     }
-    //Wait 200ms for everything to reset and then re-select the old index.
-    setTimeout(function(){var sp = document.getElementById("settingsProfiles");sp.selectedIndex = index;},200);
 }
 
 //called by ImportExportTooltip('NameSettingsProfiles')
@@ -87,11 +91,11 @@ function nameAndSaveNewProfile() {
     try {
         var profname = document.getElementById("setSettingsNameTooltip").value.replace(/[\n\r]/gm, "");
         if (profname == null) {
-            debug("Error in naming, the string is empty.");
+            debug("Error in naming, the string is empty.", "profile");
             return;
         }
     } catch (err) {
-        debug("Error in naming, the string is bad." + err.message);
+        debug("Error in naming, the string is bad." + err.message, "profile");
         return;
     }
     var profile = {
@@ -105,26 +109,28 @@ function nameAndSaveNewProfile() {
     var presetlists = [profile];
     //add the two arrays together, string them, and store them.
     safeSetItems('ATSelectedSettingsProfile', JSON.stringify(oldpresets.concat(presetlists)));
-    debug("Successfully created new profile: " + profile.name);
+    debug("Successfully created new profile: " + profile.name, "profile");
     ImportExportTooltip('message', 'Successfully created new profile: ' + profile.name);
     //Update dropdown menu to reflect new name:
     let optionElementReference = new Option(profile.name);
     optionElementReference.id = 'customProfileRead';
-    var sp = document.getElementById("settingsProfiles");
-    if (sp == null) return;
-    sp.add(optionElementReference);
-    sp.selectedIndex = sp.length-1;
+    if ($settingsProfiles == null) return;
+    $settingsProfiles.add(optionElementReference);
+    $settingsProfiles.selectedIndex = $settingsProfiles.length-1;
 }
 
-//event handler for profile delete button
+//event handler for profile delete button - confirmation check tooltip
+function onDeleteProfileHandler() {
+    ImportExportTooltip('DeleteSettingsProfiles');  //calls a tooltip then onDeleteProfile() below
+}
+//Delete Profile runs after.
 function onDeleteProfile() {
-    var sp = document.getElementById("settingsProfiles");
-    if (sp == null) return;
-    var index = sp.selectedIndex;
+    if ($settingsProfiles == null) return;
+    var index = $settingsProfiles.selectedIndex;
     //Remove the option
-    sp.options.remove(index);
+    $settingsProfiles.options.remove(index);
     //Stay on the same index (becomes next item) - so we dont have to Toggle into a new profile again and can keep chain deleting.
-    sp.selectedIndex = (index > (sp.length-1)) ? sp.length-1 : index;
+    $settingsProfiles.selectedIndex = (index > ($settingsProfiles.length-1)) ? $settingsProfiles.length-1 : index;
     //load the old data in:
     var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
     var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
@@ -132,13 +138,12 @@ function onDeleteProfile() {
     var target = (index-3); //subtract the 3 default choices out
     oldpresets.splice(target, 1);
     safeSetItems('ATSelectedSettingsProfile', JSON.stringify(oldpresets));
-    debug("Successfully deleted profile #: " + target);
+    debug("Successfully deleted profile #: " + target, "profile");
 }
 
 //Populate dropdown menu with list of AT SettingsProfiles
 function initializeSettingsProfiles() {
-    var sp = document.getElementById("settingsProfiles");
-    if (sp == null) return;
+    if ($settingsProfiles == null) return;
     //load the old data in:
     var loadLastProfiles = localStorage.getItem('ATSelectedSettingsProfile');
     var oldpresets = loadLastProfiles ? JSON.parse(loadLastProfiles) : new Array(); //load the import.
@@ -146,9 +151,9 @@ function initializeSettingsProfiles() {
         //Populate dropdown menu to reflect new name:
         let optionElementReference = new Option(elem.name);
         optionElementReference.id = 'customProfileRead';
-        sp.add(optionElementReference);        
+        $settingsProfiles.add(optionElementReference);
     });
-    sp.selectedIndex = 0;
+    $settingsProfiles.selectedIndex = 0;
 }
 initializeSettingsProfiles();
 
@@ -157,8 +162,8 @@ initializeSettingsProfiles();
 function ImportExportTooltip(what, event) {
     if (game.global.lockTooltip)
         return;
-    var elem = document.getElementById("tooltipDiv");
-    swapClass("tooltipExtra", "tooltipExtraNone", elem);
+    var $elem = document.getElementById("tooltipDiv");
+    swapClass("tooltipExtra", "tooltipExtraNone", $elem);
     var ondisplay = null; // if non-null, called after the tooltip is displayed
     var tooltipText;
     var costText = "";
@@ -196,7 +201,7 @@ function ImportExportTooltip(what, event) {
         resetAutoTrimps();
         tooltipText = "Autotrimps has been successfully reset to its defaults! ";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
-        debug(tooltipText, "other");
+        debug(tooltipText, "profile");
     } else if (what == "CleanupAutoTrimps") {
         cleanupAutoTrimps();
         tooltipText = "Autotrimps saved-settings have been attempted to be cleaned up. If anything broke, refreshing will fix it, but check that your settings are correct! (prestige in particular)";
@@ -236,27 +241,42 @@ function ImportExportTooltip(what, event) {
     } else if (what == 'MagmiteExplain') {
         tooltipText = "<img src='" + basepath + "mi.png'>";
         costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>Thats all the help you get.</div></div>";
+    } else if (what == 'ReadSettingsProfiles') {
+        //Shows a Question Popup to READ the profile:
+        titleText = '<b>Loading New AutoTrimps Profile...</b><p>Current Settings will be lost';
+        tooltipText = '<b>NOTICE:</b> Switching to new AutoTrimps settings profile!!!! <br>All current settings <b>WILL</b> be lost after this point. <br>You might want to cancel, to go back and save your existing settings first....';
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' style='width: 10vw' onclick='cancelTooltip(); confirmedSwitchNow();'>Confirm and Switch Profiles</div><div style='margin-left: 15%' class='btn btn-info' style='margin-left: 5vw' onclick='cancelTooltip();'>Cancel</div></div>";
+    } else if (what == 'ResetDefaultSettingsProfiles') {
+        //Shows a Question Popup to RESET to DEFAULT the profile:
+        titleText = '<b>Loading AutoTrimps Default Profile...</b><p>Current Settings will be lost!';
+        tooltipText = '<b>NOTICE:</b> Switching to Default AutoTrimps settings profile!!!! <br>All current settings <b>WILL</b> be lost after this point. <br>You might want to cancel, to go back and save your existing settings first.... <br>This will <b><u>Reset</u></b> the script to factory settings.';
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' style='width: 10vw' onclick='cancelTooltip(); resetAutoTrimps(); settingsProfiles.selectedIndex = 1;'>Reset to Default Profile</div><div style='margin-left: 15%' class='btn btn-info' style='margin-left: 5vw' onclick='cancelTooltip();'>Cancel</div></div>";
     } else if (what == 'NameSettingsProfiles') {
-        //Shows a Question Popup to set the name:
-        titleText = "Enter New Settings Profile Name"
+        //Shows a Question Popup to NAME the profile
+        titleText = "Enter New Settings Profile Name";
         tooltipText = "What would you like the name of the Settings Profile to be?<br/><br/><textarea id='setSettingsNameTooltip' style='width: 100%' rows='1'></textarea>";
-        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); nameAndSaveNewProfile();'>Import</div><div class='btn btn-info' onclick='cancelTooltip();document.getElementById(\"settingsProfiles\").selectedIndex=0;'>Cancel</div></div>";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' style='width: 10vw' onclick='cancelTooltip(); nameAndSaveNewProfile();'>Import</div><div class='btn btn-info' style='margin-left: 5vw' onclick='cancelTooltip();document.getElementById(\"settingsProfiles\").selectedIndex=0;'>Cancel</div></div>";
         ondisplay = function() {
             document.getElementById('setSettingsNameTooltip').focus();
         };
+    } else if (what == 'DeleteSettingsProfiles') {
+        //Shows a Question Popup to DELETE the profile:
+        titleText = "<b>WARNING:</b> Delete Profile???"
+        tooltipText = "You are about to delete the <B><U>"+`${settingsProfiles.value}`+"</B></U> settings profile.<br>This will not switch your current settings though. Continue ?<br/>";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip(); onDeleteProfile();'>Delete Profile</div><div style='margin-left: 15%' class='btn btn-info' onclick='cancelTooltip();'>Cancel</div></div>";
     } else if (what == 'message') {
         titleText = "Generic message";
         tooltipText = event;
-        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' onclick='cancelTooltip();'>OK</div></div>";
+        costText = "<div class='maxCenter'><div id='confirmTooltipBtn' class='btn btn-info' style='width: 50%' onclick='cancelTooltip();'>OK</div></div>";
     }
     //Common:
     game.global.lockTooltip = true;
-    elem.style.left = "33.75%";
-    elem.style.top = "25%";
+    $elem.style.left = "33.75%";
+    $elem.style.top = "25%";
     document.getElementById("tipTitle").innerHTML = titleText;
     document.getElementById("tipText").innerHTML = tooltipText;
     document.getElementById("tipCost").innerHTML = costText;
-    elem.style.display = "block";
+    $elem.style.display = "block";
     if (ondisplay !== null)
         ondisplay();
 }
@@ -267,9 +287,9 @@ function resetAutoTrimps(imported,profname) {
         localStorage.removeItem('autoTrimpSettings');
         //delete,remake,init defaults, recreate everything:
         autoTrimpSettings = imported ? imported : new Object(); //load the import.
-        var settingsrow = document.getElementById("settingsRow");
-        settingsrow.removeChild(document.getElementById("autoSettings"));
-        settingsrow.removeChild(document.getElementById("autoTrimpsTabBarMenu"));
+        var $settingsRow = document.getElementById("settingsRow");
+        $settingsRow.removeChild(document.getElementById("autoSettings"));
+        $settingsRow.removeChild(document.getElementById("autoTrimpsTabBarMenu"));
         automationMenuSettingsInit();
         initializeAllTabs();
         initializeAllSettings();
@@ -281,13 +301,13 @@ function resetAutoTrimps(imported,profname) {
     }
     setTimeout(waitRemoveLoad(imported),101);
     if (imported) {
-        debug("Successfully imported new AT settings...");
+        debug("Successfully imported new AT settings...", "profile");
         if (profname)   //pass in existing profile name to use:
-            ImportExportTooltip("message", "Successfully Imported Autotrimps Settings File!: " + profname);    
+            ImportExportTooltip("message", "Successfully Imported Autotrimps Settings File!: " + profname);
         else            //or prompt to create a new name:
             ImportExportTooltip('NameSettingsProfiles');
     } else {
-        debug("Successfully reset AT settings to Defaults...");
+        debug("Successfully reset AT settings to Defaults...", "profile");
         ImportExportTooltip("message", "Autotrimps has been successfully reset to its defaults!");
     }
 }
@@ -300,22 +320,22 @@ function loadAutoTrimps() {
         var thestring = document.getElementById("importBox").value.replace(/[\n\r]/gm, "");
         var tmpset = JSON.parse(thestring);
         if (tmpset == null) {
-            debug("Error importing AT settings, the string is empty.");
+            debug("Error importing AT settings, the string is empty.", "profile");
             return;
         }
     } catch (err) {
-        debug("Error importing AT settings, the string is bad." + err.message);
+        debug("Error importing AT settings, the string is bad." + err.message, "profile");
         return;
     }
-    debug("Importing new AT settings file...");
+    debug("Importing new AT settings file...", "profile");
     resetAutoTrimps(tmpset);
 }
 
 //remove stale values from past autotrimps versions
 function cleanupAutoTrimps() {
     for (var setting in autoTrimpSettings) {
-        var elem = document.getElementById(autoTrimpSettings[setting].id);
-        if (elem == null)
+        var $elem = document.getElementById(autoTrimpSettings[setting].id);
+        if ($elem == null)
             delete autoTrimpSettings[setting];
     }
 }
@@ -360,7 +380,7 @@ function importModuleVars() {
         }
         var tmpset = compareModuleVars();
     } catch (err) {
-        debug("Error importing MODULE vars, the string is bad." + err.message);
+        debug("Error importing MODULE vars, the string is bad." + err.message, "profile");
         return;
     }
     localStorage.removeItem('ATMODULES');

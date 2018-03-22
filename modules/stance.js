@@ -432,13 +432,13 @@ function autoStance2() {
                 setFormation("0");
         } else if (game.upgrades.Barrier.done && surviveB) {
             if (game.global.formation != 3) {
-                setFormation(3);    //does this ever run?
+                setFormation(3);    //does this ever run? 
+                //TODO Check this with analytics instead.
                 debug("AutoStance B/3","other");
             }
         } else {
-            if (game.global.formation != 1) {
+            if (game.global.formation != 1)
                 setFormation(1);    //the last thing that runs
-            }
         }
     }
     baseDamage /= (game.global.titimpLeft > 0 ? 2 : 1); //unconsider titimp
