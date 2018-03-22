@@ -10,7 +10,8 @@ Discord is a chat program. Come to talk about AutoTrimps, for help, or suggestio
 
 ## Current Version (full changes below)
 Ongoing Development!
-- v2.1.6.7 - March 20, Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + EnableAFKMode. Pinned AT Tab menu bar to top when scrolling.  Graph: Graph: FluffyXP . Continue Development on long TODO list... 
+- v2.1.6.8 - March 22, New: Multiple small commits for Settings, make GUI better. Up/Down graph buttons. Warning messages on import/export. Internal code fixes, gameplay unchanged.
+- v2.1.6.7 - March 20, Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + Go AFK Mode. Pinned AT Tab menu bar to top when scrolling.  Graph: Graph: FluffyXP . Continue Development on long TODO list... 
 - v2.1.6.6 - March 13, Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors.
 - v2.1.6.5 - March 7, Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable. 
 - v2.1.6.4 - March 4, 2018 Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.
@@ -281,6 +282,7 @@ See changelog at the original version's github page: https://github.com/zininzin
 
 
 ## Detailed Code Documentation:
+Read docs/main-doc.txt or docs/TODO.md for more complete info, the below is somewhat outdated.
 
 Since javascript is easily human readable, Much can be learned by reading the source code, starting with this knowledge:
 
