@@ -52,10 +52,9 @@ changelogList.push({date: "3/20", version: "v2.1.6.7", description: "Moved all t
 changelogList.push({date: "3/13", version: "v2.1.6.6", description: "Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors.", isNew: false});
 changelogList.push({date: "3/7", version: "v2.1.6.5", description: "Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable.", isNew: false});
 function assembleChangelog(date,version,description,isNew) {
-    if (isNew)
-        return (`<b class="AutoEggs">${date} ${version} </b><b style="background-color:#32CD32"> New:</b> ${description}<br>`);
-    else
-        return (`<b>${date} ${version} </b> ${description}<br>`);
+    return (isNew)
+    ? (`<b class="AutoEggs">${date} ${version} </b><b style="background-color:#32CD32"> New:</b> ${description}<br>`)
+    : (`<b>${date} ${version} </b> ${description}<br>`);
 }
 function printChangelog() {
     var body="";
@@ -66,8 +65,8 @@ function printChangelog() {
     };
     var footer = 
         '<br><b>Ongoing Development</b> - <u>Report any bugs/problems please</u>!\
-        <br>You can find me on Discord: <b>genr8_#8163</b> @ <a href="https://discord.gg/0VbWe0dxB9kIfV2C">AT Discord Channel</a>\
-        <br><a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">Check the commit history</a> (if you want)'
+        <br>Talk with the dev: <b>genr8_#8163</b> @ <a href="https://discord.gg/0VbWe0dxB9kIfV2C">AutoTrimps Discord Channel</a>\
+        <br>Or check <a href="https://github.com/genBTC/AutoTrimps/commits/gh-pages" target="#">the commit history</a> (if you want).'
     ,   action = 'cancelTooltip()'
     ,   title = 'Script Update Notice<br>' + ATversion
     ,   acceptBtnText = "Thank you for playing AutoTrimps. Accept and Continue."
@@ -147,22 +146,6 @@ var heirloomFlag = false;
 var heirloomCache = game.global.heirloomsExtra.length;
 var magmiteSpenderChanged = false;
 
-//reset stuff that may not have gotten cleaned up on portal
-function mainCleanup() {
-    lastrunworld = currentworld;
-    currentworld = game.global.world;
-    aWholeNewWorld = lastrunworld != currentworld;
-    //run once per portal:
-    if (currentworld == 1 && aWholeNewWorld) {
-        lastHeliumZone = 0;
-        zonePostpone = 0;
-        //for the dummies like me who always forget to turn automaps back on after portaling
-        if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
-            settingChanged("AutoMaps");
-        return true; // Do other things
-    }
-}
-
 ////////////////////////////////////////
 //Main LOGIC Loop///////////////////////
 ////////////////////////////////////////
@@ -205,17 +188,16 @@ function mainLoop() {
 
     //EXECUTE CORE LOGIC
     if (getPageSetting('ExitSpireCell') >0) exitSpireCell(); //"Exit Spire After Cell" (other.js)
-    if (getPageSetting('WorkerRatios')) workerRatios(); //"Auto Worker Ratios"  (jobs.js)
-    if (getPageSetting('BuyUpgrades')) buyUpgrades();   //"Buy Upgrades"       (upgrades.js)
+    if (getPageSetting('WorkerRatios')) workerRatios();  //"Auto Worker Ratios"  (jobs.js)
+    if (getPageSetting('BuyUpgrades')) buyUpgrades();    //"Buy Upgrades"       (upgrades.js)
     var agu = getPageSetting('AutoGoldenUpgrades');
-    if (agu && agu!='Off') autoGoldenUpgradesAT(agu); //"Golden Upgrades"     (other.js)
+    if (agu && agu!='Off') autoGoldenUpgradesAT(agu);    //"Golden Upgrades"     (other.js)
     if (getPageSetting('BuyStorage'))  buyStorage();     //"Buy Storage"     (buildings.js)
-    if (getPageSetting('BuyBuildings')) buyBuildings(); //"Buy Buildings"    (buildings.js)
-    if (getPageSetting('BuyJobs')) buyJobs();           //"Buy Jobs"            (jobs.js)
+    if (getPageSetting('BuyBuildings')) buyBuildings();  //"Buy Buildings"    (buildings.js)
+    if (getPageSetting('BuyJobs')) buyJobs();            //"Buy Jobs"            (jobs.js)
     if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"       (gather.js)
-    else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"     (")
-    if (getPageSetting('AutoMaps')) autoMap();          //"Auto Maps"   (automaps.js)
-    else updateAutoMapsStatus();
+    else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"  (")
+    getPageSetting('AutoMaps') ? autoMap() : updateAutoMapsStatus(); //"Auto Maps"      (automaps.js)
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"     (autobreedtimer.js)
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40) (portal.js)
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
@@ -223,23 +205,20 @@ function mainLoop() {
     if (aWholeNewWorld && getPageSetting('FinishC2')>0 && game.global.runningChallengeSquared) finishChallengeSquared(); // "Finish Challenge2" (other.js)
     autoLevelEquipment();           //"Buy Armor", "Buy Armor Upgrades", "Buy Weapons", "Buy Weapons Upgrades"  (equipment.js)
     if (getPageSetting('UseScryerStance'))  useScryerStance();  //"Use Scryer Stance"   (scryer.js)
-    else if (getPageSetting('AutoStance')<=1) autoStance();    //"Auto Stance"      (autostance.js)
-    else if (getPageSetting('AutoStance')==2) autoStance2();   //"Auto Stance #2"       (")
-    if (getPageSetting('UseAutoGen')) autoGenerator(); // "Auto Generator ON" (magmite.js)
+    else if (getPageSetting('AutoStance')<=1) autoStance();     //"Auto Stance"       (autostance.js)
+    else if (getPageSetting('AutoStance')==2) autoStance2();    //"Auto Stance #2"         (")
+    if (getPageSetting('UseAutoGen')) autoGenerator();          //"Auto Generator ON" (magmite.js)
     ATselectAutoFight();  //  pick the right version of Fight/AutoFight/BetterAutoFight/BAF2 (fight.js)
-    if (getPageSetting('DynamicPrestige2')>0&&((getPageSetting('ForcePresZ')<0)||(game.global.world<getPageSetting('ForcePresZ')))) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
+    var forcePrecZ = (getPageSetting('ForcePresZ')<0) || (game.global.world<getPageSetting('ForcePresZ'));
+    if (getPageSetting('DynamicPrestige2')>0 && forcePrecZ) prestigeChanging2(); //"Dynamic Prestige" (dynprestige.js)
     else autoTrimpSettings.Prestige.selected = document.getElementById('Prestige').value; //just make sure the UI setting and the internal setting are aligned.
-    try {
-        if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)
-            autoMagmiteSpender();   //Auto Magmite Spender (magmite.js)
-    } catch (err) {
-        debug("Error encountered in AutoMagmiteSpender(Always): " + err.message,"general");
-    }
-    if (getPageSetting('AutoNatureTokens')) autoNatureTokens();     //Nature - (other.js)
+    if (getPageSetting('AutoMagmiteSpender2')==2 && !magmiteSpenderChanged)  autoMagmiteSpender();   //Auto Magmite Spender (magmite.js)
+    if (getPageSetting('AutoNatureTokens')) autoNatureTokens();     //Nature     (other.js)
     //
-    //Runs any user provided scripts - by copying and pasting a function named userscripts() into the Chrome Dev console. (F12)
+    //Runs any user provided scripts, see line 253 below
     if (userscriptOn) userscripts();
-    //rinse, repeat
+    //
+    //rinse, repeat, done
     return;
 }
 
@@ -247,13 +226,30 @@ function mainLoop() {
 function guiLoop() {
     updateCustomButtons();
     //Swiffy UI/Display tab
-    if(autoTrimpSettings['EnhanceGrids'].enabled)
+    if(getPageSetting('EnhanceGrids'))
         MODULES["fightinfo"].Update();
     if(typeof MODULES !== 'undefined' && typeof MODULES["performance"] !== 'undefined' && MODULES["performance"].isAFK)
         MODULES["performance"].UpdateAFKOverlay();
 }
 
+//reset stuff that may not have gotten cleaned up on portal
+function mainCleanup() {
+    lastrunworld = currentworld;
+    currentworld = game.global.world;
+    aWholeNewWorld = lastrunworld != currentworld;
+    //run once per portal:
+    if (currentworld == 1 && aWholeNewWorld) {
+        lastHeliumZone = 0;
+        zonePostpone = 0;
+        //for the dummies like me who always forget to turn automaps back on after portaling
+        if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
+            settingChanged("AutoMaps");
+        return true; // Do other things
+    }
+}
+
 // Userscript loader. write your own!
+//Copy and paste this function named userscripts() into the JS Dev console. (F12) 
 var userscriptOn = true;    //controls the looping of userscripts and can be self-disabled
 var globalvar0,globalvar1,globalvar2,globalvar3,globalvar4,globalvar5,globalvar6,globalvar7,globalvar8,globalvar9;
 //left blank intentionally. the user will provide this. blank global vars are included as an example
@@ -261,6 +257,8 @@ function userscripts()
 {
     //insert code here:
 }
+
+//test.
 function throwErrorfromMain() {
     throw new Error("We have successfully read the thrown error message out of the main file");
 }
