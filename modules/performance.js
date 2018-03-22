@@ -143,7 +143,7 @@
 	{
 		M["performance"].AFKOverlayZone.innerText = 'Current Zone: ' + game.global.world;
 		M["performance"].AFKOverlayHelium.innerText = 'Current Helium: ' + prettify(Math.floor(game.resources.helium.owned));
-		M["performance"].AFKOverlayStatus.innerHTML = 'Current Status: ' + getAutoMapsStatus()[0];
+		M["performance"].AFKOverlayStatus.innerHTML = 'Current Status: ' + updateAutoMapsStatus(true)[0];
 	}
 
 })(MODULES, window);

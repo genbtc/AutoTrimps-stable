@@ -28,7 +28,6 @@ MODULES["maps"].UnearnedPrestigesRequired = 2;
 MODULES["maps"].maxMapBonusAfterZ = MODULES["maps"].maxMapBonus;   //Max Map Bonus After Zone uses this many stacks 
                                                                  //- init as default value (10). user can set if they want.
 
-
 //Initialize Global Vars (dont mess with these ones, nothing good can come from it).
 var stackingTox = false;
 var doVoids = false;
@@ -753,79 +752,75 @@ function autoMap() {
 }
 
 //update the UI with stuff from automaps.
-function updateAutoMapsStatus() {
+function updateAutoMapsStatus(get) {
     //automaps status
-    var status = document.getElementById('autoMapStatus');
+    var status;
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
-    if(!autoTrimpSettings.AutoMaps.enabled) status.innerHTML = 'Off';
-    else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status.innerHTML = 'Out of Map Credits';
+    if(!autoTrimpSettings.AutoMaps.enabled) status = 'Off';
+    else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status = 'Out of Map Credits';
     else if (preSpireFarming) {
         var secs = Math.floor(60 - (spireTime*60)%60).toFixed(0)
         var mins = Math.floor(minSp - spireTime).toFixed(0);
         var hours = minSp - (spireTime / 60).toFixed(2);
         var spiretimeStr = (spireTime>=60) ? 
             (hours + 'h') : (mins + 'm:' + (secs>=10 ? secs : ('0'+secs)) + 's');
-        status.innerHTML = 'Farming for Spire ' + spiretimeStr + ' left';
+        status = 'Farming for Spire ' + spiretimeStr + ' left';
     }
-    else if (spireMapBonusFarming) status.innerHTML = 'Getting Spire Map Bonus';
-    else if (doMaxMapBonus) status.innerHTML = 'Max Map Bonus After Zone';
-    else if (!game.global.mapsUnlocked) status.innerHTML = '&nbsp;';
-    else if (needPrestige && !doVoids) status.innerHTML = 'Prestige';
-    else if (doVoids && voidCheckPercent == 0) status.innerHTML = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
-    else if (stackingTox) status.innerHTML = 'Getting Tox Stacks';
-    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0) status.innerHTML = 'Prepping for Voids';
-    else if (doVoids && voidCheckPercent > 0) status.innerHTML = 'Farming to do Voids: ' + voidCheckPercent + '%';
-    else if (shouldFarm && !doVoids) status.innerHTML = 'Farming: ' + HDratio.toFixed(4) + 'x';
-    else if (scryerStuck) status.innerHTML = 'Scryer Got Stuck, Farming';
-    else if (!enoughHealth && !enoughDamage) status.innerHTML = 'Want Health & Damage';
-    else if (!enoughDamage) status.innerHTML = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
-    else if (!enoughHealth) status.innerHTML = 'Want more health';
-    else if (enoughHealth && enoughDamage) status.innerHTML = 'Advancing';
+    else if (spireMapBonusFarming) status = 'Getting Spire Map Bonus';
+    else if (doMaxMapBonus) status = 'Max Map Bonus After Zone';
+    else if (!game.global.mapsUnlocked) status = '&nbsp;';
+    else if (needPrestige && !doVoids) status = 'Prestige';
+    else if (doVoids && voidCheckPercent == 0) status = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
+    else if (stackingTox) status = 'Getting Tox Stacks';
+    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0) status = 'Prepping for Voids';
+    else if (doVoids && voidCheckPercent > 0) status = 'Farming to do Voids: ' + voidCheckPercent + '%';
+    else if (shouldFarm && !doVoids) status = 'Farming: ' + HDratio.toFixed(4) + 'x';
+    else if (scryerStuck) status = 'Scryer Got Stuck, Farming';
+    else if (!enoughHealth && !enoughDamage) status = 'Want Health & Damage';
+    else if (!enoughDamage) status = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
+    else if (!enoughHealth) status = 'Want more health';
+    else if (enoughHealth && enoughDamage) status = 'Advancing';
 
     if (skippedPrestige) // Show skipping prestiges
-      status.insertAdjacentHTML('afterbegin', '<b style="font-size:.8em;color:pink">Prestige Skipped</b><br>');
+        status += '<b style="font-size:.8em;color:pink">Prestige Skipped</b><br>';
 
     //hider he/hr% status
-    var area51 = document.getElementById('hiderStatus');
     var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
     var lifetime = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
-    area51.innerHTML = 'He/hr: ' + getPercent.toFixed(3) + '%<br>&nbsp;&nbsp;&nbsp;He: ' + lifetime.toFixed(3) +'%';
+    var hiderStatus = 'He/hr: ' + getPercent.toFixed(3) + '%<br>&nbsp;&nbsp;&nbsp;He: ' + lifetime.toFixed(3) +'%';
+    
+    if (get) {
+        return [status,getPercent,lifetime];
+    } else {
+        document.getElementById('autoMapStatus').innerHTML = status;
+        document.getElementById('hiderStatus').innerHTML = hiderStatus;
+    }
 }
 
-function getAutoMapsStatus()
-{
-    var ret = [];
 
-    var minSp = getPageSetting('MinutestoFarmBeforeSpire');
-    if(!autoTrimpSettings.AutoMaps.enabled) ret[0] = 'Off';
-    else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) ret[0] = 'Out of Map Credits';
-    else if (preSpireFarming) {
-        var secs = Math.floor(60 - (spireTime*60)%60).toFixed(0)
-        var mins = Math.floor(minSp - spireTime).toFixed(0);
-        var hours = minSp - (spireTime / 60).toFixed(2);
-        var spiretimeStr = (spireTime>=60) ? 
-            (hours + 'h') : (mins + 'm:' + (secs>=10 ? secs : ('0'+secs)) + 's');
-        ret[0] = 'Farming for Spire ' + spiretimeStr + ' left';
+//New Code for Map Special Mods dropdown.
+function testMapSpecialModController() {
+    var mapSpecialMods=[];
+    Object.keys(mapSpecialModifierConfig).forEach(function(key){
+        var elem = mapSpecialModifierConfig[key];
+        if ((game.global.highestLevelCleared + 1) >= elem.unlocksAt)
+            mapSpecialMods.push(elem.name);
+    });
+    var $adv = document.getElementById('advSpecialSelect');
+    var oldAbbrv = $adv.value;
+    var maxIndex = mapSpecialMods.length;
+    //try to use the highest one we have.
+    if (game.talents.hyperspeed2.purchased && maxIndex==1)
+        maxIndex=0;
+    $adv.selectedIndex = maxIndex;
+    var specialModifier = getSpecialModifierSetting();  //either 0 or the abbreviation/property of mapSpecialModifierConfig
+    var perfectChecked = checkPerfectChecked();         //Perfect Checkboxes
+    var extraLevels = getExtraMapLevels();              //Extra Levels
+    //map frag cost is stored in: document.getElementById("mapCostFragmentCost").innerHTML
+    if (specialModifier == 0 && mapSpecialMods.length > 0 && (game.global.highestLevelCleared >= 59)) { //levels are 109 and 209 for Perfect sliders and Extra Levels
+        
     }
-    else if (spireMapBonusFarming) ret[0] = 'Getting Spire Map Bonus';
-    else if (doMaxMapBonus) ret[0] = 'Max Map Bonus After Zone';
-    else if (!game.global.mapsUnlocked) ret[0] = '&nbsp;';
-    else if (needPrestige && !doVoids) ret[0] = 'Prestige';
-    else if (doVoids && voidCheckPercent == 0) ret[0] = 'Void Maps: ' + game.global.totalVoidMaps + ' remaining';
-    else if (stackingTox) ret[0] = 'Getting Tox Stacks';
-    else if (needToVoid && !doVoids && game.global.totalVoidMaps > 0) ret[0] = 'Prepping for Voids';
-    else if (doVoids && voidCheckPercent > 0) ret[0] = 'Farming to do Voids: ' + voidCheckPercent + '%';
-    else if (shouldFarm && !doVoids) ret[0] = 'Farming: ' + HDratio.toFixed(4) + 'x';
-    else if (scryerStuck) ret[0] = 'Scryer Got Stuck, Farming';
-    else if (!enoughHealth && !enoughDamage) ret[0] = 'Want Health & Damage';
-    else if (!enoughDamage) ret[0] = 'Want ' + HDratio.toFixed(4) + 'x &nbspmore damage';
-    else if (!enoughHealth) ret[0] = 'Want more health';
-    else if (enoughHealth && enoughDamage) ret[0] = 'Advancing';
-
-    ret[1] = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;
-    ret[2] = (game.resources.helium.owned / (game.global.totalHeliumEarned-game.resources.helium.owned))*100;
-    ret[1] = 'He/hr: ' + ret[1].toFixed(3) + '%';
-    ret[2] = 'He: ' + ret[2].toFixed(3) + '%';
-
-    return ret;
+    if (updateMapCost(true) > game.resources.fragments.owned && $adv.selectedIndex > 0)
+        $adv.selectedIndex -= 1;
+    //
 }
