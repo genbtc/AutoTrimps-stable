@@ -689,6 +689,8 @@ function autoMap() {
                 if (needPrestige && !enoughDamage) decrement.push('diff');
                 if (shouldFarm) decrement.push('size');
             }
+            if (getPageSetting('AdvMapSpecialModifier'))
+                testMapSpecialModController();
         //Decrement 1 - use priorities first:
             //if we STILL cant afford the map, lower the loot slider (less loot)
             while (decrement.indexOf('loot') > -1 && lootAdvMapsRange.value > 0 && updateMapCost(true) > game.resources.fragments.owned) {
@@ -798,7 +800,7 @@ function updateAutoMapsStatus(get) {
 }
 
 
-//New Code for Map Special Mods dropdown.
+//New Code for Map Special Mods dropdown. (only the first one for now)
 function testMapSpecialModController() {
     var mapSpecialMods=[];
     Object.keys(mapSpecialModifierConfig).forEach(function(key){
@@ -813,6 +815,7 @@ function testMapSpecialModController() {
     if (game.talents.hyperspeed2.purchased && maxIndex==1)
         maxIndex=0;
     $adv.selectedIndex = maxIndex;
+    /*
     var specialModifier = getSpecialModifierSetting();  //either 0 or the abbreviation/property of mapSpecialModifierConfig
     var perfectChecked = checkPerfectChecked();         //Perfect Checkboxes
     var extraLevels = getExtraMapLevels();              //Extra Levels
@@ -820,7 +823,16 @@ function testMapSpecialModController() {
     if (specialModifier == 0 && mapSpecialMods.length > 0 && (game.global.highestLevelCleared >= 59)) { //levels are 109 and 209 for Perfect sliders and Extra Levels
         
     }
-    if (updateMapCost(true) > game.resources.fragments.owned && $adv.selectedIndex > 0)
+    */
+    var mc = updateMapCost(true);
+    var my = game.resources.fragments.owned;
+    var pct = mc/my*100;
+    while ($adv.selectedIndex > 0 && mc > my) {
         $adv.selectedIndex -= 1;
+    }
+    var mc = updateMapCost(true);
+    var my = game.resources.fragments.owned;
+    var pct = mc/my*100;
+    console.log("Set the map special modifier to: " + mapSpecialModifierConfig[$adv.value].name + ". Cost: " + pct.toFixed(2) + "% of your frags");
     //
 }
