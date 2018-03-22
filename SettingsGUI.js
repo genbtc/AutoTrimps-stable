@@ -179,8 +179,8 @@ function initializeAllTabs() {
     createTabs("Maps", "Maps - AutoMaps & VoidMaps Settings");
     createTabs("Combat", "Combat & Stance Settings");
     createTabs("Scryer", "Scryer Settings");
-    createTabs("Heirlooms", "Heirloom & Perk Settings");
     createTabs("Magma", "Dimensional Generator & Magmite Settings");
+    createTabs("Heirlooms", "Heirloom Settings");
     createTabs("Golden", "Golden Upgrade Settings");
     createTabs("Nature", "Nature Settings");
     createTabs("Display", "Display & Spam Settings");
@@ -268,9 +268,9 @@ function initializeAllSettings() {
     $pauseScript.parentNode.style.setProperty('margin-right','1vw');
     $pauseScript.parentNode.style.setProperty('margin-left','0');
 
-    
-    
-    
+
+
+
 //Buildings
     createSetting('BuyStorage', 'Buy Storage', 'Will buy storage when resource is almost full. (like AutoStorage, even anticipates Jestimp)', 'boolean', true, null, "Buildings");
     createSetting('BuyBuildings', 'Buy Buildings', 'Will buy non storage buildings as soon as they are available', 'boolean', true, null, "Buildings");
@@ -383,9 +383,9 @@ function initializeAllSettings() {
     createSetting('DynamicGyms', 'Dynamic Gyms', 'Designed to limit your block to slightly more than however much the enemy attack is. If MaxGyms is capped or GymWall is set, those will still work, and this will NOT override those (works concurrently), but it will further limit them. In the future it may override, but the calculation is not easy to get right so I dont want it undo-ing other things yet. ', 'boolean', false, null, 'Combat');
     createSetting('AutoRoboTrimp', 'AutoRoboTrimp', 'Use RoboTrimps ability starting at this level, and every 5 levels thereafter. (set to 0 to disable. default 60.) 60 is a good choice for mostly everybody.', 'value', '60', null, 'Combat');
 
-    
-    
-    
+
+
+
 //Scryer
     createSetting('UseScryerStance', 'Use Scryer Stance', '<b>MASTER BUTTON</b> Stay in Scryer stance in z181 and above (Overrides Autostance). Falls back to regular Autostance when not in use (so leave that on). Get 2x resources or Dark Essence. <u>All other buttons have no effect if this one is off.</u>', 'boolean', true, null, 'Scryer');
     createSetting('ScryerUseWhenOverkill', 'Use When Overkill', 'Use when we can Overkill in S stance, for double loot with no speed penalty. Recommend this be on. <b>NOTE:</b> This being on, and being able to overkill in S will override ALL other settings <u>(Except never use in spire)</u>. This is a boolean logic shortcut that disregards all the other settings including Min and Max Zone. If you ONLY want to use S during Overkill, as a workaround: turn this on and Min zone: to 9999 and everything else off(red). ', 'boolean', true, null, 'Scryer');
@@ -400,16 +400,6 @@ function initializeAllSettings() {
     createSetting('ScryerDieToUseS', 'Die To Use S', 'Turning this on will switch you back to S even when doing so would kill you. Happens in scenarios where you used Skip Corrupteds that took you into regular Autostance X/H stance, killed the corrupted and reached a non-corrupted enemy that you wish to use S on, but you havent bred yet and you are too low on health to just switch back to S. So youd rather die, wait to breed, then use S for the full non-corrupted enemy, to maximize DE. This feature was added for 1 person, use at your own risk.', 'boolean', false, null, 'Scryer');
     createSetting('ScryerDieZ', 'Scryer Suicide Z', 'You know, Die To Use S is helpful and all, but sometimes it doesn\'t matter in early zones. Don\'t you think so? That was a rhetorical question, don\'t answer it. Like Void Maps config, you can put a decimal value for cell, like 230.60 for after zone 230 for >= 60th cell.', 'value', 230.60, null, 'Scryer');
     //createSetting('ScryUseinPoison', ' Scry in Poison', ['Maybe Use in Poison', 'Force Use in Poison', 'Never Use in Poison']
-
-    
-    
-    
-    
-//Heirloom Settings
-    createSetting('AutoHeirlooms', 'Auto Heirlooms', 'Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.', 'boolean', false, null, "Heirlooms");    
-    createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'IMPORTANT SETTING. New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'Heirlooms');
-    createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buys the upgrades the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null, 'Heirlooms');
-
 
 
 
@@ -431,6 +421,15 @@ function initializeAllSettings() {
 
 
 
+
+//Heirloom Settings
+    createSetting('AutoHeirlooms', 'Auto Heirlooms', 'Automatically evaluate and carry the best heirlooms, and recommend upgrades for equipped items. AutoHeirlooms will only change carried items when the heirlooms window is not open. Carried items will be compared and swapped with the types that are already carried. If a carry spot is empty, it will be filled with the best shield (if available). Evaluation is based ONLY on the following mods (listed in order of priority, high to low): Void Map Drop Chance/Trimp Attack, Crit Chance/Crit Damage, Miner Efficiency/Metal Drop, Gem Drop/Dragimp Efficiency, Farmer/Lumberjack Efficiency. For the purposes of carrying, rarity trumps all of the stat evaluations. Empty mod slots are valued at the average value of the best missing mod.', 'boolean', false, null, "Heirlooms");
+    createSetting('AutoHeirlooms2', 'Auto Heirlooms2', 'IMPORTANT SETTING. New algorithm for Heirlooms. While enabled, the old AutoHeirlooms algorithm will be disabled (the button will stay lit or you can turn that one off). CAUTION: Turning this on will immediately re-sort your heirlooms according to the new algorithm, and turning it off again DOES revert to the original algorithm even though it may NOT have a visible result on your heirlooms. (fyi: This lack of action highlights one of the problems with the old one.) ', 'boolean', null, null, 'Heirlooms');
+    createSetting('AutoUpgradeHeirlooms', 'Auto Upgrade Heirlooms', 'Automatically buys the upgrades the script advises for the Equipped shield and staff, until we are out of nullifium.', 'boolean', null, null, 'Heirlooms');
+
+
+
+
 //Golden Upgrade Strategies:
     createSetting('AutoGoldenUpgrades', 'AutoGolden', 'IMPORTANT SETTING. Automatically Buy the specified Golden Upgrades as they become available. <b>Void</b> unlocks some intelligent settings from Dzugavili Mod and Derskagg Mod.', 'dropdown', 'Off', ["Off", "Helium", "Battle", "Void"], 'Golden');
     createSetting('goldStrat', 'OnceVoidMaxed', 'VOID ONLY: After max void golden upgrades, alternate between buying helium and battle upgrades. Or Choose a Zone to switch over completely at (picking a low zone will buy only battle, and a high zone only helium).', 'dropdown', 'Off', ["Off", "Alternating", "Zone"], 'Golden');
@@ -446,8 +445,8 @@ function initializeAllSettings() {
     createSetting('AutoWind', 'Wind', 'Spend/convert Wind tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Poison', 'Convert to Ice', 'Convert to Both'], 'Nature');
     createSetting('AutoIce', 'Ice', 'Spend/convert Ice tokens', 'dropdown', 'Off', ['Off', 'Empowerment', 'Transfer', 'Convert to Poison', 'Convert to Wind', 'Convert to Both'], 'Nature');
 
-    
-    
+
+
 
 //Display settings:
     //Subsection1Line1
@@ -481,50 +480,6 @@ function initializeAllSettings() {
     //createSetting('ResetModuleVars', 'Reset Custom Variables', 'Reset(Delete) your custom MODULES variables, and return the script to normal. ', 'infoclick', 'ResetModuleVars', null, 'Import Export');
 }
 initializeAllSettings(); //EXECUTE
-
-
-//toggles the display of the settings menu. 1
-function autoToggle(what) {
-    if (what) {
-        var $what = document.getElementById(what);
-        if ($what.style.display === 'block') {
-            $what.style.display = 'none';
-            document.getElementById(what + 'BTN').style.border = '';
-        } else {
-            $what.style.display = 'block';
-            document.getElementById(what + 'BTN').style.border = '4px solid green';
-        }
-    } else {
-        if (game.options.displayed)
-            toggleSettingsMenu();
-        var $item = document.getElementById('graphParent');
-        if ($item.style.display === 'block')
-            $item.style.display = 'none';
-        var $item = document.getElementById('autoTrimpsTabBarMenu');
-        if ($item.style.display === 'block')
-            $item.style.display = 'none';
-        else $item.style.display = 'block';        
-        var $item = document.getElementById('autoSettings');
-        if ($item.style.display === 'block')
-            $item.style.display = 'none';
-        else $item.style.display = 'block';
-    }
-}
-
-//toggles the display of the original settings menu button,
-// when clicked, hiding the AT settings and graph.
-function autoPlusSettingsMenu() {
-    var $item = document.getElementById('autoSettings');
-    if ($item.style.display === 'block')
-        $item.style.display = 'none';
-    var $item = document.getElementById('graphParent');
-    if ($item.style.display === 'block')
-        $item.style.display = 'none';
-    var $item = document.getElementById('autoTrimpsTabBarMenu');
-    if ($item.style.display === 'block')
-        $item.style.display = 'none';
-    toggleSettingsMenu();
-}
 
 //Universal function that creates sets up the Settings database, structures and associated graphic elements
 function createSetting(id, name, description, type, defaultValue, list, container) {
@@ -563,10 +518,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
             };
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn btn-info');
-        if (type == 'valueNegative')
-            btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '",true)');
-        else
-            btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '")');
+        btn.setAttribute("onclick", 'autoSetValueToolTip("' + id + '", "' + name + '",'+`${(type == 'valueNegative')}`+')');
         btn.setAttribute("onmouseover", 'tooltip(\"' + name + '\", \"customText\", event, \"' + description + '\")');
         btn.setAttribute("onmouseout", 'tooltip("hide")');
         btn.textContent = name;
@@ -619,7 +571,7 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btnParent.appendChild(btn);
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
-        return;
+        return; //return means don't store it in autoTrimpSettings at the bottom
     } else if (type == 'multitoggle') {
         if (!(loaded && id == loaded.id))
             autoTrimpSettings[id] = {
@@ -650,7 +602,6 @@ function createSetting(id, name, description, type, defaultValue, list, containe
                 type: type,
                 value: 1
             };
-
         btn.setAttribute("style", "font-size: 1.1vw;");
         btn.setAttribute('class', 'noselect settingsBtn settingBtntrue');
         btn.setAttribute('onclick', defaultValue);
@@ -660,9 +611,8 @@ function createSetting(id, name, description, type, defaultValue, list, containe
         btnParent.appendChild(btn);
         if (container) document.getElementById(container).appendChild(btnParent);
         else document.getElementById("autoSettings").appendChild(btnParent);
-
-
     }
+
     //make sure names/descriptions match what we have stored.
     if (autoTrimpSettings[id].name != name)
         autoTrimpSettings[id].name = name;
@@ -774,6 +724,51 @@ function autoSetValue(id,negative) {
     checkPortalSettings();
 }
 
+//toggles the display of the settings menu. 1
+function autoToggle(what) {
+    if (what) {
+        var $what = document.getElementById(what);
+        if ($what.style.display === 'block') {
+            $what.style.display = 'none';
+            document.getElementById(what + 'BTN').style.border = '';
+        } else {
+            $what.style.display = 'block';
+            document.getElementById(what + 'BTN').style.border = '4px solid green';
+        }
+    } else {
+        if (game.options.displayed)
+            toggleSettingsMenu();
+        var $item = document.getElementById('graphParent');
+        if ($item.style.display === 'block')
+            $item.style.display = 'none';
+        var $item = document.getElementById('autoTrimpsTabBarMenu');
+        if ($item.style.display === 'block')
+            $item.style.display = 'none';
+        else $item.style.display = 'block';
+        var $item = document.getElementById('autoSettings');
+        if ($item.style.display === 'block')
+            $item.style.display = 'none';
+        else $item.style.display = 'block';
+    }
+}
+
+//toggles the display of the original settings menu button,
+// when clicked, hiding the AT settings and graph.
+function autoPlusSettingsMenu() {
+    var $item = document.getElementById('autoSettings');
+    if ($item.style.display === 'block')
+        $item.style.display = 'none';
+    var $item = document.getElementById('graphParent');
+    if ($item.style.display === 'block')
+        $item.style.display = 'none';
+    var $item = document.getElementById('autoTrimpsTabBarMenu');
+    if ($item.style.display === 'block')
+        $item.style.display = 'none';
+    toggleSettingsMenu();
+}
+
+//Responsible for keeping the GUI in sync with the settings database and
+// force-controlling the values of some and changing its visible or hidden status
 function updateCustomButtons() {
     //console.log("GUI: CustomButtons Updated");
     function toggleElem(elem, showHide) {
@@ -813,7 +808,8 @@ function updateCustomButtons() {
     //if ShieldBlock is for sure, remove ShieldBlock from settingsbox (achievement=12 means z100).
     (game.achievements.zones.finished < 12) ? turnOn("BuyShieldblock") : function(){turnOff("BuyShieldblock");setPageSetting("BuyShieldblock",false);}();
 
-    //update dropdown selections: (ALL DROPDOWNS REQUIRE THIS BIT TO BE UPDATEY)
+    //DROPDOWNS: updates dropdown selections. (ALL DROPDOWNS REQUIRE THIS BIT TO BE UPDATEY)
+    //todo check why this isnt possible to set automatically in the dropdown code.
     document.getElementById('AutoPortal').value = autoTrimpSettings.AutoPortal.selected;
     document.getElementById('HeliumHourChallenge').value = autoTrimpSettings.HeliumHourChallenge.selected;
     document.getElementById('AutoGoldenUpgrades').value = autoTrimpSettings.AutoGoldenUpgrades.selected;
@@ -842,7 +838,7 @@ function updateCustomButtons() {
         shouldFarm = false;
 
     // handle metal preference
-    MODULES["automaps"] && (MODULES["automaps"].preferGardens = !getPageSetting('PreferMetal'));
+    MODULES["maps"] && (MODULES["maps"].preferGardens = !getPageSetting('PreferMetal'));
     //if player has selected arbalest or gambeson but doesn't have them unlocked, just unselect it for them! It's magic!
     if (document.getElementById('Prestige').selectedIndex > 11 && game.global.slowDone == false) {
         document.getElementById('Prestige').selectedIndex = 11;
