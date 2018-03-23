@@ -268,6 +268,11 @@ function autoToggleGraph() {
 }
 
 function escapeATWindows() {
+    var $tooltip = document.getElementById("tooltipDiv");
+    if ($tooltip.style.display != 'none') {
+        cancelTooltip();
+        return;
+    }
     //Turn off "Settings"/"AutoTrimpsSettings"/"Graphs" Menu on escape.
     if (game.options.displayed) toggleSettingsMenu();
     var $item = document.getElementById('autoSettings');
@@ -281,6 +286,7 @@ document.addEventListener("keydown",function (event) {
     //Hotkeys have to be enabled, and all these conditions have to be met or else we cant use the hotkey.
 	if (game.options.menu.hotkeys.enabled == 1 && !game.global.preMapsActive && !game.global.lockTooltip && !ctrlPressed && !heirloomsShown && event.keyCode == 27) //27 == escape
         escapeATWindows();
+    //TODO this currently escapes out of both tooltips and the settings and its already checking for locked tooltips. Maybe if there IS a tooltip open we should just close that first.
     //Turn off "Settings"/"AutoTrimpsSettings"/"Graphs" Menu on escape.
 }, true);
 
@@ -399,7 +405,8 @@ function pushData() {
         mapbonus: GraphsVars.MapBonus,
         magmite: game.global.magmite,
         magmamancers: game.jobs.Magmamancer.owned,
-        fluffy: game.global.fluffyExp
+        fluffy: game.global.fluffyExp,
+        nursery: game.buildings.Nursery.purchased 
     });
     //only keep 15 portals worth of runs to prevent filling storage
     clearData(15);

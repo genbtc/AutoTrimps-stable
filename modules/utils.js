@@ -10,7 +10,6 @@ if (!String.prototype.includes) {
         if (typeof start !== 'number') {
             start = 0;
         }
-
         if (start + search.length > this.length) {
             return false;
         } else {
@@ -65,7 +64,7 @@ function parseVersion(version) {
 function updateOldSettings(oldSettings) {
     var oldVer = oldSettings[ATversion];
     
-    if (versionIsOlder(oldVer, '2.1.6.8-genbtc-3-22-2018+Mod+Uni+coderpatsy')) {
+    if (versionIsOlder(oldVer, '2.1.6.8-genbtc-3-22-2018')) {
         //do something
     }
     
@@ -237,15 +236,6 @@ function postBuy2(old) {
     game.global.maxSplit = old[3];
 }
 
-function getCorruptScale(type) {
-    switch (type) {
-        case "attack":
-            return mutations.Corruption.statScale(3);
-        case "health":
-            return mutations.Corruption.statScale(10);
-    }
-}
-
 function setTitle() {
     if (aWholeNewWorld)
         document.title = '(' + game.global.world + ')' + ' Trimps ' + document.getElementById('versionNumber').innerHTML;
@@ -328,7 +318,8 @@ function filterMessage2(what){
     log.scrollTop = log.scrollHeight;
 }
 
- //Replacement function for Zone tooltip to show current amount in seconds (Just adds the seconds)
+ //Replacement function for "World Info" tooltip to show current amount in seconds (Just adds the seconds)
+ //Overwrites game function.
 function formatMinutesForDescriptions(number){
     var text;
     var seconds = Math.floor((number*60) % 60);

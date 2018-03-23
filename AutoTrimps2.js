@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
-// @version      2.1.6.8-genbtc-3-22-2018+Mod+Uni+coderpatsy
+// @version      2.1.6.8-genbtc-3-22-2018
 // @updateURL    https://github.com/genbtc/AutoTrimps/AutoTrimps2.js
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
@@ -8,7 +8,7 @@
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.6.8-genbtc-3-22-2018+Mod+Uni+coderpatsy';
+var ATversion = '2.1.6.8-genbtc-3-22-2018';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////

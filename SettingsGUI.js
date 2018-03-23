@@ -612,6 +612,23 @@ function createSetting(id, name, description, type, defaultValue, list, containe
     autoTrimpSettings["ATversion"] = ATversion;
 }
 
+//makes labeled checkboxes.
+function createInput(id, name) {
+    var $btnParent = document.createElement("DIV");
+    $btnParent.setAttribute('style', 'display: inline-block; vertical-align: top; margin-left: 0.5vw; margin-bottom: 0.5vw; width: 6.5vw;');
+    var $input = document.createElement("input");
+    $input.type = 'checkbox';
+    $input.setAttribute('id', id);
+    $input.setAttribute('style', 'text-align: left; width: 0.8vw; ');
+    //$input.setAttribute('onkeypress', 'isValidKey2(this,event)');
+    $btnParent.appendChild($input);
+    var $label = document.createElement("label");
+    $label.setAttribute('style', 'text-align: left; margin-left: 0.2vw; font-size: 0.6vw');
+    $label.innerHTML = name;
+    $btnParent.appendChild($label);
+    document.getElementById("autoSettings").appendChild($btnParent);
+}
+
 //Default Toggler handler for any setting of the 3 special types (boolean, multitoggle, dropdown, and handle PrestigeBackup) - not value type.
 function settingChanged(id) {
     var btn = autoTrimpSettings[id];
@@ -673,7 +690,7 @@ function autoSetValueToolTip(id, text,negative) {
     }
     box.focus();
 }
-//enter handler for popup
+//Keyboard handler - Enter Key accepts popup
 function onKeyPressSetting(event, id,negative) {
     if (event.which == 13 || event.keyCode == 13) {
         autoSetValue(id,negative);

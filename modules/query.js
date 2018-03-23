@@ -159,6 +159,16 @@ function getCorruptedCellsNum() {
     }
     return corrupteds;
 }
+
+function getCorruptScale(type) {
+    switch (type) {
+        case "attack":
+            return mutations.Corruption.statScale(3);
+        case "health":
+            return mutations.Corruption.statScale(10);
+    }
+}
+
 function getPotencyMod(howManyMoreGenes) {
     var potencyMod = game.resources.trimps.potency;
     //Add potency (book)
