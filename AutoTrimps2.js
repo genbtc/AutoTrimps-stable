@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AutoTrimpsV2
-// @version      2.1.6.8-genbtc-3-22-2018
+// @version      2.1.6.9-genbtc-3-23-2018
 // @updateURL    https://github.com/genbtc/AutoTrimps/AutoTrimps2.js
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, belaith, ishakaru, genBTC, Unihedron, coderPatsy
@@ -8,7 +8,7 @@
 // @include      *kongregate.com/games/GreenSatellite/trimps
 // @grant        none
 // ==/UserScript==
-var ATversion = '2.1.6.8-genbtc-3-22-2018';
+var ATversion = '2.1.6.9-genbtc-3-22-2018';
 
 ////////////////////////////////////////////////////////////////////////////////
 //Main Loader Initialize Function (loads first, load everything else)///////////
@@ -38,7 +38,7 @@ function initializeAutoTrimps() {
     scriptLoad('SettingsGUI.js');   //populate Settings GUI
     scriptLoad('Graphs.js');        //populate Graphs
     //Load modules:
-    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'import-export', 'client-server', 'perks', 'fight-info', 'performance'];
+    var ATmodules = ['query', 'portal', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'other', 'import-export', 'client-server', 'perks', 'fight-info', 'performance'];
     for (var m in ATmodules) {
         scriptLoad(modulepath + ATmodules[m] + '.js');
     }
@@ -198,7 +198,7 @@ function mainLoop() {
     if (getPageSetting('BuyJobs')) buyJobs();            //"Buy Jobs"            (jobs.js)
     if (getPageSetting('ManualGather2')<=2) manualLabor();  //"Auto Gather/Build"       (gather.js)
     else if (getPageSetting('ManualGather2')==3) manualLabor2();  //"Auto Gather/Build #2"  (")
-    getPageSetting('AutoMaps') ? autoMap() : updateAutoMapsStatus(); //"Auto Maps"      (automaps.js)
+    getPageSetting('AutoMaps') > 0 ? autoMap() : updateAutoMapsStatus(); //"Auto Maps"      (automaps.js)
     if (getPageSetting('GeneticistTimer') >= 0) autoBreedTimer(); //"Geneticist Timer" / "Auto Breed Timer"     (autobreedtimer.js)
     if (autoTrimpSettings.AutoPortal.selected != "Off") autoPortal();   //"Auto Portal" (hidden until level 40) (portal.js)
     if (getPageSetting('TrapTrimps') && game.global.trapBuildAllowed && game.global.trapBuildToggled == false) toggleAutoTrap(); //"Trap Trimps"
@@ -243,7 +243,7 @@ function mainCleanup() {
         lastHeliumZone = 0;
         zonePostpone = 0;
         //for the dummies like me who always forget to turn automaps back on after portaling
-        if(getPageSetting('RunUniqueMaps') && !game.upgrades.Battle.done && autoTrimpSettings.AutoMaps.enabled == false)
+        if(getPageSetting('AutoMaps')==1 && !game.upgrades.Battle.done && getPageSetting('AutoMaps') == 0)
             settingChanged("AutoMaps");
         return true; // Do other things
     }

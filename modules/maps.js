@@ -389,7 +389,7 @@ function autoMap() {
     //Look through all the maps we have - find Uniques and figure out if we need to run them.
     for (var map in game.global.mapsOwnedArray) {
         var theMap = game.global.mapsOwnedArray[map];
-        if (theMap.noRecycle && getPageSetting('RunUniqueMaps')) {
+        if (theMap.noRecycle && getPageSetting('AutoMaps')==1) {
             if (theMap.name == 'The Wall' && game.upgrades.Bounty.allowed == 0 && !game.talents.bounty.purchased) {
                 var theMapDifficulty = Math.ceil(theMap.difficulty / 2);
                 if(game.global.world < 15 + theMapDifficulty) continue;
@@ -761,7 +761,7 @@ function updateAutoMapsStatus(get) {
     //automaps status
     var status;
     var minSp = getPageSetting('MinutestoFarmBeforeSpire');
-    if(!autoTrimpSettings.AutoMaps.enabled) status = 'Off';
+    if(getPageSetting('AutoMaps') == 0) status = 'Off';
     else if (game.global.challengeActive == "Mapology" && game.challenges.Mapology.credits < 1) status = 'Out of Map Credits';
     else if (preSpireFarming) {
         var secs = Math.floor(60 - (spireTime*60)%60).toFixed(0)
@@ -787,7 +787,7 @@ function updateAutoMapsStatus(get) {
     else if (enoughHealth && enoughDamage) status = 'Advancing';
 
     if (skippedPrestige) // Show skipping prestiges
-        status += '<b style="font-size:.8em;color:pink">Prestige Skipped</b><br>';
+        status += '<br><b style="font-size:.8em;color:pink">Prestige Skipped</b><br>';
 
     //hider he/hr% status
     var getPercent = (game.stats.heliumHour.value() / (game.global.totalHeliumEarned - (game.global.heliumLeftover + game.resources.helium.owned)))*100;

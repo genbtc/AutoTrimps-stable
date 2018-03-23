@@ -22,8 +22,9 @@ if (!String.prototype.includes) {
 function loadPageVariables() {
     var tmp = JSON.parse(localStorage.getItem('autoTrimpSettings'));
     if (tmp !== null) {
+      debug('ATsettings: Checking version...');
         if (tmp['ATversion'] != undefined && !versionIsOlder(tmp['ATversion'], ATversion)) autoTrimpSettings = tmp;
-        else updateOldSettings(tmp);
+        else { debug("ATsettings: Old version. There was a format change."); updateOldSettings(tmp);};
     }
 }
 
@@ -62,10 +63,16 @@ function parseVersion(version) {
 }
 
 function updateOldSettings(oldSettings) {
-    var oldVer = oldSettings[ATversion];
-    
-    if (versionIsOlder(oldVer, '2.1.6.8-genbtc-3-22-2018')) {
-        //do something
+    var oldVer = oldSettings['ATversion'];
+    debug("ATsettings: Updating v" +  oldVer + " to  v" + ATversion);
+    if (versionIsOlder(oldVer, '2.1.6.9')) {
+      debug("ATsettings: Migrating AutoMaps + RunUniqueMaps to new AutoMaps.");
+      //migrate AutoMaps + RunUniqueMaps to new AutoMaps
+      var am = (oldSettings['AutoMaps']);
+      oldSettings['AutoMaps'] = am ? 1 : 0;
+      if (!oldSettings['RunUniqueMaps'])
+          oldSettings['AutoMaps']++;
+      delete oldSettings['RunUniqueMaps'];
     }
     
     autoTrimpSettings = oldSettings;
