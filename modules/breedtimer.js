@@ -59,9 +59,9 @@ function autoBreedTimer() {
     var newSquadRdy = game.resources.trimps.realMax() <= game.resources.trimps.owned + 1;
     var defaultBreedTimer = game.talents.patience.purchased && getPageSetting('UsePatience') ? 45 : 30;
     var targetBreed = getPageSetting('GeneticistTimer');
-    var newGeneTimerSetting;
+    var newGeneTimerSetting=0;
 //TIMER MANAGEMENT SECTION: 
-    var manageBreedTimer = getPageSetting('ManageBreedtimer')
+    var manageBreedTimer = getPageSetting('ManageBreedtimer');
     if (manageBreedTimer) {
         if(game.portal.Anticipation.level == 0) newGeneTimerSetting = 0;
         else if(game.global.challengeActive == 'Electricity' || game.global.challengeActive == 'Mapocalypse') newGeneTimerSetting = 3.5;
@@ -76,10 +76,10 @@ function autoBreedTimer() {
             newGeneTimerSetting = getPageSetting('SpireBreedTimer');
         else 
             newGeneTimerSetting = defaultBreedTimer;
-    }
-    if (newGeneTimerSetting != targetBreed) {
-         setPageSetting('GeneticistTimer',newGeneTimerSetting);
-         debug("Changing the Geneticist Timer to a new value : " + newGeneTimerSetting, "other");
+        if (newGeneTimerSetting != targetBreed) {
+             setPageSetting('GeneticistTimer',newGeneTimerSetting);
+             debug("Changing the Geneticist Timer to a new value : " + newGeneTimerSetting, "other");
+        }
     }
     var inDamageStance = game.upgrades.Dominance.done ? game.global.formation == 2 : game.global.formation == 0;
     var inScryerStance = (game.global.world >= 60 && game.global.highestLevelCleared >= 180) && game.global.formation == 4;
