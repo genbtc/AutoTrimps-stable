@@ -14,7 +14,7 @@ var ATversion = '2.1.6.5-genbtc-3-7-2018+Mod+Uni+coderpatsy';
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////
 var atscript = document.getElementById('AutoTrimps-script')
-  , basepath = 'https://genbtc.github.io/AutoTrimps/'
+  , basepath = 'https://genbtc.github.io/AutoTrimps-stable/'
   , modulepath = 'modules/'
   ;
 //This should redirect the script to wherever its being mirrored from.
@@ -29,7 +29,7 @@ function initializeAutoTrimps() {
     document.head.appendChild(document.createElement('script')).src = basepath + 'SettingsGUI.js';
     document.head.appendChild(document.createElement('script')).src = basepath + 'Graphs.js';
     //Load modulepaths:
-    var ATmodules = ['query', 'import-export', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'client-server', 'perks'];
+    var ATmodules = ['query', 'upgrades', 'heirlooms', 'buildings', 'jobs', 'equipment', 'gather', 'stance', 'battlecalc', 'maps', 'breedtimer', 'dynprestige', 'fight', 'scryer', 'magmite', 'portal', 'other', 'import-export', 'client-server', 'perks'];
     for (var i=0,len=ATmodules.length; i<len; i++) {
         document.head.appendChild(document.createElement('script')).src = basepath + modulepath + ATmodules[i] + '.js';
     }

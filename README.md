@@ -25,10 +25,10 @@ took a break
 
 ***Option 1***: Install TamperMonkey (Chrome) or GreaseMonkey (Firefox)
 
-**EASY INSTALL click here: https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js** (the Monkeys will detect this and prompt you to install it)
+**EASY INSTALL click here: https://genbtc.github.io/AutoTrimps-stable/.user.js** (the Monkeys will detect this and prompt you to install it)
 
 Overly detailed Chrome/TamperMonkey Instructions:
-- Open the TamperMonkey dashboard and go to utilities – in the URL box paste https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js and click IMPORT
+- Open the TamperMonkey dashboard and go to utilities – in the URL box paste https://genbtc.github.io/AutoTrimps-stable/.user.js and click IMPORT
 - Alternatively, paste the contents of `.user.js` into a user script (pay attention, it says .user.js - this contains 4 lines of code that loads AutoTrimps2.js)
 - The script should automatically load everytime you go to https://trimps.github.io or the game on Kongregate
 - You will know you have the script loaded if you see the Automation and Graphs buttons in the game menu at the bottom
@@ -38,12 +38,12 @@ Overly detailed Chrome/TamperMonkey Instructions:
 
 FireFox/GreaseMonkey instructions:
 - GreaseMonkey identifies userscripts by visiting a URL that ends with ".user.js" in them:
-- Visit this URL, and Agree to install the userscript:  https://github.com/genbtc/AutoTrimps/raw/gh-pages/.user.js
+- Visit this URL, and Agree to install the userscript:  https://genbtc.github.io/AutoTrimps-stable/.user.js
 
 ***Option 2***: Via a Bookmark (does not work with Kongregate - maybe it does now that I added an include kongregate line to the file)
 - Create new bookmark and set its target to:
 ```js
-javascript:with(document)(head.appendChild(createElement('script')).src='https://genbtc.github.io/AutoTrimps/AutoTrimps2.js')._
+javascript:with(document)(head.appendChild(createElement('script')).src='https://genbtc.github.io/AutoTrimps-stable/AutoTrimps2.js')._
 ```
 - This bookmark button has to be clicked manually after you go to https://trimps.github.io
 

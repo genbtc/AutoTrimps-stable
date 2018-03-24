@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AutoTrimps-genBTC
-// @namespace    https://github.com/genbtc/AutoTrimps
+// @namespace    https://genbtc.github.io/AutoTrimps-stable
 // @version      2.1.6.5-genbtc-3-7-2018+Mod+Uni+coderpatsy
 // @description  Automate all the trimps!
 // @author       zininzinin, spindrjr, Ishkaru, genBTC
@@ -12,7 +12,7 @@
 var script = document.createElement('script');
 script.id = 'AutoTrimps-script';
 //This can be edited to point to your own Github Repository URL.
-script.src = 'https://genbtc.github.io/AutoTrimps/AutoTrimps2.js';
+script.src = 'https://genbtc.github.io/AutoTrimps-stable/AutoTrimps2.js';
 document.head.appendChild(script);
 
 // This File is Deprecated, please use .user.js instead (with the leading dot) so TamperMonkey/Greasemonkey can detect it as a script automatically.
