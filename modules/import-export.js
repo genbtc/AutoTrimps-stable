@@ -1,39 +1,42 @@
 MODULES["import-export"] = {};
+
 //2018 AutoTrimps - genBTC, copied from SettingsGUI.js
 //Create settings profile selection dropdown box in DOM. (import/export section)
+var $settingsProfiles;
 function settingsProfileMakeGUI() {
-    var settingsProfilesLabel = document.createElement("Label");
-    settingsProfilesLabel.id = 'settingsProfiles Label';
-    settingsProfilesLabel.innerHTML = "Settings Profile: ";
-    if (game.options.menu.darkTheme.enabled == 2) settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color: #C8C8C8; font-size: 0.8vw;");
-    else settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color:white; font-size: 0.8vw;");
-    var settingsProfiles = document.createElement("select");
-    settingsProfiles.id = 'settingsProfiles';
-    settingsProfiles.setAttribute('class', 'noselect');
-    settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
+    var $settingsProfilesLabel = document.createElement("Label");
+    $settingsProfilesLabel.id = 'settingsProfiles Label';
+    $settingsProfilesLabel.innerHTML = "Settings Profile: ";
+    if (game.options.menu.darkTheme.enabled == 2) $settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color: #C8C8C8; font-size: 0.8vw;");
+    else $settingsProfilesLabel.setAttribute("style", "margin-left: 1.2vw; margin-right: 0.8vw; color:white; font-size: 0.8vw;");
+    $settingsProfiles = document.createElement("select");
+    $settingsProfiles.id = 'settingsProfiles';
+    $settingsProfiles.setAttribute('class', 'noselect');
+    $settingsProfiles.setAttribute('onchange', 'settingsProfileDropdownHandler()');
     var oldstyle = 'text-align: center; width: 160px; font-size: 1.1vw;';
-    if(game.options.menu.darkTheme.enabled != 2) settingsProfiles.setAttribute("style", oldstyle + " color: black;");
-    else settingsProfiles.setAttribute('style', oldstyle);
+    if(game.options.menu.darkTheme.enabled != 2) $settingsProfiles.setAttribute("style", oldstyle + " color: black;");
+    else $settingsProfiles.setAttribute('style', oldstyle);
     //Create settings profile selection dropdown
-    var settingsProfilesButton = document.createElement("Button");
-    settingsProfilesButton.id = 'settingsProfiles Button';
-    settingsProfilesButton.setAttribute('class', 'btn btn-info');
-    settingsProfilesButton.innerHTML = "&lt;Delete Profile";
-    settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw; font-size: 0.8vw;');    
-    settingsProfilesButton.setAttribute('onclick','onDeleteProfile()');
-    //Add the settingsProfiles dropdown to UI
-    var ietab = document.getElementById('Import Export');
-    ietab.insertBefore(settingsProfilesLabel, ietab.childNodes[2]);
-    ietab.insertBefore(settingsProfiles, ietab.childNodes[3]);
-    ietab.insertBefore(settingsProfilesButton, ietab.childNodes[4]);
+    var $settingsProfilesButton = document.createElement("Button");
+    $settingsProfilesButton.id = 'settingsProfiles Button';
+    $settingsProfilesButton.setAttribute('class', 'btn btn-info');
+    $settingsProfilesButton.innerHTML = "&lt;Delete Profile";
+    $settingsProfilesButton.setAttribute('style', 'margin-left: 0.5vw; margin-right: 0.5vw; font-size: 0.8vw;');
+    $settingsProfilesButton.setAttribute('onclick','onDeleteProfileHandler()');
+    //Add the $settingsProfiles dropdown to UI
+    var $ietab = document.getElementById('Import Export');
+    //Any ERRORs here are caused by incorrect order loading of script and you should reload until its gone.(for now)
+    $ietab.insertBefore($settingsProfilesLabel, $ietab.childNodes[1]);
+    $ietab.insertBefore($settingsProfiles, $ietab.childNodes[2]);
+    $ietab.insertBefore($settingsProfilesButton, $ietab.childNodes[3]);
     //populate with a Default (read default settings):
-    var innerhtml = "<option id='customProfileCurrent'>Current</option>";    
+    var innerhtml = "<option id='customProfileCurrent'>Current</option>";
     //populate with a Default (read default settings):
-    innerhtml += "<option id='customProfileDefault'>Defaults</option>";
+    innerhtml += "<option id='customProfileDefault'>Reset to Default</option>";
     //Append a 2nd default item named "Save New..." and have it tied to a write function();
     innerhtml += "<option id='customProfileNew'>Save New...</option>";
     //dont forget to populate the rest of it with stored items:
-    settingsProfiles.innerHTML = innerhtml;
+    $settingsProfiles.innerHTML = innerhtml;
 }
 settingsProfileMakeGUI();
 
