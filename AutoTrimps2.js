@@ -48,8 +48,9 @@ function initializeAutoTrimps() {
 
 var changelogList = [];
 //changelogList.push({date: " ", version: " ", description: "", isNew: true});  //TEMPLATE
-changelogList.push({date: "3/22", version: "v2.1.6.8", description: "Multiple small commits for Settings, make GUI better. Up/Down graph buttons. Warning messages on import/export. Internal code fixes, gameplay unchanged.", isNew: true});
-changelogList.push({date: "3/20", version: "v2.1.6.7", description: "Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + Go AFK Mode. GUI: Pinned AT Tab menu bar to top when scrolling. Minimize/Maxi/Close Buttons. ShowChangeLog Button. Graph: FluffyXP(testing)", isNew: true});
+changelogList.push({date: "3/23", version: "v2.1.6.9", description: "AutoMaps setting combined with RunUniqueMaps. Be advised, the variable has changed from boolean false,true to a value 0,1,2. Settings file has been migrated as such. New: Map SpecialMod is extremely beta and can break your game. Geneticist Infinity fixed.", isNew: true});
+changelogList.push({date: "3/22", version: "v2.1.6.8", description: "Settings GUI, make better. Up/Down graph buttons. Warning notices on import/export. Internal code fixes, gameplay unchanged.", isNew: false});
+changelogList.push({date: "3/20", version: "v2.1.6.7", description: "Moved all the Settings around on you :) Enjoy the new layout. Display Tab: EnhanceGrid + Go AFK Mode. GUI: Pinned AT Tab menu bar to top when scrolling. Minimize/Maxi/Close Buttons. ShowChangeLog Button. Graph: FluffyXP(testing)", isNew: false});
 changelogList.push({date: "3/13", version: "v2.1.6.6", description: "Geneticist management changes. Equipment code improvements. scriptLoad improvements. attempt to track errors.", isNew: false});
 changelogList.push({date: "3/7", version: "v2.1.6.5", description: "Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable.", isNew: false});
 function assembleChangelog(date,version,description,isNew) {
