@@ -25,20 +25,20 @@ took a break
 
 ***Option 1***: Install TamperMonkey (Chrome) or GreaseMonkey (Firefox)
 
-**EASY INSTALL click here: https://genbtc.github.io/AutoTrimps-stable/.user.js** (the Monkeys will detect this and prompt you to install it)
+**EASY INSTALL click here: https://genbtc.github.io/AutoTrimps-stable/install.user.js** (the Monkeys will detect this and prompt you to install it)
 
 Overly detailed Chrome/TamperMonkey Instructions:
-- Open the TamperMonkey dashboard and go to utilities – in the URL box paste https://genbtc.github.io/AutoTrimps-stable/.user.js and click IMPORT
-- Alternatively, paste the contents of `.user.js` into a user script (pay attention, it says .user.js - this contains 4 lines of code that loads AutoTrimps2.js)
+- Open the TamperMonkey dashboard and go to utilities – in the URL box paste https://genbtc.github.io/AutoTrimps-stable/install.user.js and click IMPORT
+- Alternatively, paste the contents of `install.user.js` into a user script (pay attention, it says install.user.js - this contains 4 lines of code that loads AutoTrimps2.js)
 - The script should automatically load everytime you go to https://trimps.github.io or the game on Kongregate
 - You will know you have the script loaded if you see the Automation and Graphs buttons in the game menu at the bottom
 - DO NOT PASTE THE FULL 2000+ line contents of the script into TamperMonkey! It will not work properly!
-- The .user.js file is a "stub" or "loader" that references the AutoTrimps2.js file which is where the actual script is located.
-- The purpose of .user.js is so that you don't have to rely on TamperMonkey's update functionality - instead it will automaticaly download the updated copy from the URL provided everytime its loaded.
+- The install.user.js file is a "stub" or "loader" that references the AutoTrimps2.js file which is where the actual script is located.
+- The purpose of install.user.js is so that you don't have to rely on TamperMonkey's update functionality - instead it will automaticaly download the updated copy from the URL provided everytime its loaded.
 
 FireFox/GreaseMonkey instructions:
-- GreaseMonkey identifies userscripts by visiting a URL that ends with ".user.js" in them:
-- Visit this URL, and Agree to install the userscript:  https://genbtc.github.io/AutoTrimps-stable/.user.js
+- GreaseMonkey identifies userscripts by visiting a URL that ends with "install.user.js" in them:
+- Visit this URL, and Agree to install the userscript:  https://genbtc.github.io/AutoTrimps-stable/install.user.js
 
 ***Option 2***: Via a Bookmark (does not work with Kongregate - maybe it does now that I added an include kongregate line to the file)
 - Create new bookmark and set its target to:

@@ -179,7 +179,6 @@ The main loop consists of the following subroutines, all of which are enable-abl
 
 Version Numbered Files (files needing version string during minor upgrades):
 ======================
-.user.js
 user.js
 install.user.js
 AutoTrimps2.js

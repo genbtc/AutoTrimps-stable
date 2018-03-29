@@ -48,7 +48,7 @@ function initializeAutoTrimps() {
 //Other function should be made to create a DOM element for this, scrape the API data into it, and then print tooltip with header/footer.
 function printChangelog() {
     tooltip('confirm', null, 'update', '\
-<br><b class="AutoEggs">3/7-3/9 v2.1.6.5 </b><b style="background-color:#32CD32"> New:</B> Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable. Continue Development on long TODO list... \
+<br><b class="AutoEggs">3/7-3/9 v2.1.6.5 </b><b style="background-color:#32CD32"> New:</B> Save/Reload Profiles in Import/Export. Magmamancer graph. Magmite/Magma Spam disableable.<br> This is the <a target=\'#\' href=\'https://genbtc.github.io/AutoTrimps-stable\'>Stable Repository</a> for the faint of heart. \
 <br><b>3/4 v2.1.6.4 </b> Basic Analytics are now being collected. Read about it in the tooltip of the new button on the Import/Export tab . Overkill Graph fixed for Liquification.  Setting Max Explorers to infinity as they are not that useless anymore. Update battlecalc for Fluffy & Ice on Autostance2.\
 <br><b>3/1 v2.1.6.3 </b> AutoPerks: Capable/Curious/Cunning, BaseDamageCalc: C2,StillRowing,Strength in Health,Ice,Fluffy,Magmamancer - Fix bugs in autoperks around capable/fluffy allocating looting + more bugs\
 <br><u>Report any bugs/problems please!<br You can find me on Discord: <span style="background-color:#ddd;color:#222">genr8_#8163 </span>\
