@@ -93,6 +93,7 @@ function autoPortal() {
         case "Watch":
         case "Lead":
         case "Corrupted":
+	case "Domination":
             if(!game.global.challengeActive) {
                 doPortal(autoTrimpSettings.AutoPortal.selected);
             }
